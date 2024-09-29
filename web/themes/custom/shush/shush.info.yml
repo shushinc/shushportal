@@ -1,0 +1,25 @@
+name: Shush Portal
+type: theme
+base theme: stable9
+description: "A flexible theme with regions and a responsive, mobile-first layout."
+core_version_requirement: ^9 || ^10
+libraries:
+  - shush/bootstrap-cdn
+  - shush/fonts-id-06
+  - shush/fontawesome
+  - shush/global-styling
+
+regions:
+  header: "Header"
+  primary_menu: "Primary Menu"
+  secondary_menu: "Secondary Menu"
+  sidebar_first: "First sidebar"
+  sidebar_second: "Second sidebar"
+  breadcrumb: "Breadcrumb"
+  highlighted: "Highlighted"
+  help: "Help"
+  banner: "Banner"
+  content: "Content"
+  footer: "Footer"
+  footer_second: "Footer Secondary"
+  hidden: "Hidden"

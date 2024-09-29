@@ -1,0 +1,7 @@
+zcs.login:
+  path: '/login'
+  defaults:
+    _title: 'Login'
+    _controller: '\Drupal\zcs_custom\Controller\LoginController::login'
+  requirements:
+    _role: 'anonymous'

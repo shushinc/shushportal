@@ -1,0 +1,22 @@
+uuid: 604909eb-5ae5-4f12-b0d4-33fa8efab114
+langcode: en
+status: true
+dependencies:
+  theme:
+    - shush
+_core:
+  default_config_hash: Rm3v3ph7SPIBC7taPPGr-FOluPqxgeXvB0jTGPsMjg0
+id: shush_secondary_local_tasks
+theme: shush
+region: content
+weight: -7
+provider: null
+plugin: local_tasks_block
+settings:
+  id: local_tasks_block
+  label: 'Secondary tabs'
+  label_display: '0'
+  provider: core
+  primary: false
+  secondary: true
+visibility: {  }

@@ -1,0 +1,48 @@
+<?php
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function zcs_custom_theme($existing, $type, $theme, $path) {
+  return [
+    'portal_login' => [
+      'variables' => [
+        'title' => NULL,
+        'description' => NULL,
+        'module_path' => NULL,
+      ],
+      'template' => 'portal-login',
+    ],
+  ];
+}
+
+
+/**
+ * Implements hook_form_alter() to add "Forgot Password?" link to the login form.
+ */
+function zcs_custom_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
+  // Target the user login form.
+  if ($form_id == 'user_login_form') {
+    // Add a "Forgot Password?" link at the end of the form.
+    $form['forgot_password'] = [
+      '#markup' => '<p><a href="' . \Drupal\Core\Url::fromRoute('user.pass')->toString() . '">' . t('Forgot password?') . '</a></p>',
+      '#weight' => 10,
+    ];
+  }
+}
+
+
+/**
+ * Implements hook_menu_local_tasks_alter() to remove "Log in" and "Reset your password" tabs.
+ */
+function zcs_custom_menu_local_tasks_alter(array &$local_tasks) {
+
+  $route_name = \DRUPAL::routeMatch()->getRouteName();
+  if ($route_name == 'user.login' || $route_name == 'user.register'|| $route_name == 'user.pass') {
+    unset($local_tasks['tabs'][0]['user.register']);
+    unset($local_tasks['tabs'][0]['user.pass']);
+    unset($local_tasks['tabs'][0]['user.login']);
+  }
+}

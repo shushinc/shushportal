@@ -1,0 +1,33 @@
+<?php
+
+
+use \Drupal\menu_link_content\Entity\MenuLinkContent;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\user\Entity\Role;
+
+
+function zcs_kong_install() {
+    // Add a sample link to the main menu.
+    $menu_link = MenuLinkContent::create([
+      'menu_name' => 'main',
+      'title' => 'API keys',
+      'link' => [
+         ['uri' => 'internal:/apps']
+      ],
+      'weight' => 5,
+      'menu_per_role__show_role' => [
+        'authenticated',
+      ],
+    ]);
+    $menu_link->save();
+}
+
+
+
+function zcs_kong_uninstall() {
+  $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+  $menu_item_object = current($storage->loadByProperties(['title' => 'API keys']));
+  if($menu_item_object) {
+    $menu_item_object->delete();
+  }
+}

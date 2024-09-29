@@ -1,0 +1,6 @@
+services:
+  zcs_kong.kong_gateway:
+    class: Drupal\zcs_kong\Services\KongService
+    arguments:
+      - '@current_user'
+      - '@http_client'

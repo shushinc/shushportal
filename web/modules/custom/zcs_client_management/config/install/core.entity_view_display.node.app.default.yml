@@ -1,0 +1,123 @@
+uuid: 16a9351c-0ecc-46dc-af5d-ca8badb34c3a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.app.body
+    - field.field.node.app.field_app_id
+    - field.field.node.app.field_app_key
+    - field.field.node.app.field_app_status
+    - field.field.node.app.field_consumer_id
+    - field.field.node.app.field_expiry_date
+    - field.field.node.app.field_renewal_date
+    - field.field.node.app.field_tag
+    - field.field.node.app.field_ttl
+    - node.type.app
+  module:
+    - options
+    - text
+    - user
+_core:
+  default_config_hash: IxMSc8xYAEM520ew0lNZuAp_n4m4X265v7_okwNunZc
+id: node.app.default
+targetEntityType: node
+bundle: app
+mode: default
+content:
+  body:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 101
+    region: content
+  field_app_id:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 103
+    region: content
+  field_app_key:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 105
+    region: content
+  field_app_status:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 112
+    region: content
+  field_consumer_id:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 109
+    region: content
+  field_expiry_date:
+    type: timestamp
+    label: above
+    settings:
+      date_format: medium
+      custom_date_format: ''
+      timezone: ''
+      tooltip:
+        date_format: long
+        custom_date_format: ''
+      time_diff:
+        enabled: false
+        future_format: '@interval hence'
+        past_format: '@interval ago'
+        granularity: 2
+        refresh: 60
+    third_party_settings: {  }
+    weight: 110
+    region: content
+  field_renewal_date:
+    type: timestamp
+    label: above
+    settings:
+      date_format: medium
+      custom_date_format: ''
+      timezone: ''
+      tooltip:
+        date_format: long
+        custom_date_format: ''
+      time_diff:
+        enabled: false
+        future_format: '@interval hence'
+        past_format: '@interval ago'
+        granularity: 2
+        refresh: 60
+    third_party_settings: {  }
+    weight: 111
+    region: content
+  field_tag:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 102
+    region: content
+  field_ttl:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 104
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden: {  }
