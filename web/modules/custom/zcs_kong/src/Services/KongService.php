@@ -77,14 +77,16 @@ class kongService  {
    * {@inheritdoc}
    */
   public function createConsumer($username, $customer_id) {
+
+    $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
+    $endpoint = $endpoint_url .'/consumers';
+
     $body = [
       'username' => $username,
       'custom_id' => $customer_id,
     ];
 
     $request_body = json::encode($body);
-    $endpoint = 'http://34.72.223.216:8001/consumers';
-
     $response = $this->httpClient->request('POST', $endpoint, [
       'headers' => [
        'content-type' => 'application/json',
@@ -99,7 +101,8 @@ class kongService  {
    * {@inheritdoc}
    */
   public function getTagsList() {
-    $endpoint = 'http://34.72.223.216:8001/tags';
+    $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
+    $endpoint = $endpoint_url . '/tags';
     $response = $this->httpClient->request('GET', $endpoint, [
       'headers' => [
        'content-type' => 'application/json',
@@ -152,6 +155,10 @@ class kongService  {
    * {@inheritdoc}
    */
   public function generateKey($consumer_id, $tags, $ttl) {
+
+    $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
+    $endpoint = $endpoint_url .'/consumers/'. $consumer_id .'/key-auth';
+
     if ($ttl == 'never_expires') {
       $ttl = '';
     } 
@@ -165,7 +172,6 @@ class kongService  {
         "ttl" => (int) $ttl,
       ];
       $request_body = json::encode($body);
-      $endpoint = "http://34.72.223.216:8001/consumers/$consumer_id/key-auth";
       $response = $this->httpClient->request('POST', $endpoint, [
         'headers' => [
         'content-type' => 'application/json',
@@ -185,8 +191,9 @@ class kongService  {
   * {@inheritdoc}
   */
   public function getAppList($consumer_id) {
+    $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
+    $endpoint = $endpoint_url .'/consumers/'. $consumer_id .'/key-auth'.
     try {
-      $endpoint = "http://34.72.223.216:8001/consumers/$consumer_id/key-auth";
       $response = $this->httpClient->request('GET', $endpoint, [
         'headers' => [
         'content-type' => 'application/json',
@@ -237,8 +244,11 @@ class kongService  {
   * {@inheritdoc}
   */
   public function getApp($consumer_id, $app_id) {
+
+    $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
+    $endpoint = $endpoint_url .'/consumers/'. $consumer_id .'/key-auth/'.$app_id;
+
     try {
-      $endpoint = "http://34.72.223.216:8001/consumers/$consumer_id/key-auth/$app_id";
       $response = $this->httpClient->request('GET', $endpoint, [
         'headers' => [
         'content-type' => 'application/json',
@@ -260,6 +270,10 @@ class kongService  {
   * {@inheritdoc}
   */
   public function updateApp($consumer_id, $app_id, $ttl, $tag, $app_key) {
+
+    $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
+    $endpoint = $endpoint_url .'/consumers/'. $consumer_id .'/key-auth/'. $app_id;
+    
     try {
       $body = [
         "ttl" => (int) $ttl,
@@ -267,7 +281,6 @@ class kongService  {
         "key" =>  $app_key,  
       ];
       $request_body = json::encode($body);
-      $endpoint = "http://34.72.223.216:8001/consumers/$consumer_id/key-auth/$app_id";
       $response = $this->httpClient->request('PUT', $endpoint, [
         'headers' => [
         'content-type' => 'application/json',
@@ -286,8 +299,10 @@ class kongService  {
 
 
   public function deleteApp($consumer_id, $app_id) {
+
+    $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
+    $endpoint = $endpoint_url .'/consumers/'.$consumer_id .'/key-auth/'.$app_id;
     try {
-      $endpoint = "http://34.72.223.216:8001/consumers/$consumer_id/key-auth/$app_id";
       $response = $this->httpClient->request('DELETE', $endpoint, [
         'headers' => [
         'content-type' => 'application/json',

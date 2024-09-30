@@ -174,18 +174,23 @@ final class UpdateKeyForm extends FormBase {
    *
    */
   public function access(AccountInterface $account) {
-    $memberships = \Drupal::service('group.membership_loader')->loadByUser(\Drupal::currentUser());
-    if (isset($memberships)) {
-      $roles = $memberships[0]->getRoles();
-      $group_roles = [];
-      foreach($roles as $role) {
-        $group_roles[] = $role->id();
-      }
-      if (in_array('partner-admin', $group_roles)) {
-        return AccessResult::allowed();
-      }
-      else{
-        return AccessResult::forbidden();
+    if (\Drupal::currentUser()->hasRole('carrier_admin') || \Drupal::currentUser()->hasRole('administrator')) {
+      return AccessResult::allowed();
+    }
+    else {
+      $memberships = \Drupal::service('group.membership_loader')->loadByUser(\Drupal::currentUser());
+      if (isset($memberships)) {
+        $roles = $memberships[0]->getRoles();
+        $group_roles = [];
+        foreach($roles as $role) {
+          $group_roles[] = $role->id();
+        }
+        if (in_array('partner-admin', $group_roles)) {
+          return AccessResult::allowed();
+        }
+        else{
+          return AccessResult::forbidden();
+        }
       }
     }
     return AccessResult::forbidden();

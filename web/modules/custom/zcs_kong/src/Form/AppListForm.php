@@ -96,7 +96,7 @@ final class AppListForm extends FormBase {
                 $expiry_time = date('d M Y' , (int)$app->get('field_expiry_date')->value);
               }
             }        
-                  
+            $key = $app->get('field_app_key')->value ?? '';
             $apps[] = [
               'api_name' => $app->getTitle(),
               'description' => $description,
@@ -105,7 +105,7 @@ final class AppListForm extends FormBase {
               'renewal' => $renewal_date ?? '-',
               'expiry' => $expiry_time ?? '-',    
               'api_key' => [
-                'data' => $app->get('field_app_key')->value ?? '',
+                'data' =>  Markup::create("<div class='kong-key'>$key</div><div class='pwd-toggle'></div><div class='pwd-copy'></div>"),
                 'class' => 'api-keys',
               ],
               'update_key' => [
@@ -163,7 +163,9 @@ final class AppListForm extends FormBase {
                 $expiry_time = date('d M Y' , (int)$app->get('field_expiry_date')->value);
               }
             } 
+            $key = $app->get('field_app_key')->value ?? '';
             $apps[] = [
+              
               'api_name' => $app->getTitle(),
               'description' => $description,
               'tag' => $app->get('field_tag')->value ?? '',
@@ -172,7 +174,7 @@ final class AppListForm extends FormBase {
               'renewal' => $renewal_date ?? '-',
               'expiry' => $expiry_time ?? '-',
               'api_key' => [
-                'data' => $app->get('field_app_key')->value ?? '',
+                'data' =>  Markup::create("<div class='kong-key'>$key</div><div class='pwd-toggle'></div><div class='pwd-copy'></div>"),
                 'class' => 'api-keys',
               ], 
             ]; 
