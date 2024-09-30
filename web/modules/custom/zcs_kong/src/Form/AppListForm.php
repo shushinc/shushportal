@@ -39,7 +39,7 @@ final class AppListForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state): array {
 
     $header = [
-      'api_name' => $this->t('API Key Name'),
+      'api_name' => $this->t('Client Name'),
       'description' => $this->t('Description'),
       'tag' => $this->t('Tag'),
       'created' => $this->t('Created'),

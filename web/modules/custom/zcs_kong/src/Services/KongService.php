@@ -192,7 +192,7 @@ class kongService  {
   */
   public function getAppList($consumer_id) {
     $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
-    $endpoint = $endpoint_url .'/consumers/'. $consumer_id .'/key-auth'.
+    $endpoint = $endpoint_url .'/consumers/'. $consumer_id .'/key-auth';
     try {
       $response = $this->httpClient->request('GET', $endpoint, [
         'headers' => [

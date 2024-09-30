@@ -10,7 +10,7 @@ function zcs_kong_install() {
     // Add a sample link to the main menu.
     $menu_link = MenuLinkContent::create([
       'menu_name' => 'main',
-      'title' => 'API keys',
+      'title' => 'API Keys',
       'link' => [
          ['uri' => 'internal:/apps']
       ],
