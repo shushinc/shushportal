@@ -4,6 +4,8 @@ dependencies:
   config:
     - group.type.partner
     - user.role.carrier_admin
+_core:
+  default_config_hash: xL0MGWVVbdFJ5Q9-
 id: partner-partner_carrier_admin
 label: 'Partner Carrier Admin'
 weight: 105
@@ -29,5 +31,6 @@ permissions:
   - 'view group invitations'
   - 'view group revisions'
   - 'view group_membership relationship'
+  - 'view group_node:app relationship'
   - 'view latest group version'
   - 'view own unpublished group'
