@@ -117,7 +117,7 @@ class kongService  {
    */
   public function checkUserAccessGeneratekey() {
     if (!\Drupal::currentUser()->hasRole('client_admin')) {
-      \Drupal::messenger()->addError('The user has no access to create APP');
+      //\Drupal::messenger()->addError('The user has no access to create APP');
       return FALSE;
     }
     else {
