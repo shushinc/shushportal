@@ -1,0 +1,6 @@
+services:
+  zcs_custom.anonymous_redirect:
+    class: Drupal\zcs_custom\EventSubscriber\AnonymousRedirectSubscriber
+    arguments: []
+    tags:
+      - { name: event_subscriber }

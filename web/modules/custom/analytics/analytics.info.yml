@@ -1,0 +1,6 @@
+name: "Analytics Module"
+description: "Show the analytics for the API responses."
+core_version_requirement: "^8.8 || ^9 || ^10 || ^11"
+type: module
+package: 'Charts'
+version: VERSION

@@ -1,0 +1,29 @@
+uuid: 424853c8-ce10-4c52-a0da-8317420bdf47
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_swagger
+    - node.type.apis
+  module:
+    - file
+_core:
+  default_config_hash: 5Y9m3y5pu7O54bHGohcSudmrb8b_lWgR_SszCtbqLLY
+id: node.apis.field_swagger
+field_name: field_swagger
+entity_type: node
+bundle: apis
+label: Swagger
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:file'
+  handler_settings: {  }
+  file_directory: '[date:custom:Y]-[date:custom:m]'
+  file_extensions: 'yml yaml json'
+  max_filesize: ''
+  description_field: false
+field_type: file

@@ -1,0 +1,26 @@
+uuid: 3c16f0a1-9dba-4a87-8bfe-6fc2e55586f2
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - shush
+_core:
+  default_config_hash: '-WK881kTaBfWJycfQCK4IHGWpCoe_3nUyzuEVXoGfcc'
+id: shush_page_title
+theme: shush
+region: content
+weight: -6
+provider: null
+plugin: page_title_block
+settings:
+  id: page_title_block
+  label: 'Page title'
+  label_display: '0'
+  provider: core
+visibility:
+  request_path:
+    id: request_path
+    negate: true
+    pages: "<front>\r\n/home\r\n/apps\r\n/dashboard"

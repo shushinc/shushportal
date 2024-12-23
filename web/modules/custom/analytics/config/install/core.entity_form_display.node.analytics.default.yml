@@ -1,0 +1,152 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.analytics.body
+    - field.field.node.analytics.field_404_api_volume_in_mil
+    - field.field.node.analytics.field_api_volume_in_mil
+    - field.field.node.analytics.field_attribute
+    - field.field.node.analytics.field_average_api_latency_in_mil
+    - field.field.node.analytics.field_carrier
+    - field.field.node.analytics.field_date
+    - field.field.node.analytics.field_end_customer
+    - field.field.node.analytics.field_error_api_volume_in_mil
+    - field.field.node.analytics.field_est_revenue
+    - field.field.node.analytics.field_partner
+    - field.field.node.analytics.field_success_api_volume_in_mil
+    - field.field.node.analytics.field_transaction_type
+    - field.field.node.analytics.field_transaction_type_count
+    - node.type.analytics
+  module:
+    - datetime
+_core:
+  default_config_hash: Zg0z1DLOx5EERXY6SZybg6xQj0hTO2TpIP6XvIdYQcY
+id: node.analytics.default
+targetEntityType: node
+bundle: analytics
+mode: default
+content:
+  field_404_api_volume_in_mil:
+    type: number
+    weight: 28
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_api_volume_in_mil:
+    type: number
+    weight: 2
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_attribute:
+    type: entity_reference_autocomplete
+    weight: 9
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_average_api_latency_in_mil:
+    type: number
+    weight: 3
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_carrier:
+    type: entity_reference_autocomplete
+    weight: 10
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_date:
+    type: datetime_default
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_end_customer:
+    type: entity_reference_autocomplete
+    weight: 11
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_error_api_volume_in_mil:
+    type: number
+    weight: 5
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_est_revenue:
+    type: number
+    weight: 7
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_partner:
+    type: entity_reference_autocomplete
+    weight: 8
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_success_api_volume_in_mil:
+    type: number
+    weight: 6
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_transaction_type:
+    type: options_select
+    weight: 26
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_transaction_type_count:
+    type: string_textfield
+    weight: 27
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    weight: 1
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  body: true
+  created: true
+  path: true
+  promote: true
+  sticky: true
+  uid: true

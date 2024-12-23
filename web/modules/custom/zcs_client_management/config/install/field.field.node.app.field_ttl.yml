@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_ttl
+    - node.type.app
+  module:
+    - options
+id: node.app.field_ttl
+field_name: field_ttl
+entity_type: node
+bundle: app
+label: TTL
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: '7776000'
+default_value_callback: ''
+settings: {  }
+field_type: list_string

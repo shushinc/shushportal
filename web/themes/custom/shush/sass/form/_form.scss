@@ -1,0 +1,259 @@
+form.user-logout-confirm {
+  text-align: center;
+  #edit-submit {
+    font-size: 1rem;
+    margin-right: 15px;
+  }
+}
+
+#block-shush-primary-admin-actions {
+  nav {
+    list-style-type: none;
+    padding: 0;
+    margin: 2rem 0;
+    li {
+      a {
+        font-family: $poppins;
+        font-weight: 500;
+        display: inline-block;
+        padding: 5px 40px;
+        border-radius: 3px;
+        color: $white;
+        text-transform: capitalize;
+        font-size: 16px;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        text-decoration: none;
+        background-color: $light-grey;
+        border: none;
+        //width: 100%;
+        min-width: fit-content;
+        text-align: center;
+        &:hover {
+          color: #fff;
+          background: $primary-color;
+        }
+      }
+    }
+  }
+}
+
+.developer-app-form,
+.apigee-edge-teams-add-team-member-form {
+  .field--type-app-callback-url {
+    display: none;
+  }
+  [id^="edit-credential-"],
+  #edit-api-products--wrapper,
+  .edit-team-roles--wrapper {
+    .fieldset-legend {
+      font-family: $sans;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 16px;
+    }
+    .fieldset-wrapper {
+      .form-type-checkbox {
+        .form-checkbox {
+          display: inline-block;
+          width: auto;
+          height: auto;
+        }
+        label {
+          display: inline-block;
+        }
+      }
+    }
+  }
+}
+.zcs-kong-key-edit-form,
+.zcs-kong-key-create-form,
+.edit-client-member-form {
+  max-width: 540px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+}
+
+.ui-dialog {
+  border-radius: 10px !important;
+  .ui-dialog-titlebar {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #ddd;
+    color: rgba(17, 141, 240, 1);
+    font-size: 18px;
+    font-weight: 700;
+    padding-left: 50px !important;
+    &::before {
+      content: "";
+      background: url("/themes/custom/shush/images/login-icon.svg") no-repeat;
+      height: 18px;
+      width: 18px;
+      background-size: cover;
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      margin-top: -10px;
+    }
+    .ui-button {
+      background: transparent;
+      border: none;
+      .ui-button-icon {
+        background: url("/themes/custom/shush/images/close.png") no-repeat;
+        background-position: center center;
+        background-size: contain;
+      }
+    }
+  }
+  .ui-dialog-buttonpane {
+    padding: 10px 15px;
+    .ui-dialog-buttonset.form-actions {
+      float: none;
+      button {
+        width: 100%;
+        padding: 15px;
+        background: rgba(17, 141, 240, 1);
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        letter-spacing: -0.2px;
+        color: #fff;
+      }
+    }
+  }
+  form {
+    .form-item {
+      margin-bottom: 0;
+      label {
+        color: rgba(43, 54, 116, 1);
+        font-weight: 500;
+        font-size: 14px;
+        letter-spacing: -0.2px;
+      }
+    }
+    .address-container-inline > .form-item {
+      display: block;
+      margin-right: 0;
+    }
+    [data-drupal-selector="edit-user-type"] {
+      legend {
+        margin-bottom: 1rem;
+      }
+      .form-item-user-type {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: baseline;
+        input {
+          width: auto;
+          height: auto;
+          margin-bottom: 0;
+          margin-right: 10px;
+        }
+      }
+    }
+    &.create-client-member-form {
+      .form-submit {
+        width: 100%;
+        padding: 15px;
+        background: rgba(17, 141, 240, 1);
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        letter-spacing: -0.2px;
+        color: #fff;
+        line-height: normal;
+        margin-top: 1rem;
+      }
+      #edit-user-type--wrapper {
+        .form-item-user-type {
+          margin-bottom: 0;
+          input {
+            width: auto;
+            height: auto;
+            display: inline-block;
+            vertical-align: middle;
+            margin-bottom: 0;
+          }
+          label {
+            display: inline-block;
+            vertical-align: middle;
+          }
+        }
+      }
+    }
+  }
+}
+
+.create-client-member-form,
+.edit-client-member-form {
+  .form-submit {
+    width: 100%;
+    padding: 15px;
+    background: rgba(17, 141, 240, 1);
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    letter-spacing: -0.2px;
+    color: #fff;
+    line-height: normal;
+    margin-top: 1rem;
+  }
+  #edit-user-type--wrapper {
+    .form-item-user-type {
+      margin-bottom: 0;
+      input {
+        width: auto;
+        height: auto;
+        display: inline-block;
+        vertical-align: middle;
+        margin-bottom: 0;
+      }
+      label {
+        display: inline-block;
+        vertical-align: middle;
+      }
+    }
+  }
+}
+.ui-widget-overlay {
+  background: rgba(17, 141, 240, 0.6) !important;
+  opacity: 0.6 !important;
+}
+
+.views-exposed-form {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-around;
+  gap: 20px;
+  margin-bottom: 20px;
+  .js-form-item {
+    flex-grow: 1;
+    margin-bottom: 0;
+  }
+  #edit-actions {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    gap: 10px;
+    .form-submit {
+      padding: 5px 40px;
+      font-size: 14px;
+    }
+  }
+}
+
+.form-required:after {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiI+PHBhdGggZmlsbD0iI0VFMDAwMCIgIGQ9Ik0wLDcuNTYybDEuMTE0LTMuNDM4YzIuNTY1LDAuOTA2LDQuNDMsMS42ODgsNS41OSwyLjM1QzYuMzk4LDMuNTUzLDYuMjM3LDEuNTQ0LDYuMjIsMC40NDdoMy41MTEgYy0wLjA1LDEuNTk3LTAuMjM0LDMuNi0wLjU1OCw2LjAwM2MxLjY2NC0wLjgzOCwzLjU2Ni0xLjYxMyw1LjcxNC0yLjMyNUwxNiw3LjU2MmMtMi4wNSwwLjY3OC00LjA2LDEuMTMxLTYuMDI4LDEuMzU2IGMwLjk4NCwwLjg1NiwyLjM3MiwyLjM4MSw0LjE2Niw0LjU3NWwtMi45MDYsMi4wNTljLTAuOTM1LTEuMjc0LTIuMDQxLTMuMDA5LTMuMzE2LTUuMjA2Yy0xLjE5NCwyLjI3NS0yLjI0NCw0LjAxMy0zLjE0Nyw1LjIwNiBsLTIuODU2LTIuMDU5YzEuODcyLTIuMzA3LDMuMjExLTMuODMyLDQuMDE3LTQuNTc1QzMuODQ5LDguNTE2LDEuODcyLDguMDYyLDAsNy41NjIiLz48L3N2Zz4K);
+  background-size: 8px 8px;
+  content: "";
+  display: inline-block;
+  vertical-align: super;
+  line-height: 1;
+  height: 8px;
+  width: 8px;
+}

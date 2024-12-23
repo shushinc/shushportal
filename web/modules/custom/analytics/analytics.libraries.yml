@@ -1,0 +1,13 @@
+dashboard:
+  css:
+    theme:
+      css/dashboard.css: {}
+  js:
+    https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js: {external: true, minified: true}
+    https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20171210/classList.min.js: {external: true, minified: true}
+    https://cdn.jsdelivr.net/npm/findindex_polyfill_mdn: {external: true, minified: true}
+    https://cdn.jsdelivr.net/npm/apexcharts: {external: true, minified: true}
+    js/dashboard.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings

@@ -1,0 +1,11 @@
+uuid: 17f4110c-7725-41e1-af53-62226759befb
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: 7bfiIVP4bWj4b_8ItGf8urlIkzQpxjImSQlVGHEep_U
+name: 'Analytics Carrier'
+vid: analytics_carrier
+description: null
+weight: 0
+new_revision: false

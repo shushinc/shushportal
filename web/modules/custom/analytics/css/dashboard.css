@@ -1,0 +1,351 @@
+.row {
+  /* display: flex; */
+}
+
+.col-6 {
+  width: 48%;
+}
+.row .col-6:first-child {
+  margin-right: 2em;
+}
+
+.apexcharts-legend,
+.apexcharts-toolbar {
+  display: none !important;
+}
+
+.chart-1-header,
+.chart-2-header,
+.chart-3-header,
+.chart-4-header {
+  display: flex;
+  position: relative;
+  margin-bottom: 2em;
+}
+
+.charts-selects {
+  display: flex;
+  float: right;
+}
+
+.charts-dropdown-attributes select {
+  background-image: url(/modules/custom/analytics/icons/bar.svg);
+  background-repeat: no-repeat, no-repeat;
+  background-size: 16px;
+  background-position: 12px center;
+  padding: 0.8em 2em 0.8em 2.5em;
+  border: 0;
+  background-color: rgba(244, 247, 254, 1);
+  border-radius: 5px;
+  color: rgba(17, 141, 240, 1);
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: 0.2px;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+}
+
+.charts-dropdown-months select,
+.charts-dropdown-years select {
+  background-image: url(/modules/custom/analytics/icons/calendar.svg);
+  background-repeat: no-repeat, no-repeat;
+  background-size: 16px;
+  background-position: 12px 14px;
+  padding: 0.5em 2em 0.5em 2.5em;
+  border: 0;
+  background-color: rgba(244, 247, 254, 1);
+  border-radius: 5px;
+  color: rgba(17, 141, 240, 1);
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+}
+
+.charts-dropdown-carrier select {
+  background-image: url(/modules/custom/analytics/icons/carrier.png);
+  background-repeat: no-repeat, no-repeat;
+  background-size: 16px;
+  background-position: 12px 14px;
+  padding: 0.5em 2em 0.5em 2.5em;
+  border: 0;
+  background-color: rgba(244, 247, 254, 1);
+  border-radius: 5px;
+  color: rgba(17, 141, 240, 1);
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+}
+
+.charts-dropdown-customer select {
+  background-image: url(/modules/custom/analytics/icons/customer.png);
+  background-repeat: no-repeat, no-repeat;
+  background-size: 16px;
+  background-position: 12px 14px;
+  padding: 0.5em 2em 0.5em 2.5em;
+  border: 0;
+  background-color: rgba(244, 247, 254, 1);
+  border-radius: 5px;
+  color: rgba(17, 141, 240, 1);
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.charts-dropdown-partner select {
+  background-image: url(/modules/custom/analytics/icons/customer.png);
+  background-repeat: no-repeat, no-repeat;
+  background-size: 16px;
+  background-position: 12px 14px;
+  padding: 0.5em 2em 0.5em 2.5em;
+  border: 0;
+  background-color: rgba(244, 247, 254, 1);
+  border-radius: 5px;
+  color: rgba(17, 141, 240, 1);
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.charts-dropdown-months,
+.charts-dropdown-attributes,
+.charts-dropdown-years,
+.charts-dropdown-customer,
+.charts-dropdown-carrier,
+.charts-dropdown-partner {
+  position: relative;
+  flex-grow: 1;
+  flex-basis: 0;
+}
+.charts-dropdown-months,
+.charts-dropdown-years,
+.charts-dropdown-partner,
+.charts-dropdown-customer {
+  background: rgba(244, 247, 254, 1);
+}
+.charts-dropdown-months::after,
+.charts-dropdown-attributes::after,
+.charts-dropdown-years::after,
+.charts-dropdown-customer::after,
+.charts-dropdown-carrier::after,
+.charts-dropdown-partner::after {
+  content: "";
+  background-image: url("/modules/custom/analytics/icons/arrow_drop.svg");
+  height: 16px;
+  width: 16px;
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  margin-top: -10px;
+}
+
+.chart-1-block,
+.chart-2-block,
+.chart-3-block,
+.chart-4-block {
+  background-color: #fff;
+  margin-bottom: 25px;
+  border-radius: 6px;
+  padding: 25px !important;
+}
+
+.apexcharts-yaxis .apexcharts-text,
+.apexcharts-xaxis .apexcharts-text {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  color: rgba(163, 174, 208, 1);
+  fill: rgba(163, 174, 208, 1);
+}
+.apexcharts-xaxis .apexcharts-text {
+  font-weight: 700;
+}
+
+.chart-1-title h2,
+.chart-2-title h2,
+.chart-3-title h2,
+.chart-4-title h2 {
+  font-family: "Montserrat", sans-serif;
+  color: rgba(43, 54, 116, 1);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 28px;
+  letter-spacing: 0.2px;
+}
+.user-logged-in .dashboard-page {
+  margin-left: 290px !important;
+  padding-right: 2.5rem !important;
+}
+
+.dashboard-page .user-management-header {
+  padding-left: 0;
+}
+.dashboard-page main {
+  margin-top: 1rem;
+}
+
+.loader {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  opacity: 0.3;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background: url("//upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Phi_fenomeni.gif/50px-Phi_fenomeni.gif")
+    50% 50% no-repeat rgb(249, 249, 249);
+}
+
+.top-banner {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 16px;
+  margin-bottom: 1rem;
+}
+.banner {
+  border-radius: 10px;
+  box-shadow: 0px 0px 1px 1px #ccc;
+  padding: 10px;
+  align-items: center;
+  justify-content: space-around;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+  background: #fff;
+}
+
+.chart-2-title {
+  display: flex;
+}
+.chart-2-status-dropdown {
+  position: absolute;
+  right: 0;
+  padding-top: 1rem;
+}
+.chart-wrapper .charts-selects {
+  float: none;
+  margin-bottom: 1rem;
+  flex-wrap: nowrap;
+  gap: 18px;
+}
+.top-banner .banner {
+  background: rgba(255, 255, 255, 1);
+  border-radius: 20px;
+  border: none;
+  box-shadow: none;
+  padding: 12px;
+  flex-grow: 1;
+  flex-basis: 0;
+  min-height: 120px;
+  display: flex;
+  flex-wrap: wrap;
+}
+.top-banner .banner .banner-title {
+  font-family: Montserrat;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: -0.02em;
+  text-align: left;
+  color: rgba(163, 174, 208, 1);
+}
+
+.top-banner .banner .report-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.top-banner .banner .banner-number,
+.top-banner .banner .data-report-type {
+  font-family: Montserrat;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 32px;
+  letter-spacing: -0.02em;
+  text-align: left;
+  color: rgba(43, 54, 116, 1);
+  margin: 0;
+}
+.top-banner .banner .data-report-type {
+  padding-left: 5px;
+}
+.top-banner .banner .data-report-type.unsuccessfull {
+  color: rgba(204, 27, 11, 1);
+}
+.top-banner .banner .data-report-type.successfull {
+  color: rgba(8, 180, 135, 1);
+}
+.top-banner .banner .banner-content-wrap {
+  display: flex;
+  align-items: center;
+}
+.top-banner .banner .banner-icon {
+  height: 32px;
+  width: 32px;
+  background: rgba(244, 247, 254, 1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+}
+.page-chart-title {
+  font-size: 34px;
+  line-height: 42px;
+  font-weight: 700;
+  color: #2b3674;
+  letter-spacing: 0.2px;
+  margin-bottom: 1rem;
+  margin-top: 1.5rem;
+}
+.chart-2-status-dropdown select {
+  padding: 0.5em 2em 0.5em 2.5em;
+  border: 0;
+  background-color: rgba(244, 247, 254, 1);
+  border-radius: 5px;
+  color: rgba(17, 141, 240, 1);
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.chart-2-status-dropdown::after {
+  content: "";
+  background-image: url(/modules/custom/analytics/icons/arrow_drop.svg);
+  height: 16px;
+  width: 16px;
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  margin-top: 0;
+}
+
+.top-banner .banner .green-text-color .banner-number,
+.top-banner .banner .green-text-color .data-report-type {
+  color: rgba(8, 180, 135, 1);
+}
+.top-banner .banner.banner-1 .report-wrap,
+.top-banner .banner.banner-2 .report-wrap {
+  display: block;
+  width: 100%;
+}
+.top-banner .banner.banner-1 .banner-title,
+.top-banner .banner.banner-2 .banner-title {
+  text-align: center;
+}
+.top-banner .banner.banner-1 .report-wrap .banner-number,
+.top-banner .banner.banner-2 .report-wrap .banner-number {
+  text-align: center;
+}
+.top-banner .banner.banner-1 .data-report-type,
+.top-banner .banner.banner-2 .data-report-type {
+  font-size: 12px;
+  width: 100%;
+  text-align: center;
+  line-height: 22px;
+}

@@ -1,0 +1,31 @@
+uuid: 080ea8c7-1a44-4e84-87cc-c268c9079811
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.home_slider
+  module:
+    - system
+    - views
+  theme:
+    - shush
+_core:
+  default_config_hash: NGUG1bIGgopLO1IJ_tQU6y6eZmJhXSm_dO3wQ5Ov3l0
+id: shush_views_block__home_slider_block_1
+theme: shush
+region: banner
+weight: 0
+provider: null
+plugin: 'views_block:home_slider-block_1'
+settings:
+  id: 'views_block:home_slider-block_1'
+  label: ''
+  label_display: '0'
+  provider: views
+  views_label: ''
+  items_per_page: none
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: '<front>'

@@ -1,0 +1,36 @@
+uuid: 3e257947-ef81-4abe-b5a9-a5d4c8cbab65
+langcode: en
+status: true
+dependencies:
+  config:
+    - group.type.partner
+    - user.role.carrier_admin
+_core:
+  default_config_hash: xL0MGWVVbdFJ5Q9-2wF3dHEQ6rbqJij36GC31Wn2vkg
+id: partner-partner_carrier_admin
+label: 'Partner Carrier Admin'
+weight: 105
+admin: false
+scope: outsider
+global_role: carrier_admin
+group_type: partner
+permissions:
+  - 'access content overview'
+  - 'access group_node overview'
+  - 'administer members'
+  - 'delete any invitation'
+  - 'delete group'
+  - 'delete group revisions'
+  - 'delete own invitation'
+  - 'edit group'
+  - 'invite users to group'
+  - 'join group'
+  - 'revert group revisions'
+  - 'view all group revisions'
+  - 'view any unpublished group'
+  - 'view group'
+  - 'view group invitations'
+  - 'view group revisions'
+  - 'view group_membership relationship'
+  - 'view latest group version'
+  - 'view own unpublished group'

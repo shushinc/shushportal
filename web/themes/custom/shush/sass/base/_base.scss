@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+$primary-color: #111532;
+$link-color: rgba(15, 141, 240, 1);
+$black: #000000;
+$black-rgb: rgba(102, 102, 102, 1);
+$white: #ffffff;
+$light-blue: #eaf4ff;
+$light-grey: #4f9bf5;
+$light-grey-rgb: rgba(200, 231, 255, 1);
+$light-grey-rgb2: rgba(102, 102, 102, 1);
+
+$roboto: "Roboto", sans-serif;
+$sans: "DM Sans", sans-serif;
+$poppins: "Poppins", sans-serif;
+$Montserrat: "Montserrat", sans-serif;
+
+body {
+  font-family: $roboto;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1rem;
+  line-height: 28px;
+  background: #F0F3FF;
+}
+
+.btn-primary {
+  font-family: $poppins;
+  font-weight: 500;
+  display: inline-block;
+  padding: 5px 40px;
+  border-radius: 3px;
+  color: $white;
+  text-transform: capitalize;
+  font-size: 16px;
+  transition: all .3s;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  text-decoration: none;
+  background-color: $light-grey;
+  border: none;
+  min-width: fit-content;
+  &:hover {
+    color: #fff;
+    background: $primary-color;
+  }
+}
+
+.placeholder {
+  background: transparent;
+  opacity: 1;
+}
+
+.messages--error,
+[aria-label="Error message"]{
+  background: rgba(204, 27, 11, 1);
+  padding: 10px 30px;
+  margin-bottom: 20px;
+  font-family: $sans;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  color: $white;
+  a {
+    color: $white;
+  }
+  [role="alert"] {
+    &::before {
+      content: '';
+      background: url('../images/error.svg') no-repeat;
+      height: 26px;
+      width: 26px;
+      display: inline-block;
+      background-size: contain;
+      vertical-align: middle;
+      cursor: pointer;
+      margin-right: 20px;
+      filter: brightness(0) invert(1);
+    }
+  }
+}
+form .js-form-item {
+  input[aria-invalid="true"] {
+    border: 2px solid red; /* Highlight invalid fields */
+    box-shadow: none;
+    outline: none;
+    &:focus {
+      border: 2px solid red;
+      box-shadow: none;
+    outline: none;
+    }
+  }
+  
+}

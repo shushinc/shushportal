@@ -1,0 +1,23 @@
+uuid: 3c5acfde-40ba-46ad-acff-e784bf001993
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.group.field_partner_type
+    - group.type.partner
+  module:
+    - options
+_core:
+  default_config_hash: EPQcFmXv0fAZzp60CAnqHcjNZDWEI57KeaPIz0Yb7EY
+id: group.partner.field_partner_type
+field_name: field_partner_type
+entity_type: group
+bundle: partner
+label: 'Partner Type'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

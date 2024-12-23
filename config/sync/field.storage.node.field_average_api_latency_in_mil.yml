@@ -1,0 +1,22 @@
+uuid: 04108ef2-078e-42e3-9419-f8fe66fe1b3b
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+_core:
+  default_config_hash: _bci4qLtZ951QaJQOfZC_QxIGbAbv8jrPTGxfiqbd-M
+id: node.field_average_api_latency_in_mil
+field_name: field_average_api_latency_in_mil
+entity_type: node
+type: integer
+settings:
+  unsigned: false
+  size: normal
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

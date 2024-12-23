@@ -1,0 +1,21 @@
+uuid: 76e0828e-52d6-483c-9e3f-525dedd31ced
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.group.field_contact_name
+    - group.type.partner
+_core:
+  default_config_hash: 6ZIr-wWlguNtK5bn9N3HzldJ_3cCrFX3eS78U7nRAqM
+id: group.partner.field_contact_name
+field_name: field_contact_name
+entity_type: group
+bundle: partner
+label: 'Contact Name'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

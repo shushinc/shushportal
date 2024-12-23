@@ -1,0 +1,21 @@
+uuid: a0ef0422-e8b8-4dcc-84f5-5bcb9a3e6c15
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_renewal_date
+    - node.type.app
+_core:
+  default_config_hash: LtOx5CvIvhqA1c4eviUHSBGS6BRIDiWIxvB_A-qiQ8k
+id: node.app.field_renewal_date
+field_name: field_renewal_date
+entity_type: node
+bundle: app
+label: 'Renewal Date'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: timestamp

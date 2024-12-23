@@ -1,0 +1,20 @@
+uuid: 6c594e0a-3bf2-4e64-b3e4-c3797a1947be
+langcode: en
+status: true
+dependencies:
+  module:
+    - group
+_core:
+  default_config_hash: z83G8kSB8s9jS3Fi8haGVndxEk0bQYz6J05F59vs6r0
+id: group.field_contact_email
+field_name: field_contact_email
+entity_type: group
+type: email
+settings: {  }
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

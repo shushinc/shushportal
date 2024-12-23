@@ -1,0 +1,19 @@
+uuid: 2678ae54-1e67-451e-8fb1-4ff0e03ed846
+langcode: en
+status: true
+dependencies:
+  config:
+    - group.type.partner
+    - node.type.app
+  module:
+    - gnode
+    - node
+_core:
+  default_config_hash: UhPUv0IJ6jq3q7iiT1XQZasRt7lzVM79XFKnszHZcNc
+id: partner-group_node-app
+group_type: partner
+content_plugin: 'group_node:app'
+plugin_config:
+  group_cardinality: 0
+  entity_cardinality: 1
+  use_creation_wizard: false

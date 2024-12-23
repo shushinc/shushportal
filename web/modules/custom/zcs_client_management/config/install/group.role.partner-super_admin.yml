@@ -1,0 +1,33 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - group.type.partner
+    - user.role.administrator
+id: partner-super_admin
+label: 'Partner Super Admin'
+weight: 106
+admin: false
+scope: outsider
+global_role: administrator
+group_type: partner
+permissions:
+  - 'access content overview'
+  - 'access group_node overview'
+  - 'administer members'
+  - 'delete any invitation'
+  - 'delete group'
+  - 'delete group revisions'
+  - 'delete own invitation'
+  - 'edit group'
+  - 'invite users to group'
+  - 'join group'
+  - 'revert group revisions'
+  - 'view all group revisions'
+  - 'view any unpublished group'
+  - 'view group'
+  - 'view group invitations'
+  - 'view group revisions'
+  - 'view group_membership relationship'
+  - 'view latest group version'
+  - 'view own unpublished group'

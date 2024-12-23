@@ -1,0 +1,12 @@
+name: 'ZCS APIs'
+type: module
+description: 'APIs'
+package: Custom
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:menu_per_role
+  - drupal:swagger_ui_formatter
+  - drupal:dblog
+  - drupal:menu_link_attributes
+  - drupal:smtp
+  - drupal:mimemail

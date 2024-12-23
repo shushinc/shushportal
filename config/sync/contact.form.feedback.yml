@@ -1,0 +1,14 @@
+uuid: 3affbf1e-49e0-4ed0-afe6-43daca55d4ff
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: vymHlgJy26BuI5GGj9-IXjwR3dRC5C0tij4BpWJnoqw
+id: feedback
+label: 'Website feedback'
+recipients:
+  - delango.bio@gmail.com
+reply: ''
+weight: 0
+message: 'Your message has been sent.'
+redirect: ''

@@ -1,0 +1,14 @@
+uuid: 98b2525a-1cd9-4bc1-a168-29fe51426426
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: ecHzMskJe1L5e5BnPwKPKf4pSq3byM6-E4BIKwX6DvI
+id: partner
+label: Partner
+description: 'Manage clients'
+new_revision: true
+creator_membership: true
+creator_wizard: true
+creator_roles:
+  - partner-admin

@@ -1,0 +1,113 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the ZCS APIs module.
+ */
+
+
+use \Drupal\menu_link_content\Entity\MenuLinkContent;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\user\Entity\Role;
+
+
+function zcs_apis_install() {
+  // Add a sample link to the main menu.
+  $menu_link = MenuLinkContent::create([
+    'menu_name' => 'main',
+    'title' => 'APIs Catalog',
+    'link' => [
+      'uri' => 'https://shush-szad.readme.io/reference/silent_authentication_verify_ip_address_silent_authentication_v0_verify_ip_address_post',
+      'options' => [
+        'attributes' => [
+          'target' => '_blank',
+        ],
+      ],
+     ],
+    'weight' => 1,
+    'menu_per_role__show_role' => [
+      'authenticated',
+    ],
+  ]);
+  $menu_link->save();
+
+
+  // Create user role
+  $role_storage = \Drupal::entityTypeManager()->getStorage('user_role');
+  // Define the role machine name and label.
+  $role_id = 'carrier_admin';
+  $role_label = 'Carrier Admin';
+
+  // Check if the role already exists.
+  if (!$role_storage->load($role_id)) {
+    // Create the role.
+    $role = $role_storage->create([
+      'id' => $role_id,
+      'label' => $role_label,
+    ]);
+
+    $role->grantPermission('administer users');
+    $role->grantPermission('access user invite');
+    // Save the role.
+    $role->save();
+  }
+
+
+  // Client admin role
+  $client_admin_role_id = 'client_admin';
+  $client_admin_role_label = 'Client Admin';
+
+  // Check if the role already exists.
+  if (!$role_storage->load($client_admin_role_id)) {
+    // Create the role.
+    $role_client_admin = $role_storage->create([
+      'id' => $client_admin_role_id,
+      'label' => $client_admin_role_label,
+    ]);
+
+    $role_client_admin->grantPermission('administer users');
+    // Save the role.
+    $role_client_admin->save();
+  }
+
+
+
+  $roles = Role::loadMultiple();
+  unset($roles[AccountInterface::ANONYMOUS_ROLE]);
+  foreach ($roles as $role) {
+    $role->grantPermission('view user email addresses');
+    $role->grantPermission('access user profiles');
+    $role->save();
+  }
+}
+
+
+
+function zcs_apis_uninstall() {
+  $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+  $menu_item_object = current($storage->loadByProperties(['title' => 'APIs Catalog']));
+  if($menu_item_object) {
+    $menu_item_object->delete();
+  }
+
+    // Load the role storage.
+    $role_storage = \Drupal::entityTypeManager()->getStorage('user_role');
+    // Define the role machine name.
+    $role_id = 'carrier_admin';
+    // Load the role.
+    if ($role_storage->load($role_id)) {
+      $role = $role_storage->load($role_id);
+      // Delete the role.
+      $role->delete();
+    }
+
+
+    $roles = Role::loadMultiple();
+    unset($roles[AccountInterface::ANONYMOUS_ROLE]);
+    foreach ($roles as $role) {
+      $role->revokePermission('view user email addresses');
+      $role->revokePermission('access user profiles');
+      $role->save();
+    }
+
+}
