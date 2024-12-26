@@ -32,5 +32,6 @@ permissions:
   - 'view group invitations'
   - 'view group revisions'
   - 'view group_membership relationship'
+  - 'view group_node:app relationship'
   - 'view latest group version'
   - 'view own unpublished group'
