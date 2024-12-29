@@ -109,7 +109,7 @@
     $.ajax({
       "url": '/ajax-dashboard',
       "dataType": 'json',
-      "data": {'api_status': $('.chart-2-status-dropdown select').val()},
+      "data": {'api_status': $('.chart-2-status-dropdown select').val(), 'month': $('.charts-dropdown-months select').val(), 'year': $('.charts-dropdown-years select').val() },
       "beforeSend": function () {
         $('.loader').show();
       },

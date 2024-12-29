@@ -8,6 +8,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Drupal\user\Entity\User;
+use Drupal\group\Entity\Group;
 
 class AnalyticsController extends ControllerBase {
 
@@ -117,20 +119,42 @@ class AnalyticsController extends ControllerBase {
       $content['customerArray'][$term->tid->value] = $term->name->value;
     }
 
+
+    // Access part for the demand partners filters.
+    $currentUserGroups = $this->getCurrentUserGroups();
+    $current_user = \Drupal::currentUser();
+    $user_roles = $current_user->getRoles();
+    $excluded_roles = ['administrator', 'carrier_admin'];
+    $group_keys = array_keys($currentUserGroups);
+    $user_has_permission_for_all = FALSE;
+    // Check if any of the excluded roles exist in the user's roles.
+    foreach ($excluded_roles as $role) {
+      if (in_array($role, $user_roles, TRUE)) {
+        $user_has_permission_for_all = TRUE;
+      }
+    }
     // getting partners.
     $partners = $this->entityTypeManager()->getStorage('group')->loadByProperties(['type' => 'partner']);
     foreach ($partners as $partner) {
+      if (!$user_has_permission_for_all && !array_key_exists($partner->id(), $currentUserGroups)) {
+        continue;
+      }
       $content['partnerArray'][$partner->id()] = $partner->label();
     }
 
     $chart2DataArray = $chart3DataArray = $chart4DataArray = $chart1DataArray;
 
+    
     // getting nodes for the terms.
     $nodeQuery = $this->entityTypeManager()->getStorage('node')->getQuery();
     $nodeQuery->accessCheck(TRUE);
     $nodeQuery = $nodeQuery->condition('type', 'analytics')
       ->condition('status', '1')
       ->condition('field_date', [$currentDates[0], end($currentDates)], 'BETWEEN');
+     
+    if(!$user_has_permission_for_all) {
+      $nodeQuery->condition('field_partner.target_id', $group_keys, 'IN');
+    }  
     if ($this->request->query->get('attribute')) {
       $nodeQuery->condition('field_attribute', $this->request->query->get('attribute'));
     }
@@ -143,7 +167,7 @@ class AnalyticsController extends ControllerBase {
     if ($this->request->query->get('partner')) {
       $nodeQuery->condition('field_partner', $this->request->query->get('partner'));
     }
-    $apiStatus = false;
+    $apiStatus = false; 
     if ($this->request->query->get('api_status')) {
       $apiStatus = true;
       if ($this->request->query->get('api_status') == '200')
@@ -224,4 +248,20 @@ class AnalyticsController extends ControllerBase {
   }
 
 
+  public function getCurrentUserGroups() {
+    // Get the current user ID.
+    $current_user = \Drupal::currentUser();
+    $user = User::load($current_user->id());
+    // Load the group membership service.
+    $membership_loader = \Drupal::service('group.membership_loader');
+    // Get memberships for the current user.
+    $memberships = $membership_loader->loadByUser($user);
+    // Collect the groups the user is part of.
+    $groups = [];
+    foreach ($memberships as $membership) {
+      $group = $membership->getGroup();
+      $groups[$group->id()] = $group->label();
+    }
+    return $groups;
+  }
 }

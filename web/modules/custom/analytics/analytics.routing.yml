@@ -4,7 +4,7 @@ zcs_analytics.redirect:
     _controller: '\Drupal\analytics\Controller\AnalyticsController::analyticsDashboard'
     _title: 'Analytics'
   requirements:
-    _role: 'carrier_admin + administrator'
+    _role: 'authenticated'
   options:
     no_cache: true
 
@@ -14,7 +14,7 @@ zcs_analytics.ajax.dashboard:
     _controller: '\Drupal\analytics\Controller\AnalyticsController::analyticsAjaxDashboard'
     _title: 'Analytics'
   requirements:
-    _role: 'carrier_admin + administrator'
+    _role: 'authenticated'
   options:
     no_cache: true  
 
