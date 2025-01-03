@@ -320,6 +320,7 @@ form .js-form-item input[aria-invalid="true"]:focus {
 }
 .user-logged-in .layout-container {
   margin-left: 260px;
+  padding-right: 1rem;
 }
 .user-logged-in .header__layout {
   height: 100%;
@@ -564,6 +565,23 @@ main {
   box-shadow: 4px 4px 8px 0px rgba(0, 0, 0, 0.25);
   gap: 2em;
   margin-bottom: 2rem;
+  min-height: auto;
+}
+
+.client-management.apps-create-from main {
+  padding-top: 0;
+}
+.client-management.apps-create-from main .layout-content {
+  max-width: none;
+  margin: 0;
+  background: transparent;
+  padding: 0;
+  display: block;
+  flex-direction: inherit;
+  border-radius: 0;
+  box-shadow: none;
+  gap: inherit;
+  margin-bottom: 0;
   min-height: auto;
 }
 
@@ -1502,6 +1520,11 @@ form.user-logout-confirm #edit-submit {
   background: #fff;
   padding: 30px;
   border-radius: 10px;
+}
+
+.ui-dialog .ui-dialog-content .edit-client-member-form,
+.ui-dialog .ui-dialog-content .zcs-kong-key-edit-form {
+  padding: 0;
 }
 
 .ui-dialog {

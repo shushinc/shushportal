@@ -104,6 +104,25 @@ main {
   }
 }
 
+.client-management.apps-create-from {
+  main {
+    padding-top: 0;
+    .layout-content {
+      max-width: none;
+      margin: 0;
+      background: transparent;
+      padding: 0;
+      display: block;
+      flex-direction: inherit;
+      border-radius: 0;
+      box-shadow: none;
+      gap: inherit;
+      margin-bottom: 0;
+      min-height: auto;
+    }
+  }
+}
+
 .user-login,
 .user-register,
 .user-password,

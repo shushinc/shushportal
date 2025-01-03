@@ -77,7 +77,7 @@ final class AppListForm extends FormBase {
                   'class' => ['use-ajax'], // Enables AJAX
                   'data-dialog-type' => 'modal', // Opens in a modal
                   'data-dialog-options' => json_encode([
-                    'width' => 700,
+                    'width' => 400,
                   ]),
                 ],
               ]);

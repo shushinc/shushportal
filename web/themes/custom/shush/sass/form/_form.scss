@@ -77,6 +77,14 @@ form.user-logout-confirm {
   padding: 30px;
   border-radius: 10px;
 }
+.ui-dialog {
+  .ui-dialog-content {
+    .edit-client-member-form,
+    .zcs-kong-key-edit-form {
+      padding: 0;
+    }
+  }
+}
 
 .ui-dialog {
   border-radius: 10px !important;
