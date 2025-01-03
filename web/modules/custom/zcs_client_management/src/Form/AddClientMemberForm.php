@@ -144,6 +144,12 @@ class AddClientMemberForm extends FormBase {
     ]);  
     $user->save();
 
+    if ($client_id) {
+      $group = Group::load($client_id);
+      $group->addMember($user, ['group_roles' => [$partner_role]]);
+      $group->save();
+    }
+
     $save_invitation = $this->saveInvitation($client_id, $user_name, $user_email, $partner_role, $token);
     $send_email = $this->sendInvitationMail($client_id, $user_name, $user_email, $partner_role, $token);
     $this->messenger()->addMessage($this->t('Invite is sent successfully.'));
