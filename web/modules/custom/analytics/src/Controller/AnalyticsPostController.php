@@ -124,6 +124,7 @@ class AnalyticsPostController extends ControllerBase {
         $node->set('field_transaction_type', $content['transaction_type']);
         $node->set('field_transaction_type_count', $content['transaction_type_count']);
         $node->set('field_est_revenue', $content['est_revenue']);
+        $node->set('field_partner',  $this->getGroupId($content['client']));
         
         $node->enforceIsNew();
         $nodeSave = $node->save();
@@ -142,4 +143,14 @@ class AnalyticsPostController extends ControllerBase {
     }
     return new JsonResponse($responses);
   }
+
+  
+  public function getGroupId($title){
+    $query = \Drupal::entityQuery('group')
+    ->condition('type', 'partner')
+    ->condition('label', $title)
+    ->range(0, 1); // Limit to one result.
+    $result = $query->accessCheck()->execute();
+    return !empty($result) ? reset($result) : NULL;
+   }
 }
