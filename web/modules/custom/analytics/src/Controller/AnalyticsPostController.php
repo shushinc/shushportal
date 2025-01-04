@@ -147,10 +147,10 @@ class AnalyticsPostController extends ControllerBase {
   
   public function getGroupId($title){
     $query = \Drupal::entityQuery('group')
-    ->condition('type', 'partner')
     ->condition('label', $title)
-    ->range(0, 1); // Limit to one result.
-    $result = $query->accessCheck()->execute();
-    return !empty($result) ? reset($result) : NULL;
-   }
+    ->accessCheck(FALSE)  // Optionally disable access check if needed.
+    ->range(0, 1);  // Limit to one result, since title should be unique.
+    $group_ids = $query->execute();
+    return !empty($group_ids) ? reset($group_ids) : NULL;
+  }
 }
