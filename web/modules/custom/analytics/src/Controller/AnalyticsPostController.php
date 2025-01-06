@@ -125,14 +125,21 @@ class AnalyticsPostController extends ControllerBase {
         $node->set('field_transaction_type_count', $content['transaction_type_count']);
         $node->set('field_est_revenue', $content['est_revenue']);
         $node->set('field_partner',  $this->getGroupId($content['client']));
+        $node->set('field_kong_analytical_id', $content['kong_analytical_id']);
         
-        $node->enforceIsNew();
-        $nodeSave = $node->save();
-        if (!$nodeSave) {
-          $responses[$key] = ['message' => $content['carrier_name'] . " Node creation failed."];
+        $node_exsist = $this->checkAnalyticalId($content['kong_analytical_id']);      
+        if($node_exsist) {
+          $responses[$key] = ['message' => 'Analytics id: '. $content['kong_analytical_id'] . " already exists."];
         }
         else {
-          $responses[$key] = ['message' => $content['carrier_name'] . " Node created successfully."];
+          $node->enforceIsNew();
+          $nodeSave = $node->save();
+          if (!$nodeSave) {
+            $responses[$key] = ['message' => $content['carrier_name'] . " Node creation failed."];
+          }
+          else {
+            $responses[$key] = ['message' => $content['carrier_name'] . " Node created successfully."];
+          }
         }
       }
     }
@@ -152,5 +159,22 @@ class AnalyticsPostController extends ControllerBase {
     ->range(0, 1);  // Limit to one result, since title should be unique.
     $group_ids = $query->execute();
     return !empty($group_ids) ? reset($group_ids) : NULL;
+  }
+
+  public function checkAnalyticalId($analytical_id){
+    // Check if the entity is a node and has the field_kong_analytical_id field.
+    if (!empty($analytical_id)) {
+      // Query to check if the value already exists in the field.
+      $query = \Drupal::entityQuery('node')
+        ->condition('field_kong_analytical_id', $analytical_id)
+        ->condition('type', 'analytics'); // Optional: restrict to the same content type
+      $existing_node = $query->accessCheck()->execute();
+      if (!empty($existing_node)) {
+         return TRUE;
+      }
+      else {
+        return False;
+      }
+    } 
   }
 }

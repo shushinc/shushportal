@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_kong_analytical_id
+    - node.type.analytics
+id: node.analytics.field_kong_analytical_id
+field_name: field_kong_analytical_id
+entity_type: node
+bundle: analytics
+label: 'kong Analytical Id'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

@@ -13,6 +13,7 @@ dependencies:
     - field.field.node.analytics.field_end_customer
     - field.field.node.analytics.field_error_api_volume_in_mil
     - field.field.node.analytics.field_est_revenue
+    - field.field.node.analytics.field_kong_analytical_id
     - field.field.node.analytics.field_partner
     - field.field.node.analytics.field_success_api_volume_in_mil
     - field.field.node.analytics.field_transaction_type
@@ -96,6 +97,14 @@ content:
     weight: 7
     region: content
     settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_kong_analytical_id:
+    type: string_textfield
+    weight: 29
+    region: content
+    settings:
+      size: 60
       placeholder: ''
     third_party_settings: {  }
   field_partner:

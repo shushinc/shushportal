@@ -13,6 +13,7 @@ dependencies:
     - field.field.node.analytics.field_end_customer
     - field.field.node.analytics.field_error_api_volume_in_mil
     - field.field.node.analytics.field_est_revenue
+    - field.field.node.analytics.field_kong_analytical_id
     - field.field.node.analytics.field_partner
     - field.field.node.analytics.field_success_api_volume_in_mil
     - field.field.node.analytics.field_transaction_type
@@ -51,6 +52,7 @@ hidden:
   field_end_customer: true
   field_error_api_volume_in_mil: true
   field_est_revenue: true
+  field_kong_analytical_id: true
   field_partner: true
   field_success_api_volume_in_mil: true
   field_transaction_type: true
