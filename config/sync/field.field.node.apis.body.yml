@@ -1,0 +1,26 @@
+uuid: 4608b9c7-8e05-413a-b4d2-4299e0cd2172
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.apis
+  module:
+    - text
+_core:
+  default_config_hash: 7LC56H_RrmPAm_75tGeOY0HydIPA9P-IPPeR8rgPzuM
+id: node.apis.body
+field_name: body
+entity_type: node
+bundle: apis
+label: Body
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+  required_summary: false
+  allowed_formats: {  }
+field_type: text_with_summary

@@ -1,0 +1,31 @@
+uuid: 94edf380-5046-4ef0-aecb-0b3c8e36055a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_attribute
+    - node.type.analytics
+    - taxonomy.vocabulary.analytics_attributes
+_core:
+  default_config_hash: yuE0KgZPlZvTpxrfpwFTIzrlUCVGa6yHTvqyHcmQNKE
+id: node.analytics.field_attribute
+field_name: field_attribute
+entity_type: node
+bundle: analytics
+label: Attribute
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      analytics_attributes: analytics_attributes
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

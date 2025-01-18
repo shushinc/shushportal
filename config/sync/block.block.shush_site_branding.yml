@@ -1,0 +1,25 @@
+uuid: 1bf12266-ee1b-4607-915d-740a122f5f78
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - shush
+_core:
+  default_config_hash: B8C4tnWzCf-t1vTS1gUwKERHRzqOu3Jr_czcUg03i4k
+id: shush_site_branding
+theme: shush
+region: header
+weight: 0
+provider: null
+plugin: system_branding_block
+settings:
+  id: system_branding_block
+  label: 'Site branding'
+  label_display: '0'
+  provider: system
+  use_site_logo: true
+  use_site_name: false
+  use_site_slogan: false
+visibility: {  }

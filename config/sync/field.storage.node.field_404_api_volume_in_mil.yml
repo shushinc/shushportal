@@ -1,0 +1,20 @@
+uuid: 2d780652-0636-4812-9b80-c7555d869ed9
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_404_api_volume_in_mil
+field_name: field_404_api_volume_in_mil
+entity_type: node
+type: decimal
+settings:
+  precision: 10
+  scale: 2
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

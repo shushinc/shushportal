@@ -1,0 +1,21 @@
+uuid: 3739c54b-53c2-473a-abb7-d92cf865da24
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.group.field_consumer_id
+    - group.type.partner
+_core:
+  default_config_hash: cCE2TsEnBH4ZgLwSnaGp7Kb-vSgVyApBb6cFfPWdTj0
+id: group.partner.field_consumer_id
+field_name: field_consumer_id
+entity_type: group
+bundle: partner
+label: 'Consumer ID'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

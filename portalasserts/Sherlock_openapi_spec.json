@@ -1,0 +1,1228 @@
+{
+  "openapi": "3.0.1",
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "info": {
+    "description": "Sharelock API Spec",
+    "version": "1.0.0",
+    "title": "Sharelock - OpenAPI 3.0",
+    "contact": {
+      "email": "elango@shush.pw"
+    }
+  },
+  "paths": {
+    "/sim-swap/v0/check": {
+      "post": {
+        "summary": "Check if a Sim-Swap has been performed during a past period",
+        "description": "Check if a Sim-Swap has been performed during a past period",
+        "operationId": "CheckSimSwap",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "apikey",
+            "schema": {
+              "$ref": "#/components/schemas/api_key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Carrier",
+            "schema": {
+              "$ref": "#/components/schemas/carrier"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Endcustomer",
+            "schema": {
+              "$ref": "#/components/schemas/endcustomer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/dummy_response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400_response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401_response"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404_response"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500_response"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/503_response"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "Check Sim Swap Request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/check_simswap_request"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/device-status/v0/connectivity": {
+      "post": {
+        "summary": "Get the current device connectivity status information.",
+        "description": "Get the current device connectivity status information",
+        "operationId": "GetconnectivityStatus",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "apikey",
+            "schema": {
+              "$ref": "#/components/schemas/api_key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Carrier",
+            "schema": {
+              "$ref": "#/components/schemas/carrier"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Endcustomer",
+            "schema": {
+              "$ref": "#/components/schemas/endcustomer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/dummy_response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400_response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401_response"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404_response"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500_response"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/503_response"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "Get connectivity Status Request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/get_connectivity_status_request"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/device-status/v0/roaming": {
+      "post": {
+        "summary": "Get the current roaming status and the country information",
+        "description": "Get the current roaming status and the country information",
+        "operationId": "CheckRoamingStatus",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "apikey",
+            "schema": {
+              "$ref": "#/components/schemas/api_key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Carrier",
+            "schema": {
+              "$ref": "#/components/schemas/carrier"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Endcustomer",
+            "schema": {
+              "$ref": "#/components/schemas/endcustomer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/dummy_response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400_response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401_response"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404_response"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500_response"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/503_response"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "Get Roaming Status Request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/check_roaming_status_request"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/number-verification/v0/verify": {
+      "post": {
+        "summary": "Verifies if the received phone number is valid",
+        "description": "Verifies if the received hashed/plain text phone number matches the phone number associated with the access token",
+        "operationId": "VerifyPhoneNumber",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "apikey",
+            "schema": {
+              "$ref": "#/components/schemas/api_key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Carrier",
+            "schema": {
+              "$ref": "#/components/schemas/carrier"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Endcustomer",
+            "schema": {
+              "$ref": "#/components/schemas/endcustomer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/verify_phone_number_response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400_response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401_response"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404_response"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500_response"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/503_response"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "Verify Phone Number Request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/verify_phone_number_request"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sim-swap/v0/retrieve-date": {
+      "post": {
+        "summary": " Get the timestamp of the last MSISDN",
+        "description": " Get the timestamp of the last MSISDN",
+        "operationId": "GetMSISDNTimestamp",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "apikey",
+            "schema": {
+              "$ref": "#/components/schemas/api_key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Carrier",
+            "schema": {
+              "$ref": "#/components/schemas/carrier"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Endcustomer",
+            "schema": {
+              "$ref": "#/components/schemas/endcustomer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/dummy_response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400_response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401_response"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404_response"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500_response"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/503_response"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "Get MSISDN Timestamp Request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/get_MSISDN_timestamp_request"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/location-verification/v0/verify": {
+      "post": {
+        "summary": "Verify whether the location of a device is within the requested area",
+        "description": "Verify whether the location of a device is within a requested area. The operation returns a verification result and, optionally, a match rate estimation for the location verification in percent.",
+        "operationId": "VerifyDeviceLocation",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "apikey",
+            "schema": {
+              "$ref": "#/components/schemas/api_key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Carrier",
+            "schema": {
+              "$ref": "#/components/schemas/carrier"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Endcustomer",
+            "schema": {
+              "$ref": "#/components/schemas/endcustomer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/dummy_response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400_response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401_response"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404_response"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500_response"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/503_response"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "Verify Device Location Request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/verify_device_location_request"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/location-retrieval/v0/retrieve": {
+      "post": {
+        "summary": "Retrieve user equipment location",
+        "description": "Get timestamp of last MSISDN <-> IMSI pairing change for a mobile user account provided with MSIDN.",
+        "operationId": "RetrieveEquipmentLocation",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "apikey",
+            "schema": {
+              "$ref": "#/components/schemas/api_key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Carrier",
+            "schema": {
+              "$ref": "#/components/schemas/carrier"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Endcustomer",
+            "schema": {
+              "$ref": "#/components/schemas/endcustomer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/dummy_response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400_response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401_response"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404_response"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500_response"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/503_response"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "Retrieve Equipment Location Request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/retrieve_equipment_location_request"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/silent-authentication/v0/ip-retrieve": {
+      "post": {
+        "summary": "Retrieving  IP address associated with the MSISDN",
+        "description": "Retrieving  IP address associated with the MSISDN",
+        "operationId": "RetrieveIPAddress",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "apikey",
+            "schema": {
+              "$ref": "#/components/schemas/api_key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Carrier",
+            "schema": {
+              "$ref": "#/components/schemas/carrier"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Endcustomer",
+            "schema": {
+              "$ref": "#/components/schemas/endcustomer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/dummy_response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400_response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401_response"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404_response"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500_response"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/503_response"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "Retrieve IP Address Request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/retrieve_ipAddress_request"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "api_key": {
+        "type": "string",
+        "description": "Apigee API key"
+      },
+      "carrier": {
+        "type": "string",
+        "description": "Carrier Name"
+      },
+      "endcustomer": {
+        "type": "string",
+        "description": "End Customer Name"
+      },
+      "check_simswap_request": {
+        "type": "object",
+        "description": "Check sim swap request body",
+        "required": [
+          "phoneNumber",
+          "maxAge"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "phoneNumber": {
+            "description": "phone number",
+            "type": "string"
+          },
+          "maxAge": {
+            "description": "maximum age of the SIM swap in hours",
+            "type": "number"
+          }
+        }
+      },
+      "get_connectivity_status_request": {
+        "type": "object",
+        "description": "Get connectivity status request body",
+        "required": [
+          "phoneNumber",
+          "networkAccessIdentifier",
+          "ipv4Address",
+          "ipv6Address"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "phoneNumber": {
+            "description": "phone number",
+            "type": "string"
+          },
+          "networkAccessIdentifier": {
+            "description": "network address identifier",
+            "type": "string"
+          },
+          "ipv4Address": {
+            "$ref": "#/components/schemas/ipv4Address_obj"
+          },
+          "ipv6Address": {
+            "description": "ipv6 network address identifier",
+            "type": "string"
+          }
+        }
+      },
+      "ipv4Address_obj": {
+        "type": "object",
+        "description": "ipv4 address and port",
+        "required": [
+          "publicAddress",
+          "publicPort"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "publicAddress": {
+            "description": "ipv4 address",
+            "type": "string"
+          },
+          "publicPort": {
+            "description": "ipv4 port",
+            "type": "number"
+          }
+        }
+      },
+      "check_roaming_status_request": {
+        "type": "object",
+        "description": "Check sim swap request body",
+        "required": [
+          "device"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "device": {
+            "$ref": "#/components/schemas/get_connectivity_status_request"
+          }
+        }
+      },
+      "verify_phone_number_request": {
+        "type": "object",
+        "description": "Verify phone request body",
+        "required": [
+          "phoneNumber"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "phoneNumber": {
+            "description": "phone number",
+            "type": "string"
+          }
+        }
+      },
+      "verify_phone_number_response": {
+        "type": "object",
+        "description": "Verify phone response",
+        "required": [
+          "devicePhoneNumberVerified"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "devicePhoneNumberVerified": {
+            "description": "device PhoneNumber Verification status",
+            "type": "boolean"
+          }
+        }
+      },
+      "get_MSISDN_timestamp_request": {
+        "type": "object",
+        "description": "Get MSISDN timestamp request body",
+        "required": [
+          "phoneNumber"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "phoneNumber": {
+            "description": "phone number",
+            "type": "string"
+          }
+        }
+      },
+      "verify_device_location_request": {
+        "type": "object",
+        "description": "Verify device location request body",
+        "required": [
+          "device",
+          "area",
+          "maxAge"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "device": {
+            "$ref": "#/components/schemas/phone_number"
+          },
+          "area": {
+            "$ref": "#/components/schemas/area"
+          },
+          "maxAge": {
+            "description": "maximum age of the SIM swap in hours",
+            "type": "number"
+          }
+        }
+      },
+      "phone_number": {
+        "type": "object",
+        "description": "phone number",
+        "required": [
+          "phoneNumber"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "phoneNumber": {
+            "description": "phone number",
+            "type": "string"
+          }
+        }
+      },
+      "area": {
+        "type": "object",
+        "description": "area details",
+        "required": [
+          "areaType",
+          "center",
+          "radius"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "areaType": {
+            "description": "area type",
+            "type": "string"
+          },
+          "center": {
+            "$ref": "#/components/schemas/center"
+          },
+          "radius": {
+            "description": "area radius",
+            "type": "number"
+          }
+        }
+      },
+      "center": {
+        "type": "object",
+        "description": "area latitude and longitude",
+        "required": [
+          "latitude",
+          "longitude"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "latitude": {
+            "description": "area latitude",
+            "type": "number"
+          },
+          "longitude": {
+            "description": "area longitude",
+            "type": "number"
+          }
+        }
+      },
+      "retrieve_equipment_location_request": {
+        "type": "object",
+        "description": "Retrieve equipment location request body",
+        "required": [
+          "device",
+          "maxAge"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "device": {
+            "$ref": "#/components/schemas/get_connectivity_status_request"
+          },
+          "maxAge": {
+            "description": "maximum age of the SIM swap in hours",
+            "type": "number"
+          }
+        }
+      },
+      "retrieve_ipAddress_request": {
+        "type": "object",
+        "description": "Retrieve ipAddress request body",
+        "required": [
+          "phoneNumber"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "phoneNumber": {
+            "description": "phone number",
+            "type": "string"
+          }
+        }
+      },
+      "dummy_response": {
+        "type": "object",
+        "description": "dummy",
+        "required": [
+          "dummy"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "dummy": {
+            "description": "dummy value",
+            "type": "string"
+          }
+        }
+      },
+      "401_response": {
+        "type": "object",
+        "description": "Unauthorized",
+        "required": [
+          "error"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "description": "Status",
+            "example": 401,
+            "type": "integer"
+          },
+          "ErrorCode": {
+            "description": "invalid_request",
+            "example": "invalid_request",
+            "type": "string"
+          },
+          "Error": {
+            "description": "Invalid API key",
+            "example": "Invalid API key",
+            "type": "string"
+          }
+        }
+      },
+      "404_response": {
+        "properties": {
+          "status": {
+            "description": "Status",
+            "example": 400,
+            "type": "integer"
+          },
+          "code": {
+            "description": "NOT_FOUND",
+            "example": "NOT_FOUND",
+            "type": "string"
+          },
+          "message": {
+            "description": "The specified resource is not found",
+            "example": "The specified resource is not found",
+            "type": "string"
+          }
+        }
+      },
+      "500_response": {
+        "type": "object",
+        "description": "Internal Server Error",
+        "required": [
+          "code",
+          "message",
+          "description"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "description": "An unexpected error occurred on the server.",
+            "example": 500,
+            "type": "integer"
+          },
+          "message": {
+            "description": "Internal Server Error. Please try again later.",
+            "example": "Internal Server Error. Please try again later.",
+            "type": "string"
+          },
+          "description": {
+            "description": "Internal Server Error. Please try again later.",
+            "example": "An unexpected error occurred on the server.",
+            "type": "string"
+          }
+        }
+      },
+      "503_response": {
+        "type": "object",
+        "description": "Service unavailable",
+        "required": [
+          "code",
+          "status",
+          "message"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "description": "An unexpected error occurred on the server.",
+            "example": 500,
+            "type": "integer"
+          },
+          "status": {
+            "description": "UNAVAILABLE",
+            "example": "UNAVAILABLE",
+            "type": "string"
+          },
+          "message": {
+            "description": "Service unavailable",
+            "example": "Service unavailable",
+            "type": "string"
+          }
+        }
+      },
+      "400_response": {
+        "type": "object",
+        "description": "Bad Request",
+        "required": [
+          "code",
+          "status",
+          "message"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "description": "Error Status",
+            "example": 400,
+            "type": "integer"
+          },
+          "code": {
+            "description": "Error Code",
+            "example": "INVALID_ARGUMENT",
+            "type": "string"
+          },
+          "message": {
+            "description": "Error",
+            "example": "Client specified an invalid argument, request body or query param",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

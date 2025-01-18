@@ -1,0 +1,21 @@
+uuid: cd12e13f-315d-48f8-b30c-ec8d818db9dd
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.group_relationship.invitee_mail
+    - group.relationship_type.partner-group_invitation
+_core:
+  default_config_hash: A8Y4EN1yzGwTMMQvU7stqA69SjyVxXCSZrngWMfzNdk
+id: group_relationship.partner-group_invitation.invitee_mail
+field_name: invitee_mail
+entity_type: group_relationship
+bundle: partner-group_invitation
+label: 'Invitee mail'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: email

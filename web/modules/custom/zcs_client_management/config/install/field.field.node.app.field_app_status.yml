@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_app_status
+    - node.type.app
+  module:
+    - options
+id: node.app.field_app_status
+field_name: field_app_status
+entity_type: node
+bundle: app
+label: 'App Status'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: active
+default_value_callback: ''
+settings: {  }
+field_type: list_string

@@ -1,0 +1,20 @@
+uuid: a1878e44-fd7d-4a37-85c5-785cb326f47c
+langcode: en
+status: true
+dependencies:
+  theme:
+    - shush
+_core:
+  default_config_hash: WgW_NOV6SB3XVTPj8o3Drs_ddf3r_XMIVdIgLVerqZA
+id: shush_primary_admin_actions
+theme: shush
+region: content
+weight: -5
+provider: null
+plugin: local_actions_block
+settings:
+  id: local_actions_block
+  label: 'Primary admin actions'
+  label_display: '0'
+  provider: core
+visibility: {  }

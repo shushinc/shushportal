@@ -1,0 +1,21 @@
+uuid: afe3532e-c456-4bd7-a4ee-949a240687f9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_expiry_date
+    - node.type.app
+_core:
+  default_config_hash: LMHtqIYqfVGjGrtL4xLw5tbwqFpxC_5lo4yPI2wY1Io
+id: node.app.field_expiry_date
+field_name: field_expiry_date
+entity_type: node
+bundle: app
+label: 'Expiry Date'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: timestamp

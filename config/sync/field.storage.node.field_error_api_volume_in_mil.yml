@@ -1,0 +1,22 @@
+uuid: ee875a87-47d9-4aec-8562-b9d6aa814e23
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+_core:
+  default_config_hash: shhfXhfLWFpzISw3K3GN6b5daGKcxhpTBAhNEi_AJDM
+id: node.field_error_api_volume_in_mil
+field_name: field_error_api_volume_in_mil
+entity_type: node
+type: decimal
+settings:
+  precision: 10
+  scale: 2
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

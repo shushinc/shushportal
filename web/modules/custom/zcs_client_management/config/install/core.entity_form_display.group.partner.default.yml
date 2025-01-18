@@ -1,0 +1,78 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.group.partner.field_consumer_id
+    - field.field.group.partner.field_contact_email
+    - field.field.group.partner.field_contact_name
+    - field.field.group.partner.field_description
+    - field.field.group.partner.field_partner_status
+    - field.field.group.partner.field_partner_type
+    - group.type.partner
+  module:
+    - text
+_core:
+  default_config_hash: RlkV-TGX2e2ercB6xljk9xR41jXIHtkW7LFMBDfsq8k
+id: group.partner.default
+targetEntityType: group
+bundle: partner
+mode: default
+content:
+  field_consumer_id:
+    type: string_textfield
+    weight: 28
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_contact_email:
+    type: email_default
+    weight: 2
+    region: content
+    settings:
+      placeholder: ''
+      size: 60
+    third_party_settings: {  }
+  field_contact_name:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_description:
+    type: text_textarea_with_summary
+    weight: 3
+    region: content
+    settings:
+      rows: 9
+      summary_rows: 3
+      placeholder: ''
+      show_summary: false
+    third_party_settings: {  }
+  field_partner_status:
+    type: options_select
+    weight: 6
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_partner_type:
+    type: options_select
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  label:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  path: true
+  status: true
+  uid: true

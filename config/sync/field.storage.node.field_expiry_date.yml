@@ -1,0 +1,20 @@
+uuid: b79369b2-50c9-4c1e-9ab4-9c95e3c4a420
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+_core:
+  default_config_hash: dElM4PV5uQERuPbObQtcb5m4ERHMDEEv_wu4q2uZB_8
+id: node.field_expiry_date
+field_name: field_expiry_date
+entity_type: node
+type: timestamp
+settings: {  }
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

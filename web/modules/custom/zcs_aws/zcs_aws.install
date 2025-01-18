@@ -1,0 +1,33 @@
+<?php
+
+
+use \Drupal\menu_link_content\Entity\MenuLinkContent;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\user\Entity\Role;
+
+
+function zcs_aws_install() {
+    // Add a sample link to the main menu.
+    $menu_link = MenuLinkContent::create([
+      'menu_name' => 'main',
+      'title' => 'API Keys',
+      'link' => [
+         ['uri' => 'internal:/aws-apps']
+      ],
+      'weight' => 6,
+      'menu_per_role__show_role' => [
+        'authenticated',
+      ],
+    ]);
+    $menu_link->save();
+}
+
+
+
+function zcs_aws_uninstall() {
+  $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+  $menu_items = $storage->loadByProperties(['link__uri' => 'zcs_aws.app_list']);
+  foreach ($menu_items as $menu_item) {
+     $menu_item->delete();
+   }
+}

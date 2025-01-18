@@ -1,0 +1,36 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - group.type.partner
+    - user.role.administrator
+_core:
+  default_config_hash: aUmbT1mX6Jux0-1NoG2h1Koq15ae5oX_yUfFF_yf1zc
+id: partner-super_admin
+label: 'Partner Super Admin'
+weight: 106
+admin: false
+scope: outsider
+global_role: administrator
+group_type: partner
+permissions:
+  - 'access content overview'
+  - 'access group_node overview'
+  - 'administer members'
+  - 'delete any invitation'
+  - 'delete group'
+  - 'delete group revisions'
+  - 'delete own invitation'
+  - 'edit group'
+  - 'invite users to group'
+  - 'join group'
+  - 'revert group revisions'
+  - 'view all group revisions'
+  - 'view any unpublished group'
+  - 'view group'
+  - 'view group invitations'
+  - 'view group revisions'
+  - 'view group_membership relationship'
+  - 'view group_node:app relationship'
+  - 'view latest group version'
+  - 'view own unpublished group'
