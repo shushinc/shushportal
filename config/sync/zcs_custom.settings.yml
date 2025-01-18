@@ -1,7 +1,7 @@
 kong_endpoint: 'http://34.72.223.216:8001'
 aws_details: ''
-aws_access_key: AKIA3FLD46FUOPW3Q3MQ
-aws_secret_key: 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
+aws_access_key: ''
+aws_secret_key: ''
 aws_region: us-east-2
 user_pool_id: us-east-2_FcvS5fcef
 allowed_oauth_flows: client_credentials
