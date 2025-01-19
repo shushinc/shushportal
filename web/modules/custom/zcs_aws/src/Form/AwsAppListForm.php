@@ -85,6 +85,9 @@ final class AwsAppListForm extends FormBase {
               $delete_link = Link::createFromRoute('Delete', 'zcs_aws.delete_key', ['id' => $app->id()]);
               $operation_link = Markup::create($update_link->toString() . ' | ' . $delete_link->toString());
             }
+            else {
+              $operation_link = '';
+            }
 
             $created_time = $app->get('created')->value;
             $client_id = $app->get('field_client_id')->value ?? '';
@@ -102,11 +105,11 @@ final class AwsAppListForm extends FormBase {
               'app' => $app->get('field_tag')->value ?? '',
               'created' => date('d M Y' , (int)$created_time),
               'client_id' => [
-                'data' =>  Markup::create("<div class='kong-key'>$client_id</div><div class='pwd-toggle'></div><div class='pwd-copy'></div>"),
+                'data' =>  Markup::create("<div class='client-key'>$client_id</div><div class='pwd-toggle'></div><div class='pwd-copy'></div>"),
                 'class' => 'api-keys',
               ],
               'client_secret' => [
-                'data' =>  Markup::create("<div class='kong-key'>$secret_key</div><div class='pwd-toggle'></div><div class='pwd-copy'></div>"),
+                'data' =>  Markup::create("<div class='secret-key'>$secret_key</div><div class='pwd-toggle'></div><div class='pwd-copy'></div>"),
                 'class' => 'api-keys',
               ],
               'status' => $app_status,
@@ -120,7 +123,7 @@ final class AwsAppListForm extends FormBase {
     }
     else {
       $response =  \Drupal::service('zcs_aws.aws_gateway')->checkUserAccessGeneratekey();
-      if ($response != "error") {
+      if ($response !== "error") {
         $header['operation'] = $this->t('Operations');
       }
 
@@ -144,9 +147,12 @@ final class AwsAppListForm extends FormBase {
             $description = $group->get('field_description')->getValue()[0]['value'];
             $app_status = $app->get('field_app_status')->value;
             if ($app_status == 'active') {
-              $update_link = Link::createFromRoute('Edit', 'zcs_kong.edit_key', ['id' => $app->id()]);
-              $delete_link = Link::createFromRoute('Delete', 'zcs_kong.delete_key', ['id' => $app->id()]);
+              $update_link = Link::createFromRoute('Edit', 'zcs_aws.edit_key', ['id' => $app->id()]);
+              $delete_link = Link::createFromRoute('Delete', 'zcs_aws.delete_key', ['id' => $app->id()]);
               $operation_link = Markup::create($update_link->toString() . ' | ' . $delete_link->toString());
+            }
+            else {
+              $operation_link = '';
             }
             $created_time = $app->get('created')->value;
             $client_id = $app->get('field_client_id')->value ?? '';
@@ -165,18 +171,18 @@ final class AwsAppListForm extends FormBase {
               'tag' => $app->get('field_tag')->value ?? '',
               'created' => date('d M Y' , (int)$created_time),
               'client_id' => [
-                'data' =>  Markup::create("<div class='kong-key'>$client_id</div><div class='pwd-toggle'></div><div class='pwd-copy'></div>"),
+                'data' =>  Markup::create("<div class='client-key''>$client_id</div><div class='pwd-toggle'></div><div class='pwd-copy'></div>"),
                 'class' => 'api-keys',
               ],
               'client_secret' => [
-                'data' =>  Markup::create("<div class='kong-key'>$secret_key</div><div class='pwd-toggle'></div><div class='pwd-copy'></div>"),
+                'data' =>  Markup::create("<div class='secret-key'>$secret_key</div><div class='pwd-toggle'></div><div class='pwd-copy'></div>"),
                 'class' => 'api-keys',
               ],
               'status' => $app_status,
             ];
 
             // Condition to check if `update_key` should be added.
-            if ($response != "error") {
+            if ($response !== "error") {
                $apps[count($apps) - 1]['update_key'] = [
                 'data' => $operation_link ?? '',
                 'class' => 'app-operations',

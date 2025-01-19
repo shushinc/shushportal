@@ -199,9 +199,9 @@ class AwsHelperService  {
    * {@inheritdoc}
    */
   public function checkUserAccessGeneratekey() {
-    if (!\Drupal::currentUser()->hasRole('client_admin')) {
+    if (\Drupal::currentUser()->hasRole('client_admin')) {
       //\Drupal::messenger()->addError('The user has no access to create APP');
-      return 'error';
+      return TRUE;
     }
     else {
       $memberships = \Drupal::service('group.membership_loader')->loadByUser(\Drupal::currentUser());
