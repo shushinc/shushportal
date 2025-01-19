@@ -71,7 +71,7 @@ class CreateAwsAppForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $app_name = $form_state->getValue('aws_app_name');
     $group_id = $form_state->getValue('group_id');
-    $response = \Drupal::service('zcs_aws.aws_gateway')->createAwsAppClient($app_name, $group_id);
+    $response = \Drupal::service('zcs_aws.aws_gateway')->createAwsAppClient($app_name);
     if ($response != "error") {
       $response_key_details = \Drupal::service('zcs_aws.aws_gateway')->saveApp($group_id, $response);
       $form_state->setRedirectUrl(Url::fromRoute('zcs_aws.app_list'));

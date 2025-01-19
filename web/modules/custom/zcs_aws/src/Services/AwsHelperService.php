@@ -158,7 +158,7 @@ class AwsHelperService  {
     $aws_key =  \Drupal::config('zcs_custom.settings')->get('aws_access_key');
     $aws_secret_key =  \Drupal::config('zcs_custom.settings')->get('aws_secret_key');
     $user_pool_id =  \Drupal::config('zcs_custom.settings')->get('user_pool_id');
-    $access_token_validity=  \Drupal::config('zcs_custom.settings')->get('access_token_validity');
+    $access_token_validity =  \Drupal::config('zcs_custom.settings')->get('access_token_validity');
 
     $OAuth_flows =  \Drupal::config('zcs_custom.settings')->get('allowed_oauth_flows');
     $OAuth_scopes =  \Drupal::config('zcs_custom.settings')->get('allowed_oauth_scopes');
@@ -184,13 +184,6 @@ class AwsHelperService  {
         'AllowedOAuthFlows' => $OAuth_flows_formatted,
         'AllowedOAuthScopes' => $OAuth_scopes_formatted,
         'SupportedIdentityProviders' => [$supported_idps],
-        'AccessTokenValidity' => $access_token_validity,
-        'IdTokenValidity' => 60,
-        'TokenValidityUnits' => [
-          'AccessToken' => 'minutes',
-          'IdToken' => 'minutes',
-          'RefreshToken' => 'days',
-        ],
         'AllowedOAuthFlowsUserPoolClient' => true,
       ]);
       return $createClients;
