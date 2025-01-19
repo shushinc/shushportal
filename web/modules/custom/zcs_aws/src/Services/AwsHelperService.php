@@ -76,13 +76,18 @@ class AwsHelperService  {
       ],
     ];
 
-
-    $client = new CognitoIdentityProviderClient($config);
-    $deleteresponse = $client->deleteUserPoolClient([
-      'ClientId' => $client_id,
-      'UserPoolId' => $user_pool_id,
-    ]);
-    return $deleteresponse;
+    try {
+      $client = new CognitoIdentityProviderClient($config);
+      $deleteresponse = $client->deleteUserPoolClient([
+        'ClientId' => $client_id,
+        'UserPoolId' => $user_pool_id,
+      ]);
+      return $deleteresponse;
+    }
+    catch (\Exception $e) {
+      // \Drupal::messenger()->addError(('Request Error: ' . $e->getMessage()));
+      return "error";
+    }
   }
   /**
    * {@inheritdoc}
@@ -130,13 +135,20 @@ class AwsHelperService  {
           'secret' => $aws_secret_key,
       ],
     ];
-    $client = new CognitoIdentityProviderClient($config);
-    $updateClients = $client->updateUserPoolClient([
-      'UserPoolId' => $user_pool_id,
-      'ClientName' => $app_name,
-      'ClientId' => $client_id, // REQUIRED
-    ]);
-    return $updateClients;
+    try {
+      $client = new CognitoIdentityProviderClient($config);
+      $updateClients = $client->updateUserPoolClient([
+        'UserPoolId' => $user_pool_id,
+        'ClientName' => $app_name,
+        'ClientId' => $client_id, // REQUIRED
+      ]);
+      return $updateClients;
+    }
+    catch (\Exception $e) {
+      // \Drupal::messenger()->addError(('Request Error: ' . $e->getMessage()));
+      return "error";
+    }
+
   }
 
 
@@ -146,6 +158,7 @@ class AwsHelperService  {
     $aws_key =  \Drupal::config('zcs_custom.settings')->get('aws_access_key');
     $aws_secret_key =  \Drupal::config('zcs_custom.settings')->get('aws_secret_key');
     $user_pool_id =  \Drupal::config('zcs_custom.settings')->get('user_pool_id');
+    $access_token_validity=  \Drupal::config('zcs_custom.settings')->get('access_token_validity');
 
     $OAuth_flows =  \Drupal::config('zcs_custom.settings')->get('allowed_oauth_flows');
     $OAuth_scopes =  \Drupal::config('zcs_custom.settings')->get('allowed_oauth_scopes');
@@ -161,18 +174,31 @@ class AwsHelperService  {
         'secret' => $aws_secret_key,
       ],
     ];
-    $client = new CognitoIdentityProviderClient($config);
-    $createClients = $client->createUserPoolClient([
-      'UserPoolId' => $user_pool_id,
-      'ClientName' => $app_name,
-      'GenerateSecret' => true,
-      'AllowedOAuthFlows' =>  $OAuth_flows_formatted,
-      'AllowedOAuthScopes' => $OAuth_scopes_formatted,
-      'SupportedIdentityProviders' => [$supported_idps],
-      'CallbackURLs' => ['https://your-app/callback'],
-      'LogoutURLs' => ['https://your-app/logout'],
-    ]);
-    return $createClients;
+
+    try {
+      $client = new CognitoIdentityProviderClient($config);
+      $createClients = $client->createUserPoolClient([
+        'UserPoolId' => $user_pool_id,
+        'ClientName' => $app_name,
+        'GenerateSecret' => true,
+        'AllowedOAuthFlows' => $OAuth_flows_formatted,
+        'AllowedOAuthScopes' => $OAuth_scopes_formatted,
+        'SupportedIdentityProviders' => [$supported_idps],
+        'AccessTokenValidity' => $access_token_validity,
+        'IdTokenValidity' => 60,
+        'TokenValidityUnits' => [
+          'AccessToken' => 'minutes',
+          'IdToken' => 'minutes',
+          'RefreshToken' => 'days',
+        ],
+        'AllowedOAuthFlowsUserPoolClient' => true,
+      ]);
+      return $createClients;
+    }
+    catch (\Exception $e) {
+     // \Drupal::messenger()->addError(('Request Error: ' . $e->getMessage()));
+      return "error";
+    }
   }
 
 

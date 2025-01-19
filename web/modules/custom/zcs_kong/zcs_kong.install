@@ -7,26 +7,42 @@ use Drupal\user\Entity\Role;
 
 
 function zcs_kong_install() {
-    // Add a sample link to the main menu.
-    $menu_link = MenuLinkContent::create([
-      'menu_name' => 'main',
-      'title' => 'API Keys',
-      'link' => [
-         ['uri' => 'internal:/apps']
-      ],
-      'weight' => 5,
-      'menu_per_role__show_role' => [
-        'authenticated',
-      ],
+
+    $menu_name = 'main';
+    $title = 'API Keys';
+    $link_uri = 'internal:/apps';
+
+    // Check if a menu link with the same properties already exists.
+    $existing_menu_links = \Drupal::entityTypeManager()->getStorage('menu_link_content')->loadByProperties([
+      'menu_name' => $menu_name,
+      'title' => $title,
+      'link__uri' => $link_uri,
     ]);
-    $menu_link->save();
+
+    if (empty($existing_menu_links)) {
+
+     // Add a sample link to the main menu.
+        $menu_link = MenuLinkContent::create([
+          'menu_name' => 'main',
+          'title' => 'API Keys',
+          'link' => [
+             ['uri' => 'internal:/apps']
+          ],
+          'weight' => 5,
+          'menu_per_role__show_role' => [
+            'authenticated',
+          ],
+        ]);
+        $menu_link->save();
+    }
+
 }
 
 
 
 function zcs_kong_uninstall() {
   $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
-  $menu_items = $storage->loadByProperties(['link__uri' => 'zcs_kong.app_list']);
+  $menu_items = $storage->loadByProperties(['link__uri' => 'internal:/apps']);
   foreach ($menu_items as $menu_item) {
     $menu_item->delete();
   }

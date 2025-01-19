@@ -91,13 +91,10 @@ final class UpdateAwsAppForm extends FormBase {
     $app_name = $form_state->getValue('app_name');
     $client_id = $form_state->getValue('app_client_id');
 
-
     $response = \Drupal::service('zcs_aws.aws_gateway')->updateAwsAppClient($app_name, $client_id);
-    $aws_update_response = $response->toArray();
-    $update_app_name = $aws_update_response['UserPoolClient']['ClientName'];
-
-
-    try {
+    if ($response != "error") {
+      $aws_update_response = $response->toArray();
+      $update_app_name = $aws_update_response['UserPoolClient']['ClientName'];
       // Load the node by its ID.
       $node = Node::load($app_node_id);
       if ($node) {
@@ -109,10 +106,11 @@ final class UpdateAwsAppForm extends FormBase {
       } else {
         \Drupal::messenger()->addMessage('Node not found.', 'error');
       }
-    } catch (Exception $e) {
-      \Drupal::messenger()->addMessage('An error occurred: ' . $e->getMessage(), 'error');
     }
-
+    else {
+      \Drupal::messenger()->addError('An error occurred while updating App.', 'error');
+      $form_state->setRedirectUrl(Url::fromRoute('zcs_aws.app_list'));
+    }
   }
 
 

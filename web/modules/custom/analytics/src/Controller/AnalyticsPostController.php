@@ -125,11 +125,11 @@ class AnalyticsPostController extends ControllerBase {
         $node->set('field_transaction_type_count', $content['transaction_type_count']);
         $node->set('field_est_revenue', $content['est_revenue']);
         $node->set('field_partner',  $this->getGroupId($content['client']));
-        $node->set('field_kong_analytical_id', $content['kong_analytical_id']);
-        
-        $node_exsist = $this->checkAnalyticalId($content['kong_analytical_id']);      
+        $node->set('field_kong_analytical_id', $content['analytical_id']);
+
+        $node_exsist = $this->checkAnalyticalId($content['analytical_id']);
         if($node_exsist) {
-          $responses[$key] = ['message' => 'Analytics id: '. $content['kong_analytical_id'] . " already exists."];
+          $responses[$key] = ['message' => 'Analytics id: '. $content['analytical_id'] . " already exists."];
         }
         else {
           $node->enforceIsNew();
@@ -151,7 +151,7 @@ class AnalyticsPostController extends ControllerBase {
     return new JsonResponse($responses);
   }
 
-  
+
   public function getGroupId($title){
     $query = \Drupal::entityQuery('group')
     ->condition('label', $title)
@@ -175,6 +175,6 @@ class AnalyticsPostController extends ControllerBase {
       else {
         return False;
       }
-    } 
+    }
   }
 }

@@ -26,11 +26,18 @@ class AwsDeleteController extends ControllerBase {
     $app = Node::load($id);
     $client_id = $app->get('field_client_id')->value;
     $response = \Drupal::service('zcs_aws.aws_gateway')->deleteApp($client_id);
-    $app->set('field_app_status', 'deleted');
-    $app->save();
-    \Drupal::messenger()->addMessage('App Deleted Successfully');
-    $response = new RedirectResponse(Url::fromRoute('zcs_aws.app_list')->toString());
-    return $response->send();
+    if ($response != 'error') {
+      $app->set('field_app_status', 'deleted');
+      $app->save();
+      \Drupal::messenger()->addMessage('App Deleted Successfully');
+      $response = new RedirectResponse(Url::fromRoute('zcs_aws.app_list')->toString());
+      return $response->send();
+    }
+    else {
+      \Drupal::messenger()->addError('An error occurred while Deletion.', 'error');
+      $response = new RedirectResponse(Url::fromRoute('zcs_aws.app_list')->toString());
+      return $response->send();
+    }
   }
 
    /**

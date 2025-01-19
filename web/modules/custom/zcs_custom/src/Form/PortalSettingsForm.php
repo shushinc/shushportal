@@ -77,6 +77,11 @@ final class PortalSettingsForm extends ConfigFormBase {
       '#title' => $this->t('User Pool ID'),
       '#default_value' => $this->config('zcs_custom.settings')->get('user_pool_id'),
     ];
+    $form['aws_details']['access_token_validity'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Access Token Validity'),
+      '#default_value' => $this->config('zcs_custom.settings')->get('access_token_validity'),
+    ];
     $form['aws_details']['supported_identity_providers'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Identity Providers'),
@@ -94,10 +99,10 @@ final class PortalSettingsForm extends ConfigFormBase {
       '#default_value' => $this->config('zcs_custom.settings')->get('allowed_oauth_scopes'),
       '#description' => t('Provide values comma seperated eg: resourcetype/read, resourcetype/write.'),
     ];
-   
-     
-   
-      
+
+
+
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -128,6 +133,7 @@ final class PortalSettingsForm extends ConfigFormBase {
       ->set('aws_secret_key', $form_state->getValue('aws_details')['aws_secret_key'])
       ->set('aws_region', $form_state->getValue('aws_details')['aws_region'])
       ->set('user_pool_id', $form_state->getValue('aws_details')['user_pool_id'])
+      ->set('access_token_validity', $form_state->getValue('aws_details')['access_token_validity'])
       ->set('supported_identity_providers', $form_state->getValue('aws_details')['supported_identity_providers'])
       ->set('allowed_oauth_flows', $form_state->getValue('aws_details')['allowed_oauth_flows'])
       ->set('allowed_oauth_scopes', $form_state->getValue('aws_details')['allowed_oauth_scopes'])

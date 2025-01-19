@@ -72,10 +72,15 @@ class CreateAwsAppForm extends FormBase {
     $app_name = $form_state->getValue('aws_app_name');
     $group_id = $form_state->getValue('group_id');
     $response = \Drupal::service('zcs_aws.aws_gateway')->createAwsAppClient($app_name, $group_id);
-    $response_key_details = \Drupal::service('zcs_aws.aws_gateway')->saveApp($group_id, $response);
-    // @todo handle the error scenerio.
-    $form_state->setRedirectUrl(Url::fromRoute('zcs_aws.app_list'));
-    \Drupal::messenger()->addMessage($this->t('App created successfully in AWS Gateway'), 'status', TRUE);
+    if ($response != "error") {
+      $response_key_details = \Drupal::service('zcs_aws.aws_gateway')->saveApp($group_id, $response);
+      $form_state->setRedirectUrl(Url::fromRoute('zcs_aws.app_list'));
+      \Drupal::messenger()->addMessage($this->t('App created successfully in AWS Gateway'), 'status', TRUE);;
+    }
+    else {
+      \Drupal::messenger()->addError($this->t('Something went wrong. Please contact Administrator'), 'status', TRUE);
+    }
+
   }
 
   /**
