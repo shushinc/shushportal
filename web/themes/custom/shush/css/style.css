@@ -1006,10 +1006,12 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   display: none;
 }
 
-.zcs-kong-app-list table tr td {
+.zcs-kong-app-list table tr td,
+.zcs-aws-app-list table tr td {
   position: relative;
 }
-.zcs-kong-app-list table tr td .pwd-copy {
+.zcs-kong-app-list table tr td .pwd-copy,
+.zcs-aws-app-list table tr td .pwd-copy {
   position: absolute;
   top: 50%;
   right: 30px;
@@ -1017,7 +1019,8 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   opacity: 0;
   visibility: hidden;
 }
-.zcs-kong-app-list table tr td .pwd-copy::after {
+.zcs-kong-app-list table tr td .pwd-copy::after,
+.zcs-aws-app-list table tr td .pwd-copy::after {
   content: "";
   background: url("../images/copy-files.svg") no-repeat;
   height: 12px;
@@ -1028,19 +1031,22 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   margin-left: 5px;
   cursor: pointer;
 }
-.zcs-kong-app-list table tr td.api-keys {
+.zcs-kong-app-list table tr td.api-keys,
+.zcs-aws-app-list table tr td.api-keys {
   -webkit-text-security: disc;
   /* For WebKit browsers */
   text-security: disc;
   position: relative;
 }
-.zcs-kong-app-list table tr td.api-keys .pwd-toggle {
+.zcs-kong-app-list table tr td.api-keys .pwd-toggle,
+.zcs-aws-app-list table tr td.api-keys .pwd-toggle {
   position: absolute;
   top: 50%;
   right: 10px;
   margin-top: -14px;
 }
-.zcs-kong-app-list table tr td.api-keys .pwd-toggle::after {
+.zcs-kong-app-list table tr td.api-keys .pwd-toggle::after,
+.zcs-aws-app-list table tr td.api-keys .pwd-toggle::after {
   content: "";
   background: url("../images/eye-hidden.png") no-repeat;
   height: 12px;
@@ -1051,12 +1057,14 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   margin-left: 5px;
   cursor: pointer;
 }
-.zcs-kong-app-list table tr td.password-show {
+.zcs-kong-app-list table tr td.password-show,
+.zcs-aws-app-list table tr td.password-show {
   -webkit-text-security: none;
   text-security: none;
   padding-right: 50px;
 }
-.zcs-kong-app-list table tr td.password-show .pwd-toggle::after {
+.zcs-kong-app-list table tr td.password-show .pwd-toggle::after,
+.zcs-aws-app-list table tr td.password-show .pwd-toggle::after {
   content: "";
   background: url("../images/eye-visible.png") no-repeat;
   height: 12px;
@@ -1067,15 +1075,34 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   margin-left: 5px;
   cursor: pointer;
 }
-.zcs-kong-app-list table tr td.password-show .pwd-copy {
+.zcs-kong-app-list table tr td.password-show .pwd-copy,
+.zcs-aws-app-list table tr td.password-show .pwd-copy {
   visibility: visible;
   opacity: 1;
 }
-.zcs-kong-app-list table tr td.app-operations {
+.zcs-kong-app-list table tr td.password-show .client-key,
+.zcs-kong-app-list table tr td.password-show .secret-key,
+.zcs-aws-app-list table tr td.password-show .client-key,
+.zcs-aws-app-list table tr td.password-show .secret-key {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+  display: inline-block;
+  width: 100px;
+  vertical-align: middle;
+}
+.zcs-kong-app-list table tr td.password-show .secret-key,
+.zcs-aws-app-list table tr td.password-show .secret-key {
+  width: 180px;
+}
+.zcs-kong-app-list table tr td.app-operations,
+.zcs-aws-app-list table tr td.app-operations {
   font-size: 0;
   text-align: center;
 }
-.zcs-kong-app-list table tr td.app-operations::before {
+.zcs-kong-app-list table tr td.app-operations::before,
+.zcs-aws-app-list table tr td.app-operations::before {
   content: "";
   background: url("../images/dropdown.svg") no-repeat;
   height: 12px;
@@ -1086,7 +1113,8 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   transform: rotate(90deg);
   cursor: pointer;
 }
-.zcs-kong-app-list table tr td.app-operations .kong-app-list-edit {
+.zcs-kong-app-list table tr td.app-operations .kong-app-list-edit,
+.zcs-aws-app-list table tr td.app-operations .kong-app-list-edit {
   display: none;
   font-size: 14px;
   position: absolute;
@@ -1096,13 +1124,15 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   border-radius: 5px;
   padding: 5px 10px;
 }
-.zcs-kong-app-list table tr td.app-operations .kong-app-list-edit a {
+.zcs-kong-app-list table tr td.app-operations .kong-app-list-edit a,
+.zcs-aws-app-list table tr td.app-operations .kong-app-list-edit a {
   display: block;
   text-align: left;
   line-height: normal;
   margin: 5px 0;
 }
-.zcs-kong-app-list table tr td.app-operations.active-dropdown .kong-app-list-edit {
+.zcs-kong-app-list table tr td.app-operations.active-dropdown .kong-app-list-edit,
+.zcs-aws-app-list table tr td.app-operations.active-dropdown .kong-app-list-edit {
   display: block;
 }
 
