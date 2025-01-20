@@ -70,7 +70,23 @@ class CreateAwsAppForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $app_name = $form_state->getValue('aws_app_name');
-    $group_id = $form_state->getValue('group_id');
+    if (\Drupal::currentUser()->hasRole('carrier_admin') || \Drupal::currentUser()->hasRole('administrator')) {
+      $group_id = $form_state->getValue('group_id');
+    }
+    else {
+      $memberships = \Drupal::service('group.membership_loader')->loadByUser(\Drupal::currentUser());
+      if (isset($memberships)) {
+        $roles = $memberships[0]->getRoles();
+        $group_roles = [];
+        foreach($roles as $role) {
+          $group_roles[] = $role->id();
+        }
+        if (in_array('partner-admin', $group_roles)) {
+          $group_id = $memberships[0]->getGroup()->id();
+        }
+      }
+    }
+
     $response = \Drupal::service('zcs_aws.aws_gateway')->createAwsAppClient($app_name);
     if ($response != "error") {
       $response_key_details = \Drupal::service('zcs_aws.aws_gateway')->saveApp($group_id, $response);

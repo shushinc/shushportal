@@ -26,8 +26,8 @@ function zcs_aws_install() {
 
 function zcs_aws_uninstall() {
   $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
-  $menu_items = $storage->loadByProperties(['link__uri' => 'zcs_aws.app_list']);
+  $menu_items = $storage->loadByProperties(['link__uri' => 'internal:/aws-apps']);
   foreach ($menu_items as $menu_item) {
      $menu_item->delete();
-   }
+  }
 }
