@@ -105,11 +105,11 @@ final class AwsAppListForm extends FormBase {
               'app' => $app->get('field_tag')->value ?? '',
               'created' => date('d M Y' , (int)$created_time),
               'client_id' => [
-                'data' =>  Markup::create("<div class='client-key'>$client_id</div><div class='pwd-toggle'></div><div class='pwd-copy'></div>"),
+                'data' =>  Markup::create("<div class='client-key'>$client_id</div><div class='pwd-toggle'></div><div class='client-password'></div>"),
                 'class' => 'api-keys',
               ],
               'client_secret' => [
-                'data' =>  Markup::create("<div class='secret-key'>$secret_key</div><div class='pwd-toggle'></div><div class='pwd-copy'></div>"),
+                'data' =>  Markup::create("<div class='secret-key'>$secret_key</div><div class='pwd-toggle'></div><div class='secret-password'></div>"),
                 'class' => 'api-keys',
               ],
               'status' => $app_status,
@@ -171,11 +171,11 @@ final class AwsAppListForm extends FormBase {
               'tag' => $app->get('field_tag')->value ?? '',
               'created' => date('d M Y' , (int)$created_time),
               'client_id' => [
-                'data' =>  Markup::create("<div class='client-key''>$client_id</div><div class='pwd-toggle'></div><div class='pwd-copy'></div>"),
+                'data' =>  Markup::create("<div class='client-key''>$client_id</div><div class='pwd-toggle'></div><div class='client-password'></div>"),
                 'class' => 'api-keys',
               ],
               'client_secret' => [
-                'data' =>  Markup::create("<div class='secret-key'>$secret_key</div><div class='pwd-toggle'></div><div class='pwd-copy'></div>"),
+                'data' =>  Markup::create("<div class='secret-key'>$secret_key</div><div class='pwd-toggle'></div><div class='secret-password'></div>"),
                 'class' => 'api-keys',
               ],
               'status' => $app_status,

@@ -43,7 +43,7 @@
  * @see html.html.twig
  */
 #}
-<div class="layout-container">
+<div class="layout-container page-aws-apps">
 
 	<header role="banner" class="header">
 		<div class="header__layout container">
@@ -99,7 +99,7 @@
 
 	<div class="user-management-header">
 		<h5>{{ 'You are currently viewing the'|t }}</h5>
-		<h3>{{ 'API Keys'|t }}</h3>
+		<h3>{{ 'APP'|t }}</h3>
 		{% for role in user.roles(TRUE) %}
 			<div class="user-roles">{{ role }}</div>
 		{% endfor %}

@@ -1006,12 +1006,25 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   display: none;
 }
 
+#block-shush-primary-admin-actions
+[data-drupal-link-system-path="create-aws-key"].button-action {
+  background: #fff;
+  border: 2px solid #118df0;
+  color: #118df0;
+  border-radius: 50px;
+  padding: 10px 15px;
+}
+
 .zcs-kong-app-list table tr td,
 .zcs-aws-app-list table tr td {
   position: relative;
 }
 .zcs-kong-app-list table tr td .pwd-copy,
-.zcs-aws-app-list table tr td .pwd-copy {
+.zcs-kong-app-list table tr td .secret-password,
+.zcs-kong-app-list table tr td .client-password,
+.zcs-aws-app-list table tr td .pwd-copy,
+.zcs-aws-app-list table tr td .secret-password,
+.zcs-aws-app-list table tr td .client-password {
   position: absolute;
   top: 50%;
   right: 30px;
@@ -1020,7 +1033,11 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   visibility: hidden;
 }
 .zcs-kong-app-list table tr td .pwd-copy::after,
-.zcs-aws-app-list table tr td .pwd-copy::after {
+.zcs-kong-app-list table tr td .secret-password::after,
+.zcs-kong-app-list table tr td .client-password::after,
+.zcs-aws-app-list table tr td .pwd-copy::after,
+.zcs-aws-app-list table tr td .secret-password::after,
+.zcs-aws-app-list table tr td .client-password::after {
   content: "";
   background: url("../images/copy-files.svg") no-repeat;
   height: 12px;
@@ -1076,7 +1093,11 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   cursor: pointer;
 }
 .zcs-kong-app-list table tr td.password-show .pwd-copy,
-.zcs-aws-app-list table tr td.password-show .pwd-copy {
+.zcs-kong-app-list table tr td.password-show .client-password,
+.zcs-kong-app-list table tr td.password-show .secret-password,
+.zcs-aws-app-list table tr td.password-show .pwd-copy,
+.zcs-aws-app-list table tr td.password-show .client-password,
+.zcs-aws-app-list table tr td.password-show .secret-password {
   visibility: visible;
   opacity: 1;
 }
@@ -1415,6 +1436,13 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   font-size: 14px;
   font-weight: 700;
   text-transform: capitalize;
+}
+
+.page-aws-apps .user-management-header {
+  padding-left: 0;
+}
+.page-aws-apps #block-shush-primary-admin-actions nav {
+  margin: 1rem 0 0.5rem;
 }
 
 body.password-change-page {

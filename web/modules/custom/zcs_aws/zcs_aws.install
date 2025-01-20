@@ -10,7 +10,7 @@ function zcs_aws_install() {
     // Add a sample link to the main menu.
     $menu_link = MenuLinkContent::create([
       'menu_name' => 'main',
-      'title' => 'API Keys',
+      'title' => 'Apps',
       'link' => [
          ['uri' => 'internal:/aws-apps']
       ],

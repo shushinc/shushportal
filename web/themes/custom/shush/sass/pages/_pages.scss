@@ -550,12 +550,24 @@ table {
     }
   }
 }
+
+#block-shush-primary-admin-actions
+  [data-drupal-link-system-path="create-aws-key"].button-action {
+  background: #fff;
+  border: 2px solid rgba(17, 141, 240, 1);
+  color: rgba(17, 141, 240, 1);
+  border-radius: 50px;
+  padding: 10px 15px;
+}
+
 .zcs-kong-app-list,
 .zcs-aws-app-list {
   table tr {
     td {
       position: relative;
-      .pwd-copy {
+      .pwd-copy,
+      .secret-password,
+      .client-password {
         position: absolute;
         top: 50%;
         right: 30px;
@@ -611,7 +623,9 @@ table {
           margin-left: 5px;
           cursor: pointer;
         }
-        .pwd-copy {
+        .pwd-copy,
+        .client-password,
+        .secret-password {
           visibility: visible;
           opacity: 1;
         }
@@ -963,7 +977,14 @@ table {
     text-transform: capitalize;
   }
 }
-
+.page-aws-apps {
+  .user-management-header {
+    padding-left: 0;
+  }
+  #block-shush-primary-admin-actions nav {
+    margin: 1rem 0 0.5rem;
+  }
+}
 body.password-change-page {
   background: $white;
 }

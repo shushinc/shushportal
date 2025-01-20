@@ -1,5 +1,5 @@
 zcs_aws.create_key:
   route_name: zcs_aws.create_key
-  title: 'Generate Key'
+  title: "Create APP"
   appears_on:
     - zcs_aws.app_list

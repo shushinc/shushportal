@@ -22,20 +22,16 @@
       $(".user-profile-name").unbind().on( "click", function(event) {
         $(this).next('.user__profile').toggle();
       });
-      // $(".zcs-kong-app-list table tr td.api-keys .pwd-toggle").unbind().on("click", function(event) {
-      //   $(this).parent().toggleClass('password-show');
-      //   $('.zcs-kong-app-list table tr td').not(this).parent().removeClass('password-show');
-      // });
-
       $(".zcs-aws-app-list table tr td.api-keys .pwd-toggle").unbind().on("click", function(event) {
         $(this).parent().toggleClass('password-show');
         $('.zcs-aws-app-list table tr td').not(this).parent().removeClass('password-show');
       });
+      
 
       //  Password copy
       
       $(".pwd-copy").unbind().click(function () {
-        const copiedtext = $(this).closest("tr").find(".client-key").text();
+        const copiedtext = $(this).closest("tr").find(".kong-key").text();
     
         if (navigator.clipboard) {
             // Use Clipboard API
@@ -64,8 +60,8 @@
         }
       });
 
-      $(".pwd-copy").unbind().click(function (event) {
-        event.preventDefault();
+      $(".secret-password").unbind().click(function () {
+        console.log('sec click');
         const copiedtext = $(this).closest("tr").find(".secret-key").text();
     
         if (navigator.clipboard) {
@@ -94,8 +90,40 @@
           }
         }
       });
+
+      $(".client-password").unbind().click(function () {
+        console.log('cli click');
+        const copiedtext = $(this).closest("tr").find(".client-key").text();
     
-      $('.zcs-aws-app-list table tr').each(function() {
+        if (navigator.clipboard) {
+            // Use Clipboard API
+          navigator.clipboard.writeText(copiedtext)
+            .then(() => {
+              alert('Text copied to clipboard successfully!');
+            })
+            .catch((error) => {
+              console.error('Failed to copy text: ', error);
+            });
+        } else {
+          // Fallback for browsers without Clipboard API
+          const textArea = document.createElement("textarea");
+          textArea.value = copiedtext;
+          document.body.appendChild(textArea);
+          textArea.select();
+          
+          try {
+            document.execCommand("copy");
+            alert('Text copied to clipboard successfully!');
+          } catch (err) {
+            console.error('Failed to copy text: ', err);
+          } finally {
+            document.body.removeChild(textArea);
+          }
+        }
+      });
+    
+
+      $('.zcs-kong-app-list table tr').each(function() {
         var lastTd = $(this).find('td.app-operations');
         var lastTdLinks = lastTd.find('a');
 
@@ -105,9 +133,9 @@
         }
 
       });
-      $(".zcs-aws-app-list table tr td:last-child").unbind().on("click", function(event) {
+      $(".zcs-kong-app-list table tr td:last-child").unbind().on("click", function(event) {
         $(this).toggleClass('active-dropdown');
-        $('.zcs-aws-app-list table tr td').not(this).removeClass('active-dropdown');
+        $('.zcs-kong-app-list table tr td').not(this).removeClass('active-dropdown');
       });
       setTimeout(function() {
         $('.highlighted .messages--status').slideUp();
