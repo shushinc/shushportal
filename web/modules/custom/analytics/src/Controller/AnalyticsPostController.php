@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Component\Utility\EmailValidator;
+use Drupal\group\Entity\GroupRelationship;
 
 
 class AnalyticsPostController extends ControllerBase {
@@ -77,6 +78,14 @@ class AnalyticsPostController extends ControllerBase {
         $node = Node::create(['type' => 'analytics']);
         $node->set('title', $content['carrier_name']);
         $node->set('uid', key($user));
+        $group_relation = '';
+        // Map client based on the gateway.
+        if (\Drupal::moduleHandler()->moduleExists('zcs_aws')) {
+          $group_relation = $this->getGroupIdFromApp($content['client']);
+        }
+        else {
+          $group_relation = $this->getGroupId($content['client']);    
+        } 
 
         //attribute
         $attrTerms = $this->entityTypeManager()->getStorage('taxonomy_term')->loadByProperties(['vid' => 'analytics_attributes', 'name' => $content['attribute']]);
@@ -124,7 +133,7 @@ class AnalyticsPostController extends ControllerBase {
         $node->set('field_transaction_type', $content['transaction_type']);
         $node->set('field_transaction_type_count', $content['transaction_type_count']);
         $node->set('field_est_revenue', $content['est_revenue']);
-        $node->set('field_partner',  $this->getGroupId($content['client']));
+        $node->set('field_partner',  $group_relation);
         $node->set('field_kong_analytical_id', $content['analytical_id']);
 
         $node_exsist = $this->checkAnalyticalId($content['analytical_id']);
@@ -176,5 +185,40 @@ class AnalyticsPostController extends ControllerBase {
         return False;
       }
     }
+  }
+
+  public function getGroupIdFromApp($client_id){
+    $group_id = '';
+    $query = \Drupal::entityQuery('node')
+       ->condition('type', 'app')
+       ->condition('field_client_id', $client_id);
+    $node = $query->accessCheck(FALSE)->execute();
+    $node_id = reset($node);
+    if($node_id) {
+      $group_content_ids = \Drupal::entityQuery('group_relationship')
+      ->condition('type', 'partner-group_node-app')
+      ->condition('entity_id', $node_id)
+      ->accessCheck()->accessCheck(FALSE)->execute();
+      $relationship_id = reset($group_content_ids);
+      if($relationship_id) {
+        $group_relationship = GroupRelationship::load($relationship_id);
+        if ($group_relationship) {
+          // Get the associated group entity.
+          $group = $group_relationship->getGroup();    
+          // Return the Group ID if the group exists.
+          if ($group) {
+            $group_id =  $group->id();
+            return $group_id;
+          }
+        } 
+      } 
+      else {
+        \Drupal::logger('Analytics')->info('No relationship id found for the client id : @id', ['@id' => $client_id]);
+      } 
+    }  
+    else {
+      \Drupal::logger('Analytics')->info('No node found for the client id : @id', ['@id' => $client_id]);
+    }  
+    return $group_id; 
   }
 }
