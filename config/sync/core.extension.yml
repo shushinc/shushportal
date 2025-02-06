@@ -55,6 +55,7 @@ module:
   user: 0
   variationcache: 0
   views_ui: 0
+  zcs_api_attributes: 0
   zcs_apis: 0
   zcs_aws: 0
   zcs_client_management: 0
