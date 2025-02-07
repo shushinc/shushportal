@@ -981,8 +981,11 @@ table {
   .user-management-header {
     padding-left: 0;
   }
-  #block-shush-primary-admin-actions nav {
-    margin: 1rem 0 0.5rem;
+  #block-shush-primary-admin-actions {
+    text-align: right;
+    nav {
+      margin: 1rem 0 0.5rem;
+    }
   }
 }
 body.password-change-page {
@@ -1038,5 +1041,30 @@ body.password-change-page {
     color: rgba(163, 174, 208, 1);
     font-size: 1rem;
     line-height: 16px;
+  }
+}
+
+nav {
+  ul.js-pager__items {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    li {
+      padding: 20px;
+      a {
+        text-decoration: none;
+        span + span {
+          font-size: 24px;
+        }
+      }
+    }
+  }
+}
+
+.api-attribute-status {
+  table tr td {
+    &:nth-child(2) {
+      font-weight: 400;
+    }
   }
 }

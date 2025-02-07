@@ -1441,6 +1441,9 @@ table tr td .edit-operation:hover .edit-operation-wrap {
 .page-aws-apps .user-management-header {
   padding-left: 0;
 }
+.page-aws-apps #block-shush-primary-admin-actions {
+  text-align: right;
+}
 .page-aws-apps #block-shush-primary-admin-actions nav {
   margin: 1rem 0 0.5rem;
 }
@@ -1497,6 +1500,25 @@ body.password-change-page {
   color: #a3aed0;
   font-size: 1rem;
   line-height: 16px;
+}
+
+nav ul.js-pager__items {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+nav ul.js-pager__items li {
+  padding: 20px;
+}
+nav ul.js-pager__items li a {
+  text-decoration: none;
+}
+nav ul.js-pager__items li a span + span {
+  font-size: 24px;
+}
+
+.api-attribute-status table tr td:nth-child(2) {
+  font-weight: 400;
 }
 
 form.user-logout-confirm {
