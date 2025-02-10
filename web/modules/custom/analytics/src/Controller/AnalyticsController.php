@@ -88,7 +88,7 @@ class AnalyticsController extends ControllerBase {
     $chart1FinalData = $chart2FinalData = $chart3FinalData = $chart4FinalData = [];
     $chart1DataArray = $chart2DataArray = $chart3DataArray = $chart4DataArray = [];
     for ($day = 1; $day <= $daysInMonth; $day++) {
-      $dates[] = "           $currentMonth / $day              ";
+      $dates[] = date('D', strtotime("$currentYear-$currentMonth-$day")) . " $currentMonth/$day";
       $currentDates[] = date('Y-m-d', strtotime("$currentYear-$currentMonth-$day"));
       $datesCount[date('Y-m-d', strtotime("$currentYear-$currentMonth-$day"))] = 0;
     }
