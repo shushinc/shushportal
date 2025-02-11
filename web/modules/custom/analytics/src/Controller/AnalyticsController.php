@@ -88,7 +88,7 @@ class AnalyticsController extends ControllerBase {
     $chart1FinalData = $chart2FinalData = $chart3FinalData = $chart4FinalData = [];
     $chart1DataArray = $chart2DataArray = $chart3DataArray = $chart4DataArray = [];
     for ($day = 1; $day <= $daysInMonth; $day++) {
-      $dates[] = date('D', strtotime("$currentYear-$currentMonth-$day")) . " $currentMonth/$day";
+      $dates[] = ($currentMonth < 10 && !empty($this->request->query->get('month')) ? '0' : ''). "$currentMonth  /  $day";
       $currentDates[] = date('Y-m-d', strtotime("$currentYear-$currentMonth-$day"));
       $datesCount[date('Y-m-d', strtotime("$currentYear-$currentMonth-$day"))] = 0;
     }
@@ -230,17 +230,32 @@ class AnalyticsController extends ControllerBase {
       $chart3FinalData[$i]['data'] = array_values($final['data']);
     }
 
+    $doubleFinal3Data = $dateWiseCount = [];
+    for ($chart3=0; $chart3 < count($chart3FinalData); $chart3++) { 
+      for ($chart3_dates = 0; $chart3_dates < $daysInMonth; $chart3_dates++) {
+        if ($chart3FinalData[$chart3]['data'][$chart3_dates] > 0) {
+          $dateWiseCount[$chart3_dates] += 1;
+        }
+        $doubleFinal3Data[0]['data'][$chart3_dates] += $chart3FinalData[$chart3]['data'][$chart3_dates];
+      }
+    }
+
+    foreach ($dateWiseCount as $key => $val) {
+      $doubleFinal3Data[0]['data'][$key] = (int) round($doubleFinal3Data[0]['data'][$key] / $val);
+    }
+    $doubleFinal3Data[0]['name'] = (!empty($this->request->query->get('attribute'))) ? $chart1DataArray[$this->request->query->get('attribute')]['name'] : 'Average List';
+
     // finalize array chart4
     foreach ($chart4DataArray as $dataA) {
       $chart4FinalData[] = $dataA;
     }
     foreach ($chart4FinalData as $i => $final) {
       $chart4FinalData[$i]['data'] = array_values($final['data']);
-    }
+    }    
 
     $finalData['chart1'] = $chart1FinalData;
     $finalData['chart2'] = $chart2FinalData;
-    $finalData['chart3'] = $chart3FinalData;
+    $finalData['chart3'] = $doubleFinal3Data;
     $finalData['chart4'] = $chart4FinalData;
 
     // assign all chart array to one
