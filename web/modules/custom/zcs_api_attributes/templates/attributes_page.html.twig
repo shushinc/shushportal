@@ -1,0 +1,32 @@
+<div>
+  <table class="attributes-table">
+    <thead>
+      <tr>
+        <td>API Category</td>
+        <td>API Attributes</td>
+        <td>Integrated with Carrier Network</td>
+        <td>Carrier Enabled for 3rd Party Use</td>
+        <td>Able to be used</td>
+        <td>Current Standard Pricing(USD)</td>
+        {% if content.admin %}<td>Operations</td>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for mainkey, attributes in content.final %}
+          {% for key, att in attributes %}
+          <tr>
+            {% if key == 0 %} 
+              <td rowspan={{ attributes|length }}>{{ content.titles[mainkey].name }}</td>
+            {% endif %}
+            <td>{{ att.title }}</td>
+            <td><span class=" ">{{ att.integrated_carrier_network }}</span></td>
+            <td><span class=" ">{{ att.carrier_enabled_3rd_party_use }}</span></td>
+            <td><span class=" ">{{ att.to_be_used }}</span></td>
+            <td>{{ att.current_standard_price}}</td>
+            {% if content.admin %}<td><a href="{{ att.url }}">Edit</a></td>{% endif %}
+          </tr>
+          {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

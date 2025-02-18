@@ -5,11 +5,13 @@ dependencies:
   config:
     - field.field.node.api_attributes.body
     - field.field.node.api_attributes.field_able_to_be_used
+    - field.field.node.api_attributes.field_api_attributes_status
     - field.field.node.api_attributes.field_carrier_enabled_3rd_party
     - field.field.node.api_attributes.field_current_standard_pricing
     - field.field.node.api_attributes.field_successfully_integrated_cn
     - node.type.api_attributes
   module:
+    - options
     - text
     - user
 id: node.api_attributes.default
@@ -25,20 +27,26 @@ content:
     weight: 101
     region: content
   field_able_to_be_used:
-    type: string
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 110
+    region: content
+  field_api_attributes_status:
+    type: entity_reference_label
     label: above
     settings:
-      link_to_entity: false
+      link: true
     third_party_settings: {  }
-    weight: 108
+    weight: 109
     region: content
   field_carrier_enabled_3rd_party:
-    type: string
+    type: list_default
     label: above
-    settings:
-      link_to_entity: false
+    settings: {  }
     third_party_settings: {  }
-    weight: 107
+    weight: 111
     region: content
   field_current_standard_pricing:
     type: string
@@ -46,15 +54,14 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    weight: 105
+    weight: 113
     region: content
   field_successfully_integrated_cn:
-    type: string
+    type: list_default
     label: above
-    settings:
-      link_to_entity: false
+    settings: {  }
     third_party_settings: {  }
-    weight: 106
+    weight: 112
     region: content
   links:
     settings: {  }

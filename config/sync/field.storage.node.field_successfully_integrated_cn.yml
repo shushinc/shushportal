@@ -1,18 +1,24 @@
-uuid: b2271ff2-bb37-44f6-aabd-fff1c5779d16
+uuid: cdcdb54b-1ec4-422f-8b42-5caef04affa6
 langcode: en
 status: true
 dependencies:
   module:
     - node
+    - options
 id: node.field_successfully_integrated_cn
 field_name: field_successfully_integrated_cn
 entity_type: node
-type: string
+type: list_string
 settings:
-  max_length: 255
-  case_sensitive: false
-  is_ascii: false
-module: core
+  allowed_values:
+    -
+      value: 'yes'
+      label: 'Yes'
+    -
+      value: 'no'
+      label: 'No'
+  allowed_values_function: ''
+module: options
 locked: false
 cardinality: 1
 translatable: true

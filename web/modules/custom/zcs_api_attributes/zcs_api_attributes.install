@@ -28,7 +28,7 @@ function zcs_api_attributes_install() {
           'link' => [
              ['uri' => $link_uri]
           ],
-          'weight' => 7,
+          'weight' => 7   ,
           'menu_per_role__show_role' => [
             'authenticated',
           ],

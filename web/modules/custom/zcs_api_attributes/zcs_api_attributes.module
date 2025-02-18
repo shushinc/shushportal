@@ -4,3 +4,14 @@
  * @file
  * Primary module hooks for zcs_api_attributes module.
  */
+
+function zcs_api_attributes_theme() {
+  return [
+    'attributes_page' => [
+      'variables' => [
+        'content' => null,
+      ],
+      'template' => 'attributes_page'
+    ]
+  ];
+}

@@ -6,6 +6,7 @@ dependencies:
     - core.entity_view_mode.node.teaser
     - field.field.node.api_attributes.body
     - field.field.node.api_attributes.field_able_to_be_used
+    - field.field.node.api_attributes.field_api_attributes_status
     - field.field.node.api_attributes.field_carrier_enabled_3rd_party
     - field.field.node.api_attributes.field_current_standard_pricing
     - field.field.node.api_attributes.field_successfully_integrated_cn
@@ -33,6 +34,7 @@ content:
     region: content
 hidden:
   field_able_to_be_used: true
+  field_api_attributes_status: true
   field_carrier_enabled_3rd_party: true
   field_current_standard_pricing: true
   field_successfully_integrated_cn: true

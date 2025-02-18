@@ -1,18 +1,24 @@
-uuid: 61305ef9-38f5-4aaf-9c71-ae9ae8e76c4b
+uuid: 0313064c-ecab-4690-9699-a1da69d18212
 langcode: en
 status: true
 dependencies:
   module:
     - node
+    - options
 id: node.field_carrier_enabled_3rd_party
 field_name: field_carrier_enabled_3rd_party
 entity_type: node
-type: string
+type: list_string
 settings:
-  max_length: 255
-  case_sensitive: false
-  is_ascii: false
-module: core
+  allowed_values:
+    -
+      value: 'yes'
+      label: 'Yes'
+    -
+      value: 'no'
+      label: 'No'
+  allowed_values_function: ''
+module: options
 locked: false
 cardinality: 1
 translatable: true

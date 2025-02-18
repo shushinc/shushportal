@@ -1,17 +1,16 @@
-uuid: 118637d5-93f4-4578-9106-ffaccb0bc348
+uuid: ce909a1b-cdc5-4fbd-912c-3aae32297bea
 langcode: en
 status: true
 dependencies:
   module:
     - node
-id: node.field_current_standard_pricing
-field_name: field_current_standard_pricing
+    - taxonomy
+id: node.field_api_attributes_status
+field_name: field_api_attributes_status
 entity_type: node
-type: string
+type: entity_reference
 settings:
-  max_length: 255
-  case_sensitive: false
-  is_ascii: false
+  target_type: taxonomy_term
 module: core
 locked: false
 cardinality: 1
