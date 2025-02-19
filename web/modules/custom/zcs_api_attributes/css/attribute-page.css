@@ -1,11 +1,95 @@
 .attributes-table {
   width: 100%;
 }
-.attributes-table, td {
+.attributes-table,
+td {
   border: 1px solid #000;
   border-collapse: collapse;
 }
+table.attributes-table {
+  table-layout: fixed;
+}
+table.attributes-table tr td {
+  border: 1px solid #ddd;
+  padding: 0;
+  text-align: center;
+}
+table.attributes-table tr td:first-child {
+  width: 16%;
+}
+table.attributes-table tr td:nth-child(2) {
+  width: 25%;
+}
+.api-attribute-status table tbody tr td:nth-child(2) {
+  width: 22%;
+}
+.api-attribute-status table tbody tr td:first-child {
+  font-weight: 400 !important;
+  padding: 10px;
+  text-align: left;
+}
 
-table tr td {
-  border: 1px solid;
+.api-attribute-status table tbody tr td[rowspan="6"],
+.api-attribute-status table tbody tr td[rowspan="3"],
+.api-attribute-status table tbody tr td[rowspan="2"],
+.api-attribute-status table tbody tr td[rowspan="9"],
+.api-attribute-status table tbody tr td[rowspan="4"] {
+  font-weight: 700 !important;
+  padding: 10px;
+  text-align: center;
+}
+.api-attribute-status table thead tr td {
+  font-weight: 700 !important;
+  padding: 10px;
+  text-align: center;
+  line-break: 18px;
+}
+.api-attribute-status table tr td .attrib_no,
+.api-attribute-status table tr td .attrib_yes {
+  position: relative;
+  display: block;
+  z-index: 10;
+  color: #fff;
+  height: 100%;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+}
+.api-attribute-status table tr td .attrib_no::before,
+.api-attribute-status table tr td .attrib_yes::before {
+  content: "";
+  display: block;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background: red;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  top: 0;
+  z-index: -1;
+}
+
+.api-attribute-status table tr td .attrib_yes::before {
+  background: #06b487;
+}
+
+.api-attribute-status table tbody tr td:nth-child(2),
+.api-attribute-status table tbody tr td:nth-child(3),
+.api-attribute-status table tbody tr td:nth-child(4) {
+  padding: 0;
+}
+
+.api-attribute-status table tbody tr td[rowspan="6"] + td,
+.api-attribute-status table tbody tr td[rowspan="3"] + td,
+.api-attribute-status table tbody tr td[rowspan="2"] + td,
+.api-attribute-status table tbody tr td[rowspan="9"] + td,
+.api-attribute-status table tbody tr td[rowspan="4"] + td {
+  padding: 10px;
+  text-align: left;
+}
+
+.api-attribute-status table tbody tr td:nth-child(6),
+.api-attribute-status table tbody tr td:nth-child(7) {
+  padding: 10px;
 }
