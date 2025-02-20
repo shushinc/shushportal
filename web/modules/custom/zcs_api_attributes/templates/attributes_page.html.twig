@@ -3,11 +3,11 @@
     <thead>
       <tr>
         <td>API Category</td>
-        <td>API Attributes</td>
+        <td>API Attribute</td>
         <td>Integrated with Carrier Network</td>
         <td>Carrier Enabled for 3rd Party Use</td>
         <td>Able to be used</td>
-        <td>Current Standard Pricing(USD)</td>
+        <td>Current Standard Pricing (USD)</td>
         {% if content.admin %}<td>Operations</td>{% endif %}
       </tr>
     </thead>
@@ -23,7 +23,7 @@
             <td><span class=" ">{{ att.carrier_enabled_3rd_party_use }}</span></td>
             <td><span class=" ">{{ att.to_be_used }}</span></td>
             <td>{{ att.current_standard_price}}</td>
-            {% if content.admin %}<td><a href="{{ att.url }}">Edit</a></td>{% endif %}
+            {% if content.admin %}<td>{{ att.url }}</td>{% endif %}
           </tr>
           {% endfor %}
       {% endfor %}

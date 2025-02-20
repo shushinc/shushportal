@@ -7,3 +7,10 @@ zcs_api_attributes.attribute.page:
     _permission: 'access content'
   options:
     no_cache: true
+zcs_api_attributes.edit_attribute:
+  path: '/api-attribute/{id}/edit'
+  defaults:
+    _title: 'Update API Attribute Status'
+    _form: 'Drupal\zcs_api_attributes\Form\UpdateApiAttributeForm'
+  requirements:
+    _custom_access: '\Drupal\zcs_api_attributes\Form\UpdateApiAttributeForm::access'   
