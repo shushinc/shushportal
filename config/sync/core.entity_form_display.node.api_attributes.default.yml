@@ -8,6 +8,7 @@ dependencies:
     - field.field.node.api_attributes.field_api_attributes_status
     - field.field.node.api_attributes.field_carrier_enabled_3rd_party
     - field.field.node.api_attributes.field_current_standard_pricing
+    - field.field.node.api_attributes.field_price_per_call
     - field.field.node.api_attributes.field_successfully_integrated_cn
     - node.type.api_attributes
 id: node.api_attributes.default
@@ -36,6 +37,14 @@ content:
   field_current_standard_pricing:
     type: string_textfield
     weight: 30
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_price_per_call:
+    type: string_textfield
+    weight: 31
     region: content
     settings:
       size: 60

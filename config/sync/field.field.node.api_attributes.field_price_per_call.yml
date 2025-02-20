@@ -1,0 +1,19 @@
+uuid: 8f04dcdb-c9db-42b4-853c-ae18d17f9fd5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_price_per_call
+    - node.type.api_attributes
+id: node.api_attributes.field_price_per_call
+field_name: field_price_per_call
+entity_type: node
+bundle: api_attributes
+label: 'Price Per Call'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

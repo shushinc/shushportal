@@ -8,6 +8,7 @@ dependencies:
     - field.field.node.api_attributes.field_api_attributes_status
     - field.field.node.api_attributes.field_carrier_enabled_3rd_party
     - field.field.node.api_attributes.field_current_standard_pricing
+    - field.field.node.api_attributes.field_price_per_call
     - field.field.node.api_attributes.field_successfully_integrated_cn
     - node.type.api_attributes
   module:
@@ -55,6 +56,14 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     weight: 113
+    region: content
+  field_price_per_call:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 114
     region: content
   field_successfully_integrated_cn:
     type: list_default

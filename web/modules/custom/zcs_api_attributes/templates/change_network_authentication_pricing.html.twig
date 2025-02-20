@@ -1,0 +1,29 @@
+<div>
+  <div class="change-network-authentication-pricing">
+     <span class="currency-info">Currency : default USD. Effective Date: 02/01/2025</span>
+  </div>
+  <table class="attributes-table">
+    <thead>
+      <tr>
+        <td>API Category</td>
+        <td>API Attribute</td>
+        <td>Price / call ( USD)</td>
+        {% if content.admin %}<td>Operations</td>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for mainkey, attributes in content.final %}
+          {% for key, att in attributes %}
+          <tr>
+            {% if key == 0 %} 
+              <td rowspan={{ attributes|length }}>{{ content.titles[mainkey].name }}</td>
+            {% endif %}
+            <td>{{ att.title }}</td>
+            <td><span class=" ">{{ att.price_per_call}}</span></td>
+            {% if content.admin %}<td>{{ att.url }}</td>{% endif %}
+          </tr>
+          {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

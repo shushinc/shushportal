@@ -26,7 +26,7 @@ use Drupal\Core\Access\AccessResult;
 /**
  * Provides a zcs API Attribute status.
  */
-final class UpdateApiAttributeForm extends FormBase {
+final class UpdateChangeNetworkAuthenticationPricing extends FormBase {
 
 
 
@@ -48,7 +48,7 @@ final class UpdateApiAttributeForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId(): string {
-    return 'zcs_api_attribute_edit_form';
+    return 'zcs_change_network_authentication_pricing_form';
   }
 
   /**
@@ -69,48 +69,18 @@ final class UpdateApiAttributeForm extends FormBase {
       '#default_value' => $node->getTitle() ?? '',
       '#attributes' => ['disabled' => 'disabled'],
     ];
-    $form['integrated_with_carrier_network'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Integrated with Carrier Network'),
-      '#options' => [
-       'yes' => 'Yes',
-       'no' => 'No',
-      ],
-      '#default_value' => $node->field_successfully_integrated_cn->value,
-      '#attributes' => ['disabled' => 'disabled'],
-    ];
-    $form['able_to_be_used'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Able to be used'),
-      '#options' => [
-       'yes' => 'Yes',
-       'no' => 'No',
-      ],
-      '#default_value' => $node->field_able_to_be_used->value,
-      '#attributes' => ['disabled' => 'disabled'],
-    ];
-    $form['current_standard_pricing'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Current Standard Pricing (USD)'),
-      '#default_value' => '$ ' . $node->field_current_standard_pricing->value,
-      '#attributes' => ['disabled' => 'disabled'],
-    ];
 
-    $form['carrier_enabled_3rd_party_use'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Carrier Enabled for 3rd Party Use'),
-      '#options' => [
-       'yes' => 'Yes',
-       'no' => 'No',
-      ],
-      '#default_value' => $node->field_carrier_enabled_3rd_party->value,
+    $form['price_per_call'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Price / call (USD)'),
+      '#default_value' => $node->field_price_per_call->value ?? 0,
     ];
 
     $form['actions'] = [
       '#type' => 'actions',
       'submit' => [
         '#type' => 'submit',
-        '#value' => $this->t('Update API Attribute Status'),
+        '#value' => $this->t('Update Change Network Authentication Pricing'),
       ],
     ];
     return $form;
@@ -126,12 +96,12 @@ final class UpdateApiAttributeForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
     $api_attribute_id = $this->request->get('id');
-    $third_party_use = $form_state->getValue('carrier_enabled_3rd_party_use');
+    $price_per_call = $form_state->getValue('price_per_call');
     $node = Node::load($api_attribute_id);
-    $node->set('field_carrier_enabled_3rd_party', $third_party_use);
+    $node->set('field_price_per_call', $price_per_call);
     $node->save();
-    $this->messenger()->addMessage('API Attribute updated Successfully'); 
-    $form_state->setRedirectUrl(Url::fromRoute('zcs_api_attributes.attribute.page'));
+    $this->messenger()->addMessage('Change Network Authentication pricing updated Successfully'); 
+    $form_state->setRedirectUrl(Url::fromRoute('zcs_api_attributes.change_network_authentication_pricing'));
   }
 
 
