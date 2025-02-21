@@ -9,11 +9,15 @@ dependencies:
     - field.field.node.api_attributes.field_api_attributes_status
     - field.field.node.api_attributes.field_carrier_enabled_3rd_party
     - field.field.node.api_attributes.field_current_standard_pricing
+    - field.field.node.api_attributes.field_disc_pricing
     - field.field.node.api_attributes.field_effective_date1_price_call
     - field.field.node.api_attributes.field_effective_date2_price_call
     - field.field.node.api_attributes.field_effective_date3_price_call
+    - field.field.node.api_attributes.field_infobip_discount
     - field.field.node.api_attributes.field_price_per_call
+    - field.field.node.api_attributes.field_sinch_discount
     - field.field.node.api_attributes.field_successfully_integrated_cn
+    - field.field.node.api_attributes.field_twilio_discount
     - node.type.api_attributes
   module:
     - text
@@ -41,8 +45,12 @@ hidden:
   field_api_attributes_status: true
   field_carrier_enabled_3rd_party: true
   field_current_standard_pricing: true
+  field_disc_pricing: true
   field_effective_date1_price_call: true
   field_effective_date2_price_call: true
   field_effective_date3_price_call: true
+  field_infobip_discount: true
   field_price_per_call: true
+  field_sinch_discount: true
   field_successfully_integrated_cn: true
+  field_twilio_discount: true

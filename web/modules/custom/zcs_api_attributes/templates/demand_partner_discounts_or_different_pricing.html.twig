@@ -1,0 +1,30 @@
+<div>
+  <table class="attributes-table">
+    <thead>
+      <tr>
+        <td>API Category</td>
+        <td>API Attribute</td>
+        <td>Twilio Discount (%)</td>
+        <td>Disc Pricing (USD)</td>
+        <td>Sinch Discount (%)</td>
+        <td>InfoBip Discount (%)</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for mainkey, attributes in content.final %}
+          {% for key, att in attributes %}
+          <tr>
+            {% if key == 0 %} 
+              <td rowspan={{ attributes|length }}>{{ content.titles[mainkey].name }}</td>
+            {% endif %}
+            <td>{{ att.title }}</td>
+            <td><span class=" ">{{ att.twilio_discount}}</span></td>
+            <td><span class=" ">{{ att.disc_pricing}}</span></td>
+            <td><span class=" ">{{ att.sinch_discount}}</span></td>
+            <td><span class=" ">{{ att.infobip_discount}}</span></td>
+          </tr>
+          {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

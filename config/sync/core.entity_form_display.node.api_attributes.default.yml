@@ -8,11 +8,15 @@ dependencies:
     - field.field.node.api_attributes.field_api_attributes_status
     - field.field.node.api_attributes.field_carrier_enabled_3rd_party
     - field.field.node.api_attributes.field_current_standard_pricing
+    - field.field.node.api_attributes.field_disc_pricing
     - field.field.node.api_attributes.field_effective_date1_price_call
     - field.field.node.api_attributes.field_effective_date2_price_call
     - field.field.node.api_attributes.field_effective_date3_price_call
+    - field.field.node.api_attributes.field_infobip_discount
     - field.field.node.api_attributes.field_price_per_call
+    - field.field.node.api_attributes.field_sinch_discount
     - field.field.node.api_attributes.field_successfully_integrated_cn
+    - field.field.node.api_attributes.field_twilio_discount
     - node.type.api_attributes
 id: node.api_attributes.default
 targetEntityType: node
@@ -45,6 +49,14 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_disc_pricing:
+    type: string_textfield
+    weight: 36
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_effective_date1_price_call:
     type: string_textfield
     weight: 32
@@ -69,9 +81,25 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_infobip_discount:
+    type: string_textfield
+    weight: 38
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_price_per_call:
     type: string_textfield
     weight: 31
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sinch_discount:
+    type: string_textfield
+    weight: 37
     region: content
     settings:
       size: 60
@@ -82,6 +110,14 @@ content:
     weight: 29
     region: content
     settings: {  }
+    third_party_settings: {  }
+  field_twilio_discount:
+    type: string_textfield
+    weight: 35
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   status:
     type: boolean_checkbox

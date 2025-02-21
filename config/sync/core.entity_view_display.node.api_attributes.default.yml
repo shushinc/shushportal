@@ -8,11 +8,15 @@ dependencies:
     - field.field.node.api_attributes.field_api_attributes_status
     - field.field.node.api_attributes.field_carrier_enabled_3rd_party
     - field.field.node.api_attributes.field_current_standard_pricing
+    - field.field.node.api_attributes.field_disc_pricing
     - field.field.node.api_attributes.field_effective_date1_price_call
     - field.field.node.api_attributes.field_effective_date2_price_call
     - field.field.node.api_attributes.field_effective_date3_price_call
+    - field.field.node.api_attributes.field_infobip_discount
     - field.field.node.api_attributes.field_price_per_call
+    - field.field.node.api_attributes.field_sinch_discount
     - field.field.node.api_attributes.field_successfully_integrated_cn
+    - field.field.node.api_attributes.field_twilio_discount
     - node.type.api_attributes
   module:
     - options
@@ -60,6 +64,14 @@ content:
     third_party_settings: {  }
     weight: 113
     region: content
+  field_disc_pricing:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 119
+    region: content
   field_effective_date1_price_call:
     type: string
     label: above
@@ -84,6 +96,14 @@ content:
     third_party_settings: {  }
     weight: 117
     region: content
+  field_infobip_discount:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 121
+    region: content
   field_price_per_call:
     type: string
     label: above
@@ -92,12 +112,28 @@ content:
     third_party_settings: {  }
     weight: 114
     region: content
+  field_sinch_discount:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 120
+    region: content
   field_successfully_integrated_cn:
     type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
     weight: 112
+    region: content
+  field_twilio_discount:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 118
     region: content
   links:
     settings: {  }
