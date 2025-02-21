@@ -317,6 +317,7 @@ form .js-form-item input[aria-invalid="true"]:focus {
   top: 0;
   z-index: 200;
   background: linear-gradient(180deg, #ffffff 43.72%, #9ed1f9 67.22%, #118df0 100%);
+  overflow-y: auto;
 }
 .user-logged-in .layout-container {
   margin-left: 260px;
@@ -372,9 +373,35 @@ form .js-form-item input[aria-invalid="true"]:focus {
 }
 .user-logged-in .region-primary-menu ul li ul {
   padding: 0;
+  display: none;
 }
 .user-logged-in .region-primary-menu ul li ul li {
-  padding: 16px 0;
+  padding: 8px 15px;
+}
+.user-logged-in .region-primary-menu ul li ul li a {
+  font-size: 14px;
+}
+.user-logged-in .region-primary-menu ul li.menu-item--expanded {
+  position: relative;
+}
+.user-logged-in .region-primary-menu ul li.menu-item--expanded::after {
+  content: "";
+  background: url("../images/arrow-down.svg") no-repeat;
+  height: 16px;
+  width: 16px;
+  position: absolute;
+  right: 20px;
+  top: 22px;
+}
+.user-logged-in .region-primary-menu ul li.menu-item--expanded.menuexpand::after {
+  transform: rotateX(180deg);
+  top: 10px;
+}
+.user-logged-in .region-primary-menu ul li.menu-item--expanded.menuexpand ul {
+  display: block;
+}
+.user-logged-in .region-primary-menu ul li.menu-item--expanded.menu-item--active-trail ul {
+  display: block;
 }
 
 .layout-container.password-change-page {
@@ -396,8 +423,8 @@ form .js-form-item input[aria-invalid="true"]:focus {
   margin-top: 3rem;
 }
 .toolbar-horizontal.toolbar-fixed.toolbar-tray-open .site__sec-menu {
-  position: absolute;
-  bottom: 5vh;
+  position: sticky;
+  bottom: 0;
 }
 
 .apps #block-shush-primary-admin-actions nav li a {
@@ -883,6 +910,7 @@ table th {
   text-align: left;
   border-bottom: 1px solid #ddd;
   color: #a3aed0;
+  line-height: normal;
 }
 table th a {
   text-decoration: none;

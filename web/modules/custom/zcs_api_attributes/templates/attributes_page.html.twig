@@ -1,32 +1,46 @@
 <div>
-  <table class="attributes-table">
-    <thead>
-      <tr>
-        <td>API Category</td>
-        <td>API Attribute</td>
-        <td>Integrated with Carrier Network</td>
-        <td>Carrier Enabled for 3rd Party Use</td>
-        <td>Able to be used</td>
-        <td>Current Standard Pricing (USD)</td>
-        {% if content.admin %}<td>Operations</td>{% endif %}
-      </tr>
-    </thead>
-    <tbody>
-      {% for mainkey, attributes in content.final %}
-          {% for key, att in attributes %}
-          <tr>
-            {% if key == 0 %} 
-              <td rowspan={{ attributes|length }}>{{ content.titles[mainkey].name }}</td>
-            {% endif %}
-            <td>{{ att.title }}</td>
-            <td><span class=" ">{{ att.integrated_carrier_network }}</span></td>
-            <td><span class=" ">{{ att.carrier_enabled_3rd_party_use }}</span></td>
-            <td><span class=" ">{{ att.to_be_used }}</span></td>
-            <td>{{ att.current_standard_price}}</td>
-            {% if content.admin %}<td>{{ att.url }}</td>{% endif %}
-          </tr>
-          {% endfor %}
-      {% endfor %}
-    </tbody>
-  </table>
+	<table class="attributes-table">
+		<thead>
+			<tr>
+				<th>API Category</th>
+				<th>API Attribute</th>
+				<th>Integrated with Carrier Network</th>
+				<th>Carrier Enabled for 3rd Party Use</th>
+				<th>Able to be used</th>
+				<th>Current Standard Pricing (USD)</th>
+				{% if content.admin %}
+					<th>Operations</th>
+				{% endif %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for mainkey, attributes in content.final %}
+				{% for key, att in attributes %}
+					<tr>
+						{% if key == 0 %}
+							<td rowspan={{ attributes|length }}>{{ content.titles[mainkey].name }}</td>
+						{% endif %}
+						<td>{{ att.title }}</td>
+						<td>
+							<span class=" ">{{ att.integrated_carrier_network }}</span>
+						</td>
+						<td>
+							<span class=" ">{{ att.carrier_enabled_3rd_party_use }}</span>
+						</td>
+						<td>
+							<span class=" ">{{ att.to_be_used }}</span>
+						</td>
+						<td>{{ att.current_standard_price}}</td>
+						{% if content.admin %}
+							<td>
+								<div class="edit-operation">
+									<div class="edit-operation-wrap">{{ att.url }}</div>
+								</div>
+							</td>
+						{% endif %}
+					</tr>
+				{% endfor %}
+			{% endfor %}
+		</tbody>
+	</table>
 </div>

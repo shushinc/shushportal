@@ -148,7 +148,10 @@
         autoplay: true,
         autoplaySpeed: 5000,
       }); 
-     
+      $(".site__menu ul.menu .menu-item--expanded").unbind().on( "click", function(event) {
+        console.log('menu expand');
+        $(this).toggleClass('menuexpand');
+      });
     }
   };
 })(jQuery, Drupal);

@@ -1,29 +1,52 @@
 <div>
-  <div class="change-network-authentication-pricing">
-     <span class="currency-info">Currency : default USD. Effective Date: 02/01/2025</span>
-  </div>
-  <table class="attributes-table">
-    <thead>
-      <tr>
-        <td>API Category</td>
-        <td>API Attribute</td>
-        <td>Price / call ( USD)</td>
-        {% if content.admin %}<td>Operations</td>{% endif %}
-      </tr>
-    </thead>
-    <tbody>
-      {% for mainkey, attributes in content.final %}
-          {% for key, att in attributes %}
-          <tr>
-            {% if key == 0 %} 
-              <td rowspan={{ attributes|length }}>{{ content.titles[mainkey].name }}</td>
-            {% endif %}
-            <td>{{ att.title }}</td>
-            <td><span class=" ">{{ att.price_per_call}}</span></td>
-            {% if content.admin %}<td>{{ att.url }}</td>{% endif %}
-          </tr>
-          {% endfor %}
-      {% endfor %}
-    </tbody>
-  </table>
+	<div class="change-network-authentication-pricing">
+		<div class="top-banner">
+			<div class="banner banner-1">
+				<div class="banner-title">Currency</div>
+				<div class="report-wrap">
+					<div class="banner-number">default USD</div>
+				</div>
+			</div>
+			<div class="banner banner-2">
+				<div class="banner-title">Effective Date</div>
+				<div class="report-wrap">
+					<div class="banner-number">02/01/2025</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<table class="attributes-table">
+		<thead>
+			<tr>
+				<th>API Category</th>
+				<th>API Attribute</th>
+				<th>Price / call ( USD)</th>
+				{% if content.admin %}
+					<th>Operations</th>
+				{% endif %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for mainkey, attributes in content.final %}
+				{% for key, att in attributes %}
+					<tr>
+						{% if key == 0 %}
+							<td rowspan={{ attributes|length }}>{{ content.titles[mainkey].name }}</td>
+						{% endif %}
+						<td>{{ att.title }}</td>
+						<td>
+							<span class=" ">{{ att.price_per_call}}</span>
+						</td>
+						{% if content.admin %}
+							<td>
+								<div class="edit-operation">
+									<div class="edit-operation-wrap">{{ att.url }}</div>
+								</div>
+							</td>
+						{% endif %}
+					</tr>
+				{% endfor %}
+			{% endfor %}
+		</tbody>
+	</table>
 </div>

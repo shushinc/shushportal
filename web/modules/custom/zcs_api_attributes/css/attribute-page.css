@@ -3,16 +3,19 @@
 }
 .attributes-table,
 td {
-  border: 1px solid #000;
+  border: none;
   border-collapse: collapse;
 }
 table.attributes-table {
   table-layout: fixed;
 }
 table.attributes-table tr td {
-  border: 1px solid #ddd;
+  border: none;
   padding: 0;
   text-align: center;
+}
+.change-network-authentication-pricing table.attributes-table tr td {
+  padding: 10px;
 }
 table.attributes-table tr td:first-child {
   width: 16%;
@@ -20,10 +23,12 @@ table.attributes-table tr td:first-child {
 table.attributes-table tr td:nth-child(2) {
   width: 25%;
 }
-.api-attribute-status table tbody tr td:nth-child(2) {
+.api-attribute-status table tbody tr td:nth-child(2),
+.change-network-authentication-pricing table tbody tr td:nth-child(2) {
   width: 22%;
 }
-.api-attribute-status table tbody tr td:first-child {
+.api-attribute-status table tbody tr td:first-child,
+.change-network-authentication-pricing table tbody tr td:first-child {
   font-weight: 400 !important;
   padding: 10px;
   text-align: left;
@@ -33,12 +38,18 @@ table.attributes-table tr td:nth-child(2) {
 .api-attribute-status table tbody tr td[rowspan="3"],
 .api-attribute-status table tbody tr td[rowspan="2"],
 .api-attribute-status table tbody tr td[rowspan="9"],
-.api-attribute-status table tbody tr td[rowspan="4"] {
+.api-attribute-status table tbody tr td[rowspan="4"],
+.change-network-authentication-pricing table tbody tr td[rowspan="6"],
+.change-network-authentication-pricing table tbody tr td[rowspan="3"],
+.change-network-authentication-pricing table tbody tr td[rowspan="2"],
+.change-network-authentication-pricing table tbody tr td[rowspan="9"],
+.change-network-authentication-pricing table tbody tr td[rowspan="4"] {
   font-weight: 700 !important;
   padding: 10px;
   text-align: center;
 }
-.api-attribute-status table thead tr td {
+.api-attribute-status table thead tr td,
+.change-network-authentication-pricing table thead tr td {
   font-weight: 700 !important;
   padding: 10px;
   text-align: center;
@@ -54,6 +65,8 @@ table.attributes-table tr td:nth-child(2) {
   width: 100%;
   padding: 10px;
   text-align: center;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
 }
 .api-attribute-status table tr td .attrib_no::before,
 .api-attribute-status table tr td .attrib_yes::before {
@@ -84,7 +97,12 @@ table.attributes-table tr td:nth-child(2) {
 .api-attribute-status table tbody tr td[rowspan="3"] + td,
 .api-attribute-status table tbody tr td[rowspan="2"] + td,
 .api-attribute-status table tbody tr td[rowspan="9"] + td,
-.api-attribute-status table tbody tr td[rowspan="4"] + td {
+.api-attribute-status table tbody tr td[rowspan="4"] + td,
+.change-network-authentication-pricing table tbody tr td[rowspan="6"] + td,
+.change-network-authentication-pricing table tbody tr td[rowspan="3"] + td,
+.change-network-authentication-pricing table tbody tr td[rowspan="2"] + td,
+.change-network-authentication-pricing table tbody tr td[rowspan="9"] + td,
+.change-network-authentication-pricing table tbody tr td[rowspan="4"] + td {
   padding: 10px;
   text-align: left;
 }
@@ -92,4 +110,88 @@ table.attributes-table tr td:nth-child(2) {
 .api-attribute-status table tbody tr td:nth-child(6),
 .api-attribute-status table tbody tr td:nth-child(7) {
   padding: 10px;
+}
+
+.top-banner {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 16px;
+  margin-bottom: 1rem;
+}
+.banner {
+  border-radius: 10px;
+  box-shadow: 0px 0px 1px 1px #ccc;
+  padding: 10px;
+  align-items: center;
+  justify-content: space-around;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+  background: #fff;
+}
+.top-banner .banner {
+  background: rgba(255, 255, 255, 1);
+  border-radius: 20px;
+  border: none;
+  box-shadow: none;
+  padding: 12px;
+  flex-grow: 1;
+  flex-basis: 0;
+  min-height: 120px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.top-banner .banner .banner-title {
+  font-family: Montserrat;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: -0.02em;
+  text-align: left;
+  color: rgba(163, 174, 208, 1);
+  text-align: center;
+  min-height: 32px;
+}
+
+.top-banner .banner .report-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+.top-banner .banner .banner-number,
+.top-banner .banner .data-report-type {
+  font-family: Montserrat;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 32px;
+  letter-spacing: -0.02em;
+  text-align: left;
+  color: rgba(43, 54, 116, 1);
+  margin: 0;
+}
+.top-banner .banner.banner-1,
+.top-banner .banner.banner-2 {
+  flex: 0 0 25%;
+}
+.top-banner .banner.banner-1 .report-wrap,
+.top-banner .banner.banner-2 .report-wrap {
+  display: block;
+  width: 100%;
+}
+.top-banner .banner.banner-1 .banner-title,
+.top-banner .banner.banner-2 .banner-title {
+  text-align: center;
+}
+.top-banner .banner.banner-1 .report-wrap .banner-number,
+.top-banner .banner.banner-2 .report-wrap .banner-number {
+  text-align: center;
+}
+.top-banner .banner.banner-1 .data-report-type,
+.top-banner .banner.banner-2 .data-report-type {
+  font-size: 12px;
+  width: 100%;
+  text-align: center;
+  line-height: 22px;
 }
