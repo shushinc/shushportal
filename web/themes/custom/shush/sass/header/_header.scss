@@ -127,7 +127,7 @@
       }
       .user__profile-info {
         flex: 0 0 70%;
-        padding-left: 15px;
+        padding-left: 10px;
         .user-profile-firstname,
         .user-app > a {
           font-family: $sans;
@@ -146,9 +146,14 @@
           line-height: 16px;
           color: $white;
           text-overflow: ellipsis;
-          width: 85%;
-          white-space: nowrap;
+          width: 100%;
+          word-wrap: break-word;
+          white-space: pre-wrap;
           overflow: hidden;
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          max-width: 160px;
         }
         .user-profile-roles {
           font-weight: 500;
@@ -320,7 +325,7 @@
     margin-top: 3rem;
   }
   .site__sec-menu {
-    position: sticky;
+    position: absolute;
     bottom: 0;
   }
 }

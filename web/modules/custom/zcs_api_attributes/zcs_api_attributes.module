@@ -19,6 +19,11 @@ function zcs_api_attributes_theme() {
       ],
       'template' => 'change_network_authentication_pricing'
     ],
-
+    'network_authentication_pricing_over_time' => [
+      'variables' => [
+        'content' => null,
+      ],
+      'template' => 'network_authentication_pricing_over_time'
+    ],
   ];
 }

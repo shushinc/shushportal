@@ -252,7 +252,7 @@ form .js-form-item input[aria-invalid="true"]:focus {
 }
 .user__profile-block .user__profile .user-profile-list .user__profile-info {
   flex: 0 0 70%;
-  padding-left: 15px;
+  padding-left: 10px;
 }
 .user__profile-block .user__profile .user-profile-list .user__profile-info .user-profile-firstname,
 .user__profile-block .user__profile .user-profile-list .user__profile-info .user-app > a {
@@ -272,9 +272,14 @@ form .js-form-item input[aria-invalid="true"]:focus {
   line-height: 16px;
   color: #ffffff;
   text-overflow: ellipsis;
-  width: 85%;
-  white-space: nowrap;
+  width: 100%;
+  word-wrap: break-word;
+  white-space: pre-wrap;
   overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  max-width: 160px;
 }
 .user__profile-block .user__profile .user-profile-list .user__profile-info .user-profile-roles {
   font-weight: 500;
@@ -423,7 +428,7 @@ form .js-form-item input[aria-invalid="true"]:focus {
   margin-top: 3rem;
 }
 .toolbar-horizontal.toolbar-fixed.toolbar-tray-open .site__sec-menu {
-  position: sticky;
+  position: absolute;
   bottom: 0;
 }
 

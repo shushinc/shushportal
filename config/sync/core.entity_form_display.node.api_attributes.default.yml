@@ -8,6 +8,9 @@ dependencies:
     - field.field.node.api_attributes.field_api_attributes_status
     - field.field.node.api_attributes.field_carrier_enabled_3rd_party
     - field.field.node.api_attributes.field_current_standard_pricing
+    - field.field.node.api_attributes.field_effective_date1_price_call
+    - field.field.node.api_attributes.field_effective_date2_price_call
+    - field.field.node.api_attributes.field_effective_date3_price_call
     - field.field.node.api_attributes.field_price_per_call
     - field.field.node.api_attributes.field_successfully_integrated_cn
     - node.type.api_attributes
@@ -37,6 +40,30 @@ content:
   field_current_standard_pricing:
     type: string_textfield
     weight: 30
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_effective_date1_price_call:
+    type: string_textfield
+    weight: 32
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_effective_date2_price_call:
+    type: string_textfield
+    weight: 33
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_effective_date3_price_call:
+    type: string_textfield
+    weight: 34
     region: content
     settings:
       size: 60
