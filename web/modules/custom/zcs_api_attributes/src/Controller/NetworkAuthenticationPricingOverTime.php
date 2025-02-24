@@ -10,6 +10,10 @@ use Drupal\Core\Link;
 class NetworkAuthenticationPricingOverTime extends ControllerBase {
   public function pricingPage() {
 
+   $effective_date_1 = \Drupal::config('zcs_custom.api_attribute_settings')->get('effective_date_1');
+   $effective_date_2 = \Drupal::config('zcs_custom.api_attribute_settings')->get('effective_date_2');
+   $effective_date_3 = \Drupal::config('zcs_custom.api_attribute_settings')->get('effective_date_3');
+
     $contents = $this->entityTypeManager()->getStorage('node')->loadByProperties(['type' => 'api_attributes']);
     if (!empty($contents)) {
       foreach ($contents as $content) {
@@ -32,6 +36,10 @@ class NetworkAuthenticationPricingOverTime extends ControllerBase {
     }
     $data['final'] = $final;
     $data['titles'] = $titles;
+    $data['effective_date_1'] = $effective_date_1;
+    $data['effective_date_2'] = $effective_date_2;
+    $data['effective_date_3'] = $effective_date_3;
+
     return [
       '#theme' => 'network_authentication_pricing_over_time',
       '#content' => $data,

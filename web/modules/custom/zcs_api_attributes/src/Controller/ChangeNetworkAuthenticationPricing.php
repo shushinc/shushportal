@@ -10,6 +10,9 @@ use Drupal\Core\Link;
 class ChangeNetworkAuthenticationPricing extends ControllerBase {
   public function pricingPage() {
 
+    $effective_date = \Drupal::config('zcs_custom.api_attribute_settings')->get('effective_date');
+    $currency = \Drupal::config('zcs_custom.api_attribute_settings')->get('currency');
+
     $contents = $this->entityTypeManager()->getStorage('node')->loadByProperties(['type' => 'api_attributes']);
     if (!empty($contents)) {
       foreach ($contents as $content) {
@@ -40,6 +43,9 @@ class ChangeNetworkAuthenticationPricing extends ControllerBase {
     }
     $data['final'] = $final;
     $data['titles'] = $titles;
+    $data['currency'] = $currency;
+    $data['effective_date'] = $effective_date;
+
     return [
       '#theme' => 'change_network_authentication_pricing',
       '#content' => $data,
