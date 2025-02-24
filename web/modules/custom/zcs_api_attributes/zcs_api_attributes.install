@@ -9,7 +9,7 @@ use Drupal\user\Entity\Role;
 function zcs_api_attributes_install() {
 
     $menu_name = 'main';
-    $title = 'API Attribute Status ';
+    $title = 'API Attribute Status';
     $link_uri = 'internal:/api-attribute-status';
 
     // Check if a menu link with the same properties already exists.
@@ -36,6 +36,51 @@ function zcs_api_attributes_install() {
         $menu_link->save();
     }
 
+
+
+   // Create the parent menu link.
+  $parent_menu_link = MenuLinkContent::create([
+    'title' => 'Price',
+    'link' => ['uri' => 'route:<nolink>'],  // Adjust path as needed.
+    'menu_name' => $menu_name,
+    'expanded' => TRUE, // Keep it expanded to show child links.
+    'weight' => 8,
+  ]);
+  $parent_menu_link->save();
+
+  // Get the parent menu link ID.
+  $parent_id = 'menu_link_content:' . $parent_menu_link->uuid();
+
+  // Create the child menu link.
+  $child_menu_link1 = MenuLinkContent::create([
+    'title' => 'Change Network Authentication Pricing',
+    'link' => ['uri' => 'internal:/change-network-authentication-pricing'], // Adjust path as needed.
+    'menu_name' => $menu_name,
+    'parent' => $parent_id, // Set the parent ID.
+    'weight' => 1,
+  ]);
+  $child_menu_link1->save();
+
+  // Create the child menu link.
+  $child_menu_link2 = MenuLinkContent::create([
+    'title' => 'Network Authentication Pricing Over Time',
+    'link' => ['uri' => 'internal:/network_authentication_pricing_over_time'], // Adjust path as needed.
+    'menu_name' => $menu_name,
+    'parent' => $parent_id, // Set the parent ID.
+    'weight' => 2,
+  ]);
+  $child_menu_link2->save();
+
+  // Create the child menu link.
+  $child_menu_link3 = MenuLinkContent::create([
+    'title' => 'Demand Partner Discounts or Different Pricing',
+    'link' => ['uri' => 'internal:/demand_partner_discounts_or_different_pricing'], // Adjust path as needed.
+    'menu_name' => $menu_name,
+    'parent' => $parent_id, // Set the parent ID.
+    'weight' => 3,
+  ]);
+  $child_menu_link3->save();
+
 }
 
 
@@ -46,4 +91,41 @@ function zcs_api_attributes_uninstall() {
   foreach ($menu_items as $menu_item) {
     $menu_item->delete();
   }
+
+
+  $query = \Drupal::entityQuery('menu_link_content')
+    ->condition('title', 'Price')
+    ->condition('menu_name', 'main');
+  $parent_ids = $query->accessCheck()->execute();
+
+  if (!empty($parent_ids)) {
+    foreach ($parent_ids as $parent_id) {
+      $parent = MenuLinkContent::load($parent_id);
+      if ($parent) {
+        $parent_uuid = $parent->uuid();
+        $parent_menu_link_id = 'menu_link_content:' . $parent_uuid;
+
+        // Find and delete child menu links.
+        $child_query = \Drupal::entityQuery('menu_link_content')
+          ->condition('parent', $parent_menu_link_id);
+        $child_ids = $child_query->accessCheck()->execute();
+
+        if (!empty($child_ids)) {
+          foreach ($child_ids as $child_id) {
+            $child = MenuLinkContent::load($child_id);
+            if ($child) {
+              $child->delete();
+            }
+          }
+        }
+
+        // Delete the parent menu link.
+        $parent->delete();
+      }
+    }
+  }
+
+
+
+
 }
