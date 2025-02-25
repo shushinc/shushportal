@@ -1,5 +1,5 @@
 zcs_aws.create_key:
   route_name: zcs_aws.create_key
-  title: "Create APP"
+  title: "Create Client Credentials"
   appears_on:
     - zcs_aws.app_list
