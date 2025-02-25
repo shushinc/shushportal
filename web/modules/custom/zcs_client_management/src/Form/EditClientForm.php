@@ -63,7 +63,8 @@ final class EditClientForm extends FormBase {
       '#required' => TRUE,
       '#attributes' => [
         'autocomplete' => 'off'
-      ],   
+      ],
+      '#maxlength' => 20,      
       '#default_value' =>  $group->get('label')->value ?? '',     
     ];
 

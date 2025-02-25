@@ -68,7 +68,7 @@ final class AwsAppListForm extends FormBase {
             if ($gateway_name != 'aws') {
               continue;
             }
-            $description = $group->get('field_description')->getValue()[0]['value'];
+            $description = Markup::create($group->get('field_description')->getValue()[0]['value']);
             $app_status = $app->get('field_app_status')->value;
             if ($app_status == 'active') {
               $url = Url::fromRoute('zcs_aws.edit_key', ['id' => $app->id()]);
