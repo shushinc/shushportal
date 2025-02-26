@@ -876,7 +876,7 @@ display:
           plugin_id: text
           empty: true
           content:
-            value: '<a href="/user-invite?destination=/user-management" class="btn-primary use-ajax anchor-dropdown-btn" data-toggle=''modal''  data-dialog-type=''modal''  data-dialog-options=''{"width": 400, "title": "Invite Member"}''>Invite Member</a>'
+            value: '<a href="/user-invite?destination=/user-management" class="btn-primary use-ajax anchor-dropdown-btn" data-toggle=''modal''  data-dialog-type=''modal''  data-dialog-options=''{"width": 400, "title": "Invite Member"}''>Invite Carrier User</a>'
             format: full_html
           tokenize: false
       footer: {  }

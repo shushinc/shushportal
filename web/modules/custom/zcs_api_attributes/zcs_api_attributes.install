@@ -53,7 +53,7 @@ function zcs_api_attributes_install() {
 
   // Create the child menu link.
   $child_menu_link1 = MenuLinkContent::create([
-    'title' => 'Change Network Authentication Pricing',
+    'title' => 'Change Pricing',
     'link' => ['uri' => 'internal:/change-network-authentication-pricing'], // Adjust path as needed.
     'menu_name' => $menu_name,
     'parent' => $parent_id, // Set the parent ID.
@@ -63,7 +63,7 @@ function zcs_api_attributes_install() {
 
   // Create the child menu link.
   $child_menu_link2 = MenuLinkContent::create([
-    'title' => 'Network Authentication Pricing Over Time',
+    'title' => 'Pricing Over Time',
     'link' => ['uri' => 'internal:/network_authentication_pricing_over_time'], // Adjust path as needed.
     'menu_name' => $menu_name,
     'parent' => $parent_id, // Set the parent ID.
@@ -73,7 +73,7 @@ function zcs_api_attributes_install() {
 
   // Create the child menu link.
   $child_menu_link3 = MenuLinkContent::create([
-    'title' => 'Demand Partner Discounts or Different Pricing',
+    'title' => 'Client Discounts',
     'link' => ['uri' => 'internal:/demand_partner_discounts_or_different_pricing'], // Adjust path as needed.
     'menu_name' => $menu_name,
     'parent' => $parent_id, // Set the parent ID.

@@ -66,7 +66,7 @@
 	<div class="charts-selects">
 		<div class="charts-dropdown-carrier">
 			<select>
-				<option value=''>All Carrier</option>
+				<option value=''>All Carriers</option>
 				{% for i,term in content.carrierArray %}
 					<option value={{ i }}>{{ term }}</option>
 				{% endfor %}
@@ -74,7 +74,7 @@
 		</div>
 		<div class="charts-dropdown-attributes">
 			<select>
-				<option value=''>All Attribute</option>
+				<option value=''>All Attributes</option>
 				{% for i,term in content.attributeArray %}
 					<option value={{ i }}>{{ term }}</option>
 				{% endfor %}
@@ -83,7 +83,7 @@
 		<div class="charts-dropdown-partner">
 
 			<select>
-				<option value=''>All Client</option>
+				<option value=''>All Clients</option>
 				{% for i,partner in content.partnerArray %}
 					<option value={{ i }}>{{ partner }}</option>
 				{% endfor %}
@@ -91,7 +91,7 @@
 		</div>
 		<div class="charts-dropdown-customer">
 			<select>
-				<option value=''>All End Customer</option>
+				<option value=''>All End Customers</option>
 				{% for i,term in content.customerArray %}
 					<option value={{ i }}>{{ term }}</option>
 				{% endfor %}
