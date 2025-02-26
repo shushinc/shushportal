@@ -105,14 +105,11 @@ table.attributes-table tr td:nth-child(2) {
   position: relative;
   display: block;
   z-index: 10;
-  color: #fff;
+  color: #000;
   height: 100%;
   width: 100%;
   padding: 10px;
   text-align: center;
-  border-right: 2px solid #fff;
-  border-bottom: 2px solid #fff;
-  font-size: 0;
 }
 .api-attribute-status table tr td .attrib_no::before,
 .api-attribute-status table tr td .attrib_yes::before {
@@ -122,7 +119,7 @@ table.attributes-table tr td:nth-child(2) {
   height: 100%;
   width: 100%;
   background: url("/themes/custom/shush/images/error-bg.svg") no-repeat;
-  background-position: center;
+  background-position: right 45px center;
   left: 0;
   bottom: 0;
   right: 0;
@@ -132,7 +129,7 @@ table.attributes-table tr td:nth-child(2) {
 
 .api-attribute-status table tr td .attrib_yes::before {
   background: url("/themes/custom/shush/images/active-bg.svg") no-repeat;
-  background-position: center;
+  background-position: right 45px center;
 }
 
 .api-attribute-status table tbody tr td:nth-child(2),
