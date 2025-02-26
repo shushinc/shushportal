@@ -235,6 +235,10 @@ table.attributes-table tr td:nth-child(2) {
   padding: 10px;
 }
 
+.api-attribute-status table tbody tr td:last-child {
+  text-align: center;
+}
+
 .top-banner {
   display: flex;
   align-items: center;
