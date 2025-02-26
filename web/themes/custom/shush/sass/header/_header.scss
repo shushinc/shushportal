@@ -24,7 +24,8 @@
     li {
       padding: 0 16px;
       position: relative;
-      a {
+      a,
+      span {
         font-family: $sans;
         font-weight: 500;
         color: $black-rgb;
@@ -206,7 +207,6 @@
       #9ed1f9 67.22%,
       #118df0 100%
     );
-    overflow-y: auto;
   }
   .layout-container {
     margin-left: 260px;
@@ -224,6 +224,10 @@
     .site__sec-menu {
       width: 100%;
       padding: 0;
+    }
+    .site__menu {
+      max-height: 480px;
+      overflow-y: auto;
     }
     .site__logo {
       padding: 2rem 16px;

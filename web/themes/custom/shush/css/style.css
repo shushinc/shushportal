@@ -157,7 +157,8 @@ form .js-form-item input[aria-invalid="true"]:focus {
   padding: 0 16px;
   position: relative;
 }
-.region-primary-menu ul li a {
+.region-primary-menu ul li a,
+.region-primary-menu ul li span {
   font-family: "DM Sans", sans-serif;
   font-weight: 500;
   color: #666666;
@@ -170,7 +171,9 @@ form .js-form-item input[aria-invalid="true"]:focus {
   display: block;
   position: relative;
 }
-.region-primary-menu ul li a:hover, .region-primary-menu ul li a.is-active {
+.region-primary-menu ul li a:hover, .region-primary-menu ul li a.is-active,
+.region-primary-menu ul li span:hover,
+.region-primary-menu ul li span.is-active {
   color: #191a5b;
   opacity: 1;
   font-weight: 600;
@@ -322,7 +325,6 @@ form .js-form-item input[aria-invalid="true"]:focus {
   top: 0;
   z-index: 200;
   background: linear-gradient(180deg, #ffffff 43.72%, #9ed1f9 67.22%, #118df0 100%);
-  overflow-y: auto;
 }
 .user-logged-in .layout-container {
   margin-left: 260px;
@@ -341,6 +343,10 @@ form .js-form-item input[aria-invalid="true"]:focus {
 .user-logged-in .header__inner .site__sec-menu {
   width: 100%;
   padding: 0;
+}
+.user-logged-in .header__inner .site__menu {
+  max-height: 480px;
+  overflow-y: auto;
 }
 .user-logged-in .header__inner .site__logo {
   padding: 2rem 16px;
@@ -1440,8 +1446,9 @@ table tr td .edit-operation:hover .edit-operation-wrap {
 
 .user-management-header {
   background: transparent;
-  padding-top: 1rem;
+  padding-top: 1.5rem;
   padding-left: 1rem;
+  padding-bottom: 1.5rem;
 }
 .user-management-header h5 {
   font-family: "Montserrat", sans-serif;
