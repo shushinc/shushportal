@@ -286,7 +286,7 @@ table.attributes-table tr td:nth-child(2) {
   align-items: center;
   flex-wrap: nowrap;
   gap: 16px;
-  margin-bottom: 1rem;
+  margin-bottom: 2.5rem;
   justify-content: center;
 }
 .banner {
