@@ -72,21 +72,29 @@ table.attributes-table tr td:nth-child(2) {
 .api-attribute-status table tbody tr td[rowspan="2"],
 .api-attribute-status table tbody tr td[rowspan="9"],
 .api-attribute-status table tbody tr td[rowspan="4"],
+.api-attribute-status table tbody tr td[rowspan="1"],
+.api-attribute-status table tbody tr td[rowspan="5"],
 .change-network-authentication-pricing table tbody tr td[rowspan="6"],
 .change-network-authentication-pricing table tbody tr td[rowspan="3"],
 .change-network-authentication-pricing table tbody tr td[rowspan="2"],
 .change-network-authentication-pricing table tbody tr td[rowspan="9"],
 .change-network-authentication-pricing table tbody tr td[rowspan="4"],
+.change-network-authentication-pricing table tbody tr td[rowspan="1"],
+.change-network-authentication-pricing table tbody tr td[rowspan="5"],
 .network_authentication_pricing_over_time table tbody tr td[rowspan="6"],
 .network_authentication_pricing_over_time table tbody tr td[rowspan="3"],
 .network_authentication_pricing_over_time table tbody tr td[rowspan="2"],
 .network_authentication_pricing_over_time table tbody tr td[rowspan="9"],
 .network_authentication_pricing_over_time table tbody tr td[rowspan="4"],
+.network_authentication_pricing_over_time table tbody tr td[rowspan="1"],
+.network_authentication_pricing_over_time table tbody tr td[rowspan="5"],
 .demand_partner_discounts_or_different_pricing table tbody tr td[rowspan="6"],
 .demand_partner_discounts_or_different_pricing table tbody tr td[rowspan="3"],
 .demand_partner_discounts_or_different_pricing table tbody tr td[rowspan="2"],
 .demand_partner_discounts_or_different_pricing table tbody tr td[rowspan="9"],
-.demand_partner_discounts_or_different_pricing table tbody tr td[rowspan="4"] {
+.demand_partner_discounts_or_different_pricing table tbody tr td[rowspan="4"],
+.demand_partner_discounts_or_different_pricing table tbody tr td[rowspan="1"],
+.demand_partner_discounts_or_different_pricing table tbody tr td[rowspan="5"] {
   font-weight: 700 !important;
   padding: 10px;
   text-align: center;
@@ -143,16 +151,34 @@ table.attributes-table tr td:nth-child(2) {
 .api-attribute-status table tbody tr td[rowspan="2"] + td,
 .api-attribute-status table tbody tr td[rowspan="9"] + td,
 .api-attribute-status table tbody tr td[rowspan="4"] + td,
+.api-attribute-status table tbody tr td[rowspan="1"] + td,
+.api-attribute-status table tbody tr td[rowspan="5"] + td,
 .change-network-authentication-pricing table tbody tr td[rowspan="6"] + td,
 .change-network-authentication-pricing table tbody tr td[rowspan="3"] + td,
 .change-network-authentication-pricing table tbody tr td[rowspan="2"] + td,
 .change-network-authentication-pricing table tbody tr td[rowspan="9"] + td,
 .change-network-authentication-pricing table tbody tr td[rowspan="4"] + td,
+.change-network-authentication-pricing table tbody tr td[rowspan="1"] + td,
+.change-network-authentication-pricing table tbody tr td[rowspan="5"] + td,
 .network_authentication_pricing_over_time table tbody tr td[rowspan="6"] + td,
 .network_authentication_pricing_over_time table tbody tr td[rowspan="3"] + td,
 .network_authentication_pricing_over_time table tbody tr td[rowspan="2"] + td,
 .network_authentication_pricing_over_time table tbody tr td[rowspan="9"] + td,
 .network_authentication_pricing_over_time table tbody tr td[rowspan="4"] + td,
+.network_authentication_pricing_over_time table tbody tr td[rowspan="1"] + td,
+.network_authentication_pricing_over_time table tbody tr td[rowspan="5"] + td,
+.demand_partner_discounts_or_different_pricing
+  table
+  tbody
+  tr
+  td[rowspan="1"]
+  + td,
+.demand_partner_discounts_or_different_pricing
+  table
+  tbody
+  tr
+  td[rowspan="5"]
+  + td,
 .demand_partner_discounts_or_different_pricing
   table
   tbody
@@ -191,11 +217,15 @@ table.attributes-table tr td:nth-child(2) {
 .change-network-authentication-pricing table tbody tr td[rowspan="2"] + td,
 .change-network-authentication-pricing table tbody tr td[rowspan="9"] + td,
 .change-network-authentication-pricing table tbody tr td[rowspan="4"] + td,
+.change-network-authentication-pricing table tbody tr td[rowspan="1"] + td,
+.change-network-authentication-pricing table tbody tr td[rowspan="5"] + td,
 .network_authentication_pricing_over_time table tbody tr td[rowspan="6"] + td,
 .network_authentication_pricing_over_time table tbody tr td[rowspan="3"] + td,
 .network_authentication_pricing_over_time table tbody tr td[rowspan="2"] + td,
 .network_authentication_pricing_over_time table tbody tr td[rowspan="9"] + td,
 .network_authentication_pricing_over_time table tbody tr td[rowspan="4"] + td,
+.network_authentication_pricing_over_time table tbody tr td[rowspan="1"] + td,
+.network_authentication_pricing_over_time table tbody tr td[rowspan="5"] + td,
 .demand_partner_discounts_or_different_pricing
   table
   tbody
@@ -225,6 +255,18 @@ table.attributes-table tr td:nth-child(2) {
   tbody
   tr
   td[rowspan="4"]
+  + td,
+.demand_partner_discounts_or_different_pricing
+  table
+  tbody
+  tr
+  td[rowspan="1"]
+  + td,
+.demand_partner_discounts_or_different_pricing
+  table
+  tbody
+  tr
+  td[rowspan="5"]
   + td {
   font-weight: 400;
   text-align: left;
