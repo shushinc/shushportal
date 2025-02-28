@@ -174,8 +174,8 @@ display:
           label: 'Contact Name'
           exclude: false
           alter:
-            alter_text: false
-            text: ''
+            alter_text: true
+            text: "{% if field_partner_type|lower == 'demandpartner' %}\r\n  Demand Partner\r\n{% else %}\r\n  Other Partner\r\n{% endif %}"
             make_link: false
             path: ''
             absolute: false
@@ -361,8 +361,8 @@ display:
           label: 'Partner Type'
           exclude: false
           alter:
-            alter_text: false
-            text: ''
+            alter_text: true
+            text: "{% if field_partner_type|lower == 'demandpartner' %}\r\n  Demand Partner\r\n{% else %}\r\n {{ field_partner_type }}\r\n{% endif %}"
             make_link: false
             path: ''
             absolute: false
