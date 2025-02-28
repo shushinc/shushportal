@@ -5,13 +5,19 @@
  * Primary module hooks for zcs Client Management module.
  */
 
-
-// function zcs_client_management_preprocess_page(&$variables) {
-
-//     $route_name = \Drupal::routeMatch()->getRouteName();
-//     dump($route_name);
-
-// }
+/**
+ * Implements hook_theme().
+ */
+function zcs_client_management_theme($existing, $type, $theme, $path) {
+    return [
+      'client_image' => [
+        'variables' => [
+          'image_url' => '',      
+        ],
+        'template' => 'client-image',
+      ],
+    ];
+  }
 
 
 
