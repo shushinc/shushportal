@@ -1,11 +1,10 @@
 <div class="chart-wrapper">
-	<div class="top-banner">
+    <img src="/modules/custom/analytics/images/dashboard.png" alt="Module Image" style="width: 100%;">
+	 <div class="top-banner" style="display:none;">
 		<div class="banner banner-1">
 			<div class="banner-title">{{ 'Total Successful API Transactions this month' }}</div>
 			<div class="report-wrap">
 				<div class="banner-number">{{ content.totalSuccessCalls|round|convert_number }}</div>
-				{# <div class="data-report-type successfull">{{ 'Successful' }}</div> #}
-
 			</div>
 			<div class="data-report-type successfull-avg">Average
 				{{ content.totalSuccessCallsAvg |round|convert_number }}
