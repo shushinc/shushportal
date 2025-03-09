@@ -1,0 +1,32 @@
+    Database:
+    portalasserts/zcs_new.sql
+    
+    
+    export HOME=/var/www/html/shushportal
+
+    echo "drush configurations"
+    /var/www/html/shushportal/vendor/bin/drush cr
+    
+    echo "config import"
+    /var/www/html/shushportal/vendor/bin/drush cim -y
+
+    echo "enabling custome modules and apigee module"
+    /var/www/html/shushportal/vendor/bin/drush en zcs_apis  -y
+
+    echo "Enabling Theme"
+    /var/www/html/shushportal/vendor/bin/drush theme:en shush -y
+    
+    echo "Installing Theme" 
+    /var/www/html/shushportal/vendor/bin/drush config-set system.theme default shush -y
+
+    echo "Enabling Carrier User Module"
+    /var/www/html/shushportal/vendor/bin/drush en zcs_user_management -y
+    
+    echo "Enabling UClient User Module"
+    /var/www/html/shushportal/vendor/bin/drush en zcs_client_management -y
+
+    echo "database update status"
+    /var/www/html/shushportal/vendor/bin/drush updb
+    
+    echo "clearing drush"
+    /var/www/html/shushportal/vendor/bin/drush cr

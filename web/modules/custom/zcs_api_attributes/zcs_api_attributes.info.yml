@@ -1,0 +1,5 @@
+name: 'ZCS API Attributes'
+type: module
+description: 'API Attribute status'
+package: zcs
+core_version_requirement: ^10 || ^11

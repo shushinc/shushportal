@@ -1,0 +1,23 @@
+uuid: f64f5bbc-0165-4a1e-a79c-632be2298eb1
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.group.field_partner_status
+    - group.type.partner
+  module:
+    - options
+_core:
+  default_config_hash: CZIxHlFQYxffI-3DoQq7k9zGjLBrJ9UbOs3R0pPHWn0
+id: group.partner.field_partner_status
+field_name: field_partner_status
+entity_type: group
+bundle: partner
+label: 'Partner Status'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

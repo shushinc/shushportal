@@ -1,0 +1,35 @@
+<?php
+/**
+ * @file
+ * Functions to support theming in the Showcase Lite theme.
+ */
+
+use Drupal\Core\Theme\ThemeSettings;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Template\Attribute;
+
+/**
+ * Implements hook_preprocess_HOOK() for HTML document templates.
+ *
+ * Adds body classes if certain regions have content.
+ */
+
+
+/**
+ * Implements hook_preprocess_html().
+ */
+function shush_preprocess_html(&$vars) {
+   // Get the current path
+   $current_path = \Drupal::service('path.current')->getPath();
+   $internal = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
+   // Assign it to body class 
+   $newString = ltrim($current_path, '/');
+   $vars['attributes']['class'][] = str_replace("/", "-", $newString);
+
+}
+
+function shush_preprocess_page(&$variables) {
+   // Get the current user's display name.
+   $current_user = \Drupal::currentUser();
+   $variables['username'] = $current_user->getDisplayName();
+ }

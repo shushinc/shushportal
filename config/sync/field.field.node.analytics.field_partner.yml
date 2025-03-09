@@ -1,0 +1,31 @@
+uuid: 63fc0ce9-2014-462c-8e33-6d05802060d2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_partner
+    - group.type.partner
+    - node.type.analytics
+_core:
+  default_config_hash: Bke0vWjJbKtq4f0sFBiEZR_oVUsc52ai6i4Ylatnqg8
+id: node.analytics.field_partner
+field_name: field_partner
+entity_type: node
+bundle: analytics
+label: Partner
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:group'
+  handler_settings:
+    target_bundles:
+      partner: partner
+    sort:
+      field: label
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

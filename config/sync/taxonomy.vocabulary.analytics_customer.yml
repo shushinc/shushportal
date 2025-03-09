@@ -1,0 +1,11 @@
+uuid: ff2c939a-db61-464d-ad73-d00b3ce55e37
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: BvsayeN_qQm8pLl3DRYhyI5RPLb3v_MfJeBTxmd6QV0
+name: 'Analytics Customer'
+vid: analytics_customer
+description: null
+weight: 0
+new_revision: false

@@ -1,0 +1,38 @@
+uuid: bc6dbaa1-e972-4895-ade3-171afa049568
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.api_attributes.body
+    - field.field.node.api_attributes.field_able_to_be_used
+    - field.field.node.api_attributes.field_carrier_enabled_3rd_party
+    - field.field.node.api_attributes.field_current_standard_pricing
+    - field.field.node.api_attributes.field_successfully_integrated_cn
+    - node.type.api_attributes
+  module:
+    - text
+    - user
+id: node.api_attributes.teaser
+targetEntityType: node
+bundle: api_attributes
+mode: teaser
+content:
+  body:
+    type: text_summary_or_trimmed
+    label: hidden
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    weight: 101
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  field_able_to_be_used: true
+  field_carrier_enabled_3rd_party: true
+  field_current_standard_pricing: true
+  field_successfully_integrated_cn: true

@@ -1,0 +1,49 @@
+<?php
+
+
+use \Drupal\menu_link_content\Entity\MenuLinkContent;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\user\Entity\Role;
+
+
+function zcs_api_attributes_install() {
+
+    $menu_name = 'main';
+    $title = 'API Attribute Status ';
+    $link_uri = 'internal:/api-attribute-status';
+
+    // Check if a menu link with the same properties already exists.
+    $existing_menu_links = \Drupal::entityTypeManager()->getStorage('menu_link_content')->loadByProperties([
+      'menu_name' => $menu_name,
+      'title' => $title,
+      'link__uri' => $link_uri,
+    ]);
+
+    if (empty($existing_menu_links)) {
+
+     // Add a sample link to the main menu.
+        $menu_link = MenuLinkContent::create([
+          'menu_name' => $menu_name,
+          'title' =>  $title,
+          'link' => [
+             ['uri' => $link_uri]
+          ],
+          'weight' => 7,
+          'menu_per_role__show_role' => [
+            'authenticated',
+          ],
+        ]);
+        $menu_link->save();
+    }
+
+}
+
+
+
+function zcs_api_attributes_uninstall() {
+  $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+  $menu_items = $storage->loadByProperties(['link__uri' => 'internal:/api-attribute-status']);
+  foreach ($menu_items as $menu_item) {
+    $menu_item->delete();
+  }
+}

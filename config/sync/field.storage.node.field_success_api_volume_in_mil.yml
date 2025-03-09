@@ -1,0 +1,22 @@
+uuid: 23abe53a-c6af-4330-ab80-a9d5d920240f
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+_core:
+  default_config_hash: ymBiuuJ6dGQMKPeIPr87XOsnk0kpU9J5g-4RmOXkNOA
+id: node.field_success_api_volume_in_mil
+field_name: field_success_api_volume_in_mil
+entity_type: node
+type: decimal
+settings:
+  precision: 10
+  scale: 2
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

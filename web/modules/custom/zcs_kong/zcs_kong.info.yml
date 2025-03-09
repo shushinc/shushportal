@@ -1,0 +1,5 @@
+name: 'zcs_kong'
+type: module
+description: 'Integration of kong API'
+package: Custom
+core_version_requirement: ^10 || ^11

@@ -1,0 +1,49 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.apis.body
+    - field.field.node.apis.field_image
+    - field.field.node.apis.field_link
+    - field.field.node.apis.field_swagger
+    - image.style.medium
+    - node.type.apis
+  module:
+    - image
+    - text
+    - user
+_core:
+  default_config_hash: HaNKD4vre1Ia_7BTdATg3p8Fe3srwaijb0v6VVCkvwI
+id: node.apis.teaser
+targetEntityType: node
+bundle: apis
+mode: teaser
+content:
+  body:
+    type: text_summary_or_trimmed
+    label: hidden
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    weight: 101
+    region: content
+  field_image:
+    type: image
+    label: hidden
+    settings:
+      image_link: content
+      image_style: medium
+      image_loading:
+        attribute: lazy
+    third_party_settings: {  }
+    weight: -1
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  field_link: true
+  field_swagger: true

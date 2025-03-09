@@ -1,0 +1,19 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - group.type.partner
+_core:
+  default_config_hash: YhA9mpO1azTidkHyrWwkZMhnBq69RBYN0CQ2qKeJw0w
+id: partner-member
+label: Member
+weight: 104
+admin: false
+scope: individual
+global_role: null
+group_type: partner
+permissions:
+  - 'access group_node overview'
+  - 'view group'
+  - 'view group_node:app entity'
+  - 'view group_node:app relationship'

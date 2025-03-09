@@ -1,0 +1,44 @@
+zcs_client_management.create_client:
+  path: 'create-client'
+  defaults:
+    _title: 'Create Client'
+    _form: 'Drupal\zcs_client_management\Form\CreateClientForm'
+  requirements:
+    _permission: 'access content'
+zcs_client_management.edit_client:
+  path: '/client/{id}/edit'
+  defaults:
+    _title: 'Update Client'
+    _form: 'Drupal\zcs_client_management\Form\EditClientForm'
+  requirements:
+    _permission: 'access content'
+zcs_client_management.add_client_member:
+  path: '/add-client-member'
+  defaults:
+    _title: 'Add client Member'
+    _form: 'Drupal\zcs_client_management\Form\AddClientMemberForm'
+  requirements:
+    _permission: 'access content'   
+zcs_client_management.autocomplete_users:
+  path: '/client_users_autocomplete'
+  defaults:
+    _controller: '\Drupal\zcs_client_management\Controller\ClientMemberAutocompleteController::Autocomplete'
+    _title: 'Client Users Autocomplete'
+  requirements:
+    _permission: 'access content'
+zcs_client_management.edit_client_member:
+  path: '/client/{id}/member/{cid}/edit'
+  defaults:
+    _title: 'Update client Member'
+    _form: 'Drupal\zcs_client_management\Form\EditClientMemberForm'
+  requirements:
+    _permission: 'access content'
+zcs_client_management.verify_invitation:
+  path: '/verify_client_invitation/{token}'
+  defaults:
+    _controller: '\Drupal\zcs_client_management\Controller\ClientMemberInvitationController::verifyInvitation'
+  requirements:
+    _user_is_logged_in: 'FALSE'
+  options:
+    _maintenance_access: TRUE
+    no_cache: TRUE    

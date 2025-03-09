@@ -1,0 +1,26 @@
+uuid: ee673acc-441d-4805-b0e5-ffcbd1d8f4df
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.user_profile
+  module:
+    - views
+  theme:
+    - shush
+_core:
+  default_config_hash: _p4p-DWxNNTKgc2034uz6f1ipj8bgHMaDX-eUiPzIA0
+id: shush_views_block__user_profile_block_1
+theme: shush
+region: secondary_menu
+weight: 0
+provider: null
+plugin: 'views_block:user_profile-block_1'
+settings:
+  id: 'views_block:user_profile-block_1'
+  label: ''
+  label_display: '0'
+  provider: views
+  views_label: ''
+  items_per_page: none
+visibility: {  }

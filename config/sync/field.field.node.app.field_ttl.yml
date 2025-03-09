@@ -1,0 +1,25 @@
+uuid: 8c8fc4b8-e461-4aea-afd4-617973c410ba
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_ttl
+    - node.type.app
+  module:
+    - options
+_core:
+  default_config_hash: _sMdj_X-NtbLeC-EP8ZznuqKkULwfrseX8fcE9mmAk8
+id: node.app.field_ttl
+field_name: field_ttl
+entity_type: node
+bundle: app
+label: TTL
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: '7776000'
+default_value_callback: ''
+settings: {  }
+field_type: list_string

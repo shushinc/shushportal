@@ -1,0 +1,33 @@
+zcs_user_management.user_invite:
+  path: '/user-invite'
+  defaults:
+    _title: 'User Invite'
+    _form: 'Drupal\zcs_user_management\Form\UserInviteForm'
+  requirements:
+    _permission: 'access user invite'
+
+zcs_user_management.user_edit_form:
+  path: '/user-management/{uid}/edit'
+  defaults:
+    _title: 'Update User'
+    _form: 'Drupal\zcs_user_management\Form\UserEditForm'
+  requirements:
+    _permission: 'access user invite'    
+
+zcs_user_management.user_invite_list:
+  path: '/user-invite-list'
+  defaults:
+    _title: 'User Invite List'
+    _form: 'Drupal\zcs_user_management\Form\UserInviteListForm'
+  requirements:
+    _permission: 'access user invite'
+
+zcs_user_management.verify_invitation:
+  path: '/verify_invitation/{token}'
+  defaults:
+    _controller: '\Drupal\zcs_user_management\Controller\UserInvitationController::verifyInvitation'
+  requirements:
+    _user_is_logged_in: 'FALSE'
+  options:
+    _maintenance_access: TRUE
+    no_cache: TRUE

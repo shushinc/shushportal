@@ -1,0 +1,20 @@
+uuid: fb3394b9-8a0b-43e8-aed8-571de21d96ee
+langcode: en
+status: true
+dependencies:
+  config:
+    - group.type.partner
+_core:
+  default_config_hash: xT6GMeDnZttqNSLh91CU4InW95n2KlaujZmsbRrMghE
+id: partner-member
+label: Member
+weight: 104
+admin: false
+scope: individual
+global_role: null
+group_type: partner
+permissions:
+  - 'access group_node overview'
+  - 'view group'
+  - 'view group_node:app entity'
+  - 'view group_node:app relationship'

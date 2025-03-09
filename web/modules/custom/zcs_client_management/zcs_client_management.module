@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for zcs Client Management module.
+ */
+
+
+// function zcs_client_management_preprocess_page(&$variables) {
+
+//     $route_name = \Drupal::routeMatch()->getRouteName();
+//     dump($route_name);
+
+// }
+
+
+
+/**
+ * Implements hook_mail().
+ */
+function zcs_client_management_mail($key, &$message, $params) {
+    $email_from = \Drupal::config('system.site')->get('mail');
+    switch ($key) {
+        case 'client_member_invite':
+            $message['from'] = 'zebraconsultancyservices1@gmail.com';
+            $message['subject'] = t('Partner Onboarding - Activate your account');
+            $message['body'][] = $params['message'];
+            break;
+    }
+}

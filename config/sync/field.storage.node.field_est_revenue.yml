@@ -1,0 +1,22 @@
+uuid: 101629f6-e1ef-44f6-8bff-3c84e98c5715
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+_core:
+  default_config_hash: oQ416qFmpjcEA4KY7jJi92FGVvbHySqGa8QbBnYGNAc
+id: node.field_est_revenue
+field_name: field_est_revenue
+entity_type: node
+type: integer
+settings:
+  unsigned: false
+  size: normal
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

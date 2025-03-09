@@ -1,0 +1,22 @@
+uuid: afd42910-5302-4775-8488-70a61d354ae3
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - shush
+_core:
+  default_config_hash: YstecqrV4FL_bHpiAA-CxhsSL4VQsyi-g35pjgcg9Nk
+id: shush_content
+theme: shush
+region: content
+weight: -4
+provider: null
+plugin: system_main_block
+settings:
+  id: system_main_block
+  label: 'Main page content'
+  label_display: '0'
+  provider: system
+visibility: {  }

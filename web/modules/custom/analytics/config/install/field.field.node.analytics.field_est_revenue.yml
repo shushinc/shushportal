@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_est_revenue
+    - node.type.analytics
+id: node.analytics.field_est_revenue
+field_name: field_est_revenue
+entity_type: node
+bundle: analytics
+label: 'Est Revenue'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

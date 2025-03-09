@@ -1,0 +1,25 @@
+uuid: 152ab69e-1a95-434f-99da-134acd9f38c9
+langcode: en
+status: true
+dependencies:
+  module:
+    - file
+    - node
+_core:
+  default_config_hash: eDr1mODoWOYEnA2WD7UW4hQTAimWlUGYo8RSezMK18Y
+id: node.field_swagger
+field_name: field_swagger
+entity_type: node
+type: file
+settings:
+  target_type: file
+  display_field: false
+  display_default: false
+  uri_scheme: public
+module: file
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

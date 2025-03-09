@@ -1,0 +1,9 @@
+name: 'zcs Client Management'
+type: module
+description: 'ZCS client Management'
+package: zcs
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:group
+  - drupal:gnode
+  - drupal:ginvite

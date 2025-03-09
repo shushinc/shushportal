@@ -1,0 +1,24 @@
+{% if page.header %}
+<div class="header-site-logo text-center pt-3 pb-3 pt-md-5 pb-md-2 mt-md-5">
+  <div class="site__logo col-lg-12">
+    {{ page.header }}
+  </div>
+  </div>
+{% endif %}
+
+<main role="main">
+  {% if page.highlighted %}
+    <div class="highlighted">
+      <div class="container">
+      {{ page.highlighted }}
+      </div>
+    </div>
+  {% endif %}
+  <div class="container">
+    <a id="main-content" tabindex="-1"></a>{# link is in html.html.twig #}
+      {{ page.content }}
+  </div>
+  <div class="login-footer-logo">
+    <img src="/themes/custom/shush/images/footer-logo.svg" alt="login-page-logo">
+  </div>
+</main>

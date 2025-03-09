@@ -1,0 +1,14 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for ZCS APIs module.
+ */
+
+
+/**
+ *  hook_preprocess_node.
+ */
+function zcs_apis_preprocess_node(&$variables) {
+  $variables['display_submitted'] = FALSE;
+}

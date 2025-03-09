@@ -1,0 +1,123 @@
+<?php
+
+
+use \Drupal\menu_link_content\Entity\MenuLinkContent;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\user\Entity\Role;
+
+
+
+/**
+ * Implements hook_schema().
+ */
+function zcs_user_management_schema() {
+    $schema['zcs_user_invitations'] = [
+      'fields' => [
+        'id' => array(
+          'description' => 'The primary identifier for invitations.',
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ),
+        'user_name' => [
+          'type' => 'varchar',
+          'length' => 255,
+          'NOT NULL' => TRUE,
+          'description' => 'User Name',
+        ],
+        'email' => [
+          'type' => 'varchar',
+          'length' => 255,
+          'NOT NULL' => TRUE,
+          'description' => 'Email id of the user',
+        ],
+        'role' => [
+          'type' => 'varchar',
+          'length' => 255,
+          'NOT NULL' => TRUE,
+          'description' => 'Group role',
+        ],
+        'token' => [
+          'type' => 'varchar',
+          'length' => 100,
+          'not null' => TRUE,
+          'description' => 'Invitation token',
+        ],
+        'passkey' => [
+          'type' => 'varchar',
+          'length' => 100,
+          'not null' => TRUE,
+          'description' => 'Invitation token',
+        ],
+        'status' => [
+            'type' => 'varchar',
+            'length' => 50,
+            'NOT NULL' => TRUE,
+            'description' => 'Invitation status',
+        ],
+        'created_time' => [
+          'type' => 'int',
+          'not null' => TRUE,
+          'description' => 'Current Timestamp.',
+        ],
+        'expire_time' => [
+          'type' => 'int',
+          'not null' => TRUE,
+          'description' => 'Expire Time.',
+        ],
+      ],
+      'primary key' => ['id'],
+    ];
+    return $schema;
+  }
+
+
+  
+
+
+function zcs_user_management_install() {
+    // Add a sample link to the main menu.
+    $menu_link = MenuLinkContent::create([
+      'menu_name' => 'main',
+      'title' => 'User Management',
+      'link' => [
+         ['uri' => 'internal:/user-management']
+      ],
+      'weight' => 2,
+      'menu_per_role__show_role' => [
+         'administrator',
+         'carrier_admin',
+      ],
+    ]);
+    $menu_link->save();
+}
+
+
+
+function zcs_user_management_uninstall() {
+  $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+  $menu_item_object = current($storage->loadByProperties(['title' => 'User Management']));
+  if($menu_item_object) {
+    $menu_item_object->delete();
+  }
+
+  $schema = \Drupal::database()->schema();
+  // Define the table name to drop.
+  $table_name = 'zcs_user_invitations';
+
+  // Check if the table exists.
+  if ($schema->tableExists($table_name)) {
+    // Drop the table.
+    $schema->dropTable($table_name);
+  }
+
+
+
+   $view = \Drupal\views\Entity\View::load('user_management');
+   if ($view) {
+     $view->delete();
+   }
+
+ 
+
+}

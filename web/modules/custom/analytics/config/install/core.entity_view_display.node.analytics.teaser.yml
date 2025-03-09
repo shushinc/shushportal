@@ -1,0 +1,59 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.analytics.body
+    - field.field.node.analytics.field_404_api_volume_in_mil
+    - field.field.node.analytics.field_api_volume_in_mil
+    - field.field.node.analytics.field_attribute
+    - field.field.node.analytics.field_average_api_latency_in_mil
+    - field.field.node.analytics.field_carrier
+    - field.field.node.analytics.field_date
+    - field.field.node.analytics.field_end_customer
+    - field.field.node.analytics.field_error_api_volume_in_mil
+    - field.field.node.analytics.field_est_revenue
+    - field.field.node.analytics.field_kong_analytical_id
+    - field.field.node.analytics.field_partner
+    - field.field.node.analytics.field_success_api_volume_in_mil
+    - field.field.node.analytics.field_transaction_type
+    - field.field.node.analytics.field_transaction_type_count
+    - node.type.analytics
+  module:
+    - text
+    - user
+_core:
+  default_config_hash: __5WiTkT_k0a2I5hDUqAhMrMsFRfhM4FTh64PQk9bQc
+id: node.analytics.teaser
+targetEntityType: node
+bundle: analytics
+mode: teaser
+content:
+  body:
+    type: text_summary_or_trimmed
+    label: hidden
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    weight: 101
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  field_404_api_volume_in_mil: true
+  field_api_volume_in_mil: true
+  field_attribute: true
+  field_average_api_latency_in_mil: true
+  field_carrier: true
+  field_date: true
+  field_end_customer: true
+  field_error_api_volume_in_mil: true
+  field_est_revenue: true
+  field_kong_analytical_id: true
+  field_partner: true
+  field_success_api_volume_in_mil: true
+  field_transaction_type: true
+  field_transaction_type_count: true

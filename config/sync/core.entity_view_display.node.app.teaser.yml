@@ -1,0 +1,54 @@
+uuid: b2af5f44-bb9c-4478-a18e-f0c39c4dbd3e
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.app.body
+    - field.field.node.app.field_app_id
+    - field.field.node.app.field_app_key
+    - field.field.node.app.field_app_status
+    - field.field.node.app.field_client_id
+    - field.field.node.app.field_client_secret
+    - field.field.node.app.field_consumer_id
+    - field.field.node.app.field_expiry_date
+    - field.field.node.app.field_gateway
+    - field.field.node.app.field_renewal_date
+    - field.field.node.app.field_tag
+    - field.field.node.app.field_ttl
+    - node.type.app
+  module:
+    - text
+    - user
+_core:
+  default_config_hash: T_D1b5OxTKdvlrvDHaId9dmS0uCPyEO52lHm5sx1898
+id: node.app.teaser
+targetEntityType: node
+bundle: app
+mode: teaser
+content:
+  body:
+    type: text_summary_or_trimmed
+    label: hidden
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    weight: 101
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  field_app_id: true
+  field_app_key: true
+  field_app_status: true
+  field_client_id: true
+  field_client_secret: true
+  field_consumer_id: true
+  field_expiry_date: true
+  field_gateway: true
+  field_renewal_date: true
+  field_tag: true
+  field_ttl: true

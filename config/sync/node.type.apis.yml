@@ -1,0 +1,20 @@
+uuid: e7351525-b9b2-47c3-ae87-0c0b797c63fc
+langcode: en
+status: true
+dependencies:
+  module:
+    - menu_ui
+third_party_settings:
+  menu_ui:
+    available_menus:
+      - main
+    parent: 'main:'
+_core:
+  default_config_hash: KfA1aWVT1q-pJcSpvLquz2f5829dkfG_7W4KF1ZByn8
+name: APIs
+type: apis
+description: 'Describes the API details and APIs specification.'
+help: null
+new_revision: false
+preview_mode: 1
+display_submitted: true

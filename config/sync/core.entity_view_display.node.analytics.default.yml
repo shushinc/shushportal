@@ -1,0 +1,170 @@
+uuid: 00ee3bd6-136e-457d-bf89-f49489bb95b0
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.analytics.body
+    - field.field.node.analytics.field_404_api_volume_in_mil
+    - field.field.node.analytics.field_api_volume_in_mil
+    - field.field.node.analytics.field_attribute
+    - field.field.node.analytics.field_average_api_latency_in_mil
+    - field.field.node.analytics.field_carrier
+    - field.field.node.analytics.field_date
+    - field.field.node.analytics.field_end_customer
+    - field.field.node.analytics.field_error_api_volume_in_mil
+    - field.field.node.analytics.field_est_revenue
+    - field.field.node.analytics.field_kong_analytical_id
+    - field.field.node.analytics.field_partner
+    - field.field.node.analytics.field_success_api_volume_in_mil
+    - field.field.node.analytics.field_transaction_type
+    - field.field.node.analytics.field_transaction_type_count
+    - node.type.analytics
+  module:
+    - datetime
+    - options
+    - text
+    - user
+_core:
+  default_config_hash: P_LIe3XyLXebap3bsFFVWjXaVBcS7cNuD0jbyVpW6o0
+id: node.analytics.default
+targetEntityType: node
+bundle: analytics
+mode: default
+content:
+  body:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 101
+    region: content
+  field_404_api_volume_in_mil:
+    type: number_decimal
+    label: above
+    settings:
+      thousand_separator: ''
+      decimal_separator: .
+      scale: 2
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 114
+    region: content
+  field_api_volume_in_mil:
+    type: number_integer
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 102
+    region: content
+  field_attribute:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 109
+    region: content
+  field_average_api_latency_in_mil:
+    type: number_integer
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 103
+    region: content
+  field_carrier:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 110
+    region: content
+  field_date:
+    type: datetime_default
+    label: above
+    settings:
+      timezone_override: ''
+      format_type: medium
+    third_party_settings: {  }
+    weight: 104
+    region: content
+  field_end_customer:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 111
+    region: content
+  field_error_api_volume_in_mil:
+    type: number_decimal
+    label: above
+    settings:
+      thousand_separator: ''
+      decimal_separator: .
+      scale: 2
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 105
+    region: content
+  field_est_revenue:
+    type: number_integer
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 107
+    region: content
+  field_kong_analytical_id:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 115
+    region: content
+  field_partner:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 108
+    region: content
+  field_success_api_volume_in_mil:
+    type: number_decimal
+    label: above
+    settings:
+      thousand_separator: ''
+      decimal_separator: .
+      scale: 2
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 106
+    region: content
+  field_transaction_type:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 112
+    region: content
+  field_transaction_type_count:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 113
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden: {  }

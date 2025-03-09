@@ -1,0 +1,23 @@
+uuid: 4838976e-1d84-41b4-ace8-a6cc1fff07d1
+langcode: en
+status: true
+dependencies:
+  module:
+    - group
+_core:
+  default_config_hash: qXb5Qt7fg4ua51uP27nm_4_Pn-Frcz-LAiToimdyf9Y
+id: group.field_contact_name
+field_name: field_contact_name
+entity_type: group
+type: string
+settings:
+  max_length: 255
+  case_sensitive: false
+  is_ascii: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

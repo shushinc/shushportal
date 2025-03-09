@@ -1,0 +1,38 @@
+uuid: 4e328a07-71c6-4e6f-ae70-604cc073653b
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+_core:
+  default_config_hash: KCSAfUZB57lFTSxb6nOeRnnkygUrItq2jo0YRdc4wl4
+id: node.field_ttl
+field_name: field_ttl
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '7776000'
+      label: '90 Days'
+    -
+      value: '14688000'
+      label: '170 Days'
+    -
+      value: '15552000'
+      label: '180 Days'
+    -
+      value: '31536000'
+      label: '365 Days'
+    -
+      value: never_expires
+      label: 'Never Expires'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

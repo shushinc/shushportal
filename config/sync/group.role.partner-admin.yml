@@ -1,0 +1,16 @@
+uuid: 2e4ac062-ce1f-407e-81e8-812ef963a9aa
+langcode: en
+status: true
+dependencies:
+  config:
+    - group.type.partner
+_core:
+  default_config_hash: uecwBQwsEBq2pyZPUBZRWVWU6EK7sUidmsQFiCUYwa4
+id: partner-admin
+label: Admin
+weight: 103
+admin: true
+scope: individual
+global_role: null
+group_type: partner
+permissions: {  }

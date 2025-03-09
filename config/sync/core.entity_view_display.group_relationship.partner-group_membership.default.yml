@@ -1,0 +1,25 @@
+uuid: c7824804-15ff-4208-a31a-297420e587d0
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.group_relationship.partner-group_membership.group_roles
+    - group.relationship_type.partner-group_membership
+_core:
+  default_config_hash: W6gLN75M8SO0TT7aawLzOIrSaoiixCtu0O01uVLW3HA
+id: group_relationship.partner-group_membership.default
+targetEntityType: group_relationship
+bundle: partner-group_membership
+mode: default
+content:
+  group_roles:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: false
+    third_party_settings: {  }
+    weight: -4
+    region: content
+hidden:
+  entity_id: true
+  uid: true

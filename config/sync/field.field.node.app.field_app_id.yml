@@ -1,0 +1,21 @@
+uuid: e349d6cc-5821-4e9f-bf08-b944b3094af8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_app_id
+    - node.type.app
+_core:
+  default_config_hash: CpmCqy27W2p4nDz6Odpkq-W4EddttWHa90QN7dfCkIQ
+id: node.app.field_app_id
+field_name: field_app_id
+entity_type: node
+bundle: app
+label: 'APP ID'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

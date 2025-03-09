@@ -1,0 +1,27 @@
+uuid: 5d70f9dc-7e34-49b1-8847-9e081e74dc66
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.group_relationship.invitation_status
+    - group.relationship_type.partner-group_invitation
+_core:
+  default_config_hash: uqPoPTq_lzFmeB4ZZri4i2m-GQN_Bw-BUabbgCt0i1g
+id: group_relationship.partner-group_invitation.invitation_status
+field_name: invitation_status
+entity_type: group_relationship
+bundle: partner-group_invitation
+label: 'Invitation status'
+description: ''
+required: true
+translatable: true
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

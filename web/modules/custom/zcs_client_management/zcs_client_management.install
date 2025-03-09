@@ -1,0 +1,134 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the zcs Client Management module.
+ */
+use Drupal\group\Entity\GroupType;
+use \Drupal\menu_link_content\Entity\MenuLinkContent;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\user\Entity\Role;
+
+
+/**
+ * Implements hook_schema().
+ */
+function zcs_client_management_schema() {
+   $schema['zcs_client_member_invitations'] = [
+     'fields' => [
+       'id' => array(
+         'description' => 'The primary identifier for invitations.',
+         'type' => 'serial',
+         'unsigned' => TRUE,
+         'not null' => TRUE,
+       ),
+       'partner_id' => [
+         'type' => 'varchar',
+         'length' => 255,
+         'NOT NULL' => TRUE,
+         'description' => 'Partner Id',
+       ],
+       'user_name' => [
+         'type' => 'varchar',
+         'length' => 255,
+         'NOT NULL' => TRUE,
+         'description' => 'User Name',
+       ],
+       'email' => [
+         'type' => 'varchar',
+         'length' => 255,
+         'NOT NULL' => TRUE,
+         'description' => 'Email id of the user',
+       ],
+       'role' => [
+         'type' => 'varchar',
+         'length' => 255,
+         'NOT NULL' => TRUE,
+         'description' => 'Group role',
+       ],
+       'token' => [
+         'type' => 'varchar',
+         'length' => 100,
+         'not null' => TRUE,
+         'description' => 'Invitation token',
+       ],
+       'status' => [
+           'type' => 'varchar',
+           'length' => 50,
+           'NOT NULL' => TRUE,
+           'description' => 'Invitation status',
+       ],
+       'created_time' => [
+         'type' => 'int',
+         'not null' => TRUE,
+         'description' => 'Current Timestamp.',
+       ],
+       'expire_time' => [
+         'type' => 'int',
+         'not null' => TRUE,
+         'description' => 'Expire Time.',
+       ],
+     ],
+     'primary key' => ['id'],
+   ];
+   return $schema;
+ }
+
+
+function zcs_client_management_install() {
+  $menu_link = MenuLinkContent::create([
+    'menu_name' => 'main',
+    'title' => 'Client Management',
+    'link' => [
+       ['uri' => 'internal:/client-management']
+    ],
+    'weight' => 3,
+    'menu_per_role__show_role' => [
+       'administrator',
+       'carrier_admin',
+    ],    
+  ]);
+  $menu_link->save();
+
+
+  // Fetch the saved parent menu link to use its ID.
+  $parent_menu_link = \Drupal\menu_link_content\Entity\MenuLinkContent::load($menu_link->id());
+  $parent_menu_link_id = $parent_menu_link->getPluginId();
+
+  // Child Menu.
+  $menu_link1 = MenuLinkContent::create([
+    'menu_name' => 'main',
+    'title' => 'Client Members',
+    'link' => [
+       ['uri' => 'internal:/client-memberships']
+    ],
+    'weight' => 4,
+    'menu_per_role__show_role' => [
+       'administrator',
+       'carrier_admin',
+       'client_admin',
+    ],  
+   //'parent' => $parent_menu_link_id,
+  ]);
+  $menu_link1->save();
+}
+
+
+
+
+function zcs_client_management_uninstall() {
+    $group_type = GroupType::load('partner');
+    if ($group_type) {
+        // Delete the group type
+        $group_type->delete();
+    }
+    $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+    $menu_item_object = current($storage->loadByProperties(['title' => 'Client Management']));
+    if($menu_item_object) {
+      $menu_item_object->delete();
+    }
+}
+
+
+
+

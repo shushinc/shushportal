@@ -1,0 +1,35 @@
+uuid: 29a6849a-dc03-4071-9830-ce161e16c4a0
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.group_relationship.partner-group_invitation.group_roles
+    - field.field.group_relationship.partner-group_invitation.invitation_status
+    - field.field.group_relationship.partner-group_invitation.invitee_mail
+    - group.relationship_type.partner-group_invitation
+_core:
+  default_config_hash: iXyr7aGM4k5MgjG8zDFLGS0iDmouPg4-sjUUZq36lEY
+id: group_relationship.partner-group_invitation.default
+targetEntityType: group_relationship
+bundle: partner-group_invitation
+mode: default
+content:
+  group_roles:
+    type: options_buttons
+    weight: 31
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  invitee_mail:
+    type: email_default
+    weight: -1
+    region: content
+    settings:
+      placeholder: example@example.com
+      size: 60
+    third_party_settings: {  }
+hidden:
+  entity_id: true
+  invitation_status: true
+  path: true
+  uid: true

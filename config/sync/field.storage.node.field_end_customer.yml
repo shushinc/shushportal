@@ -1,0 +1,22 @@
+uuid: c15806c7-f4bb-4b60-bd12-e022645370c6
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - taxonomy
+_core:
+  default_config_hash: HWV6V-P9e-17JAYNxALFCRNIaiUZM-A99L-kP07zIPg
+id: node.field_end_customer
+field_name: field_end_customer
+entity_type: node
+type: entity_reference
+settings:
+  target_type: taxonomy_term
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

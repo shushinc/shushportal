@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "apigee-test-2-429811",
+  "private_key_id": "af2c67fceff3b5f7d857d7c015bf72829070307d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDC3On8jGTlGCVS\n2qQb6AJkRAXGN8zQWABpN+ekQQHciOPMuJ8ROQwQ1OAxMMMqJwAwKAAUbPMCM5DU\n49981NPkl50JPg17XjMSH4hmz9pIZtCX1wb9ipJkWyF1JkOKmH1iMY80QZwvyfLs\n6aj04nP8XJnC6pfntZOHbELgtIRnK1uAvlZIEWCbWAdNinUk5OP+29zg0NFzVjCu\ncR/G0XO8wBAaw1wOS1s/wgtoWpXhc3ltpKJwRq9ma7lZv0essvYjcj+f9BPVvK6b\nkI1oOH0GBalkrGMNpnRMifi6Av7GxW3YO3zbHmzo7mK4gKiVHqbO4w8saDtbXtEs\nBVaMygURAgMBAAECggEAFOws6Hu3kpyc11BYChIHfbYLC60undkxFBsXUVzUgxYk\npXTWSX5fVAhTWRzD+8jrvX/yAD9xeTVJsf4Unz3n0XXQ++7QekRTRfkiR22+YYM+\nlusU2lDQZpudVEuLOXyli89H8cOwrjXoEjWFeWO+MeTMcrAHJu8pW8NNS/y98ai3\nV86ftroyYp7iEoC21FsWRjPS6N7jRh4GFiDFrSv96bL12ErlO1DeKUf9/qX2o4Eo\njmL2ptehjd9IbG8VuMY/iZ4+v5loZe8swUtt89qy+PjKKlbzYauyh2cG8wjBFYDQ\nfv+V38wY2FuDl/j9qL6oZOvkZVlGdhYoo7q/dVDXsQKBgQDrLZwBLNpALlEjHaQ4\nwXw0NVPgnNMUnkcBKKWgcqLcWj5pmUmxSaqWT6hG5WeCYee1tlNfLAsdMFVZW4Sc\nQVr+nzWgacPTqvGrgQKD7NzqzNYPC16kE2tCbE6zgYegbCehOR3Lz+QTilI3KiOL\nYz/MXd/KHuPfZ7TJcilg7RkuiQKBgQDUHYwET4+ZiwD0TstLDmG+DANK9V8PIjrF\nZTisTmHd0cfV9HASIqig19ROreXsXPbyuiCJ86Fy/ysAQlnqK+ytwEEVWDd45irz\nFEpqPlVGSoxN6v53CjMJ0UJJwcGNHJUWEkQkJ+M9dVWxpVETkEjOZYriaqwHpStF\nxI8k+s3ASQKBgQCHu/Y7U2jP/CuGKfh7bWjDNTgo/jpxvvxaNdyKIz/OECPPjNJU\niaD0Shtkd8jrHpi+bvHljyUG/rtz7Hc4PBxJsxgfcou8ogADrV0HSXEj739ohXZl\nGnQgjSRLRGpD88hXrAB/fogzovTas+5555mN2WxtWrDIYzGbxtENCSssiQKBgEp8\njby9y6mZnJ4uRUl4JW69fTKHc/g2hvjmkL5BUDC7CDfj/K8BqMHCyPVQL9uO0dFu\n9xo6icl+PbV7l2OaRSTGzJQYRHKaMR7nUzJ37S4f46FBElbvJ/kcmPCZr8RD8z6q\n727a6vucBpm5ef0qv8Zq9hiIaRzOLaH0YmgUAsixAoGALyWRvRqRyIAJLT2QOeNw\nnKmDN731yI1TlZjDfliGaf9z9zZHYBnC0HzwquTDJP7cqCXd+3qrXyhe7hhLmYu1\nAELnI4HPenpSb3LtGM+imhC5GrlkdoIC89eO5EjdttJ7zlz6MO3H4b+7ayCrMWjL\nTnbYT2dfvZq7PvLs1pYN1F0=\n-----END PRIVATE KEY-----\n",
+  "client_email": "apigee-proxy-deployemnt@apigee-test-2-429811.iam.gserviceaccount.com",
+  "client_id": "114352834504165088627",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/apigee-proxy-deployemnt%40apigee-test-2-429811.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

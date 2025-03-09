@@ -1,0 +1,22 @@
+uuid: 3db0ef47-39f4-4518-821e-58c99728594e
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+_core:
+  default_config_hash: dLZJxEJzVVOVqfiK5btfTjpSUF7HtWmCg5ONHUJlybY
+id: node.field_api_volume_in_mil
+field_name: field_api_volume_in_mil
+entity_type: node
+type: integer
+settings:
+  unsigned: false
+  size: normal
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

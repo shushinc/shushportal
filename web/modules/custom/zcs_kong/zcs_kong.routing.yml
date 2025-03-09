@@ -1,0 +1,30 @@
+zcs_kong.create_key:
+  path: 'create-key'
+  defaults:
+    _title: 'Generate API key'
+    _form: 'Drupal\zcs_kong\Form\CreatekeyForm'
+  requirements:
+    _custom_access: '\Drupal\zcs_kong\Form\CreatekeyForm::access'
+
+zcs_kong.app_list:
+  path: '/apps'
+  defaults:
+    _title: 'API Keys'
+    _form: 'Drupal\zcs_kong\Form\AppListForm'
+  requirements:
+    _permission: 'access content' 
+
+zcs_kong.edit_key:
+  path: '/key/{id}/edit'
+  defaults:
+    _title: 'Update API key'
+    _form: 'Drupal\zcs_kong\Form\UpdateKeyForm'
+  requirements:
+    _custom_access: '\Drupal\zcs_kong\Form\UpdateKeyForm::access'
+
+zcs_kong.delete_key:
+  path: '/key/{id}/delete'
+  defaults:
+    _controller: '\Drupal\zcs_kong\Controller\DeleteController::deleteKey'
+  requirements:
+     _custom_access: '\Drupal\zcs_kong\Controller\DeleteController::access' 

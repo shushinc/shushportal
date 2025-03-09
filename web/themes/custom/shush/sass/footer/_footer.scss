@@ -1,0 +1,40 @@
+footer.footer {
+  background: $black;
+  padding: 50px 0;
+  p {
+    font-family: $roboto;
+    font-weight: 400;
+    color: $white;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease-in-out;
+    &:hover {
+      color: $link-color;
+    }
+  }
+  .region-footer {
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+      display: flex;
+      flex-wrap: wrap;
+      li {
+        a {
+          font-family: $roboto;
+          font-weight: 400;
+          color: $white;
+          text-decoration: none;
+          padding: 0 10px;
+          font-size: 14px;
+          letter-spacing: 0.5px;
+          transition: all 0.3s ease-in-out;
+          &:hover {
+            color: $link-color;
+          }
+        }
+      }
+    }
+
+  }
+}

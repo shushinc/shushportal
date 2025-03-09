@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Analytics Carrier'
+vid: analytics_carrier
+description: null
+weight: 0
+new_revision: false

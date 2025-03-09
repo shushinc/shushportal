@@ -1,0 +1,26 @@
+uuid: 9c27093d-0de5-40e3-a083-fe892d3b8252
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.group.field_description
+    - group.type.partner
+  module:
+    - text
+_core:
+  default_config_hash: wcu2lF7iZWySysXasoOPrdisKi3JlmgJlzJ3xsHFcCE
+id: group.partner.field_description
+field_name: field_description
+entity_type: group
+bundle: partner
+label: Description
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: false
+  required_summary: false
+  allowed_formats: {  }
+field_type: text_with_summary

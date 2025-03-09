@@ -1,0 +1,17 @@
+<?php
+
+
+/**
+ * Implements hook_theme().
+ */
+
+function analytics_theme() {
+  return [
+    'analytics' => [
+      'variables' => [
+        'content' => null,
+      ],
+      'template' => 'analytics'
+    ]
+  ];
+}

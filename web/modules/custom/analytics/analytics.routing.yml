@@ -1,0 +1,31 @@
+zcs_analytics.redirect:
+  path: '/dashboard'
+  defaults:
+    _controller: '\Drupal\analytics\Controller\AnalyticsController::analyticsDashboard'
+    _title: 'Analytics'
+  requirements:
+    _role: 'authenticated'
+  options:
+    no_cache: true
+
+zcs_analytics.ajax.dashboard:
+  path: '/ajax-dashboard'
+  defaults:
+    _controller: '\Drupal\analytics\Controller\AnalyticsController::analyticsAjaxDashboard'
+    _title: 'Analytics'
+  requirements:
+    _role: 'authenticated'
+  options:
+    no_cache: true  
+
+
+zcs_analytics.node.add:
+  path: '/analytics/node/add'
+  defaults:
+    _controller: '\Drupal\analytics\Controller\AnalyticsPostController::addAnalyticsNode'
+    _title: 'Create Analytics Node'
+  methods: ['POST']
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: true

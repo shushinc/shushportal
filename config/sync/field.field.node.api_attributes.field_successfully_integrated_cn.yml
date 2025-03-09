@@ -1,0 +1,19 @@
+uuid: 8a387dc0-a08d-4de2-afde-6f048dde3327
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_successfully_integrated_cn
+    - node.type.api_attributes
+id: node.api_attributes.field_successfully_integrated_cn
+field_name: field_successfully_integrated_cn
+entity_type: node
+bundle: api_attributes
+label: 'Successfully integrated with Carrier Network'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

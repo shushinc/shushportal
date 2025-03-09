@@ -1,0 +1,22 @@
+uuid: 824354ba-70fb-42e4-8dc8-34e5ff23b281
+langcode: en
+status: true
+dependencies:
+  module:
+    - group
+    - node
+_core:
+  default_config_hash: B3lEzOKrUUtZfi6D_kclZmB-LBQgLmcWvGCAlO6XUlQ
+id: node.field_partner
+field_name: field_partner
+entity_type: node
+type: entity_reference
+settings:
+  target_type: group
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

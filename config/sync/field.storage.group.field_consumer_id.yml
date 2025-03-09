@@ -1,0 +1,23 @@
+uuid: 6814ff5e-04ea-4263-a47e-e76ebde8fbe8
+langcode: en
+status: true
+dependencies:
+  module:
+    - group
+_core:
+  default_config_hash: LN-cOJYa9VGv0cno0FydrkE5ECPnsdqT9VqncGc5sYk
+id: group.field_consumer_id
+field_name: field_consumer_id
+entity_type: group
+type: string
+settings:
+  max_length: 255
+  case_sensitive: false
+  is_ascii: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,14 @@
+uuid: ae309501-39ff-4e7e-9f26-58e755a59289
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.carrier_admin
+  module:
+    - user
+id: user_remove_role_action.carrier_admin
+label: 'Remove the Carrier Admin role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: carrier_admin

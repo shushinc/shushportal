@@ -1,0 +1,24 @@
+uuid: ecb15cb0-143d-40a5-9029-e2414b3734e8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.group_relationship.group_roles
+    - group.relationship_type.partner-group_invitation
+_core:
+  default_config_hash: m178I5tHF8v3t3QsUx_o4kBGnbKUloW7C-pqlGT9wNM
+id: group_relationship.partner-group_invitation.group_roles
+field_name: group_roles
+entity_type: group_relationship
+bundle: partner-group_invitation
+label: Roles
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'group_type:group_role'
+  handler_settings:
+    group_type_id: partner
+field_type: entity_reference

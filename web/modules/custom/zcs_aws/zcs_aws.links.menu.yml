@@ -1,0 +1,6 @@
+zcs_aws.aws_settings_form:
+  title: 'AWS Gateway'
+  route_name: zcs_aws.aws_settings
+  description: 'AWS Gateway Configuration'
+  parent: system.admin_config_system
+  weight: 99
