@@ -26,6 +26,7 @@ class AnonymousRedirectSubscriber implements EventSubscriberInterface {
    */
   public static function getSubscribedEvents() {
     $events[KernelEvents::REQUEST][] = ['onRequest', 100];
+    $events[KernelEvents::REQUEST][] = ['checkRedirect', 30];
     return $events;
   }
 
@@ -59,8 +60,9 @@ class AnonymousRedirectSubscriber implements EventSubscriberInterface {
       $event->setResponse($response);
     }
     $current_user = \Drupal::currentUser();
-    if (!\Drupal::currentUser()->isAnonymous() && !$current_user->hasRole('administrator')) {
+    if (!\Drupal::currentUser()->isAnonymous()) {
       $request = $event->getRequest();
+     // dump($request);
       $current_path = $request->getPathInfo();
       $user_id = $current_user->id();
       // Check if the current path matches 'user/{uid}/edit'.
@@ -87,5 +89,22 @@ class AnonymousRedirectSubscriber implements EventSubscriberInterface {
       }
     }
   }
+
+
+  public function checkRedirect(RequestEvent $event) {
+    // Ensure this runs only for authenticated users
+    if (\Drupal::currentUser()->isAuthenticated()) {
+      $request = $event->getRequest();
+      $path = $request->getPathInfo(); // Get the current URL path
+      $queryParams = $request->query->all(); // Get query parameters
+
+      // Check if user is visiting /user/{uid} with ?check_logged_in=1
+      if (preg_match('/^\/user\/\d+$/', $path) && isset($queryParams['check_logged_in'])) {
+        $response = new RedirectResponse(Url::fromRoute('<front>')->toString());
+        $event->setResponse($response);
+      }
+    }
+  }
+
 
 }
