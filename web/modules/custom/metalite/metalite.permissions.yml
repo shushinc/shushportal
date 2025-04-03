@@ -1,0 +1,8 @@
+administer metalite configuration:
+  title: 'Administer Metalite configuration'
+  description: 'Allow access to the Metalite configuration form.'
+  restrict access: true
+
+access metalite dashboard:
+  title: 'Access Metalite dashboard'
+  description: 'Allow access to the Metalite dashboard.'

@@ -1,0 +1,6 @@
+name: Metalite
+type: module
+description: 'Provides integration with Metalite API.'
+package: Custom
+core_version_requirement: ^10
+configure: metalite.settings

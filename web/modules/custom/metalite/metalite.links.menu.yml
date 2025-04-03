@@ -1,0 +1,5 @@
+metalite.settings:
+  title: 'Metalite'
+  description: 'Configure Metalite API integration.'
+  parent: system.admin_config_services
+  route_name: metalite.settings

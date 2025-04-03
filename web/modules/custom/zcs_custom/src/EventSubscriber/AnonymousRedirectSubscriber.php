@@ -54,6 +54,7 @@ class AnonymousRedirectSubscriber implements EventSubscriberInterface {
         && (strpos(\Drupal::service('path.current')->getPath(), '/user/registrationpassword') === FALSE)
         && (strpos(\Drupal::service('path.current')->getPath(), '/verify_invitation') === FALSE)
         && (strpos(\Drupal::service('path.current')->getPath(), '/verify_client_invitation') === FALSE)
+        && (strpos(\Drupal::service('path.current')->getPath(), '/metabase/dashboard') === FALSE)
         ) {
       $response = new RedirectResponse($redirect_path);
       $event->setResponse($response);

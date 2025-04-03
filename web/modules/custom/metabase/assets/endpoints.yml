@@ -1,0 +1,1581 @@
+endpoints:
+  -
+    endpoint: /api/action/
+    method: GET
+    file: 'action.GET.yml'
+  -
+    endpoint: /api/action/
+    method: POST
+    file: 'action.POST.yml'
+  -
+    endpoint: /api/action/public
+    method: GET
+    file: 'action.public.GET.yml'
+  -
+    endpoint: /api/action/{action-id}
+    method: GET
+    file: 'action._action-id_.GET.yml'
+  -
+    endpoint: /api/action/{action-id}
+    method: DELETE
+    file: 'action._action-id_.DELETE.yml'
+  -
+    endpoint: /api/action/{action-id}/execute
+    method: GET
+    file: 'action._action-id_.execute.GET.yml'
+  -
+    endpoint: /api/action/{id}
+    method: PUT
+    file: 'action._id_.PUT.yml'
+  -
+    endpoint: /api/action/{id}/execute
+    method: POST
+    file: 'action._id_.execute.POST.yml'
+  -
+    endpoint: /api/action/{id}/public_link
+    method: POST
+    file: 'action._id_.public_link.POST.yml'
+  -
+    endpoint: /api/action/{id}/public_link
+    method: DELETE
+    file: 'action._id_.public_link.DELETE.yml'
+  -
+    endpoint: /api/activity/most_recently_viewed_dashboard
+    method: GET
+    file: 'activity.most_recently_viewed_dashboard.GET.yml'
+  -
+    endpoint: /api/activity/popular_items
+    method: GET
+    file: 'activity.popular_items.GET.yml'
+  -
+    endpoint: /api/activity/recent_views
+    method: GET
+    file: 'activity.recent_views.GET.yml'
+  -
+    endpoint: /api/activity/recents
+    method: GET
+    file: 'activity.recents.GET.yml'
+  -
+    endpoint: /api/activity/recents
+    method: POST
+    file: 'activity.recents.POST.yml'
+  -
+    endpoint: /api/alert/
+    method: GET
+    file: 'alert.GET.yml'
+  -
+    endpoint: /api/alert/
+    method: POST
+    file: 'alert.POST.yml'
+  -
+    endpoint: /api/alert/question/{id}
+    method: GET
+    file: 'alert.question._id_.GET.yml'
+  -
+    endpoint: /api/alert/{id}
+    method: GET
+    file: 'alert._id_.GET.yml'
+  -
+    endpoint: /api/alert/{id}
+    method: PUT
+    file: 'alert._id_.PUT.yml'
+  -
+    endpoint: /api/alert/{id}/subscription
+    method: DELETE
+    file: 'alert._id_.subscription.DELETE.yml'
+  -
+    endpoint: /api/api-key/
+    method: POST
+    file: 'api-key.POST.yml'
+  -
+    endpoint: /api/api-key/
+    method: GET
+    file: 'api-key.GET.yml'
+  -
+    endpoint: /api/api-key/count
+    method: GET
+    file: 'api-key.count.GET.yml'
+  -
+    endpoint: /api/api-key/{id}
+    method: PUT
+    file: 'api-key._id_.PUT.yml'
+  -
+    endpoint: /api/api-key/{id}
+    method: DELETE
+    file: 'api-key._id_.DELETE.yml'
+  -
+    endpoint: /api/api-key/{id}/regenerate
+    method: PUT
+    file: 'api-key._id_.regenerate.PUT.yml'
+  -
+    endpoint: /api/automagic-dashboards/database/{id}/candidates
+    method: GET
+    file: 'automagic-dashboards.database._id_.candidates.GET.yml'
+  -
+    endpoint: /api/automagic-dashboards/model_index/{model-index-id}/primary_key/{pk-id}
+    method: GET
+    file: 'automagic-dashboards.model_index._model-index-id_.primary_key._pk-id_.GET.yml'
+  -
+    endpoint: /api/automagic-dashboards/{entity}/{entity-id-or-query}
+    method: GET
+    file: 'automagic-dashboards._entity_._entity-id-or-query_.GET.yml'
+  -
+    endpoint: /api/automagic-dashboards/{entity}/{entity-id-or-query}/cell/{cell-query}
+    method: GET
+    file: 'automagic-dashboards._entity_._entity-id-or-query_.cell._cell-query_.GET.yml'
+  -
+    endpoint: /api/automagic-dashboards/{entity}/{entity-id-or-query}/cell/{cell-query}/compare/{comparison-entity}/{comparison-entity-id-or-query}
+    method: GET
+    file: 'automagic-dashboards._entity_._entity-id-or-query_.cell._cell-query_.compare._comparison-entity_._comparison-entity-id-or-query_.GET.yml'
+  -
+    endpoint: /api/automagic-dashboards/{entity}/{entity-id-or-query}/cell/{cell-query}/rule/{prefix}/{dashboard-template}
+    method: GET
+    file: 'automagic-dashboards._entity_._entity-id-or-query_.cell._cell-query_.rule._prefix_._dashboard-template_.GET.yml'
+  -
+    endpoint: /api/automagic-dashboards/{entity}/{entity-id-or-query}/cell/{cell-query}/rule/{prefix}/{dashboard-template}/compare/{comparison-entity}/{comparison-entity-id-or-query}
+    method: GET
+    file: 'automagic-dashboards._entity_._entity-id-or-query_.cell._cell-query_.rule._prefix_._dashboard-template_.compare._comparison-entity_._comparison-entity-id-or-query_.GET.yml'
+  -
+    endpoint: /api/automagic-dashboards/{entity}/{entity-id-or-query}/compare/{comparison-entity}/{comparison-entity-id-or-query}
+    method: GET
+    file: 'automagic-dashboards._entity_._entity-id-or-query_.compare._comparison-entity_._comparison-entity-id-or-query_.GET.yml'
+  -
+    endpoint: /api/automagic-dashboards/{entity}/{entity-id-or-query}/query_metadata
+    method: GET
+    file: 'automagic-dashboards._entity_._entity-id-or-query_.query_metadata.GET.yml'
+  -
+    endpoint: /api/automagic-dashboards/{entity}/{entity-id-or-query}/rule/{prefix}/{dashboard-template}
+    method: GET
+    file: 'automagic-dashboards._entity_._entity-id-or-query_.rule._prefix_._dashboard-template_.GET.yml'
+  -
+    endpoint: /api/automagic-dashboards/{entity}/{entity-id-or-query}/rule/{prefix}/{dashboard-template}/compare/{comparison-entity}/{comparison-entity-id-or-query}
+    method: GET
+    file: 'automagic-dashboards._entity_._entity-id-or-query_.rule._prefix_._dashboard-template_.compare._comparison-entity_._comparison-entity-id-or-query_.GET.yml'
+  -
+    endpoint: /api/bookmark/
+    method: GET
+    file: 'bookmark.GET.yml'
+  -
+    endpoint: /api/bookmark/ordering
+    method: PUT
+    file: 'bookmark.ordering.PUT.yml'
+  -
+    endpoint: /api/bookmark/{model}/{id}
+    method: POST
+    file: 'bookmark._model_._id_.POST.yml'
+  -
+    endpoint: /api/bookmark/{model}/{id}
+    method: DELETE
+    file: 'bookmark._model_._id_.DELETE.yml'
+  -
+    endpoint: /api/cache/
+    method: GET
+    file: 'cache.GET.yml'
+  -
+    endpoint: /api/cache/
+    method: PUT
+    file: 'cache.PUT.yml'
+  -
+    endpoint: /api/cache/
+    method: DELETE
+    file: 'cache.DELETE.yml'
+  -
+    endpoint: /api/cache/invalidate
+    method: POST
+    file: 'cache.invalidate.POST.yml'
+  -
+    endpoint: /api/card/
+    method: GET
+    file: 'card.GET.yml'
+  -
+    endpoint: /api/card/
+    method: POST
+    file: 'card.POST.yml'
+  -
+    endpoint: /api/card/collections
+    method: POST
+    file: 'card.collections.POST.yml'
+  -
+    endpoint: /api/card/embeddable
+    method: GET
+    file: 'card.embeddable.GET.yml'
+  -
+    endpoint: /api/card/from-csv
+    method: POST
+    file: 'card.from-csv.POST.yml'
+  -
+    endpoint: /api/card/pivot/{card-id}/query
+    method: POST
+    file: 'card.pivot._card-id_.query.POST.yml'
+  -
+    endpoint: /api/card/public
+    method: GET
+    file: 'card.public.GET.yml'
+  -
+    endpoint: /api/card/{card-id}/params/{param-key}/search/{query}
+    method: GET
+    file: 'card._card-id_.params._param-key_.search._query_.GET.yml'
+  -
+    endpoint: /api/card/{card-id}/params/{param-key}/values
+    method: GET
+    file: 'card._card-id_.params._param-key_.values.GET.yml'
+  -
+    endpoint: /api/card/{card-id}/persist
+    method: POST
+    file: 'card._card-id_.persist.POST.yml'
+  -
+    endpoint: /api/card/{card-id}/public_link
+    method: POST
+    file: 'card._card-id_.public_link.POST.yml'
+  -
+    endpoint: /api/card/{card-id}/public_link
+    method: DELETE
+    file: 'card._card-id_.public_link.DELETE.yml'
+  -
+    endpoint: /api/card/{card-id}/query
+    method: POST
+    file: 'card._card-id_.query.POST.yml'
+  -
+    endpoint: /api/card/{card-id}/query/{export-format}
+    method: POST
+    file: 'card._card-id_.query._export-format_.POST.yml'
+  -
+    endpoint: /api/card/{card-id}/refresh
+    method: POST
+    file: 'card._card-id_.refresh.POST.yml'
+  -
+    endpoint: /api/card/{card-id}/unpersist
+    method: POST
+    file: 'card._card-id_.unpersist.POST.yml'
+  -
+    endpoint: /api/card/{id}
+    method: GET
+    file: 'card._id_.GET.yml'
+  -
+    endpoint: /api/card/{id}
+    method: PUT
+    file: 'card._id_.PUT.yml'
+  -
+    endpoint: /api/card/{id}
+    method: DELETE
+    file: 'card._id_.DELETE.yml'
+  -
+    endpoint: /api/card/{id}/copy
+    method: POST
+    file: 'card._id_.copy.POST.yml'
+  -
+    endpoint: /api/card/{id}/dashboards
+    method: GET
+    file: 'card._id_.dashboards.GET.yml'
+  -
+    endpoint: /api/card/{id}/query_metadata
+    method: GET
+    file: 'card._id_.query_metadata.GET.yml'
+  -
+    endpoint: /api/card/{id}/series
+    method: GET
+    file: 'card._id_.series.GET.yml'
+  -
+    endpoint: /api/cards/dashboards
+    method: POST
+    file: 'cards.dashboards.POST.yml'
+  -
+    endpoint: /api/cards/move
+    method: POST
+    file: 'cards.move.POST.yml'
+  -
+    endpoint: /api/channel/
+    method: GET
+    file: 'channel.GET.yml'
+  -
+    endpoint: /api/channel/
+    method: POST
+    file: 'channel.POST.yml'
+  -
+    endpoint: /api/channel/test
+    method: POST
+    file: 'channel.test.POST.yml'
+  -
+    endpoint: /api/channel/{id}
+    method: GET
+    file: 'channel._id_.GET.yml'
+  -
+    endpoint: /api/channel/{id}
+    method: PUT
+    file: 'channel._id_.PUT.yml'
+  -
+    endpoint: /api/cloud-migration/
+    method: POST
+    file: 'cloud-migration.POST.yml'
+  -
+    endpoint: /api/cloud-migration/
+    method: GET
+    file: 'cloud-migration.GET.yml'
+  -
+    endpoint: /api/cloud-migration/cancel
+    method: PUT
+    file: 'cloud-migration.cancel.PUT.yml'
+  -
+    endpoint: /api/collection/
+    method: GET
+    file: 'collection.GET.yml'
+  -
+    endpoint: /api/collection/
+    method: POST
+    file: 'collection.POST.yml'
+  -
+    endpoint: /api/collection/graph
+    method: GET
+    file: 'collection.graph.GET.yml'
+  -
+    endpoint: /api/collection/graph
+    method: PUT
+    file: 'collection.graph.PUT.yml'
+  -
+    endpoint: /api/collection/root
+    method: GET
+    file: 'collection.root.GET.yml'
+  -
+    endpoint: /api/collection/root/dashboard-question-candidates
+    method: GET
+    file: 'collection.root.dashboard-question-candidates.GET.yml'
+  -
+    endpoint: /api/collection/root/items
+    method: GET
+    file: 'collection.root.items.GET.yml'
+  -
+    endpoint: /api/collection/root/move-dashboard-question-candidates
+    method: POST
+    file: 'collection.root.move-dashboard-question-candidates.POST.yml'
+  -
+    endpoint: /api/collection/trash
+    method: GET
+    file: 'collection.trash.GET.yml'
+  -
+    endpoint: /api/collection/tree
+    method: GET
+    file: 'collection.tree.GET.yml'
+  -
+    endpoint: /api/collection/{id}
+    method: GET
+    file: 'collection._id_.GET.yml'
+  -
+    endpoint: /api/collection/{id}
+    method: PUT
+    file: 'collection._id_.PUT.yml'
+  -
+    endpoint: /api/collection/{id}/dashboard-question-candidates
+    method: GET
+    file: 'collection._id_.dashboard-question-candidates.GET.yml'
+  -
+    endpoint: /api/collection/{id}/items
+    method: GET
+    file: 'collection._id_.items.GET.yml'
+  -
+    endpoint: /api/collection/{id}/move-dashboard-question-candidates
+    method: POST
+    file: 'collection._id_.move-dashboard-question-candidates.POST.yml'
+  -
+    endpoint: /api/dashboard/
+    method: GET
+    file: 'dashboard.GET.yml'
+  -
+    endpoint: /api/dashboard/
+    method: POST
+    file: 'dashboard.POST.yml'
+  -
+    endpoint: /api/dashboard/embeddable
+    method: GET
+    file: 'dashboard.embeddable.GET.yml'
+  -
+    endpoint: /api/dashboard/params/valid-filter-fields
+    method: GET
+    file: 'dashboard.params.valid-filter-fields.GET.yml'
+  -
+    endpoint: /api/dashboard/pivot/{dashboard-id}/dashcard/{dashcard-id}/card/{card-id}/query
+    method: POST
+    file: 'dashboard.pivot._dashboard-id_.dashcard._dashcard-id_.card._card-id_.query.POST.yml'
+  -
+    endpoint: /api/dashboard/public
+    method: GET
+    file: 'dashboard.public.GET.yml'
+  -
+    endpoint: /api/dashboard/save
+    method: POST
+    file: 'dashboard.save.POST.yml'
+  -
+    endpoint: /api/dashboard/save/collection/{parent-collection-id}
+    method: POST
+    file: 'dashboard.save.collection._parent-collection-id_.POST.yml'
+  -
+    endpoint: /api/dashboard/{dashboard-id}/dashcard/{dashcard-id}/card/{card-id}/query
+    method: POST
+    file: 'dashboard._dashboard-id_.dashcard._dashcard-id_.card._card-id_.query.POST.yml'
+  -
+    endpoint: /api/dashboard/{dashboard-id}/dashcard/{dashcard-id}/card/{card-id}/query/{export-format}
+    method: POST
+    file: 'dashboard._dashboard-id_.dashcard._dashcard-id_.card._card-id_.query._export-format_.POST.yml'
+  -
+    endpoint: /api/dashboard/{dashboard-id}/dashcard/{dashcard-id}/execute
+    method: GET
+    file: 'dashboard._dashboard-id_.dashcard._dashcard-id_.execute.GET.yml'
+  -
+    endpoint: /api/dashboard/{dashboard-id}/dashcard/{dashcard-id}/execute
+    method: POST
+    file: 'dashboard._dashboard-id_.dashcard._dashcard-id_.execute.POST.yml'
+  -
+    endpoint: /api/dashboard/{dashboard-id}/public_link
+    method: POST
+    file: 'dashboard._dashboard-id_.public_link.POST.yml'
+  -
+    endpoint: /api/dashboard/{dashboard-id}/public_link
+    method: DELETE
+    file: 'dashboard._dashboard-id_.public_link.DELETE.yml'
+  -
+    endpoint: /api/dashboard/{from-dashboard-id}/copy
+    method: POST
+    file: 'dashboard._from-dashboard-id_.copy.POST.yml'
+  -
+    endpoint: /api/dashboard/{id}
+    method: GET
+    file: 'dashboard._id_.GET.yml'
+  -
+    endpoint: /api/dashboard/{id}
+    method: DELETE
+    file: 'dashboard._id_.DELETE.yml'
+  -
+    endpoint: /api/dashboard/{id}
+    method: PUT
+    file: 'dashboard._id_.PUT.yml'
+  -
+    endpoint: /api/dashboard/{id}/cards
+    method: PUT
+    file: 'dashboard._id_.cards.PUT.yml'
+  -
+    endpoint: /api/dashboard/{id}/items
+    method: GET
+    file: 'dashboard._id_.items.GET.yml'
+  -
+    endpoint: /api/dashboard/{id}/params/{param-key}/search/{query}
+    method: GET
+    file: 'dashboard._id_.params._param-key_.search._query_.GET.yml'
+  -
+    endpoint: /api/dashboard/{id}/params/{param-key}/values
+    method: GET
+    file: 'dashboard._id_.params._param-key_.values.GET.yml'
+  -
+    endpoint: /api/dashboard/{id}/query_metadata
+    method: GET
+    file: 'dashboard._id_.query_metadata.GET.yml'
+  -
+    endpoint: /api/dashboard/{id}/related
+    method: GET
+    file: 'dashboard._id_.related.GET.yml'
+  -
+    endpoint: /api/database/
+    method: GET
+    file: 'database.GET.yml'
+  -
+    endpoint: /api/database/
+    method: POST
+    file: 'database.POST.yml'
+  -
+    endpoint: /api/database/sample_database
+    method: POST
+    file: 'database.sample_database.POST.yml'
+  -
+    endpoint: /api/database/validate
+    method: POST
+    file: 'database.validate.POST.yml'
+  -
+    endpoint: /api/database/{id}
+    method: GET
+    file: 'database._id_.GET.yml'
+  -
+    endpoint: /api/database/{id}
+    method: PUT
+    file: 'database._id_.PUT.yml'
+  -
+    endpoint: /api/database/{id}
+    method: DELETE
+    file: 'database._id_.DELETE.yml'
+  -
+    endpoint: /api/database/{id}/autocomplete_suggestions
+    method: GET
+    file: 'database._id_.autocomplete_suggestions.GET.yml'
+  -
+    endpoint: /api/database/{id}/card_autocomplete_suggestions
+    method: GET
+    file: 'database._id_.card_autocomplete_suggestions.GET.yml'
+  -
+    endpoint: /api/database/{id}/discard_values
+    method: POST
+    file: 'database._id_.discard_values.POST.yml'
+  -
+    endpoint: /api/database/{id}/dismiss_spinner
+    method: POST
+    file: 'database._id_.dismiss_spinner.POST.yml'
+  -
+    endpoint: /api/database/{id}/fields
+    method: GET
+    file: 'database._id_.fields.GET.yml'
+  -
+    endpoint: /api/database/{id}/idfields
+    method: GET
+    file: 'database._id_.idfields.GET.yml'
+  -
+    endpoint: /api/database/{id}/metadata
+    method: GET
+    file: 'database._id_.metadata.GET.yml'
+  -
+    endpoint: /api/database/{id}/persist
+    method: POST
+    file: 'database._id_.persist.POST.yml'
+  -
+    endpoint: /api/database/{id}/rescan_values
+    method: POST
+    file: 'database._id_.rescan_values.POST.yml'
+  -
+    endpoint: /api/database/{id}/schema/
+    method: GET
+    file: 'database._id_.schema.GET.yml'
+  -
+    endpoint: /api/database/{id}/schema/{schema}
+    method: GET
+    file: 'database._id_.schema._schema_.GET.yml'
+  -
+    endpoint: /api/database/{id}/schemas
+    method: GET
+    file: 'database._id_.schemas.GET.yml'
+  -
+    endpoint: /api/database/{id}/sync_schema
+    method: POST
+    file: 'database._id_.sync_schema.POST.yml'
+  -
+    endpoint: /api/database/{id}/syncable_schemas
+    method: GET
+    file: 'database._id_.syncable_schemas.GET.yml'
+  -
+    endpoint: /api/database/{id}/unpersist
+    method: POST
+    file: 'database._id_.unpersist.POST.yml'
+  -
+    endpoint: /api/database/{id}/usage_info
+    method: GET
+    file: 'database._id_.usage_info.GET.yml'
+  -
+    endpoint: /api/database/{virtual-db}/datasets
+    method: GET
+    file: 'database._virtual-db_.datasets.GET.yml'
+  -
+    endpoint: /api/database/{virtual-db}/datasets/{schema}
+    method: GET
+    file: 'database._virtual-db_.datasets._schema_.GET.yml'
+  -
+    endpoint: /api/database/{virtual-db}/metadata
+    method: GET
+    file: 'database._virtual-db_.metadata.GET.yml'
+  -
+    endpoint: /api/database/{virtual-db}/schema/{schema}
+    method: GET
+    file: 'database._virtual-db_.schema._schema_.GET.yml'
+  -
+    endpoint: /api/database/{virtual-db}/schemas
+    method: GET
+    file: 'database._virtual-db_.schemas.GET.yml'
+  -
+    endpoint: /api/dataset/
+    method: POST
+    file: 'dataset.POST.yml'
+  -
+    endpoint: /api/dataset/native
+    method: POST
+    file: 'dataset.native.POST.yml'
+  -
+    endpoint: /api/dataset/parameter/search/{query}
+    method: POST
+    file: 'dataset.parameter.search._query_.POST.yml'
+  -
+    endpoint: /api/dataset/parameter/values
+    method: POST
+    file: 'dataset.parameter.values.POST.yml'
+  -
+    endpoint: /api/dataset/pivot
+    method: POST
+    file: 'dataset.pivot.POST.yml'
+  -
+    endpoint: /api/dataset/query_metadata
+    method: POST
+    file: 'dataset.query_metadata.POST.yml'
+  -
+    endpoint: /api/dataset/{export-format}
+    method: POST
+    file: 'dataset._export-format_.POST.yml'
+  -
+    endpoint: /api/ee/advanced-permissions/application/graph
+    method: GET
+    file: 'ee.advanced-permissions.application.graph.GET.yml'
+  -
+    endpoint: /api/ee/advanced-permissions/application/graph
+    method: PUT
+    file: 'ee.advanced-permissions.application.graph.PUT.yml'
+  -
+    endpoint: /api/ee/advanced-permissions/impersonation/
+    method: GET
+    file: 'ee.advanced-permissions.impersonation.GET.yml'
+  -
+    endpoint: /api/ee/advanced-permissions/impersonation/{id}
+    method: DELETE
+    file: 'ee.advanced-permissions.impersonation._id_.DELETE.yml'
+  -
+    endpoint: /api/ee/audit-app/user/audit-info
+    method: GET
+    file: 'ee.audit-app.user.audit-info.GET.yml'
+  -
+    endpoint: /api/ee/audit-app/user/{id}/subscriptions
+    method: DELETE
+    file: 'ee.audit-app.user._id_.subscriptions.DELETE.yml'
+  -
+    endpoint: /api/ee/autodescribe/card/summarize
+    method: POST
+    file: 'ee.autodescribe.card.summarize.POST.yml'
+  -
+    endpoint: /api/ee/autodescribe/dashboard/summarize/{id}
+    method: POST
+    file: 'ee.autodescribe.dashboard.summarize._id_.POST.yml'
+  -
+    endpoint: /api/ee/billing/
+    method: GET
+    file: 'ee.billing.GET.yml'
+  -
+    endpoint: /api/ee/gsheets/folder
+    method: POST
+    file: 'ee.gsheets.folder.POST.yml'
+  -
+    endpoint: /api/ee/gsheets/folder
+    method: GET
+    file: 'ee.gsheets.folder.GET.yml'
+  -
+    endpoint: /api/ee/gsheets/folder
+    method: DELETE
+    file: 'ee.gsheets.folder.DELETE.yml'
+  -
+    endpoint: /api/ee/gsheets/service-account
+    method: GET
+    file: 'ee.gsheets.service-account.GET.yml'
+  -
+    endpoint: /api/ee/logs/query_execution/{yyyy-mm}
+    method: GET
+    file: 'ee.logs.query_execution._yyyy-mm_.GET.yml'
+  -
+    endpoint: /api/ee/query-reference-validation/invalid-cards
+    method: GET
+    file: 'ee.query-reference-validation.invalid-cards.GET.yml'
+  -
+    endpoint: /api/ee/scim/api_key
+    method: GET
+    file: 'ee.scim.api_key.GET.yml'
+  -
+    endpoint: /api/ee/scim/api_key
+    method: POST
+    file: 'ee.scim.api_key.POST.yml'
+  -
+    endpoint: /api/ee/scim/v2/Groups
+    method: GET
+    file: 'ee.scim.v2.Groups.GET.yml'
+  -
+    endpoint: /api/ee/scim/v2/Groups
+    method: POST
+    file: 'ee.scim.v2.Groups.POST.yml'
+  -
+    endpoint: /api/ee/scim/v2/Groups/{id}
+    method: GET
+    file: 'ee.scim.v2.Groups._id_.GET.yml'
+  -
+    endpoint: /api/ee/scim/v2/Groups/{id}
+    method: PUT
+    file: 'ee.scim.v2.Groups._id_.PUT.yml'
+  -
+    endpoint: /api/ee/scim/v2/Groups/{id}
+    method: DELETE
+    file: 'ee.scim.v2.Groups._id_.DELETE.yml'
+  -
+    endpoint: /api/ee/scim/v2/Users
+    method: GET
+    file: 'ee.scim.v2.Users.GET.yml'
+  -
+    endpoint: /api/ee/scim/v2/Users
+    method: POST
+    file: 'ee.scim.v2.Users.POST.yml'
+  -
+    endpoint: /api/ee/scim/v2/Users/{id}
+    method: GET
+    file: 'ee.scim.v2.Users._id_.GET.yml'
+  -
+    endpoint: /api/ee/scim/v2/Users/{id}
+    method: PUT
+    file: 'ee.scim.v2.Users._id_.PUT.yml'
+  -
+    endpoint: /api/ee/scim/v2/Users/{id}
+    method: PATCH
+    method: ee.scim.v2.Users._id_.PATCH.yml
+  -
+    endpoint: /api/ee/serialization/export
+    method: POST
+    file: 'ee.serialization.export.POST.yml'
+  -
+    endpoint: /api/ee/serialization/import
+    method: POST
+    file: 'ee.serialization.import.POST.yml'
+  -
+    endpoint: /api/ee/stale/{id}
+    method: GET
+    file: 'ee.stale._id_.GET.yml'
+  -
+    endpoint: /api/ee/upload-management/tables
+    method: GET
+    file: 'ee.upload-management.tables.GET.yml'
+  -
+    endpoint: /api/ee/upload-management/tables/{id}
+    method: DELETE
+    file: 'ee.upload-management.tables._id_.DELETE.yml'
+  -
+    endpoint: /api/email/
+    method: PUT
+    file: 'email.PUT.yml'
+  -
+    endpoint: /api/email/
+    method: DELETE
+    file: 'email.DELETE.yml'
+  -
+    endpoint: /api/email/test
+    method: POST
+    file: 'email.test.POST.yml'
+  -
+    endpoint: /api/embed/card/{token}
+    method: GET
+    file: 'embed.card._token_.GET.yml'
+  -
+    endpoint: /api/embed/card/{token}/field/{field-id}/remapping/{remapped-id}
+    method: GET
+    file: 'embed.card._token_.field._field-id_.remapping._remapped-id_.GET.yml'
+  -
+    endpoint: /api/embed/card/{token}/field/{field-id}/search/{search-field-id}
+    method: GET
+    file: 'embed.card._token_.field._field-id_.search._search-field-id_.GET.yml'
+  -
+    endpoint: /api/embed/card/{token}/field/{field-id}/values
+    method: GET
+    file: 'embed.card._token_.field._field-id_.values.GET.yml'
+  -
+    endpoint: /api/embed/card/{token}/params/{param-key}/search/{prefix}
+    method: GET
+    file: 'embed.card._token_.params._param-key_.search._prefix_.GET.yml'
+  -
+    endpoint: /api/embed/card/{token}/params/{param-key}/values
+    method: GET
+    file: 'embed.card._token_.params._param-key_.values.GET.yml'
+  -
+    endpoint: /api/embed/card/{token}/query
+    method: GET
+    file: 'embed.card._token_.query.GET.yml'
+  -
+    endpoint: /api/embed/card/{token}/query/{export-format}
+    method: GET
+    file: 'embed.card._token_.query._export-format_.GET.yml'
+  -
+    endpoint: /api/embed/dashboard/{token}
+    method: GET
+    file: 'embed.dashboard._token_.GET.yml'
+  -
+    endpoint: /api/embed/dashboard/{token}/dashcard/{dashcard-id}/card/{card-id}
+    method: GET
+    file: 'embed.dashboard._token_.dashcard._dashcard-id_.card._card-id_.GET.yml'
+  -
+    endpoint: /api/embed/dashboard/{token}/dashcard/{dashcard-id}/card/{card-id}/{export-format}
+    method: GET
+    file: 'embed.dashboard._token_.dashcard._dashcard-id_.card._card-id_._export-format_.GET.yml'
+  -
+    endpoint: /api/embed/dashboard/{token}/field/{field-id}/remapping/{remapped-id}
+    method: GET
+    file: 'embed.dashboard._token_.field._field-id_.remapping._remapped-id_.GET.yml'
+  -
+    endpoint: /api/embed/dashboard/{token}/field/{field-id}/search/{search-field-id}
+    method: GET
+    file: 'embed.dashboard._token_.field._field-id_.search._search-field-id_.GET.yml'
+  -
+    endpoint: /api/embed/dashboard/{token}/field/{field-id}/values
+    method: GET
+    file: 'embed.dashboard._token_.field._field-id_.values.GET.yml'
+  -
+    endpoint: /api/embed/dashboard/{token}/params/{param-key}/search/{prefix}
+    method: GET
+    file: 'embed.dashboard._token_.params._param-key_.search._prefix_.GET.yml'
+  -
+    endpoint: /api/embed/dashboard/{token}/params/{param-key}/values
+    method: GET
+    file: 'embed.dashboard._token_.params._param-key_.values.GET.yml'
+  -
+    endpoint: /api/embed/pivot/card/{token}/query
+    method: GET
+    file: 'embed.pivot.card._token_.query.GET.yml'
+  -
+    endpoint: /api/embed/pivot/dashboard/{token}/dashcard/{dashcard-id}/card/{card-id}
+    method: GET
+    file: 'embed.pivot.dashboard._token_.dashcard._dashcard-id_.card._card-id_.GET.yml'
+  -
+    endpoint: /api/embed/tiles/card/{token}/{zoom}/{x}/{y}/{lat-field}/{lon-field}
+    method: GET
+    file: 'embed.tiles.card._token_._zoom_._x_._y_._lat-field_._lon-field_.GET.yml'
+  -
+    endpoint: /api/embed/tiles/dashboard/{token}/dashcard/{dashcard-id}/card/{card-id}/{zoom}/{x}/{y}/{lat-field}/{lon-field}
+    method: GET
+    file: 'embed.tiles.dashboard._token_.dashcard._dashcard-id_.card._card-id_._zoom_._x_._y_._lat-field_._lon-field_.GET.yml'
+  -
+    endpoint: /api/field/{id}
+    method: GET
+    file: 'field._id_.GET.yml'
+  -
+    endpoint: /api/field/{id}
+    method: PUT
+    file: 'field._id_.PUT.yml'
+  -
+    endpoint: /api/field/{id}/dimension
+    method: POST
+    file: 'field._id_.dimension.POST.yml'
+  -
+    endpoint: /api/field/{id}/dimension
+    method: DELETE
+    file: 'field._id_.dimension.DELETE.yml'
+  -
+    endpoint: /api/field/{id}/discard_values
+    method: POST
+    file: 'field._id_.discard_values.POST.yml'
+  -
+    endpoint: /api/field/{id}/related
+    method: GET
+    file: 'field._id_.related.GET.yml'
+  -
+    endpoint: /api/field/{id}/remapping/{remapped-id}
+    method: GET
+    file: 'field._id_.remapping._remapped-id_.GET.yml'
+  -
+    endpoint: /api/field/{id}/rescan_values
+    method: POST
+    file: 'field._id_.rescan_values.POST.yml'
+  -
+    endpoint: /api/field/{id}/search/{search-id}
+    method: GET
+    file: 'field._id_.search._search-id_.GET.yml'
+  -
+    endpoint: /api/field/{id}/summary
+    method: GET
+    file: 'field._id_.summary.GET.yml'
+  -
+    endpoint: /api/field/{id}/values
+    method: GET
+    file: 'field._id_.values.GET.yml'
+  -
+    endpoint: /api/field/{id}/values
+    method: POST
+    file: 'field._id_.values.POST.yml'
+  -
+    endpoint: /api/geojson/
+    method: GET
+    file: 'geojson.GET.yml'
+  -
+    endpoint: /api/geojson/{key}
+    method: GET
+    file: 'geojson._key_.GET.yml'
+  -
+    endpoint: /api/google/settings
+    method: PUT
+    file: 'google.settings.PUT.yml'
+  -
+    endpoint: /api/ldap/settings
+    method: PUT
+    file: 'ldap.settings.PUT.yml'
+  -
+    endpoint: /api/login-history/current
+    method: GET
+    file: 'login-history.current.GET.yml'
+  -
+    endpoint: /api/model-index/
+    method: POST
+    file: 'model-index.POST.yml'
+  -
+    endpoint: /api/model-index/
+    method: GET
+    file: 'model-index.GET.yml'
+  -
+    endpoint: /api/model-index/{id}
+    method: GET
+    file: 'model-index._id_.GET.yml'
+  -
+    endpoint: /api/model-index/{id}
+    method: DELETE
+    file: 'model-index._id_.DELETE.yml'
+  -
+    endpoint: /api/moderation-review/
+    method: POST
+    file: 'moderation-review.POST.yml'
+  -
+    endpoint: /api/mt/gtap/
+    method: GET
+    file: 'mt.gtap.GET.yml'
+  -
+    endpoint: /api/mt/gtap/
+    method: POST
+    file: 'mt.gtap.POST.yml'
+  -
+    endpoint: /api/mt/gtap/validate
+    method: POST
+    file: 'mt.gtap.validate.POST.yml'
+  -
+    endpoint: /api/mt/gtap/{id}
+    method: GET
+    file: 'mt.gtap._id_.GET.yml'
+  -
+    endpoint: /api/mt/gtap/{id}
+    method: PUT
+    file: 'mt.gtap._id_.PUT.yml'
+  -
+    endpoint: /api/mt/gtap/{id}
+    method: DELETE
+    file: 'mt.gtap._id_.DELETE.yml'
+  -
+    endpoint: /api/mt/user/attributes
+    method: GET
+    file: 'mt.user.attributes.GET.yml'
+  -
+    endpoint: /api/mt/user/{id}/attributes
+    method: PUT
+    file: 'mt.user._id_.attributes.PUT.yml'
+  -
+    endpoint: /api/native-query-snippet/
+    method: GET
+    file: 'native-query-snippet.GET.yml'
+  -
+    endpoint: /api/native-query-snippet/
+    method: POST
+    file: 'native-query-snippet.POST.yml'
+  -
+    endpoint: /api/native-query-snippet/{id}
+    method: GET
+    file: 'native-query-snippet._id_.GET.yml'
+  -
+    endpoint: /api/native-query-snippet/{id}
+    method: PUT
+    file: 'native-query-snippet._id_.PUT.yml'
+  -
+    endpoint: /api/notify/db/attached_datawarehouse
+    method: POST
+    file: 'notify.db.attached_datawarehouse.POST.yml'
+  -
+    endpoint: /api/notify/db/{id}
+    method: POST
+    file: 'notify.db._id_.POST.yml'
+  -
+    endpoint: /api/notify/db/{id}/new-table
+    method: POST
+    file: 'notify.db._id_.new-table.POST.yml'
+  -
+    endpoint: /api/permissions/graph
+    method: GET
+    file: 'permissions.graph.GET.yml'
+  -
+    endpoint: /api/permissions/graph
+    method: PUT
+    file: 'permissions.graph.PUT.yml'
+  -
+    endpoint: /api/permissions/graph/db/{db-id}
+    method: GET
+    file: 'permissions.graph.db._db-id_.GET.yml'
+  -
+    endpoint: /api/permissions/graph/group/{group-id}
+    method: GET
+    file: 'permissions.graph.group._group-id_.GET.yml'
+  -
+    endpoint: /api/permissions/group
+    method: GET
+    file: 'permissions.group.GET.yml'
+  -
+    endpoint: /api/permissions/group
+    method: POST
+    file: 'permissions.group.POST.yml'
+  -
+    endpoint: /api/permissions/group/{group-id}
+    method: PUT
+    file: 'permissions.group._group-id_.PUT.yml'
+  -
+    endpoint: /api/permissions/group/{group-id}
+    method: DELETE
+    file: 'permissions.group._group-id_.DELETE.yml'
+  -
+    endpoint: /api/permissions/group/{id}
+    method: GET
+    file: 'permissions.group._id_.GET.yml'
+  -
+    endpoint: /api/permissions/membership
+    method: GET
+    file: 'permissions.membership.GET.yml'
+  -
+    endpoint: /api/permissions/membership
+    method: POST
+    file: 'permissions.membership.POST.yml'
+  -
+    endpoint: /api/permissions/membership/{group-id}/clear
+    method: PUT
+    file: 'permissions.membership._group-id_.clear.PUT.yml'
+  -
+    endpoint: /api/permissions/membership/{id}
+    method: PUT
+    file: 'permissions.membership._id_.PUT.yml'
+  -
+    endpoint: /api/permissions/membership/{id}
+    method: DELETE
+    file: 'permissions.membership._id_.DELETE.yml'
+  -
+    endpoint: /api/persist/
+    method: GET
+    file: 'persist.GET.yml'
+  -
+    endpoint: /api/persist/card/{card-id}
+    method: GET
+    file: 'persist.card._card-id_.GET.yml'
+  -
+    endpoint: /api/persist/disable
+    method: POST
+    file: 'persist.disable.POST.yml'
+  -
+    endpoint: /api/persist/enable
+    method: POST
+    file: 'persist.enable.POST.yml'
+  -
+    endpoint: /api/persist/set-refresh-schedule
+    method: POST
+    file: 'persist.set-refresh-schedule.POST.yml'
+  -
+    endpoint: /api/persist/{persisted-info-id}
+    method: GET
+    file: 'persist._persisted-info-id_.GET.yml'
+  -
+    endpoint: /api/premium-features/token/status
+    method: GET
+    file: 'premium-features.token.status.GET.yml'
+  -
+    endpoint: /api/preview_embed/card/{token}
+    method: GET
+    file: 'preview_embed.card._token_.GET.yml'
+  -
+    endpoint: /api/preview_embed/card/{token}/query
+    method: GET
+    file: 'preview_embed.card._token_.query.GET.yml'
+  -
+    endpoint: /api/preview_embed/dashboard/{token}
+    method: GET
+    file: 'preview_embed.dashboard._token_.GET.yml'
+  -
+    endpoint: /api/preview_embed/dashboard/{token}/dashcard/{dashcard-id}/card/{card-id}
+    method: GET
+    file: 'preview_embed.dashboard._token_.dashcard._dashcard-id_.card._card-id_.GET.yml'
+  -
+    endpoint: /api/preview_embed/dashboard/{token}/params/{param-key}/values
+    method: GET
+    file: 'preview_embed.dashboard._token_.params._param-key_.values.GET.yml'
+  -
+    endpoint: /api/preview_embed/pivot/card/{token}/query
+    method: GET
+    file: 'preview_embed.pivot.card._token_.query.GET.yml'
+  -
+    endpoint: /api/preview_embed/pivot/dashboard/{token}/dashcard/{dashcard-id}/card/{card-id}
+    method: GET
+    file: 'preview_embed.pivot.dashboard._token_.dashcard._dashcard-id_.card._card-id_.GET.yml'
+  -
+    endpoint: /api/public/action/{uuid}
+    method: GET
+    file: 'public.action._uuid_.GET.yml'
+  -
+    endpoint: /api/public/action/{uuid}/execute
+    method: POST
+    file: 'public.action._uuid_.execute.POST.yml'
+  -
+    endpoint: /api/public/card/{uuid}
+    method: GET
+    file: 'public.card._uuid_.GET.yml'
+  -
+    endpoint: /api/public/card/{uuid}/field/{field-id}/remapping/{remapped-id}
+    method: GET
+    file: 'public.card._uuid_.field._field-id_.remapping._remapped-id_.GET.yml'
+  -
+    endpoint: /api/public/card/{uuid}/field/{field-id}/search/{search-field-id}
+    method: GET
+    file: 'public.card._uuid_.field._field-id_.search._search-field-id_.GET.yml'
+  -
+    endpoint: /api/public/card/{uuid}/field/{field-id}/values
+    method: GET
+    file: 'public.card._uuid_.field._field-id_.values.GET.yml'
+  -
+    endpoint: /api/public/card/{uuid}/params/{param-key}/search/{query}
+    method: GET
+    file: 'public.card._uuid_.params._param-key_.search._query_.GET.yml'
+  -
+    endpoint: /api/public/card/{uuid}/params/{param-key}/values
+    method: GET
+    file: 'public.card._uuid_.params._param-key_.values.GET.yml'
+  -
+    endpoint: /api/public/card/{uuid}/query
+    method: GET
+    file: 'public.card._uuid_.query.GET.yml'
+  -
+    endpoint: /api/public/card/{uuid}/query/{export-format}
+    method: GET
+    file: 'public.card._uuid_.query._export-format_.GET.yml'
+  -
+    endpoint: /api/public/dashboard/{uuid}
+    method: GET
+    file: 'public.dashboard._uuid_.GET.yml'
+  -
+    endpoint: /api/public/dashboard/{uuid}/dashcard/{dashcard-id}/card/{card-id}
+    method: GET
+    file: 'public.dashboard._uuid_.dashcard._dashcard-id_.card._card-id_.GET.yml'
+  -
+    endpoint: /api/public/dashboard/{uuid}/dashcard/{dashcard-id}/card/{card-id}/{export-format}
+    method: POST
+    file: 'public.dashboard._uuid_.dashcard._dashcard-id_.card._card-id_._export-format_.POST.yml'
+  -
+    endpoint: /api/public/dashboard/{uuid}/dashcard/{dashcard-id}/execute
+    method: GET
+    file: 'public.dashboard._uuid_.dashcard._dashcard-id_.execute.GET.yml'
+  -
+    endpoint: /api/public/dashboard/{uuid}/dashcard/{dashcard-id}/execute
+    method: POST
+    file: 'public.dashboard._uuid_.dashcard._dashcard-id_.execute.POST.yml'
+  -
+    endpoint: /api/public/dashboard/{uuid}/field/{field-id}/remapping/{remapped-id}
+    method: GET
+    file: 'public.dashboard._uuid_.field._field-id_.remapping._remapped-id_.GET.yml'
+  -
+    endpoint: /api/public/dashboard/{uuid}/field/{field-id}/search/{search-field-id}
+    method: GET
+    file: 'public.dashboard._uuid_.field._field-id_.search._search-field-id_.GET.yml'
+  -
+    endpoint: /api/public/dashboard/{uuid}/field/{field-id}/values
+    method: GET
+    file: 'public.dashboard._uuid_.field._field-id_.values.GET.yml'
+  -
+    endpoint: /api/public/dashboard/{uuid}/params/{param-key}/search/{query}
+    method: GET
+    file: 'public.dashboard._uuid_.params._param-key_.search._query_.GET.yml'
+  -
+    endpoint: /api/public/dashboard/{uuid}/params/{param-key}/values
+    method: GET
+    file: 'public.dashboard._uuid_.params._param-key_.values.GET.yml'
+  -
+    endpoint: /api/public/oembed
+    method: GET
+    file: 'public.oembed.GET.yml'
+  -
+    endpoint: /api/public/pivot/card/{uuid}/query
+    method: GET
+    file: 'public.pivot.card._uuid_.query.GET.yml'
+  -
+    endpoint: /api/public/pivot/dashboard/{uuid}/dashcard/{dashcard-id}/card/{card-id}
+    method: GET
+    file: 'public.pivot.dashboard._uuid_.dashcard._dashcard-id_.card._card-id_.GET.yml'
+  -
+    endpoint: /api/public/tiles/card/{uuid}/{zoom}/{x}/{y}/{lat-field}/{lon-field}
+    method: GET
+    file: 'public.tiles.card._uuid_._zoom_._x_._y_._lat-field_._lon-field_.GET.yml'
+  -
+    endpoint: /api/public/tiles/dashboard/{uuid}/dashcard/{dashcard-id}/card/{card-id}/{zoom}/{x}/{y}/{lat-field}/{lon-field}
+    method: GET
+    file: 'public.tiles.dashboard._uuid_.dashcard._dashcard-id_.card._card-id_._zoom_._x_._y_._lat-field_._lon-field_.GET.yml'
+  -
+    endpoint: /api/pulse/
+    method: GET
+    file: 'pulse.GET.yml'
+  -
+    endpoint: /api/pulse/
+    method: POST
+    file: 'pulse.POST.yml'
+  -
+    endpoint: /api/pulse/form_input
+    method: GET
+    file: 'pulse.form_input.GET.yml'
+  -
+    endpoint: /api/pulse/preview_card/{id}
+    method: GET
+    file: 'pulse.preview_card._id_.GET.yml'
+  -
+    endpoint: /api/pulse/preview_card_info/{id}
+    method: GET
+    file: 'pulse.preview_card_info._id_.GET.yml'
+  -
+    endpoint: /api/pulse/preview_card_png/{id}
+    method: GET
+    file: 'pulse.preview_card_png._id_.GET.yml'
+  -
+    endpoint: /api/pulse/preview_dashboard/{id}
+    method: GET
+    file: 'pulse.preview_dashboard._id_.GET.yml'
+  -
+    endpoint: /api/pulse/test
+    method: POST
+    file: 'pulse.test.POST.yml'
+  -
+    endpoint: /api/pulse/{id}
+    method: GET
+    file: 'pulse._id_.GET.yml'
+  -
+    endpoint: /api/pulse/{id}
+    method: PUT
+    file: 'pulse._id_.PUT.yml'
+  -
+    endpoint: /api/pulse/{id}/subscription
+    method: DELETE
+    file: 'pulse._id_.subscription.DELETE.yml'
+  -
+    endpoint: /api/pulse/unsubscribe/
+    method: POST
+    file: 'pulse.unsubscribe.POST.yml'
+  -
+    endpoint: /api/pulse/unsubscribe/undo
+    method: POST
+    file: 'pulse.unsubscribe.undo.POST.yml'
+  -
+    endpoint: /api/revision/
+    method: GET
+    file: 'revision.GET.yml'
+  -
+    endpoint: /api/revision/revert
+    method: POST
+    file: 'revision.revert.POST.yml'
+  -
+    endpoint: /api/revision/{entity}/{id}
+    method: GET
+    file: 'revision._entity_._id_.GET.yml'
+  -
+    endpoint: /api/search/
+    method: GET
+    file: 'search.GET.yml'
+  -
+    endpoint: /api/search/force-reindex
+    method: POST
+    file: 'search.force-reindex.POST.yml'
+  -
+    endpoint: /api/search/re-init
+    method: POST
+    file: 'search.re-init.POST.yml'
+  -
+    endpoint: /api/search/weights
+    method: GET
+    file: 'search.weights.GET.yml'
+  -
+    endpoint: /api/search/weights
+    method: PUT
+    file: 'search.weights.PUT.yml'
+  -
+    endpoint: /api/segment/
+    method: POST
+    file: 'segment.POST.yml'
+  -
+    endpoint: /api/segment/
+    method: GET
+    file: 'segment.GET.yml'
+  -
+    endpoint: /api/segment/{id}
+    method: GET
+    file: 'segment._id_.GET.yml'
+  -
+    endpoint: /api/segment/{id}
+    method: PUT
+    file: 'segment._id_.PUT.yml'
+  -
+    endpoint: /api/segment/{id}
+    method: DELETE
+    file: 'segment._id_.DELETE.yml'
+  -
+    endpoint: /api/segment/{id}/related
+    method: GET
+    file: 'segment._id_.related.GET.yml'
+  -
+    endpoint: /api/session/
+    method: POST
+    file: 'session.POST.yml'
+  -
+    endpoint: /api/session/
+    method: DELETE
+    file: 'session.DELETE.yml'
+  -
+    endpoint: /api/session/forgot_password
+    method: POST
+    file: 'session.forgot_password.POST.yml'
+  -
+    endpoint: /api/session/google_auth
+    method: POST
+    file: 'session.google_auth.POST.yml'
+  -
+    endpoint: /api/session/password_reset_token_valid
+    method: GET
+    file: 'session.password_reset_token_valid.GET.yml'
+  -
+    endpoint: /api/session/properties
+    method: GET
+    file: 'session.properties.GET.yml'
+  -
+    endpoint: /api/session/reset_password
+    method: POST
+    file: 'session.reset_password.POST.yml'
+  -
+    endpoint: /api/setting/
+    method: GET
+    file: 'setting.GET.yml'
+  -
+    endpoint: /api/setting/
+    method: PUT
+    file: 'setting.PUT.yml'
+  -
+    endpoint: /api/setting/{key}
+    method: GET
+    file: 'setting._key_.GET.yml'
+  -
+    endpoint: /api/setting/{key}
+    method: PUT
+    file: 'setting._key_.PUT.yml'
+  -
+    endpoint: /api/setup/
+    method: POST
+    file: 'setup.POST.yml'
+  -
+    endpoint: /api/setup/admin_checklist
+    method: GET
+    file: 'setup.admin_checklist.GET.yml'
+  -
+    endpoint: /api/setup/user_defaults
+    method: GET
+    file: 'setup.user_defaults.GET.yml'
+  -
+    endpoint: /api/slack/bug-report
+    method: POST
+    file: 'slack.bug-report.POST.yml'
+  -
+    endpoint: /api/slack/manifest
+    method: GET
+    file: 'slack.manifest.GET.yml'
+  -
+    endpoint: /api/slack/settings
+    method: PUT
+    file: 'slack.settings.PUT.yml'
+  -
+    endpoint: /api/table/
+    method: GET
+    file: 'table.GET.yml'
+  -
+    endpoint: /api/table/
+    method: PUT
+    file: 'table.PUT.yml'
+  -
+    endpoint: /api/table/card__:id/fks
+    method: GET
+    file: 'table.card__:id.fks.GET.yml'
+  -
+    endpoint: /api/table/card__:id/query_metadata
+    method: GET
+    file: 'table.card__:id.query_metadata.GET.yml'
+  -
+    endpoint: /api/table/{id}
+    method: GET
+    file: 'table._id_.GET.yml'
+  -
+    endpoint: /api/table/{id}
+    method: PUT
+    file: 'table._id_.PUT.yml'
+  -
+    endpoint: /api/table/{id}/append-csv
+    method: POST
+    file: 'table._id_.append-csv.POST.yml'
+  -
+    endpoint: /api/table/{id}/discard_values
+    method: POST
+    file: 'table._id_.discard_values.POST.yml'
+  -
+    endpoint: /api/table/{id}/fields/order
+    method: PUT
+    file: 'table._id_.fields.order.PUT.yml'
+  -
+    endpoint: /api/table/{id}/fks
+    method: GET
+    file: 'table._id_.fks.GET.yml'
+  -
+    endpoint: /api/table/{id}/query_metadata
+    method: GET
+    file: 'table._id_.query_metadata.GET.yml'
+  -
+    endpoint: /api/table/{id}/related
+    method: GET
+    file: 'table._id_.related.GET.yml'
+  -
+    endpoint: /api/table/{id}/replace-csv
+    method: POST
+    file: 'table._id_.replace-csv.POST.yml'
+  -
+    endpoint: /api/table/{id}/rescan_values
+    method: POST
+    file: 'table._id_.rescan_values.POST.yml'
+  -
+    endpoint: /api/task/
+    method: GET
+    file: 'task.GET.yml'
+  -
+    endpoint: /api/task/info
+    method: GET
+    file: 'task.info.GET.yml'
+  -
+    endpoint: /api/task/{id}
+    method: GET
+    file: 'task._id_.GET.yml'
+  -
+    endpoint: /api/tiles/{card-id}/{zoom}/{x}/{y}/{lat-field}/{lon-field}
+    method: GET
+    file: 'tiles._card-id_._zoom_._x_._y_._lat-field_._lon-field_.GET.yml'
+  -
+    endpoint: /api/tiles/{dashboard-id}/dashcard/{dashcard-id}/card/{card-id}/{zoom}/{x}/{y}/{lat-field}/{lon-field}
+    method: GET
+    file: 'tiles._dashboard-id_.dashcard._dashcard-id_.card._card-id_._zoom_._x_._y_._lat-field_._lon-field_.GET.yml'
+  -
+    endpoint: /api/tiles/{zoom}/{x}/{y}/{lat-field}/{lon-field}
+    method: GET
+    file: 'tiles._zoom_._x_._y_._lat-field_._lon-field_.GET.yml'
+  -
+    endpoint: /api/timeline-event/
+    method: POST
+    file: 'timeline-event.POST.yml'
+  -
+    endpoint: /api/timeline-event/{id}
+    method: GET
+    file: 'timeline-event._id_.GET.yml'
+  -
+    endpoint: /api/timeline-event/{id}
+    method: PUT
+    file: 'timeline-event._id_.PUT.yml'
+  -
+    endpoint: /api/timeline-event/{id}
+    method: DELETE
+    file: 'timeline-event._id_.DELETE.yml'
+  -
+    endpoint: /api/timeline/
+    method: POST
+    file: 'timeline.POST.yml'
+  -
+    endpoint: /api/timeline/
+    method: GET
+    file: 'timeline.GET.yml'
+  -
+    endpoint: /api/timeline/collection/root
+    method: GET
+    file: 'timeline.collection.root.GET.yml'
+  -
+    endpoint: /api/timeline/collection/{id}
+    method: GET
+    file: 'timeline.collection._id_.GET.yml'
+  -
+    endpoint: /api/timeline/{id}
+    method: GET
+    file: 'timeline._id_.GET.yml'
+  -
+    endpoint: /api/timeline/{id}
+    method: PUT
+    file: 'timeline._id_.PUT.yml'
+  -
+    endpoint: /api/timeline/{id}
+    method: DELETE
+    file: 'timeline._id_.DELETE.yml'
+  -
+    endpoint: /api/user-key-value/namespace/{namespace}
+    method: GET
+    file: 'user-key-value.namespace._namespace_.GET.yml'
+  -
+    endpoint: /api/user-key-value/namespace/{namespace}/key/{key}
+    method: PUT
+    file: 'user-key-value.namespace._namespace_.key._key_.PUT.yml'
+  -
+    endpoint: /api/user-key-value/namespace/{namespace}/key/{key}
+    method: GET
+    file: 'user-key-value.namespace._namespace_.key._key_.GET.yml'
+  -
+    endpoint: /api/user-key-value/namespace/{namespace}/key/{key}
+    method: DELETE
+    file: 'user-key-value.namespace._namespace_.key._key_.DELETE.yml'
+  -
+    endpoint: /api/user/
+    method: GET
+    file: 'user.GET.yml'
+  -
+    endpoint: /api/user/
+    method: POST
+    file: 'user.POST.yml'
+  -
+    endpoint: /api/user/current
+    method: GET
+    file: 'user.current.GET.yml'
+  -
+    endpoint: /api/user/recipients
+    method: GET
+    file: 'user.recipients.GET.yml'
+  -
+    endpoint: /api/user/{id}
+    method: GET
+    file: 'user._id_.GET.yml'
+  -
+    endpoint: /api/user/{id}
+    method: PUT
+    file: 'user._id_.PUT.yml'
+  -
+    endpoint: /api/user/{id}
+    method: DELETE
+    file: 'user._id_.DELETE.yml'
+  -
+    endpoint: /api/user/{id}/modal/{modal}
+    method: PUT
+    file: 'user._id_.modal._modal_.PUT.yml'
+  -
+    endpoint: /api/user/{id}/password
+    method: PUT
+    file: 'user._id_.password.PUT.yml'
+  -
+    endpoint: /api/user/{id}/reactivate
+    method: PUT
+    file: 'user._id_.reactivate.PUT.yml'
+  -
+    endpoint: /api/util/bug_report_details
+    method: GET
+    file: 'util.bug_report_details.GET.yml'
+  -
+    endpoint: /api/util/diagnostic_info/connection_pool_info
+    method: GET
+    file: 'util.diagnostic_info.connection_pool_info.GET.yml'
+  -
+    endpoint: /api/util/entity_id
+    method: POST
+    file: 'util.entity_id.POST.yml'
+  -
+    endpoint: /api/util/logs
+    method: GET
+    file: 'util.logs.GET.yml'
+  -
+    endpoint: /api/util/password_check
+    method: POST
+    file: 'util.password_check.POST.yml'
+  -
+    endpoint: /api/util/product-feedback
+    method: POST
+    file: 'util.product-feedback.POST.yml'
+  -
+    endpoint: /api/util/random_token
+    method: GET
+    file: 'util.random_token.GET.yml'
+  -
+    endpoint: /api/util/stats
+    method: GET
+    file: 'util.stats.GET.yml'

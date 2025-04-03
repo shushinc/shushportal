@@ -1,0 +1,8 @@
+services:
+  metalite.api_service:
+    class: Drupal\metalite\Service\MetaliteService
+    arguments:
+      - '@config.factory'
+      - '@http_client'
+      - '@logger.factory'
+      - '@messenger'

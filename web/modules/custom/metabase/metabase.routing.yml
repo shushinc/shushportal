@@ -1,0 +1,16 @@
+metabase.settings:
+  path: '/admin/config/services/metabase'
+  defaults:
+    _form: 'Drupal\metabase\Form\MetabaseSettingsForm'
+    _title: 'Metabase API Settings'
+  requirements:
+    _permission: 'administer site configuration'
+
+metabase.embed_url:
+  path: '/metabase/dashboard/{dashboard_id}'
+  defaults:
+    _controller: '\Drupal\metabase\Controller\MetabaseDashboardController::getEmbedUrl'
+    _title: 'Metabase Dashboard Embed'
+  requirements:
+    _access: 'TRUE'
+    # _permission: 'access metabase dashboard'

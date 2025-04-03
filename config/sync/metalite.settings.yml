@@ -1,0 +1,3 @@
+remote_base_url: 'http://web:80/metabase/dashboard'
+api_key: disabled
+dashboard_id: '1'
