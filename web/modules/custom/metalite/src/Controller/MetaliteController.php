@@ -63,10 +63,10 @@ class MetaliteController extends ControllerBase {
         'height' => '800px',
         'allowfullscreen' => 'true',
         'title' => $this->t('Metalite Dashboard'),
+        'allowtransparency' => 'true',
       ],
       '#cache' => [
         'contexts' => ['url.path'],
-      // Cache for 1 hour.
         'max-age' => 3600,
       ],
     ];

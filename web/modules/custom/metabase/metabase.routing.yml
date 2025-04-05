@@ -14,3 +14,30 @@ metabase.embed_url:
   requirements:
     _access: 'TRUE'
     # _permission: 'access metabase dashboard'
+
+metabase.proxy:
+  path: '/proxy'
+  defaults:
+    _controller: '\Drupal\metabase\Controller\ProxyController::proxy'
+    _title: 'Proxy'
+  methods: [GET, POST, PUT, DELETE, HEAD, OPTIONS, PATCH]
+  requirements:
+    _access: 'TRUE'
+    # _permission: 'access content'
+  options:
+    no_cache: 'TRUE'
+
+metabase.proxy.path:
+  path: '/proxy/{path}'
+  defaults:
+    _controller: '\Drupal\metabase\Controller\ProxyController::proxy'
+    _title: 'Proxy'
+  methods: [GET, POST, PUT, DELETE, HEAD, OPTIONS, PATCH]
+  requirements:
+     _access: 'TRUE'
+    # _permission: 'access content'
+  options:
+    no_cache: 'TRUE'
+    parameters:
+      path:
+        type: path

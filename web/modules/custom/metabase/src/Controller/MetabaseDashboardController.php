@@ -73,7 +73,7 @@ class MetabaseDashboardController extends ControllerBase {
     // Create JWT payload.
     $payload = [
       'resource' => ['dashboard' => (int) $dashboard_id],
-      'params' => [],
+      'params' => (object)[],
     // 10 minute expiration
       'exp' => time() + (60 * 10),
     ];
@@ -81,6 +81,8 @@ class MetabaseDashboardController extends ControllerBase {
     try {
       // Generate token.
       $token = JWT::encode($payload, $secket_key, 'HS256');
+
+      $base_url = 'https://shushportal.ddev.site/proxy';
 
       // Build the embed URL.
       $embed_url = $base_url . '/embed/dashboard/' . $token . '#bordered=true&titled=true';
