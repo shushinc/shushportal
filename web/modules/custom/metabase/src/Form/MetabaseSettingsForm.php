@@ -60,11 +60,27 @@ class MetabaseSettingsForm extends ConfigFormBase {
       '#open' => TRUE,
     ];
 
+    $form['embeding_settings']['embed_base_url'] = [
+      '#type' => 'url',
+      '#title' => $this->t('Base URL'),
+      '#description' => $this->t('The base URL of the Metabase API (e.g., https://metabase.example.com).'),
+      '#default_value' => $config->get('embeding.base_url'),
+      '#required' => TRUE,
+    ];
+
     $form['embeding_settings']['secret_key'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Metabase Secret Key'),
       '#description' => $this->t('The secret key from your Metabase embedding settings.'),
       '#default_value' => $config->get('embeding.api_token'),
+      '#required' => TRUE,
+    ];
+
+    $form['embeding_settings']['dashboard_id'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Dashboard ID'),
+      '#description' => $this->t('Enter the default Dashboard ID.'),
+      '#default_value' => $config->get('embeding.dashboard_id'),
       '#required' => TRUE,
     ];
 
@@ -92,7 +108,9 @@ class MetabaseSettingsForm extends ConfigFormBase {
     $this->config('metabase.settings')
       ->set('api.base_url', $form_state->getValue('base_url'))
       ->set('api.api_token', $form_state->getValue('api_token'))
+      ->set('embeding.base_url', $form_state->getValue('embed_base_url'))
       ->set('embeding.api_token', $form_state->getValue('secret_key'))
+      ->set('embeding.dashboard_id', $form_state->getValue('dashboard_id'))
       ->save();
 
     parent::submitForm($form, $form_state);

@@ -37,7 +37,6 @@ module:
   menu_per_role: 0
   menu_ui: 0
   metabase: 0
-  metalite: 0
   mimemail: 0
   mysql: 0
   node: 0
