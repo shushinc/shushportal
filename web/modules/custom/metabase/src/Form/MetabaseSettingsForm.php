@@ -84,6 +84,19 @@ class MetabaseSettingsForm extends ConfigFormBase {
       '#required' => TRUE,
     ];
 
+    $form['overwrite'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Overwrite'),
+      '#open' => TRUE,
+    ];
+
+    $form['overwrite']['css'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('CSS'),
+      '#description' => $this->t('Enter the CSS to overwrite.'),
+      '#default_value' => $config->get('overwrite.css'),
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -111,6 +124,7 @@ class MetabaseSettingsForm extends ConfigFormBase {
       ->set('embeding.base_url', $form_state->getValue('embed_base_url'))
       ->set('embeding.api_token', $form_state->getValue('secret_key'))
       ->set('embeding.dashboard_id', $form_state->getValue('dashboard_id'))
+      ->set('overwrite.css', $form_state->getValue('css'))
       ->save();
 
     parent::submitForm($form, $form_state);

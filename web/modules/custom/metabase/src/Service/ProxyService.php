@@ -67,6 +67,9 @@ class ProxyService {
 
 
   public function process(Request $request) {
+
+    $config = $this->configFactory->get('metabase.settings');
+
     $path = $request->getPathInfo();
     $path = str_replace('/proxy', '', $path);
 
@@ -125,8 +128,12 @@ class ProxyService {
         // Get the entire content.
         $content = (string) $proxyResponse->getBody();
 
-        // Append CSS to hide footer.
-        $content .= 'footer{display:none !important;}';
+        $css = $config->get('overwrite.css');
+
+        if ($css) {
+          $content .= $css;
+        }
+        // $content .= 'footer{display:none !important;}';
 
         // Create and return the response.
         $response = new Response(

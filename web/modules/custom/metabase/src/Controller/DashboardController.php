@@ -91,7 +91,7 @@ class DashboardController extends ControllerBase {
         'src' => $embed_url,
         'frameborder' => '0',
         'width' => '100%',
-        'height' => '800px',
+        // 'height' => '800px',
         'allowfullscreen' => 'true',
         'title' => $this->t('Dashboard'),
         'allowtransparency' => 'true',
@@ -99,6 +99,11 @@ class DashboardController extends ControllerBase {
       '#cache' => [
         'contexts' => ['url.path'],
         'max-age' => 0,
+      ],
+      '#attached' => [
+        'library' => [
+          'metabase/iframe-resize'
+        ]
       ],
     ];
   }
