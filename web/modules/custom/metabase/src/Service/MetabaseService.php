@@ -60,7 +60,7 @@ class MetabaseService {
    *   The base URL.
    */
   protected function getBaseUrl() {
-    return $this->configFactory->get('metabase.settings')->get('base_url');
+    return $this->configFactory->get('metabase.settings')->get('metabase.internal.base_url');
   }
 
   /**
@@ -70,7 +70,7 @@ class MetabaseService {
    *   The API token.
    */
   protected function getApiToken() {
-    return $this->configFactory->get('metabase.settings')->get('api_token');
+    return $this->configFactory->get('metabase.settings')->get('api.api_token');
   }
 
   /**
@@ -106,6 +106,7 @@ class MetabaseService {
       'Content-Type' => 'application/json',
       'Accept' => 'application/json',
       'X-Metabase-Session' => $api_token,
+      'X-Api-Key' => $api_token,
     ];
 
     // Merge with any custom headers.

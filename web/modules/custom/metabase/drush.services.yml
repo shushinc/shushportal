@@ -1,0 +1,6 @@
+services:
+  metabase.commands:
+    class: \Drupal\metabase\Commands\ServiceConsumerCommands
+    arguments: ['@metabase.service']
+    tags:
+      - { name: drush.command }

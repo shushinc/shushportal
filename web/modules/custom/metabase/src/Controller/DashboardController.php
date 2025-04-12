@@ -129,7 +129,9 @@ class DashboardController extends ControllerBase {
     // Create JWT payload.
     $payload = [
       'resource' => ['dashboard' => (int) $dashboard_id],
-      'params' => (object)[],
+      'params' => (object)[
+        // 'end_customer' => 'Bank of America',
+      ],
       'exp' => time() + (60 * 10),
     ];
 

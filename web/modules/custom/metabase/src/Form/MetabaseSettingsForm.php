@@ -54,6 +54,28 @@ class MetabaseSettingsForm extends ConfigFormBase {
       '#required' => TRUE,
     ];
 
+    $form['metabase_details'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Metabase Settings'),
+      '#open' => TRUE,
+    ];
+
+    $form['metabase_details']['metabase_internal_base_url'] = [
+      '#type' => 'url',
+      '#title' => $this->t('Internal Base URL'),
+      '#description' => $this->t('The base URL of the Metabase API (e.g., https://metabase.example.com).'),
+      '#default_value' => $config->get('metabase.internal.base_url'),
+      '#required' => TRUE,
+    ];
+
+    $form['metabase_details']['metabase_external_base_url'] = [
+      '#type' => 'url',
+      '#title' => $this->t('External Base URL'),
+      '#description' => $this->t('The base URL of the Metabase API (e.g., https://metabase.example.com).'),
+      '#default_value' => $config->get('metabase.external.base_url'),
+      '#required' => TRUE,
+    ];
+
     $form['embeding_settings'] = [
       '#type' => 'details',
       '#title' => $this->t('Embedding Settings'),
@@ -121,6 +143,8 @@ class MetabaseSettingsForm extends ConfigFormBase {
     $this->config('metabase.settings')
       ->set('api.base_url', $form_state->getValue('base_url'))
       ->set('api.api_token', $form_state->getValue('api_token'))
+      ->set('metabase.internal.base_url', $form_state->getValue('metabase_internal_base_url'))
+      ->set('metabase.external.base_url', $form_state->getValue('metabase_external_base_url'))
       ->set('embeding.base_url', $form_state->getValue('embed_base_url'))
       ->set('embeding.api_token', $form_state->getValue('secret_key'))
       ->set('embeding.dashboard_id', $form_state->getValue('dashboard_id'))
