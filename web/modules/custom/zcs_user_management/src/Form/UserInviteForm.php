@@ -61,7 +61,7 @@ final class UserInviteForm extends FormBase {
       '#type' => 'actions',
       'submit' => [
         '#type' => 'submit',
-        '#value' => $this->t('Invite User'),
+        '#value' => $this->t('Invite Carrier User'),
       ],
     ];
     return $form;
