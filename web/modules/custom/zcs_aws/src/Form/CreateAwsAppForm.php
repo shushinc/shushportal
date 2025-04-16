@@ -95,6 +95,7 @@ class CreateAwsAppForm extends FormBase {
     }
     else {
       \Drupal::messenger()->addError($this->t('Something went wrong. Please contact Administrator'), 'status', TRUE);
+      $form_state->setRedirectUrl(Url::fromRoute('zcs_aws.app_list'));
     }
 
   }

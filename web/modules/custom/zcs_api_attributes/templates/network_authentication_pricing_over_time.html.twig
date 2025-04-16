@@ -1,0 +1,38 @@
+<div>
+
+  <table class="attributes-table">
+    <thead>
+      <tr>
+        <th>API Category</th>
+        <th>API Attribute</th>
+        <th>Effective Date
+          </br>
+           {{ content.effective_date_1 }}
+        </th>
+        <th>Effective Date
+          </br>
+         {{ content.effective_date_2 }}
+        </th>
+        <th>Effective Date
+         </br>
+         {{ content.effective_date_3 }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for mainkey, attributes in content.final %}
+          {% for key, att in attributes %}
+          <tr>
+            {% if key == 0 %} 
+              <td rowspan={{ attributes|length }}>{{ content.titles[mainkey].name }}</td>
+            {% endif %}
+            <td>{{ att.title }}</td>
+            <td><span class=" ">{{ att.effective_date_1_price_per_call}}</span></td>
+            <td><span class=" ">{{ att.effective_date_2_price_per_call}}</span></td>
+            <td><span class=" ">{{ att.effective_date_3_price_per_call}}</span></td>
+          </tr>
+          {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

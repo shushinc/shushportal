@@ -13,3 +13,11 @@ zcs_custom.portal_settings:
     _form: 'Drupal\zcs_custom\Form\PortalSettingsForm'
   requirements:
     _permission: 'administer site configuration'
+
+zcs_custom.api_attribute_settings:
+  path: '/admin/config/system/api-attributes-settings'
+  defaults:
+    _title: 'API Attribute Settings'
+    _form: 'Drupal\zcs_custom\Form\ApiAttributeSettingsForm'
+  requirements:
+    _permission: 'administer site configuration'

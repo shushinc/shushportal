@@ -41,7 +41,8 @@ class CreateClientForm extends FormBase {
       '#required' => TRUE,
       '#attributes' => [
         'autocomplete' => 'off'
-      ],        
+      ],
+      '#maxlength' => 20,        
     ];
 
     $form['contact_name'] = [

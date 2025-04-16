@@ -37,6 +37,26 @@ final class AppListForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
+    // $url = Url::fromRoute('zcs_aws.create_key');
+    // $url->setOptions([
+    // 'attributes' => [
+    // 'class' => ['use-ajax'],
+    // 'data-dialog-type' => 'modal',
+    // 'data-dialog-options' => json_encode(['width' => 700]),
+    // ],
+    // ]);
+
+    // $link = Link::fromTextAndUrl($this->t('Create Client Credentials'), $url)->toRenderable();
+    // $link['#attached']['library'][] = 'core/drupal.dialog.ajax'];
+
+    // // Add the link to the form before the table.
+    // $form['create_link'] = [
+    // '#type' => 'container',
+    // '#attributes' => ['class' => ['zcs-create-link']],
+    // 'link' => $link,
+    // ];
+
+
 
     $header = [
       'api_name' => $this->t('Client Name'),

@@ -1,4 +1,4 @@
-uuid: d2da72a6-2938-4caa-a8dd-e9ddd9482e99
+uuid: 1413ae2a-a927-47bf-9ab5-565d64c71e0f
 langcode: en
 status: true
 dependencies:
@@ -11,9 +11,11 @@ entity_type: node
 bundle: api_attributes
 label: 'Current Standard Pricing'
 description: ''
-required: true
+required: false
 translatable: false
-default_value: {  }
+default_value:
+  -
+    value: '0'
 default_value_callback: ''
 settings: {  }
 field_type: string

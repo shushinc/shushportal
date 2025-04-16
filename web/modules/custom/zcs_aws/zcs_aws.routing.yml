@@ -1,7 +1,7 @@
 zcs_aws.create_key:
   path: '/create-aws-key'
   defaults:
-    _title: 'Generate API key'
+    _title: 'Create Client Credentials'
     _form: '\Drupal\zcs_aws\Form\CreateAwsAppForm'
   requirements:
     _custom_access: '\Drupal\zcs_aws\Form\CreateAwsAppForm::access'

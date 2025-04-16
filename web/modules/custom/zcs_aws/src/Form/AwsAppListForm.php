@@ -38,6 +38,24 @@ final class AwsAppListForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
 
+    $url = Url::fromRoute('zcs_aws.create_key');
+    $url->setOptions([
+      'attributes' => [
+        'class' => ['button', 'button--primary', 'use-ajax'],
+        'data-dialog-type' => 'modal',
+        'data-dialog-options' => json_encode(['width' => 700]),
+      ],
+    ]);
+  
+    $form['top_actions'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['top-actions']],
+      'create_link' => [
+        '#markup' => Link::fromTextAndUrl($this->t('Create Client Credentials'), $url)->toString(),
+      ],
+      '#weight' => -10,
+    ];
+
     $header = [
       'api_name' => $this->t('Client Name'),
       'description' => $this->t('Description'),
@@ -68,7 +86,7 @@ final class AwsAppListForm extends FormBase {
             if ($gateway_name != 'aws') {
               continue;
             }
-            $description = $group->get('field_description')->getValue()[0]['value'];
+            $description = Markup::create($group->get('field_description')->getValue()[0]['value']);
             $app_status = $app->get('field_app_status')->value;
             if ($app_status == 'active') {
               $url = Url::fromRoute('zcs_aws.edit_key', ['id' => $app->id()]);

@@ -88,7 +88,7 @@ class AddClientMemberForm extends FormBase {
     ];
     $form['user_mail'] = [
       '#type' => 'email',
-      '#title' => t('Email'),
+      '#title' => t('Client User Email'),
       '#required' => TRUE,
       '#attributes' => [
         'autocomplete' => 'off'
@@ -102,7 +102,7 @@ class AddClientMemberForm extends FormBase {
     ];
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Submit'),
+      '#value' => $this->t('Invite Client User'),
     ];
     return $form;
   }

@@ -102,7 +102,7 @@ class EditClientMemberForm extends FormBase {
     // To to validation fetch only the user who is not admin
     $form['client_email'] = [
       '#type' => 'email',
-      '#title' => $this->t('Client Email'),
+      '#title' => $this->t('Client User Email'),
       '#weight' => '0',
       '#required' => TRUE,
       '#placeholder' => 'Enter the client Email',
@@ -133,7 +133,7 @@ class EditClientMemberForm extends FormBase {
     ];
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Submit'),
+      '#value' => $this->t('Update Client User'),
     ];
     return $form;
   }

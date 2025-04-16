@@ -157,7 +157,8 @@ form .js-form-item input[aria-invalid="true"]:focus {
   padding: 0 16px;
   position: relative;
 }
-.region-primary-menu ul li a {
+.region-primary-menu ul li a,
+.region-primary-menu ul li span {
   font-family: "DM Sans", sans-serif;
   font-weight: 500;
   color: #666666;
@@ -170,7 +171,9 @@ form .js-form-item input[aria-invalid="true"]:focus {
   display: block;
   position: relative;
 }
-.region-primary-menu ul li a:hover, .region-primary-menu ul li a.is-active {
+.region-primary-menu ul li a:hover, .region-primary-menu ul li a.is-active,
+.region-primary-menu ul li span:hover,
+.region-primary-menu ul li span.is-active {
   color: #191a5b;
   opacity: 1;
   font-weight: 600;
@@ -252,7 +255,7 @@ form .js-form-item input[aria-invalid="true"]:focus {
 }
 .user__profile-block .user__profile .user-profile-list .user__profile-info {
   flex: 0 0 70%;
-  padding-left: 15px;
+  padding-left: 10px;
 }
 .user__profile-block .user__profile .user-profile-list .user__profile-info .user-profile-firstname,
 .user__profile-block .user__profile .user-profile-list .user__profile-info .user-app > a {
@@ -272,9 +275,14 @@ form .js-form-item input[aria-invalid="true"]:focus {
   line-height: 16px;
   color: #ffffff;
   text-overflow: ellipsis;
-  width: 85%;
-  white-space: nowrap;
+  width: 100%;
+  word-wrap: break-word;
+  white-space: pre-wrap;
   overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  max-width: 160px;
 }
 .user__profile-block .user__profile .user-profile-list .user__profile-info .user-profile-roles {
   font-weight: 500;
@@ -336,13 +344,17 @@ form .js-form-item input[aria-invalid="true"]:focus {
   width: 100%;
   padding: 0;
 }
+.user-logged-in .header__inner .site__menu {
+  max-height: 480px;
+  overflow-y: auto;
+}
 .user-logged-in .header__inner .site__logo {
   padding: 2rem 16px;
   border-bottom: 1px solid rgba(242, 244, 247, 0.5);
 }
 .user-logged-in .header__inner .site__sec-menu {
   position: absolute;
-  bottom: 0;
+  bottom: 40px;
 }
 .user-logged-in .region-primary-menu ul {
   padding: 2rem 0 0;
@@ -372,9 +384,35 @@ form .js-form-item input[aria-invalid="true"]:focus {
 }
 .user-logged-in .region-primary-menu ul li ul {
   padding: 0;
+  display: none;
 }
 .user-logged-in .region-primary-menu ul li ul li {
-  padding: 16px 0;
+  padding: 8px 15px;
+}
+.user-logged-in .region-primary-menu ul li ul li a {
+  font-size: 14px;
+}
+.user-logged-in .region-primary-menu ul li.menu-item--expanded {
+  position: relative;
+}
+.user-logged-in .region-primary-menu ul li.menu-item--expanded::after {
+  content: "";
+  background: url("../images/arrow-down.svg") no-repeat;
+  height: 16px;
+  width: 16px;
+  position: absolute;
+  right: 20px;
+  top: 22px;
+}
+.user-logged-in .region-primary-menu ul li.menu-item--expanded.menuexpand::after {
+  transform: rotateX(180deg);
+  top: 10px;
+}
+.user-logged-in .region-primary-menu ul li.menu-item--expanded.menuexpand ul {
+  display: block;
+}
+.user-logged-in .region-primary-menu ul li.menu-item--expanded.menu-item--active-trail ul {
+  display: block;
 }
 
 .layout-container.password-change-page {
@@ -397,7 +435,7 @@ form .js-form-item input[aria-invalid="true"]:focus {
 }
 .toolbar-horizontal.toolbar-fixed.toolbar-tray-open .site__sec-menu {
   position: absolute;
-  bottom: 5vh;
+  bottom: 40px;
 }
 
 .apps #block-shush-primary-admin-actions nav li a {
@@ -883,6 +921,7 @@ table th {
   text-align: left;
   border-bottom: 1px solid #ddd;
   color: #a3aed0;
+  line-height: normal;
 }
 table th a {
   text-decoration: none;
@@ -1407,8 +1446,9 @@ table tr td .edit-operation:hover .edit-operation-wrap {
 
 .user-management-header {
   background: transparent;
-  padding-top: 1rem;
+  padding-top: 1.5rem;
   padding-left: 1rem;
+  padding-bottom: 1.5rem;
 }
 .user-management-header h5 {
   font-family: "Montserrat", sans-serif;
