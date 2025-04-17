@@ -1,0 +1,17 @@
+analytics_batch_generator.generator_form:
+  path: '/admin/content/analytics-batch-generator'
+  defaults:
+    _controller: '\Drupal\analytics_batch_generator\Controller\AnalyticsBatchController::generatorForm'
+    _title: 'Analytics Node Generator'
+  requirements:
+    _permission: 'administer content'
+
+analytics_batch_generator.start_batch:
+  path: '/admin/content/analytics-batch-generator/start'
+  defaults:
+    _controller: '\Drupal\analytics_batch_generator\Controller\AnalyticsBatchController::startBatch'
+    _title: 'Start Analytics Node Generation'
+  requirements:
+    _permission: 'administer content'
+  options:
+    _admin_route: TRUE
