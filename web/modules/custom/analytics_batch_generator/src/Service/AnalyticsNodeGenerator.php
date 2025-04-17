@@ -122,6 +122,7 @@ class AnalyticsNodeGenerator {
           'field_partner' => empty($partners) ? NULL : $partners[0],
           'field_success_api_volume_in_mil' => $this->getRandomDecimal(5, 50),
           'field_transaction_type' => $this->getRandomTransactionType(),
+          'field_transaction_type_count' => '10',
         ]);
 
         $node->save();
