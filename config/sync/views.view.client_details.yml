@@ -175,7 +175,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "{% if field_partner_type|lower == 'demandpartner' %}\r\n  Demand Partner\r\n{% else %}\r\n  Other Partner\r\n{% endif %}"
+            text: ''
             make_link: false
             path: ''
             absolute: false
@@ -515,7 +515,7 @@ display:
         options:
           offset: 0
           pagination_heading_level: h4
-          items_per_page: 10
+          items_per_page: 50
           total_pages: null
           id: 0
           tags:

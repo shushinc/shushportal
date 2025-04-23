@@ -544,7 +544,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "<div class=\"edit-operation\">\r\n<div class=\"edit-operation-wrap\">\r\n<a href=\"/user-management/{{ uid }}/edit?destination=/user-management\" class=\"use-ajax anchor-dropdown-btn\"  data-toggle='modal'  data-dialog-type='modal'  data-dialog-options='{\"width\": 400, \"title\": \"Update User\"}'>Edit</a>\r\n</div>\r\n</div>"
+            text: "<div class=\"edit-operation\">\r\n<div class=\"edit-operation-wrap\">\r\n<a href=\"/user-management/{{ uid }}/edit?destination=/user-management\" class=\"use-ajax anchor-dropdown-btn\"  data-toggle='modal'  data-dialog-type='modal'  data-dialog-options='{\"width\": 400, \"title\": \"Update Carrier User\"}'>Edit</a>\r\n</div>\r\n</div>"
             make_link: false
             path: ''
             absolute: false
