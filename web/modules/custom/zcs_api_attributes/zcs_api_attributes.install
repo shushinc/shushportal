@@ -124,20 +124,128 @@ function zcs_api_attributes_uninstall() {
       }
     }
   }
-
-
-
-
 }
 
 
-function zcs_api_attributes_update_9001(){
-  $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
-  $menu_item_object = current($storage->loadByProperties(['title' => 'Price']));
-  if($menu_item_object) {
-     // Set the weight
-     $menu_item_object->set('weight', 3); // Adjust the weight as needed
-     $menu_item_object->save();
+/**
+ * Adding new tables to add the audit record of attribute pages.
+ */
+function zcs_api_attributes_update_9002() {
+  $tables['attributes_page_data'] = [
+    'description' => 'Table for storing information about attributes.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique aggregator static ID.',
+      ],
+      'submit_by' => [
+        'description' => 'Submitter User ID.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'currency_locale' => [
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Currency of the attributes page.',
+      ],
+      'effective_date' => [
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Date of the effective date.',
+      ],
+      'page_data' => [
+        'type' => 'blob',
+        'size' => 'big',
+        'not null' => FALSE,
+        'description' => 'Attribute Page data for reference.',
+      ],
+      'approver1_uid' => [
+        'description' => 'Approver-1 User ID.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'approver1_status' => [
+        'description' => 'Approver-1 Status.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'approver2_uid' => [
+        'description' => 'Approver-2 User ID.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'approver2_status' => [
+        'description' => 'Approver-2 Status.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'attribute_status' => [
+        'description' => 'Attribute Status.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'created' => [
+        'description' => 'Attribute Page Created date.',
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => ''
+      ],
+      'updated' => [
+        'description' => 'Attribute Page Updated date.',
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => ''
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+
+  $tables['attribute_status'] = [
+    'description' => 'Table for storing information about attribute status.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique aggregator static ID.',
+      ],
+      'status' => [
+        'description' => 'Attribute Page Status.',
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => ''
+      ]
+    ],
+    'primary key' => ['id'],
+  ];
+
+
+  $database = \Drupal::database()->schema();
+  foreach ($tables as $table_name => $table) {
+    // First check if the tables exist and if missing...
+    if (!$database->tableExists($table_name)) {
+      $database->createTable($table_name, $table);
+    }
   }
 
+  \Drupal::database()->insert('attribute_status')
+    ->fields(['status'])
+    ->values(['Pending'])
+    ->values(['Approved'])
+    ->values(['Rejected'])
+    ->execute();
 }
+

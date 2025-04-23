@@ -1,0 +1,208 @@
+<?php
+
+namespace Drupal\zcs_api_attributes\Form;
+
+use Drupal\Component\Serialization\Json;
+use Drupal\Core\Database\Connection;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
+use NumberFormatter;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
+class PriceRateSheet extends FormBase {
+
+  /**
+   * EntityTypeManager $entityTypeManager.
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Array $list.
+   */
+  protected $list;
+
+  /**
+   * Connection $connection.
+   */
+  protected $database;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, Connection $connection) {
+    $this->list = require __DIR__ . '/../../resources/currencies.php';
+    $this->entityTypeManager = $entity_type_manager;
+    $this->database = $connection;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('entity_type.manager'),
+      $container->get('database')
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId() {
+    return 'rate_sheet';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state) {
+    $defaultCurrency = 'en_US';
+    if (!empty($this->getRequest()->get('cur'))) {
+      $defaultCurrency = $this->getRequest()->get('cur');
+    }
+
+    // show the right currency symbol based on the chosen one.
+    $number = new NumberFormatter($defaultCurrency, NumberFormatter::CURRENCY);
+    $symbol = $number->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
+
+
+     // to fetch currencies.
+     $currencies = [];
+     foreach ($this->list as $list) {
+       if (!empty($list['locale'])) {
+         $currencies[$list['locale']] = $list['currency'] .' ('. $list['alphabeticCode'] .')';
+       }
+     }
+     $form['currencies'] = [
+       '#type' => 'select',
+       '#options' => $currencies,
+       '#default_value' => $defaultCurrency
+     ];
+ 
+     $form['attribute_date'] = [
+       '#type' => 'date',
+       '#default_value' => date('Y-m-d'),
+     ];
+
+
+    $contents = $this->entityTypeManager->getStorage('node')->loadByProperties(['type' => 'api_attributes']);
+    if (!empty($contents)) {
+      foreach ($contents as $content) {
+        $nids[] = $content->id();
+        $form['price' . $content->id()] = [
+          '#type' => 'number',
+          '#min' => 0,
+          '#default_value' => $content->field_standard_price->value ?? 0.00,
+          '#step' => 0.001,
+          '#field_prefix' => $symbol,
+        ];
+      }
+    }
+
+    $form['nodes'] = [
+      '#type' => 'hidden',
+      '#value' => implode(",", $nids),
+    ];
+
+    // to fetch users.
+    $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'finance_admin']);
+    $finalUsers = [];
+    if (!empty($users)) {
+      foreach ($users as $user) {
+        $finalUsers[$user->id()] = $user->mail->value; 
+      }
+    }
+    $form['users'] = [
+      '#type' => 'checkboxes',
+      '#options' => $finalUsers,
+      '#attributes' => [
+        'class' => ['users-check']
+      ]
+    ];
+
+    $form['approval_page'] = [
+      '#type' => 'markup',
+      '#markup' => Link::createFromRoute('Approval Page', 'zcs_api_attributes.rate_sheet.approval')->toString(),
+    ];
+
+    $existing = $this->database->select('attributes_page_data', 'apd')
+      ->fields('apd', ['id', 'submit_by'])
+      ->condition('attribute_status', '1')
+      ->execute()->fetchObject();
+    $hide = false;
+    if ($existing) {
+      $form['message'] = [
+        '#type' => 'markup',
+        '#markup' => "There is one edit made by <b>" . $this->entityTypeManager->getStorage('user')->load($existing->submit_by)->mail->value . "</b> that is awaiting approval or rejection, so editing is not possible."
+      ];
+      $hide = true;
+    }
+
+
+    $form['#theme'] = 'rate_sheet';
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
+    $form['submit'] = [
+      '#type' => 'submit',
+      '#value' => 'Create Rate Sheet',
+      '#disabled' => $hide,
+    ];
+
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    $values = $form_state->getValues();
+    $userCount = 0;
+    foreach ($values['users'] as $user) {
+      if ($user) {
+        $userCount++;
+      }
+    }
+    if ($userCount < 2) {
+      $form_state->setErrorByName('users', 'Should select 2 users');
+    }
+  }
+
+
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    $values = $form_state->getValues();
+    $nids = explode(",", $values['nodes']);
+    foreach ($nids as $nid) {
+      $json[$nid] = $values['price' . $nid];
+    }
+    foreach ($values['users'] as $user) {
+      if ($user) {
+        $users[] = $user;
+      }
+    }
+    $this->database->insert('attributes_page_data')
+      ->fields(['submit_by', 'currency_locale', 'effective_date', 'page_data', 'approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'created', 'updated'])
+      ->values([$this->currentUser()->id(), $values['currencies'], $values['attribute_date'], Json::encode($json), reset($users), 1, end($users), 1, 1, \Drupal::time()->getRequestTime(), \Drupal::time()->getRequestTime()])
+      ->execute();
+    $mailManager = \Drupal::service('plugin.manager.mail');
+    $params['message'] = 'This is sample mail';
+    $params['title'] = 'Your Notification';
+    $langcode = \Drupal::currentUser()->getPreferredLangcode();
+    $send = true;
+
+    foreach ($users as $uid) {
+      $mail = $this->entityTypeManager->getStorage('user')->load($uid);
+      $emails[] = $mailManager->mail('zcs_api_attributes', 'rate_sheet', $mail->mail->value, $langcode, $params, NULL, $send);
+    }
+
+    if (reset($emails)['result'] != true && end($emails)['result'] != true) {
+      $this->messenger()->addError(t('There was a problem sending your email notification.'));
+    } else {
+      $this->messenger()->addStatus(t('An email notification has been sent.'));
+    }
+  }
+}

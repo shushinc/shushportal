@@ -31,5 +31,37 @@ function zcs_api_attributes_theme() {
       ],
       'template' => 'demand_partner_discounts_or_different_pricing'
     ],
+    'rate_sheet' => [
+      'render element' => 'form',
+      'template' => 'rate_sheet'
+    ],
+    'rate_sheet_approval' => [
+      'variables' => [
+        'content' => null,
+      ],
+      'template' => 'rate_sheet_approval'
+    ],
+    'rate_sheet_review' => [
+      'render element' => 'form',
+      'template' => 'rate_sheet_review'
+    ],
   ];
+}
+
+
+
+/**
+ * Implements hook_mail().
+ */
+function zcs_api_attributes_mail($key, &$message, $params) {
+  $options = array(
+    'langcode' => $message['langcode'],
+  );
+  switch ($key) {
+    case 'rate_sheet':
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = t('Form submitted', $options);
+      $message['body'][] = t('Submitted details.');
+      break;
+  }
 }

@@ -473,7 +473,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "<div class=\"user__mangement-edit\"></div>\r\n<div class=\"edit-operation\">\r\n<div class=\"edit-operation-wrap\">\r\n<a href=\"/client/{{ id }}/edit?destination=/client-management\" class=\"use-ajax anchor-dropdown-btn\" data-toggle='modal'  data-dialog-type='modal'  data-dialog-options='{\"width\": 400, \"title\": \"Update Client\"}'>Edit</a>\r\n<a href=\"/view_client_image\">View</a>\r\n</div>"
+            text: "<div class=\"user__mangement-edit\"></div>\r\n<div class=\"edit-operation\">\r\n<div class=\"edit-operation-wrap\">\r\n<a href=\"/client/{{ id }}/edit?destination=/client-management\" class=\"anchor-dropdown-btn\">Edit</a>\r\n<a href=\"/view_client_image\">View</a>\r\n</div>"
             make_link: false
             path: ''
             absolute: false
@@ -677,7 +677,7 @@ display:
           admin_label: ''
           plugin_id: text_custom
           empty: true
-          content: '<a href="/create-client?destination=/client-management" class="btn-primary use-ajax anchor-dropdown-btn" data-toggle=''modal''  data-dialog-type=''modal''  data-dialog-options=''{"width": 400, "title": "Invite Client"}''>Invite Client</a>'
+          content: '<a href="/create-client?destination=/client-management" class="btn-primary anchor-dropdown-btn">Invite Client</a>'
           tokenize: false
       footer: {  }
       display_extenders: {  }

@@ -15,6 +15,7 @@ dependencies:
     - field.field.node.api_attributes.field_infobip_discount
     - field.field.node.api_attributes.field_price_per_call
     - field.field.node.api_attributes.field_sinch_discount
+    - field.field.node.api_attributes.field_standard_price
     - field.field.node.api_attributes.field_successfully_integrated_cn
     - field.field.node.api_attributes.field_twilio_discount
     - node.type.api_attributes
@@ -103,6 +104,13 @@ content:
     region: content
     settings:
       size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_standard_price:
+    type: number
+    weight: 39
+    region: content
+    settings:
       placeholder: ''
     third_party_settings: {  }
   field_successfully_integrated_cn:
