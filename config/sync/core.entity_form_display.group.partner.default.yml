@@ -3,14 +3,26 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.group.partner.field_address
+    - field.field.group.partner.field_agreement_effective_date
+    - field.field.group.partner.field_apis_agreement_covers
+    - field.field.group.partner.field_client_legal_contact
+    - field.field.group.partner.field_client_point_of_contact
     - field.field.group.partner.field_consumer_id
     - field.field.group.partner.field_contact_email
     - field.field.group.partner.field_contact_name
+    - field.field.group.partner.field_currency
     - field.field.group.partner.field_description
+    - field.field.group.partner.field_industry
     - field.field.group.partner.field_partner_status
     - field.field.group.partner.field_partner_type
+    - field.field.group.partner.field_prepayment_amount
+    - field.field.group.partner.field_prepayment_balance_left
+    - field.field.group.partner.field_prepayment_balance_used
     - group.type.partner
   module:
+    - address
+    - datetime
     - text
 _core:
   default_config_hash: F8VkzvtQ5z92TLRKhzqSPdEFUzaewx8M98CA97L5dQs
@@ -19,6 +31,43 @@ targetEntityType: group
 bundle: partner
 mode: default
 content:
+  field_address:
+    type: address_default
+    weight: 36
+    region: content
+    settings:
+      wrapper_type: fieldset
+    third_party_settings: {  }
+  field_agreement_effective_date:
+    type: datetime_default
+    weight: 31
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_apis_agreement_covers:
+    type: string_textarea
+    weight: 37
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_client_legal_contact:
+    type: string_textfield
+    weight: 29
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_client_point_of_contact:
+    type: string_textfield
+    weight: 30
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_consumer_id:
     type: string_textfield
     weight: 28
@@ -43,6 +92,14 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_currency:
+    type: string_textfield
+    weight: 35
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_description:
     type: text_textarea_with_summary
     weight: 3
@@ -52,6 +109,12 @@ content:
       summary_rows: 3
       placeholder: ''
       show_summary: false
+    third_party_settings: {  }
+  field_industry:
+    type: options_select
+    weight: 32
+    region: content
+    settings: {  }
     third_party_settings: {  }
   field_partner_status:
     type: options_select
@@ -64,6 +127,27 @@ content:
     weight: 4
     region: content
     settings: {  }
+    third_party_settings: {  }
+  field_prepayment_amount:
+    type: number
+    weight: 33
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_prepayment_balance_left:
+    type: number
+    weight: 34
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_prepayment_balance_used:
+    type: number
+    weight: 38
+    region: content
+    settings:
+      placeholder: ''
     third_party_settings: {  }
   label:
     type: string_textfield

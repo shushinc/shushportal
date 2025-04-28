@@ -1,0 +1,19 @@
+uuid: 1f55827f-fdb3-4fa4-b8c9-ac407781cc01
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.group.field_currency
+    - group.type.partner
+id: group.partner.field_currency
+field_name: field_currency
+entity_type: group
+bundle: partner
+label: Currency
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

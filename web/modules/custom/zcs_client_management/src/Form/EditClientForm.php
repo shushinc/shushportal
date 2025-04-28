@@ -18,6 +18,9 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\group\Entity\Group;
+use Drupal\Component\Serialization\Json;
+use Drupal\Core\Datetime\DrupalDateTime;
+
 
 
 
@@ -166,7 +169,8 @@ final class EditClientForm extends FormBase {
       '#required' => TRUE,
       '#attributes' => [
         'autocomplete' => 'off'
-      ],        
+      ],
+      '#default_value' =>  $group->get('field_client_legal_contact')->value ?? '',       
     ];
 
     $form['client_point_of_contact'] = [
@@ -175,14 +179,10 @@ final class EditClientForm extends FormBase {
       '#required' => TRUE,
       '#attributes' => [
         'autocomplete' => 'off'
-      ],        
+      ],
+      '#default_value' =>  $group->get('field_client_point_of_contact')->value ?? '',        
     ];
 
-    $form['agreement_effective_date'] = [
-      '#type' => 'date',
-      '#title' => $this->t('Agreement Effective Date'),
-      '#default_value' => date('Y-m-d'),
-    ];
     $form['industry'] = [
       '#type' => 'select',
       '#title' => $this->t('Industry'),
@@ -196,12 +196,14 @@ final class EditClientForm extends FormBase {
          'other_app' => 'Other App',
         ],
       '#required' => TRUE,
+      '#default_value' =>  $group->get('field_industry')->value ?? '',
     ];
 
     $form['agreement_effective_date'] = [
-      '#title' => $this->t('Agreement Effective Date'),
       '#type' => 'date',
-      '#default_value' => '',
+      '#title' => $this->t('Agreement Effective Date'),
+      '#default_value' => $group->get('field_agreement_effective_date')->value ?? '',
+      '#date_date_format' => 'Y-m-d',
       '#disabled' => TRUE,
     ];
 
@@ -221,7 +223,7 @@ final class EditClientForm extends FormBase {
       '#title' => $this->t('Status'),
       '#options' => [
          'active' => 'Active',
-         'in_active' => 'Inactive',
+         'inactive' => 'Inactive',
         ],
       '#default_value' => 'active',  
       '#required' => TRUE,
@@ -241,14 +243,14 @@ final class EditClientForm extends FormBase {
     $form['prepayment_info']['currencies'] = [
       '#type' => 'select',
       '#options' => $currencies,
-      '#default_value' => $defaultCurrency
+      '#default_value' =>  $group->get('field_currency')->value ?? '',
     ];
 
     $form['prepayment_info']['prepayment_amount'] = [
       '#type' => 'number',
       '#title' => 'Prepayment Amount',
       '#min' => 0,
-      '#default_value' => 0.00,
+      '#default_value' =>  $group->get('field_prepayment_amount')->value ?? '',
       '#step' => 0.001,
     ];
 
@@ -256,7 +258,15 @@ final class EditClientForm extends FormBase {
       '#type' => 'number',
       '#title' => 'Prepayment Balance left',
       '#min' => 0,
-      '#default_value' => 0.00,
+      '#default_value' =>  $group->get('field_prepayment_balance_left')->value ?? '',
+      '#step' => 0.001,
+    ];
+
+    $form['prepayment_info']['prepayment_balance_used'] = [
+      '#type' => 'number',
+      '#title' => 'Prepayment Balance left',
+      '#min' => 0,
+      '#default_value' =>  $group->get('field_prepayment_balance_used')->value ?? '',
       '#step' => 0.001,
     ];
 
@@ -269,17 +279,14 @@ final class EditClientForm extends FormBase {
       ],
     ];
 
-  //  $address = $group->get('field_address')->getValue();
-   // $address_value = $address[0];
+    $address = $group->get('field_address')->getValue();
+    $address_value = isset($address[0]) ? $address[0]: '';
     $form['address_info']['address'] = [
       '#type' => 'address',
       '#title' => $this->t('Address'),
       '#required' => TRUE,  
       '#default_value' => $address_value ?? '',    
     ];
-
-
-   
 
     $form['api_agreement_covers'] = [
       '#type' => 'fieldset',
@@ -289,7 +296,10 @@ final class EditClientForm extends FormBase {
       ],
     ];
 
-
+    $api_aggreement_covers_array = [];
+    if(!empty($group->get('field_apis_agreement_covers')->value)) {
+      $api_aggreement_covers_array = json::decode($group->get('field_apis_agreement_covers')->value);
+    }
     $contents =  \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(['type' => 'api_attributes']);
     if (!empty($contents)) {
       foreach ($contents as $content) {
@@ -298,7 +308,7 @@ final class EditClientForm extends FormBase {
         $form['api_agreement_covers']['attribute_' . $content->id()]= [
           '#type' => 'checkbox',
           '#title' => $content->label(),
-          '#default_value' => FALSE,
+          '#default_value' => isset($api_aggreement_covers_array[$content->id()]) ? $api_aggreement_covers_array[$content->id()] : 0,
           '#attributes' => [
             'class' => ['toggle-checkbox'],
           ],
@@ -342,12 +352,37 @@ final class EditClientForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
+    $values = $form_state->getValues();
+    $nids = explode(",", $values['nodes']);
+    $json = [];
+    foreach ($nids as $nid) {
+      $json[$nid] = $values['attribute_' . $nid];
+    }
+   
+
+    
+    $encoded_data = Json::encode($json);
+
+
     $partner_name = $form_state->getValue('partner_name'); 
     $contact_name = $form_state->getValue('contact_name'); 
     $contact_email = $form_state->getValue('contact_email'); 
     $partner_description = $form_state->getValue('partner_description'); 
     $partner_status = $form_state->getValue('partner_status'); 
     $partner_type = $form_state->getValue('partner_type'); 
+
+
+    
+    $client_legal_contact = $form_state->getValue('client_legal_contact'); 
+    $client_point_of_contact = $form_state->getValue('client_point_of_contact'); 
+    $agreement_effective_date = $form_state->getValue('agreement_effective_date'); 
+    $industry = $form_state->getValue('industry'); 
+    $prepayment_amount = $form_state->getValue('prepayment_amount');
+    $prepayment_balance_left = $form_state->getValue('prepayment_balance_left');
+    $prepayment_balance_used= $form_state->getValue('prepayment_balance_used');
+    $currency = $form_state->getValue('currencies');
+
+
 
     $gid = $this->request->get('id');
     $group = Group::load($gid);
@@ -358,6 +393,52 @@ final class EditClientForm extends FormBase {
     $group->set('field_description', $partner_description);
     $group->set('field_partner_status', $partner_status);
     $group->set('field_partner_type', $partner_type);
+    $group->set('field_agreement_effective_date', $agreement_effective_date);
+
+    $group->set('field_client_legal_contact', $client_legal_contact);
+    $group->set('field_client_point_of_contact', $client_point_of_contact);
+    $group->set('field_prepayment_amount', $prepayment_amount);
+    $group->set('field_prepayment_balance_left', $prepayment_balance_left);
+    $group->set('field_prepayment_balance_used', $prepayment_balance_used);
+
+    $group->set('field_currency', $currency);
+    $group->set('field_industry', $industry);
+    $group->set('field_apis_agreement_covers', $encoded_data);
+
+
+
+
+       // Address details
+       $country_code =  $form_state->getValue('address')['country_code'];
+       $administrative_area = $form_state->getValue('address')['administrative_area'];
+       $locality = $form_state->getValue('address')['locality'];
+       $dependent_locality = $form_state->getValue('address')['dependent_locality'];
+       $postal_code = $form_state->getValue('address')['postal_code'];
+       $sorting_code = $form_state->getValue('address')['sorting_code'];
+       $address_line1 = $form_state->getValue('address')['address_line1'];
+       $address_line2 = $form_state->getValue('address')['address_line2'];
+       $address_line3 = $form_state->getValue('address')['address_line3'];
+       $organization = $form_state->getValue('address')['organization'];
+       $given_name = $form_state->getValue('address')['given_name'];
+       $additional_name = $form_state->getValue('address')['additional_name'];
+       $family_name =  $form_state->getValue('address')['family_name'];
+
+       $group->set('field_address', [
+        "langcode" => null,
+        "country_code" => $country_code ?? '',
+        "administrative_area" => $administrative_area ?? '',
+        "locality" => $locality ?? '',
+        "dependent_locality" => $dependent_locality ?? '',
+        "postal_code" => $postal_code ?? '',
+        "sorting_code" => $sorting_code ?? '',
+        "address_line1" => $address_line1 ?? '',
+        "address_line2" => $address_line2 ?? '',
+        "address_line3" => $address_line3 ?? '',
+        "organization" => $organization ?? '',
+        "given_name" => $given_name ?? '',
+        "additional_name" => $additional_name ?? '',
+        "family_name" => $family_name ?? '',
+      ]);
     
     $group->save();    
     $this->messenger()->addMessage($this->t('Client is updated successfully.'));

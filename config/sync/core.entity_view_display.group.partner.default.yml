@@ -3,14 +3,26 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.group.partner.field_address
+    - field.field.group.partner.field_agreement_effective_date
+    - field.field.group.partner.field_apis_agreement_covers
+    - field.field.group.partner.field_client_legal_contact
+    - field.field.group.partner.field_client_point_of_contact
     - field.field.group.partner.field_consumer_id
     - field.field.group.partner.field_contact_email
     - field.field.group.partner.field_contact_name
+    - field.field.group.partner.field_currency
     - field.field.group.partner.field_description
+    - field.field.group.partner.field_industry
     - field.field.group.partner.field_partner_status
     - field.field.group.partner.field_partner_type
+    - field.field.group.partner.field_prepayment_amount
+    - field.field.group.partner.field_prepayment_balance_left
+    - field.field.group.partner.field_prepayment_balance_used
     - group.type.partner
   module:
+    - address
+    - datetime
     - options
     - text
 _core:
@@ -20,6 +32,45 @@ targetEntityType: group
 bundle: partner
 mode: default
 content:
+  field_address:
+    type: address_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 11
+    region: content
+  field_agreement_effective_date:
+    type: datetime_default
+    label: above
+    settings:
+      timezone_override: ''
+      format_type: medium
+    third_party_settings: {  }
+    weight: 6
+    region: content
+  field_apis_agreement_covers:
+    type: basic_string
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 12
+    region: content
+  field_client_legal_contact:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_client_point_of_contact:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 5
+    region: content
   field_consumer_id:
     type: string
     label: above
@@ -43,12 +94,27 @@ content:
     third_party_settings: {  }
     weight: -4
     region: content
+  field_currency:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 10
+    region: content
   field_description:
     type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
     weight: -2
+    region: content
+  field_industry:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 7
     region: content
   field_partner_status:
     type: list_default
@@ -63,6 +129,39 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 0
+    region: content
+  field_prepayment_amount:
+    type: number_decimal
+    label: above
+    settings:
+      thousand_separator: ''
+      decimal_separator: .
+      scale: 2
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 8
+    region: content
+  field_prepayment_balance_left:
+    type: number_decimal
+    label: above
+    settings:
+      thousand_separator: ''
+      decimal_separator: .
+      scale: 2
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 9
+    region: content
+  field_prepayment_balance_used:
+    type: number_decimal
+    label: above
+    settings:
+      thousand_separator: ''
+      decimal_separator: .
+      scale: 2
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 13
     region: content
   label:
     type: string

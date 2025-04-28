@@ -177,7 +177,7 @@ class CreateClientForm extends FormBase {
       '#title' => $this->t('Status'),
       '#options' => [
          'active' => 'Active',
-         'in_active' => 'Inactive',
+         'inactive' => 'Inactive',
         ],
       '#default_value' => 'active',  
       '#required' => TRUE,
@@ -210,6 +210,14 @@ class CreateClientForm extends FormBase {
     $form['prepayment_info']['prepayment_balance_left'] = [
       '#type' => 'number',
       '#title' => 'Prepayment Balance left',
+      '#min' => 0,
+      '#default_value' => 0.00,
+      '#step' => 0.001,
+    ];
+
+    $form['prepayment_info']['prepayment_balance_used'] = [
+      '#type' => 'number',
+      '#title' => 'Prepayment Balance Used',
       '#min' => 0,
       '#default_value' => 0.00,
       '#step' => 0.001,
@@ -299,14 +307,52 @@ class CreateClientForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
+
+
+    $values = $form_state->getValues();
+
+
+    $nids = explode(",", $values['nodes']);
+    foreach ($nids as $nid) {
+      $json[$nid] = $values['attribute_' . $nid];
+    }
+    $encoded_data = Json::encode($json);
+
+
     $partner_name = $form_state->getValue('partner_name'); 
     $contact_name = $form_state->getValue('contact_name'); 
     $contact_email = $form_state->getValue('contact_email'); 
     $partner_description = $form_state->getValue('partner_description'); 
     $partner_status = $form_state->getValue('partner_status'); 
     $partner_type = $form_state->getValue('partner_type'); 
-    // create consumer in kong: 
-    if (\Drupal::moduleHandler()->moduleExists('zcs_aws')) {
+
+    $client_legal_contact = $form_state->getValue('client_legal_contact'); 
+    $client_point_of_contact = $form_state->getValue('client_point_of_contact'); 
+    $agreement_effective_date = $form_state->getValue('agreement_effective_date'); 
+    $industry = $form_state->getValue('industry'); 
+    $prepayment_amount = $form_state->getValue('prepayment_amount');
+    $prepayment_balance_left = $form_state->getValue('prepayment_balance_left');
+    $prepayment_balance_used= $form_state->getValue('prepayment_balance_used');
+    $currency = $form_state->getValue('currencies');
+
+    // Address details
+    $country_code =  $form_state->getValue('address')['country_code'];
+    $administrative_area = $form_state->getValue('address')['administrative_area'];
+    $locality = $form_state->getValue('address')['locality'];
+    $dependent_locality = $form_state->getValue('address')['dependent_locality'];
+    $postal_code = $form_state->getValue('address')['postal_code'];
+    $sorting_code = $form_state->getValue('address')['sorting_code'];
+    $address_line1 = $form_state->getValue('address')['address_line1'];
+    $address_line2 = $form_state->getValue('address')['address_line2'];
+    $address_line3 = $form_state->getValue('address')['address_line3'];
+    $organization = $form_state->getValue('address')['organization'];
+    $given_name = $form_state->getValue('address')['given_name'];
+    $additional_name = $form_state->getValue('address')['additional_name'];
+    $family_name =  $form_state->getValue('address')['family_name'];
+
+
+
+     if (\Drupal::moduleHandler()->moduleExists('zcs_aws')) {
       $group = Group::create([
         'type' => 'partner',
         'label' => $partner_name,
@@ -315,10 +361,40 @@ class CreateClientForm extends FormBase {
         'field_description' => $partner_description,
         'field_partner_status' => $partner_status,
         'field_partner_type' => $partner_type,
+        'field_client_legal_contact' => $client_legal_contact,
+        'field_client_point_of_contact' => $client_point_of_contact,
+        'field_agreement_effective_date' => $agreement_effective_date,
+        'field_prepayment_amount' => $prepayment_amount,
+        'field_prepayment_balance_left' => $prepayment_balance_left,
+        'field_prepayment_balance_used' => $prepayment_balance_used,
+        'field_currency' => $currency,
+        'field_industry' => $industry,
+        'field_apis_agreement_covers' => $encoded_data,
         'user_id' => \Drupal::currentUser()->id(),
         'created' => \Drupal::time()->getRequestTime(),
       ]);
       $group->save(); 
+
+      $group->set('field_address', [
+        "langcode" => null,
+        "country_code" => $country_code ?? '',
+        "administrative_area" => $administrative_area ?? '',
+        "locality" => $locality ?? '',
+        "dependent_locality" => $dependent_locality ?? '',
+        "postal_code" => $postal_code ?? '',
+        "sorting_code" => $sorting_code ?? '',
+        "address_line1" => $address_line1 ?? '',
+        "address_line2" => $address_line2 ?? '',
+        "address_line3" => $address_line3 ?? '',
+        "organization" => $organization ?? '',
+        "given_name" => $given_name ?? '',
+        "additional_name" => $additional_name ?? '',
+        "family_name" => $family_name ?? '',
+      ]);
+      $group->save();
+     
+
+
       $uid = \Drupal::currentUser()->id();
       $user = User::load($uid);
       $group->addMember($user, ['group_roles' => ['partner-admin']]);
@@ -337,6 +413,7 @@ class CreateClientForm extends FormBase {
       $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
     }
     else {
+      // create consumer in kong: 
       try {
         $response = \Drupal::service('zcs_kong.kong_gateway')->createConsumer($contact_name, $contact_email);
         $status_code = $response->getStatusCode();

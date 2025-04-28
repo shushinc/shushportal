@@ -1,0 +1,5 @@
+services:
+  zcs_client_management.twig.ClientManagementCustomTwig:
+    class: Drupal\zcs_client_management\Twig\ClientManagementCustomTwig
+    tags:
+      - { name: twig.extension }
