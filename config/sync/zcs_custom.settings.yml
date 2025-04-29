@@ -1,0 +1,10 @@
+kong_endpoint: 'http://34.72.223.216:8001'
+aws_details: ''
+aws_access_key: ''
+aws_secret_key: ''
+aws_region: us-east-2
+user_pool_id: us-east-2_FcvS5fcef
+allowed_oauth_flows: client_credentials
+supported_identity_providers: COGNITO
+allowed_oauth_scopes: 'sherlockapiresource/read, sherlockapiresource/write'
+access_token_validity: '60'

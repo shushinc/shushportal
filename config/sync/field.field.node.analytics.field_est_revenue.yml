@@ -1,0 +1,25 @@
+uuid: d9659acd-1dd2-4ea2-bf31-ca6f49c1e104
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_est_revenue
+    - node.type.analytics
+_core:
+  default_config_hash: v4vpY01EV1amKpnQ4QR2xnv9zKs__1Qm3M-Lscj84Mk
+id: node.analytics.field_est_revenue
+field_name: field_est_revenue
+entity_type: node
+bundle: analytics
+label: 'Est Revenue'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

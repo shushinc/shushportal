@@ -1,0 +1,12 @@
+uuid: 2eed3eb3-1c03-4a8a-b0d2-a73ce5016aaa
+langcode: en
+status: true
+dependencies: {  }
+id: client_admin
+label: 'Client Admin'
+weight: 5
+is_admin: null
+permissions:
+  - 'access user profiles'
+  - 'administer users'
+  - 'view user email addresses'

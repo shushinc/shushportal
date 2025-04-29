@@ -1,0 +1,20 @@
+uuid: 4aaa35d0-8157-42dd-af1d-efd89e9644be
+langcode: en
+status: true
+dependencies:
+  module:
+    - menu_ui
+third_party_settings:
+  menu_ui:
+    available_menus:
+      - main
+    parent: 'main:'
+_core:
+  default_config_hash: i9IaXIrc5OrHHofWfhr4en7BcNa8k2Br_HXrr8vWWKk
+name: Products
+type: product
+description: 'Describes Product specification'
+help: null
+new_revision: true
+preview_mode: 1
+display_submitted: true

@@ -1,0 +1,172 @@
+<?php
+
+
+use \Drupal\menu_link_content\Entity\MenuLinkContent;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\user\Entity\Role;
+
+
+
+/**
+ * Implements hook_schema().
+ */
+function zcs_user_management_schema() {
+    $schema['zcs_user_invitations'] = [
+      'fields' => [
+        'id' => array(
+          'description' => 'The primary identifier for invitations.',
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ),
+        'user_name' => [
+          'type' => 'varchar',
+          'length' => 255,
+          'NOT NULL' => TRUE,
+          'description' => 'User Name',
+        ],
+        'email' => [
+          'type' => 'varchar',
+          'length' => 255,
+          'NOT NULL' => TRUE,
+          'description' => 'Email id of the user',
+        ],
+        'role' => [
+          'type' => 'varchar',
+          'length' => 255,
+          'NOT NULL' => TRUE,
+          'description' => 'Group role',
+        ],
+        'token' => [
+          'type' => 'varchar',
+          'length' => 100,
+          'not null' => TRUE,
+          'description' => 'Invitation token',
+        ],
+        'passkey' => [
+          'type' => 'varchar',
+          'length' => 100,
+          'not null' => TRUE,
+          'description' => 'Invitation token',
+        ],
+        'status' => [
+            'type' => 'varchar',
+            'length' => 50,
+            'NOT NULL' => TRUE,
+            'description' => 'Invitation status',
+        ],
+        'created_time' => [
+          'type' => 'int',
+          'not null' => TRUE,
+          'description' => 'Current Timestamp.',
+        ],
+        'expire_time' => [
+          'type' => 'int',
+          'not null' => TRUE,
+          'description' => 'Expire Time.',
+        ],
+      ],
+      'primary key' => ['id'],
+    ];
+    return $schema;
+  }
+
+
+  
+
+
+function zcs_user_management_install() {
+    // Add a sample link to the main menu.
+    $menu_link = MenuLinkContent::create([
+      'menu_name' => 'main',
+      'title' => 'User Management',
+      'link' => [
+         ['uri' => 'internal:/user-management']
+      ],
+      'weight' => 2,
+      'menu_per_role__show_role' => [
+         'administrator',
+         'carrier_admin',
+      ],
+    ]);
+    $menu_link->save();
+}
+
+
+
+function zcs_user_management_uninstall() {
+  $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+  $menu_item_object = current($storage->loadByProperties(['title' => 'User Management']));
+  if($menu_item_object) {
+    $menu_item_object->delete();
+  }
+
+  $schema = \Drupal::database()->schema();
+  // Define the table name to drop.
+  $table_name = 'zcs_user_invitations';
+
+  // Check if the table exists.
+  if ($schema->tableExists($table_name)) {
+    // Drop the table.
+    $schema->dropTable($table_name);
+  }
+   $view = \Drupal\views\Entity\View::load('user_management');
+   if ($view) {
+     $view->delete();
+   }
+}
+
+
+function zcs_user_management_update_9001(){
+  $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+  $menu_item_object = current($storage->loadByProperties(['title' => 'User Management']));
+  if($menu_item_object) {
+    $menu_item_object->delete();
+  }
+
+  $menu_item_object1 = current($storage->loadByProperties(['title' => 'API Attribute Status']));
+  if($menu_item_object1) {
+    $menu_item_object1->delete();
+  }
+
+
+  $menu_name = 'main';
+  // Create the parent menu link.
+  $parent_menu_link = MenuLinkContent::create([
+    'title' => 'Carrier',
+    'link' => ['uri' => 'route:<nolink>'],
+    'menu_name' => $menu_name,
+    'expanded' => TRUE,
+    'weight' => 1,
+  ]);
+  $parent_menu_link->save();
+  // Get the parent menu link ID.
+  $parent_id = 'menu_link_content:' . $parent_menu_link->uuid();
+
+  // Create the child menu link.
+  $carrier_menu_child_link1 = MenuLinkContent::create([
+    'title' => 'User Management',
+    'link' => ['uri' => 'internal:/user-management'], // Adjust path as needed.
+    'menu_name' => $menu_name,
+    'parent' => $parent_id, // Set the parent ID.
+    'weight' => 1,
+    'menu_per_role__show_role' => [
+      'administrator',
+      'carrier_admin',
+    ],
+  ]);
+  $carrier_menu_child_link1->save();
+
+  if (\Drupal::moduleHandler()->moduleExists('zcs_kong')) {
+    // Create the child menu link.
+    $carrier_menu_child_link2 = MenuLinkContent::create([
+      'title' => 'API Attribute Status',
+      'link' => ['uri' => 'internal:/api-attribute-status'], // Adjust path as needed.
+      'menu_name' => $menu_name,
+      'parent' => $parent_id, // Set the parent ID.
+      'weight' => 2,
+    ]);
+    $carrier_menu_child_link2->save();
+  }
+
+}

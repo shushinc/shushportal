@@ -1,0 +1,27 @@
+uuid: 4c69af89-c1f8-4186-8d5b-7a9ceb4ccb10
+langcode: en
+status: false
+dependencies:
+  config:
+    - system.menu.footer
+  module:
+    - system
+  theme:
+    - shush
+_core:
+  default_config_hash: bwshopg_3udYLkfN-q1t4rk1GPa3d2bxEsBZYXNT-WM
+id: footer
+theme: shush
+region: footer
+weight: 0
+provider: null
+plugin: "system_menu_block:footer"
+settings:
+  id: "system_menu_block:footer"
+  label: Footer
+  label_display: "0"
+  provider: system
+  level: 1
+  depth: 0
+  expand_all_items: false
+visibility: {}

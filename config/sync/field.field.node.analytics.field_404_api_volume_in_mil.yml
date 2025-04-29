@@ -1,0 +1,23 @@
+uuid: 734705da-321b-4a36-8956-92c1ba469772
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_404_api_volume_in_mil
+    - node.type.analytics
+id: node.analytics.field_404_api_volume_in_mil
+field_name: field_404_api_volume_in_mil
+entity_type: node
+bundle: analytics
+label: '404 API volume in mil'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: decimal

@@ -1,0 +1,5 @@
+name: 'zcs_custom'
+type: module
+description: 'zcs_customization'
+package: Custom
+core_version_requirement: ^10 || ^11

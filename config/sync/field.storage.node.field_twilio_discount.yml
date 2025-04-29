@@ -1,0 +1,21 @@
+uuid: 7b4b2555-976d-4690-af76-a50f1ee5025e
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_twilio_discount
+field_name: field_twilio_discount
+entity_type: node
+type: string
+settings:
+  max_length: 255
+  case_sensitive: false
+  is_ascii: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

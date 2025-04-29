@@ -1,0 +1,13 @@
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: AjlALY0OA70E1fGXEUafVhr1lxxMiDlSFLMRegaYrQo
+id: partner
+label: Partner
+description: 'Manage clients'
+new_revision: true
+creator_membership: true
+creator_wizard: true
+creator_roles:
+  - partner-admin

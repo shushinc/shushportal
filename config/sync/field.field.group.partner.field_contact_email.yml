@@ -1,0 +1,21 @@
+uuid: c7d2bfed-f575-4078-8a94-ce83496690a8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.group.field_contact_email
+    - group.type.partner
+_core:
+  default_config_hash: pstmeRY50hZCXmF8Xz6AUSvUnTP-tQlwUXzHPW_k-BU
+id: group.partner.field_contact_email
+field_name: field_contact_email
+entity_type: group
+bundle: partner
+label: 'Contact Email'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: email

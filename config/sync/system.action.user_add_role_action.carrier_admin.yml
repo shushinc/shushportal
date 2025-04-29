@@ -1,0 +1,14 @@
+uuid: 58b33d6a-fa66-4041-a6e6-48b2f5a78327
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.carrier_admin
+  module:
+    - user
+id: user_add_role_action.carrier_admin
+label: 'Add the Carrier Admin role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: carrier_admin

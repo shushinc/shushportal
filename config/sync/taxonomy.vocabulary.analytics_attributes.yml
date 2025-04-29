@@ -1,0 +1,11 @@
+uuid: d768f40c-2e5b-45c1-b29b-044243d75610
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: 2hmD0KZRdtkmX_RM4U39GETUmZfgAqY8wQdN3-wV3mM
+name: 'Analytics Attributes'
+vid: analytics_attributes
+description: null
+weight: 0
+new_revision: false

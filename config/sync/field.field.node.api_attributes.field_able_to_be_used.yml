@@ -1,0 +1,21 @@
+uuid: 1eace95f-1545-4496-8d58-4bc88a39c0e6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_able_to_be_used
+    - node.type.api_attributes
+  module:
+    - options
+id: node.api_attributes.field_able_to_be_used
+field_name: field_able_to_be_used
+entity_type: node
+bundle: api_attributes
+label: 'Able to be used'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

@@ -1,0 +1,21 @@
+uuid: 6ba56a8b-64b6-42e3-9888-8d1bf1f0b697
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_carrier_enabled_3rd_party
+    - node.type.api_attributes
+  module:
+    - options
+id: node.api_attributes.field_carrier_enabled_3rd_party
+field_name: field_carrier_enabled_3rd_party
+entity_type: node
+bundle: api_attributes
+label: 'Carrier Enabled for 3rd Party Use'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

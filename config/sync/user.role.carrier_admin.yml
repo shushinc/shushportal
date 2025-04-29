@@ -1,0 +1,15 @@
+uuid: 988ea888-f7d3-4600-88b8-58359b6b313c
+langcode: en
+status: true
+dependencies:
+  module:
+    - zcs_apis
+id: carrier_admin
+label: 'Carrier Admin'
+weight: 4
+is_admin: null
+permissions:
+  - 'access user invite'
+  - 'access user profiles'
+  - 'administer users'
+  - 'view user email addresses'

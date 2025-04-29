@@ -1,0 +1,22 @@
+uuid: fa21d327-1451-4109-bb3c-59076b6a3cab
+langcode: en
+status: true
+dependencies:
+  module:
+    - help
+  theme:
+    - shush
+_core:
+  default_config_hash: Ft9d75RJeY1nQWnRC8ROHk2XisqVeNsbplrs0VYhBfQ
+id: shush_help
+theme: shush
+region: help
+weight: -9
+provider: null
+plugin: help_block
+settings:
+  id: help_block
+  label: Help
+  label_display: '0'
+  provider: help
+visibility: {  }

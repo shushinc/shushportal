@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Analytics Attributes'
+vid: analytics_attributes
+description: null
+weight: 0
+new_revision: false

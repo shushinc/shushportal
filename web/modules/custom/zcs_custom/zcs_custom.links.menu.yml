@@ -1,0 +1,12 @@
+zcs_custom.portal_settings:
+  title: Portal Settings
+  description: Portal Configurations
+  parent: system.admin_config_system
+  route_name: zcs_custom.portal_settings
+  weight: 10
+zcs_custom.api_attribute_settings:
+  title: API Attribute Settings
+  description: API Attribute Settings
+  parent: system.admin_config_system
+  route_name: zcs_custom.api_attribute_settings
+  weight: 10

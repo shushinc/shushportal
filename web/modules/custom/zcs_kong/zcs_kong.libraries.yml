@@ -1,0 +1,3 @@
+zcs_kong.dialog:
+  dependencies:
+    - core/drupal.dialog.ajax 

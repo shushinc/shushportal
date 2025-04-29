@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_api_volume_in_mil
+    - node.type.analytics
+id: node.analytics.field_api_volume_in_mil
+field_name: field_api_volume_in_mil
+entity_type: node
+bundle: analytics
+label: 'API volume in Mil'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

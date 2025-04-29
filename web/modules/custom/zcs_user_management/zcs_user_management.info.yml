@@ -1,0 +1,9 @@
+name: 'ZCS User Managment'
+type: module
+description: 'User Management'
+package: Custom
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:group
+  - drupal:gnode
+  - drupal:ginvite

@@ -1,0 +1,23 @@
+zcs.login:
+  path: '/login'
+  defaults:
+    _title: 'Login'
+    _controller: '\Drupal\zcs_custom\Controller\LoginController::login'
+  requirements:
+    _role: 'anonymous'
+
+zcs_custom.portal_settings:
+  path: '/admin/config/system/portal-settings'
+  defaults:
+    _title: 'Portal Settings'
+    _form: 'Drupal\zcs_custom\Form\PortalSettingsForm'
+  requirements:
+    _permission: 'administer site configuration'
+
+zcs_custom.api_attribute_settings:
+  path: '/admin/config/system/api-attributes-settings'
+  defaults:
+    _title: 'API Attribute Settings'
+    _form: 'Drupal\zcs_custom\Form\ApiAttributeSettingsForm'
+  requirements:
+    _permission: 'administer site configuration'

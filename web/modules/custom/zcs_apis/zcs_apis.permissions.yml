@@ -1,0 +1,4 @@
+access user invite:
+  title: 'Invite users'
+  description: 'Allow users to access invite user form.'
+  restrict access: TRUE

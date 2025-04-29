@@ -1,0 +1,22 @@
+uuid: 5b9b9262-eed7-441e-8e57-debfe66d1e9c
+langcode: en
+status: false
+dependencies:
+  module:
+    - system
+  theme:
+    - shush
+_core:
+  default_config_hash: Vn2a_YIJsjnNKVD9OTwge3foCqh73GfxHaQfTx4kNmM
+id: shush_breadcrumbs
+theme: shush
+region: breadcrumb
+weight: 0
+provider: null
+plugin: system_breadcrumb_block
+settings:
+  id: system_breadcrumb_block
+  label: Breadcrumbs
+  label_display: "0"
+  provider: system
+visibility: {}
