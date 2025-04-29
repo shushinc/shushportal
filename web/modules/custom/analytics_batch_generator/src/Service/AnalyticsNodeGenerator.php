@@ -44,12 +44,21 @@ class AnalyticsNodeGenerator {
   /**
    * Generates analytics nodes for the past 3 years.
    */
-  public function generateNodes() {
+  public function generateNodes($ago = 3, $mode = 'year') {
     // Get current timestamp
     $current_time = $this->time->getCurrentTime();
 
-    // Calculate timestamp for 3 years ago
-    $three_years_ago = $current_time - (3 * 365 * 24 * 60 * 60);
+    $ago = abs(intval($ago));
+
+    if ($mode == 'day') {
+      $three_years_ago = $current_time - ($ago * 24 * 60 * 60);
+    }
+    elseif ($mode == 'month') {
+      $three_years_ago = $current_time - (30 * $ago * 24 * 60 * 60);
+    }
+    else {
+      $three_years_ago = $current_time - (365 * $ago * 24 * 60 * 60);
+    }
 
     // Create an array of timestamps for each day
     $days = [];

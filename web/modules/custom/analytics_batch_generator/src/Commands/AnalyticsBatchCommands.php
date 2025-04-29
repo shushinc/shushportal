@@ -31,16 +31,24 @@ class AnalyticsBatchCommands extends DrushCommands {
   /**
    * Generates analytics nodes for each day from today to 3 years ago.
    *
+   * @option model_id
+   *   Metabase model id.
+   *
    * @command analytics:generate-nodes
    * @aliases ang
-   * @usage analytics:generate-nodes
+   * @usage analytics:generate-nodes [--ago=1] [--mode=day]
    *   Generates analytics nodes for the past 3 years.
    */
-  public function generateNodes() {
+  public function generateNodes(
+    array $options = [
+      'ago' => 1,
+      'mode' => 'day',
+    ]
+  ) {
     $this->output()->writeln('Starting batch process to generate analytics nodes...');
 
     // Start the batch process
-    $this->nodeGenerator->generateNodes();
+    $this->nodeGenerator->generateNodes($options['ago'], $options['mode']);
 
     // Process the batch directly in Drush
     $batch =& batch_get();
