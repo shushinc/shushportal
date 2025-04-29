@@ -68,13 +68,80 @@ class ServiceConsumerCommands extends DrushCommands {
    * @param string $name
    *   The config name to be imported.
    *
+   * @option model_id
+   *   Metabase model id.
+   *
    * @usage drush metabase:import
    * @command metabase:import
    * @aliases mb:import
    */
-  public function import($name) {
+  public function import(
+    $name,
+    array $options = [
+      'model_id' => NULL,
+    ]
+  ) {
 
     $configs = [
+      'collection' => [
+        'default' => 'api/collection/',
+      ],
+      'dashboard' => [
+        'default' => 'api/dashboard/',
+      ],
+      'database' => [
+        'default' => 'api/database/',
+      ],
+      'model' => [
+        'default' => 'api/model-index/',
+      ],
+    ];
+
+    if (!in_array($name, array_keys($configs))) {
+      $this->io()->error('Invalid config name');
+      return;
+    }
+
+    foreach ($configs[$name] as $key => $endpoint) {
+      $config = \Drupal::configFactory()->getEditable("metabase.settings.{$name}.{$key}");
+
+      $model_id = $options['model_id'];
+
+      $params = [];
+      if ($model_id) {
+        $params['model_id'] = $model_id;
+      }
+
+      $response = $this->metabaseService->get($endpoint, $params);
+      if (isset($response['data'])) {
+        $config->set('data', $response['data'])->save();
+      }
+      elseif (is_array($response)) {
+        $config->set('data', $response)->save();
+      }
+      else {
+        $this->io()->info(print_r($response, TRUE));
+      }
+    }
+  }
+
+  /**
+   * Metabase export config.
+   *
+   * @param string $name
+   *   The config name to be exported.
+   * @param string $key
+   *   The config key to be exported.
+   *
+   * @usage drush metabase:export
+   * @command metabase:export
+   * @aliases mb:export
+   */
+  public function export($name, $key = 'default') {
+    $configs = [
+      'dashboard' => [
+        'default' => 'api/dashboard/',
+      ],
       'database' => [
         'default' => 'api/database/',
       ]
@@ -85,11 +152,23 @@ class ServiceConsumerCommands extends DrushCommands {
       return;
     }
 
-    foreach ($configs[$name] as $key => $endpoint) {
-      $config = \Drupal::configFactory()->getEditable("metabase.settings.{$name}.{$key}");
-      $response = $this->metabaseService->get($endpoint);
-      if ($response['data']) {
-        $config->set('data', $response['data'])->save();
+    if (!in_array($key, array_keys($configs[$name]))) {
+      $this->io()->error('Invalid config key');
+      return;
+    }
+
+    $endpoint = $configs[$name][$key];
+
+    $config = \Drupal::configFactory()->get("metabase.settings.{$name}.{$key}");
+
+    $items = $config->get('data');
+    foreach ($items as $key => $value) {
+      $response = $this->metabaseService->get($endpoint . $value['id']);
+      if ($response == NULL) {
+        if ($name == 'database') {
+          $value['details']['password'] = 'root';
+        }
+        $response = $this->metabaseService->post($endpoint, $value);
       }
     }
   }

@@ -98,11 +98,19 @@ class MetabaseSettingsForm extends ConfigFormBase {
       '#required' => TRUE,
     ];
 
-    $form['embeding_settings']['dashboard_id'] = [
+    $form['embeding_settings']['top_dashboard_id'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Dashboard ID'),
+      '#title' => $this->t('Dashboard ID (Top)'),
       '#description' => $this->t('Enter the default Dashboard ID.'),
-      '#default_value' => $config->get('embeding.dashboard_id'),
+      '#default_value' => $config->get('embeding.dashboard.top'),
+      '#required' => TRUE,
+    ];
+
+    $form['embeding_settings']['bottom_dashboard_id'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Dashboard ID (Bottom)'),
+      '#description' => $this->t('Enter the default Dashboard ID.'),
+      '#default_value' => $config->get('embeding.dashboard.bottom'),
       '#required' => TRUE,
     ];
 
@@ -117,6 +125,13 @@ class MetabaseSettingsForm extends ConfigFormBase {
       '#title' => $this->t('CSS'),
       '#description' => $this->t('Enter the CSS to overwrite.'),
       '#default_value' => $config->get('overwrite.css'),
+    ];
+
+    $form['overwrite']['js'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('JavaScript'),
+      '#description' => $this->t('Enter the JS to overwrite.'),
+      '#default_value' => $config->get('overwrite.js'),
     ];
 
     return parent::buildForm($form, $form_state);
@@ -147,8 +162,10 @@ class MetabaseSettingsForm extends ConfigFormBase {
       ->set('metabase.external.base_url', $form_state->getValue('metabase_external_base_url'))
       ->set('embeding.base_url', $form_state->getValue('embed_base_url'))
       ->set('embeding.api_token', $form_state->getValue('secret_key'))
-      ->set('embeding.dashboard_id', $form_state->getValue('dashboard_id'))
+      ->set('embeding.dashboard.top', $form_state->getValue('top_dashboard_id'))
+      ->set('embeding.dashboard.bottom', $form_state->getValue('bottom_dashboard_id'))
       ->set('overwrite.css', $form_state->getValue('css'))
+      ->set('overwrite.js', $form_state->getValue('js'))
       ->save();
 
     parent::submitForm($form, $form_state);

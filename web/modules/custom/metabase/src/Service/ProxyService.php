@@ -121,9 +121,11 @@ class ProxyService {
       }
 
       // For GET requests that match CSS files, modify the content.
-      if ($request->isMethod('GET') &&
-          strpos($targetUrl, '/app/dist/styles.') !== FALSE &&
-          strpos($targetUrl, '.css') !== FALSE) {
+      if (
+        $request->isMethod('GET') &&
+        strpos($targetUrl, '/app/dist/styles.') !== FALSE &&
+        strpos($targetUrl, '.css') !== FALSE
+      ) {
 
         // Get the entire content.
         $content = (string) $proxyResponse->getBody();
@@ -134,6 +136,28 @@ class ProxyService {
           $content .= $css;
         }
         // $content .= 'footer{display:none !important;}';
+
+        // Create and return the response.
+        $response = new Response(
+          $content,
+          $proxyResponse->getStatusCode(),
+          $responseHeaders
+        );
+
+        return $response;
+      }
+      elseif ($request->isMethod('GET') &&
+        strpos($targetUrl, '/app/dist/runtime.') !== FALSE &&
+        strpos($targetUrl, '.js') !== FALSE
+      ){
+        // Get the entire content.
+        $content = (string) $proxyResponse->getBody();
+
+        $js = $config->get('overwrite.js');
+
+        if ($js) {
+          $content .= $js;
+        }
 
         // Create and return the response.
         $response = new Response(
