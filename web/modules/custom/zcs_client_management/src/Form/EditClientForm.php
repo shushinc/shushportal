@@ -125,7 +125,17 @@ final class EditClientForm extends FormBase {
     $gid = $this->request->get('id');
     $group = Group::load($gid);
     
-    $form['partner_name'] = [
+
+    
+    $form['client_contact_details_col_1'] = [
+      '#type' => 'fieldset',
+      '#attributes' => [
+        'class' => ['client-contact-details-col-1'],
+      ],
+    ];
+
+
+    $form['client_contact_details_col_1']['partner_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Name'),
       '#required' => TRUE,
@@ -136,7 +146,7 @@ final class EditClientForm extends FormBase {
       '#default_value' =>  $group->get('label')->value ?? '',     
     ];
 
-    $form['contact_name'] = [
+    $form['client_contact_details_col_1']['contact_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Contact Name'),
       '#required' => TRUE,
@@ -146,7 +156,7 @@ final class EditClientForm extends FormBase {
       '#default_value' =>  $group->get('field_contact_name')->value ?? '',      
     ];
 
-    $form['contact_email'] = [
+    $form['client_contact_details_col_1']['contact_email'] = [
       '#type' => 'email',
       '#title' => 'Contact Email',
       '#required' => TRUE,
@@ -156,14 +166,35 @@ final class EditClientForm extends FormBase {
       ],
       '#default_value' =>  $group->get('field_contact_email')->value ?? '',
     ];
-    $form['partner_description'] = [
+
+    $form['client_contact_details_col_1']['partner_status'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Status'),
+      '#options' => [
+         'active' => 'Active',
+         'inactive' => 'Inactive',
+        ],
+      '#default_value' => 'active',  
+      '#required' => TRUE,
+      '#default_value' => $group->get('field_partner_status')->value ?? '',
+    ];
+
+    $form['client_contact_details_col_2'] = [
+      '#type' => 'fieldset',
+      '#attributes' => [
+        'class' => ['client-contact-details-col-2'],
+      ],
+    ];
+
+
+    $form['client_contact_details_col_2']['partner_description'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Description'),
       '#required' => TRUE,
       '#default_value' =>  strip_tags($group->get('field_description')->value) ?? '',
     ];
 
-    $form['client_legal_contact'] = [
+    $form['client_contact_details_col_2']['client_legal_contact'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Legal Contact'),
       '#required' => TRUE,
@@ -173,7 +204,7 @@ final class EditClientForm extends FormBase {
       '#default_value' =>  $group->get('field_client_legal_contact')->value ?? '',       
     ];
 
-    $form['client_point_of_contact'] = [
+    $form['client_contact_details_col_2']['client_point_of_contact'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Point of Contact'),
       '#required' => TRUE,
@@ -183,7 +214,44 @@ final class EditClientForm extends FormBase {
       '#default_value' =>  $group->get('field_client_point_of_contact')->value ?? '',        
     ];
 
-    $form['industry'] = [
+    $form['client_contact_details_col_2']['address_info'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Address'),
+      '#attributes' => [
+        'class' => ['custom-fieldset'],
+      ],
+    ];
+
+    $address = $group->get('field_address')->getValue();
+    $address_value = isset($address[0]) ? $address[0]: '';
+    $form['client_contact_details_col_2']['address_info']['address'] = [
+      '#type' => 'address',
+      '#title' => $this->t('Address'),
+      '#required' => TRUE,  
+      '#default_value' => $address_value ?? '',    
+    ];
+
+
+    $form['client_contact_details_col_3'] = [
+      '#type' => 'fieldset',
+      '#attributes' => [
+        'class' => ['client-contact-details-col-3'],
+      ],
+    ];
+
+    $form['client_contact_details_col_3']['partner_type'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Type'),
+      '#options' => [
+         'demandpartner' => 'Demand Partner',
+         'enterprise' => 'Enterprise',
+        ],
+      '#required' => TRUE,
+      '#default_value' => $group->get('field_partner_type')->value ?? '',
+    ];
+
+
+    $form['client_contact_details_col_3']['industry'] = [
       '#type' => 'select',
       '#title' => $this->t('Industry'),
       '#options' => [
@@ -199,7 +267,7 @@ final class EditClientForm extends FormBase {
       '#default_value' =>  $group->get('field_industry')->value ?? '',
     ];
 
-    $form['agreement_effective_date'] = [
+    $form['client_contact_details_col_3']['agreement_effective_date'] = [
       '#type' => 'date',
       '#title' => $this->t('Agreement Effective Date'),
       '#default_value' => $group->get('field_agreement_effective_date')->value ?? '',
@@ -207,28 +275,9 @@ final class EditClientForm extends FormBase {
       '#disabled' => TRUE,
     ];
 
-    $form['partner_type'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Type'),
-      '#options' => [
-         'demandpartner' => 'Demand Partner',
-         'enterprise' => 'Enterprise',
-        ],
-      '#required' => TRUE,
-      '#default_value' => $group->get('field_partner_type')->value ?? '',
-    ];
+   
 
-    $form['partner_status'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Status'),
-      '#options' => [
-         'active' => 'Active',
-         'inactive' => 'Inactive',
-        ],
-      '#default_value' => 'active',  
-      '#required' => TRUE,
-      '#default_value' => $group->get('field_partner_status')->value ?? '',
-    ];
+ 
 
 
 
@@ -271,23 +320,7 @@ final class EditClientForm extends FormBase {
     ];
 
 
-    $form['address_info'] = [
-      '#type' => 'fieldset',
-      '#title' => $this->t('Address'),
-      '#attributes' => [
-        'class' => ['custom-fieldset'],
-      ],
-    ];
-
-    $address = $group->get('field_address')->getValue();
-    $address_value = isset($address[0]) ? $address[0]: '';
-    $form['address_info']['address'] = [
-      '#type' => 'address',
-      '#title' => $this->t('Address'),
-      '#required' => TRUE,  
-      '#default_value' => $address_value ?? '',    
-    ];
-
+   
     $form['api_agreement_covers'] = [
       '#type' => 'fieldset',
       '#title' => 'APIs Agreement Covers',

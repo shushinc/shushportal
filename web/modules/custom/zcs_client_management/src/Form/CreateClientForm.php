@@ -90,8 +90,14 @@ class CreateClientForm extends FormBase {
     }
     $defaultCurrency = 'en_US';
  
+    $form['client_contact_details_col_1'] = [
+      '#type' => 'fieldset',
+      '#attributes' => [
+        'class' => ['client-contact-details-col-1'],
+      ],
+    ];
 
-    $form['partner_name'] = [
+    $form['client_contact_details_col_1']['partner_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Name'),
       '#required' => TRUE,
@@ -101,7 +107,7 @@ class CreateClientForm extends FormBase {
       '#maxlength' => 20,        
     ];
 
-    $form['contact_name'] = [
+    $form['client_contact_details_col_1']['contact_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Contact Name'),
       '#required' => TRUE,
@@ -109,7 +115,7 @@ class CreateClientForm extends FormBase {
         'autocomplete' => 'off'
       ],        
     ];
-    $form['contact_email'] = [
+    $form['client_contact_details_col_1']['contact_email'] = [
       '#type' => 'email',
       '#title' => 'Contact Email',
       '#required' => TRUE,
@@ -117,13 +123,37 @@ class CreateClientForm extends FormBase {
         'autocomplete' => 'off'
       ],
     ];
-    $form['partner_description'] = [
+
+    $form['client_contact_details_col_1']['partner_status'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Status'),
+      '#options' => [
+         'active' => 'Active',
+         'inactive' => 'Inactive',
+        ],
+      '#default_value' => 'active',  
+      '#required' => TRUE,
+    ];
+
+
+    $form['client_contact_details_col_2'] = [
+      '#type' => 'fieldset',
+      '#attributes' => [
+        'class' => ['client-contact-details-col-2'],
+      ],
+    ];
+
+
+
+    $form['client_contact_details_col_2']['partner_description'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Description'),
       '#required' => TRUE,
     ];
 
-    $form['client_legal_contact'] = [
+
+
+    $form['client_contact_details_col_2']['client_legal_contact'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Legal Contact'),
       '#required' => TRUE,
@@ -132,7 +162,7 @@ class CreateClientForm extends FormBase {
       ],        
     ];
 
-    $form['client_point_of_contact'] = [
+    $form['client_contact_details_col_2']['client_point_of_contact'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Point of Contact'),
       '#required' => TRUE,
@@ -141,13 +171,39 @@ class CreateClientForm extends FormBase {
       ],        
     ];
 
-    $form['agreement_effective_date'] = [
-      '#type' => 'date',
-      '#title' => $this->t('Agreement Effective Date'),
-      '#default_value' => date('Y-m-d'),
+    $form['client_contact_details_col_2']['address_info'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Address'),
+      '#attributes' => [
+        'class' => ['custom-fieldset'],
+      ],
+    ];
+ 
+    $form['client_contact_details_col_2']['address_info']['address'] = [
+      '#type' => 'address',
+      '#title' => $this->t('Address'),
+      '#required' => TRUE,      
     ];
 
-    $form['industry'] = [
+
+    $form['client_contact_details_col_3'] = [
+      '#type' => 'fieldset',
+      '#attributes' => [
+        'class' => ['client-contact-details-col-3'],
+      ],
+    ];
+
+    $form['client_contact_details_col_3']['partner_type'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Type'),
+      '#options' => [
+         'demandpartner' => 'Demand Partner',
+         'enterprise' => 'Enterprise',
+        ],
+      '#required' => TRUE,
+    ];
+    
+    $form['client_contact_details_col_3']['industry'] = [
       '#type' => 'select',
       '#title' => $this->t('Industry'),
       '#options' => [
@@ -162,27 +218,11 @@ class CreateClientForm extends FormBase {
       '#required' => TRUE,
     ];
 
-    $form['partner_type'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Type'),
-      '#options' => [
-         'demandpartner' => 'Demand Partner',
-         'enterprise' => 'Enterprise',
-        ],
-      '#required' => TRUE,
+    $form['client_contact_details_col_3']['agreement_effective_date'] = [
+      '#type' => 'date',
+      '#title' => $this->t('Agreement Effective Date'),
+      '#default_value' => date('Y-m-d'),
     ];
-
-    $form['partner_status'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Status'),
-      '#options' => [
-         'active' => 'Active',
-         'inactive' => 'Inactive',
-        ],
-      '#default_value' => 'active',  
-      '#required' => TRUE,
-    ];
-
 
 
     $form['prepayment_info'] = [
@@ -226,21 +266,7 @@ class CreateClientForm extends FormBase {
 
 
 
-    $form['address_info'] = [
-      '#type' => 'fieldset',
-      '#title' => $this->t('Address'),
-      '#attributes' => [
-        'class' => ['custom-fieldset'],
-      ],
-    ];
- 
-
-    $form['address_info']['address'] = [
-      '#type' => 'address',
-      '#title' => $this->t('Address'),
-      '#required' => TRUE,      
-    ];
-
+  
  
 
     $form['api_agreement_covers'] = [

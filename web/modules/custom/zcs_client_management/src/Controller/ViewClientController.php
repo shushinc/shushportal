@@ -115,6 +115,9 @@ class ViewClientController extends ControllerBase {
       '#cache' => [
         'max-age' => 0,
       ],
+      '#attached' => [
+        'library' => ['zcs_client_management/client-view-page']
+      ]
     ];
   }
 

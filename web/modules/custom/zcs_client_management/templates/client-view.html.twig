@@ -1,161 +1,121 @@
-
 <div class="client-view-wrapper">
- <div class = "client-wrapper">
-    <div class="client-tiles-col1">
-      <div class ="client-tile">
-         <span class="client-label">
-          Client Name
-         </span>
-         <span class="client-value">
-           {{ client_name }}
-         </span>
-      </div>
-      <div class ="client-tile">
-       <span class="client-label">
-           Contact Name
-         </span>
-         <span class="client-value">
-           {{ contact_name }}
-         </span>
-      </div>
-      <div class ="client-tile">
-        <span class="client-label">
-           Email
-         </span>
-         <span class="client-value">
-           {{ contact_name }}
-         </span>
-      </div>
-      <div class ="client-tile">
-       <span class="client-label">
-          Status
-         </span>
-         <span class="client-value">
-           {{ status }}
-         </span>
-      </div>
-    <div>
-    
-    <div class="client-tiles-col2">
-        <div class ="client-tile">
-            <span class="client-label">
-                Description
-            </span>
-            <span class="client-value">
-                {{ description }}
-            </span>
-        </div>
-        <div class ="client-tile">
-            <span class="client-label">
-                Client Legal Contact
-            </span>
-            <span class="client-value">
-                {{ client_legal_contact }}
-            </span>
-        </div>
-         <div class ="client-tile">
-            <span class="client-label">
-                Client Legal Contact
-            </span>
-            <span class="client-value">
-                {{ client_legal_contact }}
-            </span>
-        </div>
-        <div class ="client-tile">
-            <span class="client-label">
-                Legal Email
-            </span>
-            <span class="client-value">
-                {{ legal_email }}
-            </span>
-        </div>
-        <div class ="client-tile">
-            <span class="client-label">
-                Client Address
-            </span>
-            <span class="client-value">
-            {% if address_line_1 is not empty %}
-               <p>{{ address_line_1 }}</P>
-            {% endif %}
-            {% if address_line_2 is not empty %}
-                 <p>{{ address_line_2 }}</P>
-            {% endif %}
-            {% if address_line_3 is not empty %}
-                <p>{{ address_line_3 }}</P>
-            {% endif %}
-             {% if country_code is not empty %}
-               <p>{{ country_code }}</P>
-            {% endif %}
-            {% if postal_code is not empty %}
-              <p>{{ postal_code }}</P>
-            {% endif %}
-            </span>
-        </div>
+	<div class="client-wrapper">
+		<div
+			class="layout-column-70">
+			<!-- Column 1 -->
+			<div class="client-tiles-col1">
+				<div class="client-tiles-row">
+					<div class="client-tile">
+						<span class="client-label">Client Name</span>
+						<span class="client-value">{{ client_name }}</span>
+					</div>
+					<div class="client-tile">
+						<span class="client-label">Contact Name</span>
+						<span class="client-value">{{ contact_name }}</span>
+					</div>
+					<div class="client-tile">
+						<span class="client-label">Email</span>
+						<span class="client-value">{{ contact_email }}</span>
+					</div>
+				</div>
+			</div>
 
-    <div>
+			<!-- Column 2 -->
+			<div class="client-tiles-col2">
+				<div class="client-tiles-row">
+					<div class="client-tile">
+						<span class="client-label">Description</span>
+						<span class="client-value">{{ description }}</span>
+					</div>
+					<div class="client-tile">
+						<span class="client-label">Client Legal Contact</span>
+						<span class="client-value">{{ client_legal_contact }}</span>
+					</div>
+					<div class="client-tile">
+						<span class="client-label">Legal Email</span>
+						<span class="client-value">{{ legal_email }}</span>
+					</div>
+				</div>
+			</div>
 
-     <div class="client-tiles-col3">
-        <div class ="client-tile">
-            <span class="client-label">
-                Type
-            </span>
-            <span class="client-value">
-                 {{ type }}
-            </span>
-        </div>
-         <div class ="client-tile">
-            <span class="client-label">
-               Industry
-            </span>
-            <span class="client-value">
-                 {{ industry }}
-            </span>
-        </div>
-        <div class ="client-tile">
-            <span class="client-label">
-               Agreement Effective Date
-            </span>
-            <span class="client-value">
-                 {{ agreement_effective_date }}
-            </span>
-        </div>
-    <div>
-     <div class="client-tiles-col4 payment-tiles">
-       <div class ="payment-detail">
-        <span class="currenycy-value">
-            {{ currency }} {{prepayment_amount | format_number}}
-        </span>
-        <span class='payment-label'>
-            Prepayment Amount
-        </span>
-       <div>
-        <div class ="payment-detail">
-            <span class="currenycy-value">
-                {{ currency }} {{prepayment_balance_left | format_number}}
-            </span>
-            <span class='payment-label'>
-                Prepayment Balance Left
-            </span>
-       <div>
-        <div class ="payment-detail">
-            <span class="currenycy-value">
-                {{ currency }} {{prepayment_balance_used | format_number}}
-            </span>
-            <span class='payment-label'>
-                Prepayment Balance Used
-            </span>
-       <div>
-    <div>
- </div>
- <div class ="api-aggreement-covers">
-   <span class="title">
-      API Agreement Covers
-   </span>
-   <span>
+			<!-- Column 3 -->
+			<div class="client-tiles-col3">
+				<div class="client-tiles-row">
+					<div class="client-tile">
+						<span class="client-label">Type</span>
+						<span class="client-value">{{ type }}</span>
+					</div>
+					<div class="client-tile">
+						<span class="client-label">Industry</span>
+						<span class="client-value">{{ industry }}</span>
+					</div>
+					<div class="client-tile">
+						<span class="client-label">Agreement Effective Date</span>
+						<span class="client-value">{{ agreement_effective_date }}</span>
+					</div>
+				</div>
+			</div>
+			<div class="client-tiles-col4">
+				<div class="client-tiles-row">
+					<div class="client-tile">
+						<span class="client-label">Status</span>
+						<span class="client-value">{{ status }}</span>
+					</div>
+					<div class="client-tile">
+						<span class="client-label">Client Address</span>
+						<span class="client-value">
+							{% if address_line_1 is not empty %}
+								<p>{{ address_line_1 }}</p>
+							{% endif %}
+							{% if address_line_2 is not empty %}
+								<p>{{ address_line_2 }}</p>
+							{% endif %}
+							{% if address_line_3 is not empty %}
+								<p>{{ address_line_3 }}</p>
+							{% endif %}
+							{% if country_code is not empty %}
+								<p>{{ country_code }}</p>
+							{% endif %}
+							{% if postal_code is not empty %}
+								<p>{{ postal_code }}</p>
+							{% endif %}
+						</span>
+					</div>
+					<div class="client-tile">
+						<span class="client-label">Agreement Term</span>
+						<span class="client-value">{{ agreement_term }}</span>
+					</div>
+				</div>
+			</div>
+		</div>
 
-  {% for title, status in agreement_covers %}
-        <p class="{{ status == 0 ? 'disabled' : 'enabled' }}"> {{ title }} </p>
-    {% endfor %}
-   </span>
- </div>
+		<div class="layout-column-30">
+			<div class="client-tiles-col4 payment-tiles">
+				<div class="payment-detail">
+					<span class="currenycy-value">{{ currency }}
+						{{ prepayment_amount | format_number }}</span>
+					<span class="payment-label">Prepayment Amount</span>
+				</div>
+				<div class="payment-detail">
+					<span class="currenycy-value">{{ currency }}
+						{{ prepayment_balance_left | format_number }}</span>
+					<span class="payment-label">Prepayment Balance Left</span>
+				</div>
+				<div class="payment-detail">
+					<span class="currenycy-value">{{ currency }}
+						{{ prepayment_balance_used | format_number }}</span>
+					<span class="payment-label">Prepayment Balance Used</span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="api-aggreement-covers">
+		<span class="title">API Agreement Covers</span>
+		<span>
+			{% for title, status in agreement_covers %}
+				<p class="{{ status == 0 ? 'disabled' : 'enabled' }}">{{ title }}</p>
+			{% endfor %}
+		</span>
+	</div>
 </div>

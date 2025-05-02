@@ -1,0 +1,201 @@
+body[class^="view-"] {
+  background: #fff;
+}
+
+.client-view-wrapper {
+  width: 100%;
+  font-family: "Inter", sans-serif;
+  color: #1c1c1c;
+}
+
+.client-wrapper {
+  display: flex;
+  flex-wrap: wrap; /* Allow items to wrap */
+  gap: 24px;
+  margin-bottom: 40px;
+  align-items: stretch; /* Ensure both columns stretch to the same height */
+}
+
+.layout-column-70 {
+  flex: 0 0 67%; /* Updated to 67% */
+  max-width: 67%;
+  display: grid;
+  grid-template-rows: repeat(3, 1fr); /* 3 columns */
+  gap: 16px;
+  height: 100%; /* Ensure full height for consistent layout */
+}
+
+.layout-column-30 {
+  flex: 0 0 30%; /* Adjusted to 33% */
+  max-width: 30%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: flex-start;
+  min-width: 250px; /* Ensures minimum width before breaking */
+  height: 100%; /* Make sure this column stretches to fill the height of the parent */
+}
+
+.client-tiles-col1,
+.client-tiles-col2,
+.client-tiles-col3,
+.client-tiles-col4 {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.client-tiles-row {
+  display: flex;
+  gap: 16px; /* Ensure columns within rows have space */
+}
+
+.client-tile {
+  font-family: "DM Sans", sans-serif;
+  background: #f5f8fc;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 16px;
+  flex: 1; /* Ensure tiles take equal space within the row */
+}
+
+.client-tile:hover,
+.client-tile:focus {
+  transition: all 0.3s ease-in-out;
+  background: #e1e5f3;
+  border: 1px solid #2e3b8f;
+}
+
+.client-label {
+  font-family: "DM Sans", sans-serif;
+  display: block;
+  color: #8e9398;
+  margin-bottom: 6px;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+  line-height: normal;
+}
+
+.client-value {
+  color: #2e3b8f;
+  display: block;
+  font-weight: 600;
+  line-height: 18px;
+  font-size: 14px;
+}
+
+.client-tile.small-tile {
+  max-width: 180px; /* Smaller tiles will have a constrained width */
+}
+
+.payment-detail {
+  font-family: "DM Sans", sans-serif;
+  background-color: #f0f3ff;
+  border: 1px solid #2e3b8f;
+  border-radius: 12px;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.currenycy-value {
+  font-family: "DM Sans", sans-serif;
+  display: block;
+  font-size: 44px;
+  font-weight: 800;
+  color: #2e3b8f;
+  margin-bottom: 6px;
+}
+
+.payment-label {
+  font-family: "DM Sans", sans-serif;
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2e3b8f;
+  letter-spacing: 0.5px;
+}
+
+.api-aggreement-covers {
+  margin-top: 32px;
+  padding: 20px;
+  border: 1px solid #dce3ed;
+  border-radius: 12px;
+}
+
+.api-aggreement-covers .title {
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: block;
+  border-bottom: 1px solid #000;
+}
+.api-aggreement-covers span {
+  display: flex;
+  flex-wrap: wrap;
+}
+.api-aggreement-covers span p {
+  font-family: "DM Sans", sans-serif;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  margin-right: 1rem;
+  margin-bottom: 10px;
+  flex: 0 0 20%;
+}
+
+.api-aggreement-covers .enabled::before,
+.api-aggreement-covers .disabled::before {
+  content: "";
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  margin-right: 8px;
+  border-radius: 50%;
+}
+
+/* Tick mark background */
+.api-aggreement-covers .enabled::before {
+  background-image: url("/themes/custom/shush/images/active-bg.svg");
+}
+
+/* Cross mark background */
+.api-aggreement-covers .disabled::before {
+  background-image: url("/themes/custom/shush/images/error-bg.svg");
+}
+body[class^="view-"].user-logged-in .layout-container {
+  margin-left: 270px;
+}
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .client-wrapper {
+    flex-wrap: wrap;
+  }
+
+  .layout-column-70,
+  .layout-column-30 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .layout-column-70 {
+    grid-template-columns: 1fr; /* Stack to 1 column on smaller screens */
+  }
+
+  .client-tile.large-tile,
+  .client-tile.small-tile {
+    grid-column: span 1;
+    max-width: 100%;
+  }
+
+  .client-wrapper {
+    margin-bottom: 20px; /* Add bottom margin for responsiveness */
+  }
+
+  .client-tiles-row {
+    flex-direction: column; /* Stack tiles vertically on smaller screens */
+  }
+}
