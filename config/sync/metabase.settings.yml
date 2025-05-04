@@ -1,14 +1,18 @@
 api:
   base_url: 'http://web:80/metabase/dashboard'
-  api_token: mb_Xn7IEfp5N5/vd7KAKnBHXXCDhtQyI2ceLhecDvbZ3Bg=
+  api_token: mb_fTL9m7197FDGr1GHTFe+gmDqRZWsDzmpSVzb2ILfGbA=
 metabase:
   internal:
     base_url: 'http://metabase:3000'
   external:
     base_url: 'https://localhost:3000'
 embeding:
-  api_token: a5c48646cb98b34c4542eb1e116afb515029f98970f3085b400f9c29df012992
+  api_token: 3a89fe3e92ab266d2826f85d96476bbb3a9c033e5c8b9d6eade46663050583e7
   base_url: 'https://shushportal.ddev.site/proxy'
-  dashboard_id: '1'
+  dashboard_id: '2'
+  dashboard:
+    top: '3'
+    bottom: '4'
 overwrite:
-  css: "body {\r\n  background-color: transparent !important;\r\n}\r\n#root > div, #root > div > div {\r\n  background-color: transparent !important;\r\n}\r\nfooter{\r\n  display:none !important;\r\n}\r\na {\r\n  color: red !important;\r\n}"
+  css: "body {\r\n  background-color: transparent !important;\r\n}\r\nheader {\r\n  display:none !important;\r\n}\r\n#root > div, #root > div > div {\r\n  background-color: transparent !important;\r\n}\r\nfooter{\r\n  display:none !important;\r\n}\r\na {\r\n  color: red !important;\r\n}"
+  js: "(function() {\r\n  'use strict';\r\n  setInterval(() => {\r\n    document.querySelectorAll('[data-testid=\"dashcard-container\"]').forEach(container => {\r\n      const card = container.querySelector('.emotion-Text-root > span');\r\n      if (!card) return;\r\n\r\n      const text = card.innerText.trim();\r\n\r\n      if (text.includes('-')) {\r\n        card.style.color = '#a00000';\r\n        card.style.fontSize = '2em';\r\n      }\r\n    });\r\n  }, 3000);\r\n})();"

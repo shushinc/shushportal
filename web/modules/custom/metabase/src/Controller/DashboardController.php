@@ -133,12 +133,9 @@ class DashboardController extends ControllerBase {
     }
 
     $params = [];
-
-    if (!in_array('administrator', \Drupal::currentUser()->getRoles())) {
-      $params = [
-        'end_customer' => 'Bank of America',
-      ];
-    }
+    $params = [
+      'user_id' => \Drupal::currentUser()->id(),
+    ];
 
     // Create JWT payload.
     $payload = [

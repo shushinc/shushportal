@@ -4,7 +4,8 @@ metabase.settings:
     _form: 'Drupal\metabase\Form\MetabaseSettingsForm'
     _title: 'Metabase API Settings'
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'administer module reports'
+
 
 metabase.dashboard:
   path: '/mb/dashboard'

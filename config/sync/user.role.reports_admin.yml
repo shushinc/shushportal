@@ -1,0 +1,12 @@
+uuid: 76a048b7-b6e0-44ed-a216-b3c384589082
+langcode: en
+status: true
+dependencies:
+  module:
+    - metabase
+id: reports_admin
+label: 'Reports Admin'
+weight: 6
+is_admin: null
+permissions:
+  - 'administer module reports'
