@@ -89,15 +89,26 @@ class CreateClientForm extends FormBase {
       }
     }
     $defaultCurrency = 'en_US';
- 
-    $form['client_contact_details_col_1'] = [
+    $form['client_Layout_column_wrapper'] = [
+      '#type' => 'fieldset',
+      '#attributes' => [
+        'class' => ['client-Layout-column-wrapper'],
+      ],
+    ];
+    $form['client_Layout_column_wrapper']['client_Layout_column_first'] = [
+      '#type' => 'fieldset',
+      '#attributes' => [
+        'class' => ['client-Layout-column-first'],
+      ],
+    ];
+    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_1'] = [
       '#type' => 'fieldset',
       '#attributes' => [
         'class' => ['client-contact-details-col-1'],
       ],
     ];
 
-    $form['client_contact_details_col_1']['partner_name'] = [
+    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_1']['partner_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Name'),
       '#required' => TRUE,
@@ -107,7 +118,7 @@ class CreateClientForm extends FormBase {
       '#maxlength' => 20,        
     ];
 
-    $form['client_contact_details_col_1']['contact_name'] = [
+    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_1']['contact_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Contact Name'),
       '#required' => TRUE,
@@ -115,7 +126,7 @@ class CreateClientForm extends FormBase {
         'autocomplete' => 'off'
       ],        
     ];
-    $form['client_contact_details_col_1']['contact_email'] = [
+    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_1']['contact_email'] = [
       '#type' => 'email',
       '#title' => 'Contact Email',
       '#required' => TRUE,
@@ -124,36 +135,20 @@ class CreateClientForm extends FormBase {
       ],
     ];
 
-    $form['client_contact_details_col_1']['partner_status'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Status'),
-      '#options' => [
-         'active' => 'Active',
-         'inactive' => 'Inactive',
-        ],
-      '#default_value' => 'active',  
-      '#required' => TRUE,
-    ];
-
-
-    $form['client_contact_details_col_2'] = [
+    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_2'] = [
       '#type' => 'fieldset',
       '#attributes' => [
         'class' => ['client-contact-details-col-2'],
       ],
     ];
 
-
-
-    $form['client_contact_details_col_2']['partner_description'] = [
+    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_2']['partner_description'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Description'),
       '#required' => TRUE,
     ];
 
-
-
-    $form['client_contact_details_col_2']['client_legal_contact'] = [
+    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_2']['client_legal_contact'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Legal Contact'),
       '#required' => TRUE,
@@ -161,8 +156,7 @@ class CreateClientForm extends FormBase {
         'autocomplete' => 'off'
       ],        
     ];
-
-    $form['client_contact_details_col_2']['client_point_of_contact'] = [
+    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_2']['client_point_of_contact'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Point of Contact'),
       '#required' => TRUE,
@@ -171,29 +165,14 @@ class CreateClientForm extends FormBase {
       ],        
     ];
 
-    $form['client_contact_details_col_2']['address_info'] = [
-      '#type' => 'fieldset',
-      '#title' => $this->t('Address'),
-      '#attributes' => [
-        'class' => ['custom-fieldset'],
-      ],
-    ];
- 
-    $form['client_contact_details_col_2']['address_info']['address'] = [
-      '#type' => 'address',
-      '#title' => $this->t('Address'),
-      '#required' => TRUE,      
-    ];
-
-
-    $form['client_contact_details_col_3'] = [
+    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_3'] = [
       '#type' => 'fieldset',
       '#attributes' => [
         'class' => ['client-contact-details-col-3'],
       ],
     ];
 
-    $form['client_contact_details_col_3']['partner_type'] = [
+    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_3']['partner_type'] = [
       '#type' => 'select',
       '#title' => $this->t('Type'),
       '#options' => [
@@ -203,7 +182,7 @@ class CreateClientForm extends FormBase {
       '#required' => TRUE,
     ];
     
-    $form['client_contact_details_col_3']['industry'] = [
+    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_3']['industry'] = [
       '#type' => 'select',
       '#title' => $this->t('Industry'),
       '#options' => [
@@ -218,14 +197,51 @@ class CreateClientForm extends FormBase {
       '#required' => TRUE,
     ];
 
-    $form['client_contact_details_col_3']['agreement_effective_date'] = [
+    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_3']['agreement_effective_date'] = [
       '#type' => 'date',
       '#title' => $this->t('Agreement Effective Date'),
       '#default_value' => date('Y-m-d'),
     ];
+    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_3']['partner_status'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Status'),
+      '#options' => [
+         'active' => 'Active',
+         'inactive' => 'Inactive',
+        ],
+      '#default_value' => 'active',  
+      '#required' => TRUE,
+    ];
 
+    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_4'] = [
+      '#type' => 'fieldset',
+      '#attributes' => [
+        'class' => ['client-contact-details-col-4'],
+      ],
+    ];
 
-    $form['prepayment_info'] = [
+    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_4']['address_info'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Address'),
+      '#attributes' => [
+        'class' => ['custom-fieldset'],
+      ],
+    ];
+ 
+    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_4']['address_info']['address'] = [
+      '#type' => 'address',
+      '#title' => $this->t('Address'),
+      '#required' => TRUE,      
+    ];
+    
+    $form['client_Layout_column_wrapper']['client_Layout_column_second'] = [
+      '#type' => 'fieldset',
+      '#attributes' => [
+        'class' => ['client-Layout-column-second'],
+      ],
+    ];
+
+    $form['client_Layout_column_wrapper']['client_Layout_column_second']['prepayment_info'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Prepayment Information'),
       '#attributes' => [
@@ -233,13 +249,13 @@ class CreateClientForm extends FormBase {
       ],
     ];
 
-    $form['prepayment_info']['currencies'] = [
+    $form['client_Layout_column_wrapper']['client_Layout_column_second']['prepayment_info']['currencies'] = [
       '#type' => 'select',
       '#options' => $currencies,
       '#default_value' => $defaultCurrency
     ];
 
-    $form['prepayment_info']['prepayment_amount'] = [
+    $form['client_Layout_column_wrapper']['client_Layout_column_second']['prepayment_info']['prepayment_amount'] = [
       '#type' => 'number',
       '#title' => 'Prepayment Amount',
       '#min' => 0,
@@ -247,7 +263,7 @@ class CreateClientForm extends FormBase {
       '#step' => 0.001,
     ];
 
-    $form['prepayment_info']['prepayment_balance_left'] = [
+    $form['client_Layout_column_wrapper']['client_Layout_column_second']['prepayment_info']['prepayment_balance_left'] = [
       '#type' => 'number',
       '#title' => 'Prepayment Balance left',
       '#min' => 0,
@@ -255,19 +271,13 @@ class CreateClientForm extends FormBase {
       '#step' => 0.001,
     ];
 
-    $form['prepayment_info']['prepayment_balance_used'] = [
+    $form['client_Layout_column_wrapper']['client_Layout_column_second']['prepayment_info']['prepayment_balance_used'] = [
       '#type' => 'number',
       '#title' => 'Prepayment Balance Used',
       '#min' => 0,
       '#default_value' => 0.00,
       '#step' => 0.001,
     ];
-
-
-
-
-  
- 
 
     $form['api_agreement_covers'] = [
       '#type' => 'fieldset',
@@ -321,11 +331,11 @@ class CreateClientForm extends FormBase {
     $user_name = $form_state->getValue('contact_name'); 
     $users = \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['mail' => $user_email]);
     if ($users) {
-      $form_state->setError($form['contact_email'], $this->t('This user is already registered or has an active invitation. Please verify their details and try again.'));
+      $form_state->setError($form['client_contact_details_col_1']['contact_email'], $this->t('This user is already registered or has an active invitation. Please verify their details and try again.'));
     }
     $username = \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['name' => $user_name]);
     if ($username) {
-      $form_state->setError($form['contact_name'], $this->t('This username is already registered or has an active invitation. Please verify their details and try again.'));
+      $form_state->setError($form['client_contact_details_col_1']['contact_name'], $this->t('This username is already registered or has an active invitation. Please verify their details and try again.'));
     }
    }
 

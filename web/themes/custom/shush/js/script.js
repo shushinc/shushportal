@@ -155,33 +155,3 @@
     }
   };
 })(jQuery, Drupal);
-jQuery(document).ready(function($){
-  // Add the 'parent-menu' class to <li> elements that have a <ul> (i.e., parent menus)
-  $('li:has(ul)').addClass('parent-menu');
-       
-  // Add the 'child-menu' class to <ul> elements that are inside a parent <li>
-  $('li:has(ul) > ul').addClass('child-menu');
-
-  // Initially hide all child menus
-  $('.child-menu').hide();
-
-  // Show child-menu if it contains an active link
-  $('.child-menu').has('a.is-active').show().closest('.parent-menu').addClass('menuexpand');
-
-  // Toggle child menu visibility when the parent menu is clicked
-  $('.parent-menu > span').click(function(){
-    var $parentMenu = $(this).parent('.parent-menu');
-    var $childMenu = $(this).next('.child-menu');
-   
-    // Toggle child menu visibility
-    $childMenu.stop(true, true).slideToggle();
-
-    // Add or remove 'menuexpand' class when the menu is toggled
-    $parentMenu.toggleClass('menuexpand');
-  });
-});
-
-
-jQuery(document).ready(function($){
-  $('.login .header-site-logo').insertBefore('main .highlighted');
-});
