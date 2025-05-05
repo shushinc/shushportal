@@ -1,0 +1,44 @@
+metabase.settings:
+  path: '/admin/config/services/metabase'
+  defaults:
+    _form: 'Drupal\metabase\Form\MetabaseSettingsForm'
+    _title: 'Metabase API Settings'
+  requirements:
+    _permission: 'administer module reports'
+
+
+metabase.dashboard:
+  path: '/mb/dashboard'
+  defaults:
+    _controller: '\Drupal\metabase\Controller\DashboardController::dashboard'
+    _title: 'Dashboard'
+  requirements:
+    _access: 'TRUE'
+    # _permission: 'access metalite dashboard'
+
+metabase.proxy:
+  path: '/proxy'
+  defaults:
+    _controller: '\Drupal\metabase\Controller\ProxyController::proxy'
+    _title: 'Proxy'
+  methods: [GET, POST, PUT, DELETE, HEAD, OPTIONS, PATCH]
+  requirements:
+    _access: 'TRUE'
+    # _permission: 'access content'
+  options:
+    no_cache: 'TRUE'
+
+metabase.proxy.path:
+  path: '/proxy/{path}'
+  defaults:
+    _controller: '\Drupal\metabase\Controller\ProxyController::proxy'
+    _title: 'Proxy'
+  methods: [GET, POST, PUT, DELETE, HEAD, OPTIONS, PATCH]
+  requirements:
+     _access: 'TRUE'
+    # _permission: 'access content'
+  options:
+    no_cache: 'TRUE'
+    parameters:
+      path:
+        type: path

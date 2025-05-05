@@ -1,0 +1,21 @@
+{#
+/**
+ * @file
+ * Default theme implementation for the analytics batch generator form.
+ *
+ * Available variables:
+ * - title: The title of the form.
+ * - description: The description of the form.
+ * - button_url: The URL for the start button.
+ * - button_text: The text for the start button.
+ *
+ * @ingroup themeable
+ */
+#}
+<div class="analytics-batch-generator-form">
+	<h2>{{ title }}</h2>
+	<div class="description">{{ description }}</div>
+	<div class="button-container">
+		<a href="{{ button_url }}" class="button button--primary">{{ button_text }}</a>
+	</div>
+</div>

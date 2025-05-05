@@ -1,0 +1,9 @@
+api:
+  base_url: 'http://web:80/metabase/dashboard'
+  api_token: mb_x5Vdgkv4wYMlWyw8KW/9EM732Wg7KCzOqLklsCE1kYw=
+embeding:
+  api_token: da12018ddd8679070c5efb2c91016af02b817b19c129915fd762e22c1776f2bd
+  base_url: 'https://shushportal.ddev.site/proxy'
+  dashboard_id: '1'
+overwrite:
+  css: "body {\r\n  background-color: transparent !important;\r\n}\r\n#root > div, #root > div > div {\r\n  background-color: transparent !important;\r\n}\r\nfooter{\r\n  display:none !important;\r\n}"

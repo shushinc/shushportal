@@ -1,0 +1,14 @@
+uuid: 158de20f-8bf5-433e-9aa5-58570fac3228
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.reports_admin
+  module:
+    - user
+id: user_add_role_action.reports_admin
+label: 'Add the Reports Admin role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: reports_admin

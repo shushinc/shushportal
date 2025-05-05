@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * @file
+ * Contains analytics_batch_generator.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function analytics_batch_generator_theme() {
+  return [
+    'analytics_batch_generator_form' => [
+      'variables' => [
+        'title' => NULL,
+        'description' => NULL,
+        'button_url' => NULL,
+        'button_text' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_help().
+ */
+function analytics_batch_generator_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.analytics_batch_generator':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Generates analytics nodes in batch for testing purposes.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * This is optional - you can use it to schedule batch generation if needed.
+ */
+function analytics_batch_generator_cron() {
+  // Uncomment to trigger node generation during cron runs
+  // \Drupal::service('analytics_batch_generator.generator')->generateNodes();
+}

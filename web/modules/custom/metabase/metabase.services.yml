@@ -1,0 +1,14 @@
+services:
+  metabase.service:
+    class: Drupal\metabase\Service\MetabaseService
+    arguments: ['@http_client', '@config.factory', '@logger.factory']
+
+  metabase.proxy:
+    class: Drupal\metabase\Service\ProxyService
+    arguments: ['@http_client', '@config.factory', '@logger.factory']
+
+  metabase.request_subscriber:
+    class: Drupal\metabase\EventSubscriber\CustomPathSubscriber
+    arguments: ['@metabase.proxy']
+    tags:
+      - { name: event_subscriber }
