@@ -42,7 +42,7 @@ class CreateClientForm extends FormBase {
       '#attributes' => [
         'autocomplete' => 'off'
       ],
-      '#maxlength' => 20,
+      '#maxlength' => 20,        
     ];
 
     $form['contact_name'] = [
@@ -51,7 +51,7 @@ class CreateClientForm extends FormBase {
       '#required' => TRUE,
       '#attributes' => [
         'autocomplete' => 'off'
-      ],
+      ],        
     ];
     $form['contact_email'] = [
       '#type' => 'email',
@@ -84,7 +84,7 @@ class CreateClientForm extends FormBase {
          'active' => 'Active',
          'in_active' => 'Inactive',
         ],
-      '#default_value' => 'active',
+      '#default_value' => 'active',  
       '#required' => TRUE,
     ];
 
@@ -106,8 +106,8 @@ class CreateClientForm extends FormBase {
      // @todo Validate the form here.
     // @endcode
     parent::validateForm($form, $form_state);
-    $user_email = $form_state->getValue('contact_email');
-    $user_name = $form_state->getValue('contact_name');
+    $user_email = $form_state->getValue('contact_email'); 
+    $user_name = $form_state->getValue('contact_name'); 
     $users = \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['mail' => $user_email]);
     if ($users) {
       $form_state->setError($form['contact_email'], $this->t('This user is already registered or has an active invitation. Please verify their details and try again.'));
@@ -122,13 +122,13 @@ class CreateClientForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
-    $partner_name = $form_state->getValue('partner_name');
-    $contact_name = $form_state->getValue('contact_name');
-    $contact_email = $form_state->getValue('contact_email');
-    $partner_description = $form_state->getValue('partner_description');
-    $partner_status = $form_state->getValue('partner_status');
-    $partner_type = $form_state->getValue('partner_type');
-    // create consumer in kong:
+    $partner_name = $form_state->getValue('partner_name'); 
+    $contact_name = $form_state->getValue('contact_name'); 
+    $contact_email = $form_state->getValue('contact_email'); 
+    $partner_description = $form_state->getValue('partner_description'); 
+    $partner_status = $form_state->getValue('partner_status'); 
+    $partner_type = $form_state->getValue('partner_type'); 
+    // create consumer in kong: 
     if (\Drupal::moduleHandler()->moduleExists('zcs_aws')) {
       $group = Group::create([
         'type' => 'partner',
@@ -141,7 +141,7 @@ class CreateClientForm extends FormBase {
         'user_id' => \Drupal::currentUser()->id(),
         'created' => \Drupal::time()->getRequestTime(),
       ]);
-      $group->save();
+      $group->save(); 
       $uid = \Drupal::currentUser()->id();
       $user = User::load($uid);
       $group->addMember($user, ['group_roles' => ['partner-admin']]);
@@ -149,9 +149,9 @@ class CreateClientForm extends FormBase {
       $user = User::create([
         'name' => $contact_name,
         'mail' => $contact_email,
-        'status' => 0, //
-        'roles' => 'authenticated',
-      ]);
+        'status' => 0, // 
+        'roles' => 'authenticated', 
+      ]);  
       $user->save();
       $token = $this->generateToken();
       $save_invitation = $this->saveInvitation($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
@@ -163,7 +163,7 @@ class CreateClientForm extends FormBase {
       try {
         $response = \Drupal::service('zcs_kong.kong_gateway')->createConsumer($contact_name, $contact_email);
         $status_code = $response->getStatusCode();
-        if ($status_code == '201') {
+        if ($status_code == '201') {  
           $group = Group::create([
             'type' => 'partner',
             'label' => $partner_name,
@@ -175,7 +175,7 @@ class CreateClientForm extends FormBase {
             'user_id' => \Drupal::currentUser()->id(),
             'created' => \Drupal::time()->getRequestTime(),
           ]);
-          $group->save();
+          $group->save(); 
           $uid = \Drupal::currentUser()->id();
           $user = User::load($uid);
           $group->addMember($user, ['group_roles' => ['partner-admin']]);
@@ -183,19 +183,19 @@ class CreateClientForm extends FormBase {
           $user = User::create([
             'name' => $contact_name,
             'mail' => $contact_email,
-            'status' => 0, //
-            'roles' => 'authenticated',
-          ]);
+            'status' => 0, // 
+            'roles' => 'authenticated', 
+          ]);  
           $user->save();
-
+    
           $token = $this->generateToken();
           $save_invitation = $this->saveInvitation($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
           $send_email = $this->sendInvitationMail($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
-
+        
           $kong_response = $response->getBody()->getContents();
           $response = Json::decode($kong_response);
           $group->set('field_consumer_id', $response['id']);
-          $group->save();
+          $group->save();   
           $this->messenger()->addMessage($this->t('Client is invited successfully.'));
           $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
         }
@@ -207,7 +207,7 @@ class CreateClientForm extends FormBase {
           $error_response = $e->getResponse();
           if ($error_response->getStatusCode() == '409') {
             $this->messenger()->addError($this->t('Unique constraint violation detected on Partner Name  or Contact Email.'));
-          }
+          } 
         } else {
           $this->messenger()->addError($this->t('Request Error: ' . $e->getMessage()));
         }

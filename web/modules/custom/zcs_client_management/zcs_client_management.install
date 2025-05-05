@@ -86,7 +86,7 @@ function zcs_client_management_install() {
     'menu_per_role__show_role' => [
        'administrator',
        'carrier_admin',
-    ],
+    ],    
   ]);
   $menu_link->save();
 
@@ -107,7 +107,7 @@ function zcs_client_management_install() {
        'administrator',
        'carrier_admin',
        'client_admin',
-    ],
+    ],  
    //'parent' => $parent_menu_link_id,
   ]);
   $menu_link1->save();
@@ -138,12 +138,12 @@ function zcs_client_management_update_9001(){
     if($menu_item_object) {
       $menu_item_object->delete();
     }
-
+  
     $menu_item_object1 = current($storage->loadByProperties(['title' => 'Client Members']));
     if($menu_item_object1) {
       $menu_item_object1->delete();
     }
-
+  
     $link_uri = 'internal:/apps';
     // Check if a menu link with the same properties already exists.
     $kong_menu_link = current($storage->loadByProperties([
@@ -153,7 +153,7 @@ function zcs_client_management_update_9001(){
     if ($kong_menu_link) {
       $kong_menu_link->delete();
     }
-
+  
     $aws_link_uri = 'internal:/aws-apps';
     // Check if a menu link with the same properties already exists.
     $aws_menu_link = current($storage->loadByProperties([
@@ -163,9 +163,9 @@ function zcs_client_management_update_9001(){
     if ($aws_menu_link) {
       $aws_menu_link->delete();
     }
-
-
-
+  
+  
+  
     // Create the parent menu link.
     $parent_menu_link = MenuLinkContent::create([
       'title' => 'Client',
@@ -177,7 +177,7 @@ function zcs_client_management_update_9001(){
     $parent_menu_link->save();
     // Get the parent menu link ID.
     $parent_id = 'menu_link_content:' . $parent_menu_link->uuid();
-
+  
     // Create the child menu link.
     $client_menu_child_link1 = MenuLinkContent::create([
       'title' => 'Client Management',
@@ -188,10 +188,10 @@ function zcs_client_management_update_9001(){
       'menu_per_role__show_role' => [
         'administrator',
         'carrier_admin',
-      ],
+      ], 
     ]);
     $client_menu_child_link1->save();
-
+  
     // Create the child menu link.
     $client_menu_child_link3 = MenuLinkContent::create([
       'title' => 'Client Members',
@@ -206,7 +206,7 @@ function zcs_client_management_update_9001(){
       ],
     ]);
     $client_menu_child_link3->save();
-
+  
     if (\Drupal::moduleHandler()->moduleExists('zcs_kong')) {
       // Create the child menu link.
       $client_menu_child_link3 = MenuLinkContent::create([

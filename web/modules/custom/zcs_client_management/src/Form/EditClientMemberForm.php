@@ -61,10 +61,10 @@ class EditClientMemberForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $gid = $this->request->get('id');
     $cid = $this->request->get('cid');
-    $user = User::load($cid);
+    $user = User::load($cid);  
     $group_type = 'partner';
     $group_storage = \Drupal::entityTypeManager()->getStorage('group');
-    $query = $group_storage->getQuery()->condition('type', $group_type);
+    $query = $group_storage->getQuery()->condition('type', $group_type); 
     $group_ids = $query->accessCheck()->execute();
 
     $membership = GroupMembership::load($cid);
@@ -84,7 +84,7 @@ class EditClientMemberForm extends FormBase {
         $client_roles[$group_role->id()] = $group_role->label();
       }
     }
-
+   
     $client_groups = [];
     foreach($clients as $group) {
       $client_groups[$group->get('id')->value] = $group->get('label')->value;
@@ -98,7 +98,7 @@ class EditClientMemberForm extends FormBase {
       '#default_value' => $gid,
       '#attributes' => ['disabled' => 'disabled'],
     ];
-
+ 
     // To to validation fetch only the user who is not admin
     $form['client_email'] = [
       '#type' => 'email',
@@ -151,8 +151,8 @@ class EditClientMemberForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $partner_role = $form_state->getValue('partner_role');
-    $user_email = $form_state->getValue('client_email');
+    $partner_role = $form_state->getValue('partner_role'); 
+    $user_email = $form_state->getValue('client_email'); 
     $user_status = $form_state->getValue('status');
     $cid = $this->request->get('cid');
     $membership = GroupMembership::load($cid);
@@ -176,6 +176,6 @@ class EditClientMemberForm extends FormBase {
       $user->save();
     }
     $this->messenger()->addMessage($this->t('Client member updated successfully.'));
-    $form_state->setRedirectUrl(Url::fromRoute('view.client_memberships.page_1'));
+    $form_state->setRedirectUrl(Url::fromRoute('view.client_memberships.page_1'));  
   }
 }

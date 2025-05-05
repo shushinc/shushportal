@@ -84,8 +84,8 @@ class AnalyticsPostController extends ControllerBase {
           $group_relation = $this->getGroupIdFromApp($content['client']);
         }
         else {
-          $group_relation = $this->getGroupId($content['client']);
-        }
+          $group_relation = $this->getGroupId($content['client']);    
+        } 
 
         //attribute
         $attrTerms = $this->entityTypeManager()->getStorage('taxonomy_term')->loadByProperties(['vid' => 'analytics_attributes', 'name' => $content['attribute']]);
@@ -160,6 +160,7 @@ class AnalyticsPostController extends ControllerBase {
     return new JsonResponse($responses);
   }
 
+
   public function getGroupId($title){
     $query = \Drupal::entityQuery('group')
     ->condition('label', $title)
@@ -203,21 +204,21 @@ class AnalyticsPostController extends ControllerBase {
         $group_relationship = GroupRelationship::load($relationship_id);
         if ($group_relationship) {
           // Get the associated group entity.
-          $group = $group_relationship->getGroup();
+          $group = $group_relationship->getGroup();    
           // Return the Group ID if the group exists.
           if ($group) {
             $group_id =  $group->id();
             return $group_id;
           }
-        }
-      }
+        } 
+      } 
       else {
         \Drupal::logger('Analytics')->info('No relationship id found for the client id : @id', ['@id' => $client_id]);
-      }
-    }
+      } 
+    }  
     else {
       \Drupal::logger('Analytics')->info('No node found for the client id : @id', ['@id' => $client_id]);
-    }
-    return $group_id;
+    }  
+    return $group_id; 
   }
 }

@@ -105,6 +105,7 @@ final class AppListForm extends FormBase {
                   ]),
                 ],
               ]);
+
               $update_link = Link::fromTextAndUrl('Edit', $url);
               $delete_link = Link::createFromRoute('Delete', 'zcs_kong.delete_key', ['id' => $app->id()]);
               $operation_link = Markup::create($update_link->toString() . ' | ' . $delete_link->toString());
@@ -122,6 +123,7 @@ final class AppListForm extends FormBase {
             if ($app->get('field_ttl')->value == 'never_expires') {
               $ttl = 'Never Expires';
               $expiry_time = '-';
+
             }
             else {
               $ttl = $app->get('field_ttl')->value;

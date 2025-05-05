@@ -54,7 +54,7 @@ class AddClientMemberForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $group_type = 'partner';
     $group_storage = \Drupal::entityTypeManager()->getStorage('group');
-    $query = $group_storage->getQuery()->condition('type', $group_type);
+    $query = $group_storage->getQuery()->condition('type', $group_type); 
     $group_ids = $query->accessCheck()->execute();
     $clients = $group_storage->loadMultiple($group_ids);
     $group_role_storage = \Drupal::entityTypeManager()->getStorage('group_role');
@@ -77,14 +77,14 @@ class AddClientMemberForm extends FormBase {
       '#options' => $client_groups,
       '#required' => TRUE,
     ];
-
+   
     $form['user_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('User Name'),
       '#required' => TRUE,
       '#attributes' => [
         'autocomplete' => 'off'
-      ],
+      ],  
     ];
     $form['user_mail'] = [
       '#type' => 'email',
@@ -92,7 +92,7 @@ class AddClientMemberForm extends FormBase {
       '#required' => TRUE,
       '#attributes' => [
         'autocomplete' => 'off'
-      ],
+      ],  
     ];
     $form['partner_role'] = [
       '#type' => 'select',
@@ -112,8 +112,8 @@ class AddClientMemberForm extends FormBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
-    $user_email = $form_state->getValue('user_name');
-    $user_name = $form_state->getValue('user_mail');
+    $user_email = $form_state->getValue('user_name'); 
+    $user_name = $form_state->getValue('user_mail'); 
     $users = \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['mail' => $user_email]);
     if ($users) {
       $form_state->setError($form['user_name'], $this->t('This user is already registered or has an active invitation. Please verify their details and try again.'));
@@ -128,20 +128,20 @@ class AddClientMemberForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $client_id = $form_state->getValue('client');
-    $partner_role = $form_state->getValue('partner_role');
+    $client_id = $form_state->getValue('client'); 
+    $partner_role = $form_state->getValue('partner_role'); 
     $user_type  = $form_state->getValue('user_type');
 
     $token = $this->generateToken();
     $user_name  = $form_state->getValue('user_name');
-    $user_email = $form_state->getValue('user_mail');
+    $user_email = $form_state->getValue('user_mail'); 
 
     $user = User::create([
       'name' => $user_name,
       'mail' => $user_email,
-      'status' => 0, //
-      'roles' => 'authenticated',
-    ]);
+      'status' => 0, // 
+      'roles' => 'authenticated', 
+    ]);  
     $user->save();
 
     if ($client_id) {
@@ -153,8 +153,8 @@ class AddClientMemberForm extends FormBase {
     $save_invitation = $this->saveInvitation($client_id, $user_name, $user_email, $partner_role, $token);
     $send_email = $this->sendInvitationMail($client_id, $user_name, $user_email, $partner_role, $token);
     $this->messenger()->addMessage($this->t('Invite is sent successfully.'));
-
-    $form_state->setRedirectUrl(Url::fromRoute('view.client_memberships.page_1'));
+  
+    $form_state->setRedirectUrl(Url::fromRoute('view.client_memberships.page_1'));   
   }
 
   /**

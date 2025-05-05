@@ -32,8 +32,8 @@ class AnalyticsController extends ControllerBase {
 
   public function analyticsDashboard() {
     $content = [];
-    $currentMonth = $this->request->query->get('month') ?? date('m'); // Current month
-    $currentYear = $this->request->query->get('year') ?? date('Y'); // Current year
+    $currentMonth = $this->request->query->get('month') ?? date('m'); // Current month  
+    $currentYear = $this->request->query->get('year') ?? date('Y'); // Current year  
     $daysInMonth = date('t', strtotime(date($currentYear . '-' . $currentMonth .'-01'))); // Total days in the current month.
 
     // Chart 1 Logic + code.
@@ -74,8 +74,8 @@ class AnalyticsController extends ControllerBase {
   }
 
   public function analyticsAjaxDashboard() {
-    $month = $this->request->query->get('month') ?? date('m'); // Current month
-    $currentYear = $this->request->query->get('year') ?? date('Y'); // Current year
+    $month = $this->request->query->get('month') ?? date('m'); // Current month  
+    $currentYear = $this->request->query->get('year') ?? date('Y'); // Current year  
     $daysInMonth = date('t', strtotime(date($currentYear . '-' . $month .'-01')));
 
     // Charts Logic + code.
@@ -144,17 +144,17 @@ class AnalyticsController extends ControllerBase {
 
     $chart2DataArray = $chart3DataArray = $chart4DataArray = $chart1DataArray;
 
-
+    
     // getting nodes for the terms.
     $nodeQuery = $this->entityTypeManager()->getStorage('node')->getQuery();
     $nodeQuery->accessCheck(TRUE);
     $nodeQuery = $nodeQuery->condition('type', 'analytics')
       ->condition('status', '1')
       ->condition('field_date', [$currentDates[0], end($currentDates)], 'BETWEEN');
-
+     
     if(!$user_has_permission_for_all) {
       $nodeQuery->condition('field_partner.target_id', $group_keys, 'IN');
-    }
+    }  
     if ($this->request->query->get('attribute')) {
       $nodeQuery->condition('field_attribute', $this->request->query->get('attribute'));
     }
@@ -167,14 +167,14 @@ class AnalyticsController extends ControllerBase {
     if ($this->request->query->get('partner')) {
       $nodeQuery->condition('field_partner', $this->request->query->get('partner'));
     }
-    $apiStatus = false;
+    $apiStatus = false; 
     if ($this->request->query->get('api_status')) {
       $apiStatus = true;
       if ($this->request->query->get('api_status') == '200')
         $apiField = 'field_success_api_volume_in_mil';
       elseif ($this->request->query->get('api_status') == '404')
         $apiField = 'field_404_api_volume_in_mil';
-      else
+      else 
         $apiField = 'field_error_api_volume_in_mil';
     }
 
@@ -231,7 +231,7 @@ class AnalyticsController extends ControllerBase {
     }
 
     $doubleFinal3Data = $dateWiseCount = [];
-    for ($chart3=0; $chart3 < count($chart3FinalData); $chart3++) {
+    for ($chart3=0; $chart3 < count($chart3FinalData); $chart3++) { 
       for ($chart3_dates = 0; $chart3_dates < $daysInMonth; $chart3_dates++) {
         if ($chart3FinalData[$chart3]['data'][$chart3_dates] > 0) {
           $dateWiseCount[$chart3_dates] += 1;
@@ -251,7 +251,7 @@ class AnalyticsController extends ControllerBase {
     }
     foreach ($chart4FinalData as $i => $final) {
       $chart4FinalData[$i]['data'] = array_values($final['data']);
-    }
+    }    
 
     $finalData['chart1'] = $chart1FinalData;
     $finalData['chart2'] = $chart2FinalData;

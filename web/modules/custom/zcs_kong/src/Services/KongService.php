@@ -273,6 +273,7 @@ class kongService  {
 
     $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
     $endpoint = $endpoint_url .'/consumers/'. $consumer_id .'/key-auth/'. $app_id;
+
     try {
       $body = [
         "ttl" => (int) $ttl,
@@ -327,6 +328,7 @@ class kongService  {
       $expiry_time = $ttl + time();
     }
 
+
     // Create a new node object.
     $node = Node::create([
       'type' => 'app', // Replace with your content type machine name.
@@ -364,6 +366,7 @@ class kongService  {
       $group = Group::load(reset($group_id));
       return $group;
    }
+
 
 
      /**

@@ -18,7 +18,7 @@ zcs_client_management.add_client_member:
     _title: 'Add client Member'
     _form: 'Drupal\zcs_client_management\Form\AddClientMemberForm'
   requirements:
-    _permission: 'access content'
+    _permission: 'access content'   
 zcs_client_management.autocomplete_users:
   path: '/client_users_autocomplete'
   defaults:
@@ -41,11 +41,11 @@ zcs_client_management.verify_invitation:
     _user_is_logged_in: 'FALSE'
   options:
     _maintenance_access: TRUE
-    no_cache: TRUE
+    no_cache: TRUE    
 zcs_client_management.view_client_image:
   path: '/view_client_image'
   defaults:
     _controller: '\Drupal\zcs_client_management\Controller\ViewClientImageController::viewImage'
     _title: ''
   requirements:
-    _permission: 'access content'
+    _permission: 'access content'   
