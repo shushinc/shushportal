@@ -62,6 +62,7 @@ body {
   font-size: 1rem;
   line-height: 28px;
   background: #F0F3FF;
+  min-height: 100vh;
 }
 
 .btn-primary {
@@ -325,6 +326,9 @@ form .js-form-item input[aria-invalid="true"]:focus {
   top: 0;
   z-index: 200;
   background: linear-gradient(180deg, #ffffff 43.72%, #9ed1f9 67.22%, #118df0 100%);
+}
+body.not-loggedin #block-shush-site-branding>a>img {
+  width: 498px;
 }
 .user-logged-in .layout-container {
   margin-left: 260px;
