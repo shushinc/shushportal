@@ -126,10 +126,11 @@ class RateSheetReviewForm extends FormBase {
       '#type' => 'hidden',
       '#value' => $by
     ];
+    $otherApprover = array_diff($approvers, [$by]);
 
     $form['another_approver_status'] = [
       '#type' => 'hidden',
-      '#value' => $data->{end(array_diff($approvers, [$by])).'_status'}
+      '#value' => $data->{end($otherApprover).'_status'}
     ];
 
     $form['#theme'] = 'rate_sheet_review';

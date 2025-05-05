@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\Core\Render\Markup;
 /**
  * @file
  * Primary module hooks for zcs_api_attributes module.
@@ -60,8 +61,9 @@ function zcs_api_attributes_mail($key, &$message, $params) {
   switch ($key) {
     case 'rate_sheet':
       $message['from'] = \Drupal::config('system.site')->get('mail');
-      $message['subject'] = t('Form submitted', $options);
-      $message['body'][] = t('Submitted details.');
+      $message['subject'] = t('Price Plan Rate sheet Requested for Approval', $options);
+      $message['body'][] = Markup::create($params['message']);
+      $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed; delsp=yes';
       break;
   }
 }

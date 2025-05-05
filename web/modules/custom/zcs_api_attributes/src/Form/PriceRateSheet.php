@@ -10,6 +10,9 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use NumberFormatter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Url;
+
 
 class PriceRateSheet extends FormBase {
 
@@ -78,12 +81,14 @@ class PriceRateSheet extends FormBase {
      $form['currencies'] = [
        '#type' => 'select',
        '#options' => $currencies,
-       '#default_value' => $defaultCurrency
+       '#default_value' => $defaultCurrency,
+       '#weight' => 0,
      ];
  
      $form['attribute_date'] = [
        '#type' => 'date',
        '#default_value' => date('Y-m-d'),
+       '#weight' => 1,
      ];
 
 
@@ -119,7 +124,8 @@ class PriceRateSheet extends FormBase {
       '#options' => $finalUsers,
       '#attributes' => [
         'class' => ['users-check']
-      ]
+      ],
+      '#weight' => 2,
     ];
 
     $form['approval_page'] = [
@@ -182,6 +188,7 @@ class PriceRateSheet extends FormBase {
     foreach ($values['users'] as $user) {
       if ($user) {
         $users[] = $user;
+        $userMails[$user] = $this->entityTypeManager->getStorage('user')->load($user)->mail->value;
       }
     }
     $this->database->insert('attributes_page_data')
@@ -189,14 +196,26 @@ class PriceRateSheet extends FormBase {
       ->values([$this->currentUser()->id(), $values['currencies'], $values['attribute_date'], Json::encode($json), reset($users), 1, end($users), 1, 1, \Drupal::time()->getRequestTime(), \Drupal::time()->getRequestTime()])
       ->execute();
     $mailManager = \Drupal::service('plugin.manager.mail');
-    $params['message'] = 'This is sample mail';
-    $params['title'] = 'Your Notification';
+
+    $modulePath = \Drupal::service('extension.path.resolver')->getPath('module', 'zcs_api_attributes');
+    $path = $modulePath . '/templates/attributes_approval_mail.html.twig';
+
+    $rendered = \Drupal::service('twig')->load($path)->render([
+      'user' => $this->entityTypeManager->getStorage('user')->load($this->currentUser()->id())->mail->value,
+      'approver1' => $userMails[reset($users)],
+      'approver2' => $userMails[end($users)],
+      'effective_date' => $values['attribute_date'],
+      'approval' => Link::createFromRoute('Approval', 'zcs_api_attributes.rate_sheet')->toString(),
+      'site_name' => $this->config('system.site')->get('name')
+    ]);
+  
+
+    $params['message'] = Markup::create(nl2br($rendered));
     $langcode = \Drupal::currentUser()->getPreferredLangcode();
     $send = true;
 
     foreach ($users as $uid) {
-      $mail = $this->entityTypeManager->getStorage('user')->load($uid);
-      $emails[] = $mailManager->mail('zcs_api_attributes', 'rate_sheet', $mail->mail->value, $langcode, $params, NULL, $send);
+      $emails[] = $mailManager->mail('zcs_api_attributes', 'rate_sheet', $userMails[$uid], $langcode, $params, NULL, $send);
     }
 
     if (reset($emails)['result'] != true && end($emails)['result'] != true) {

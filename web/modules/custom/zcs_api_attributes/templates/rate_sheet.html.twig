@@ -6,24 +6,42 @@
   <p class="message">{{ form.message }}</p>
 {% endif %}
 {{ form.approval_page }}
-{{ form.users }}
-{{ form.currencies }}
-{{ form.attribute_date }}
-<table class="attributes-table">
-  <thead>
-    <tr>
-      <td>Title</td>
-      <td> Estimated Prices </td>
-    </tr>
-  </thead>
-  <tbody>
-    {% for id, title in fetch_attributes() %}
-    <tr>
-      <td>{{ title }}</td>
-      <td>{{ form['price' ~ id] }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div>
+  <span class="attributes-label">Select Currencies</span>
+  <span class="attribute-inputs">{{ form.currencies }}</span>
+</div>
+<div>
+  <span class="attributes-label">Effective Date</span>
+  <span class="attribute-inputs">{{ form.attribute_date }}</span>
+</div>
+<div>
+  <span class="attributes-label">Select Approvers</span>
+  <span class="attribute-inputs">{{ form.users }}</span>
+</div>
+<div>
+  <span class="attributes-label">Attributes and Prices</span>
+  <span class="attribute-inputs">
+    <table class="attributes-table">
+      <thead>
+        <tr>
+          <td>Title</td>
+          <td>Estimated Prices</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for id, title in fetch_attributes() %}
+        <tr>
+          <td>{{ title }}</td>
+          <td>{{ form['price' ~ id] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </span>
+</div>
+
+
+
+
 
 {{ form.submit }}

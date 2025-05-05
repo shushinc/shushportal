@@ -343,11 +343,7 @@ class CreateClientForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
-
-
     $values = $form_state->getValues();
-
-
     $nids = explode(",", $values['nodes']);
     foreach ($nids as $nid) {
       $json[$nid] = $values['attribute_' . $nid];

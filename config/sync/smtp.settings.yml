@@ -13,8 +13,8 @@ smtp_from: zebraconsultancyservices1@gmail.com
 smtp_fromname: ''
 smtp_client_hostname: ''
 smtp_client_helo: ''
-smtp_allowhtml: '0'
-smtp_test_address: giridevelop@gmail.com
+smtp_allowhtml: '1'
+smtp_test_address: ''
 smtp_reroute_address: ''
 smtp_debugging: false
 smtp_debug_level: 1
