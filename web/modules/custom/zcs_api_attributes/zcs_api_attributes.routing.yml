@@ -37,7 +37,7 @@ zcs_api_attributes.change_network_authentication_pricing_update:
 zcs_api_attributes.network_authentication_pricing_over_time:
   path: '/network_authentication_pricing_over_time'
   defaults:
-    _controller: '\Drupal\zcs_api_attributes\Controller\NetworkAuthenticationPricingOverTime::pricingPage'
+    _controller: '\Drupal\zcs_api_attributes\Controller\PricingOverTime::pricingPage'
     _title: 'Network Authentication Pricing Over Time'
   requirements:
     _permission: 'access content'
@@ -52,3 +52,35 @@ zcs_api_attributes.demand_partner_discountes_or_different_pricing:
     _permission: 'access content'
   options:
     no_cache: true               
+
+zcs_api_attributes.rate_sheet:
+  path: '/rate-sheet-price'
+  defaults:
+    _form: '\Drupal\zcs_api_attributes\Form\PriceRateSheet'
+    _title: 'Create Rate Sheet'
+  requirements:
+    _role: 'finance_admin + administrator'
+  options:
+    no_cache: true 
+
+zcs_api_attributes.rate_sheet.approval:
+  path: '/rate-sheet-approval'
+  defaults:
+    _controller: '\Drupal\zcs_api_attributes\Controller\PricingOverTime::attributeApprovals'
+    _title: 'Rate Sheet Approvals'
+  requirements:
+    _role: 'finance_admin + administrator'
+  options:
+    no_cache: 'TRUE'    
+
+zcs_api_attributes.rate_sheet.review:
+  path: '/rate_sheet/review/{id}'
+  defaults:
+    _form: '\Drupal\zcs_api_attributes\Form\RateSheetReviewForm'
+    _title: 'RateSheet Review'
+    id: 0
+  requirements:
+    _role: 'finance_admin + administrator'
+    id: \d+
+  options:
+    no_cache: 'TRUE'    

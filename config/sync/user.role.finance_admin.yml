@@ -1,0 +1,9 @@
+uuid: c529f3ad-5883-45c8-990d-d3e49f3e831d
+langcode: en
+status: true
+dependencies: {  }
+id: finance_admin
+label: 'Finance Admin'
+weight: 6
+is_admin: null
+permissions: {  }

@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\Core\Render\Markup;
 /**
  * @file
  * Primary module hooks for zcs_api_attributes module.
@@ -31,5 +32,38 @@ function zcs_api_attributes_theme() {
       ],
       'template' => 'demand_partner_discounts_or_different_pricing'
     ],
+    'rate_sheet' => [
+      'render element' => 'form',
+      'template' => 'rate_sheet'
+    ],
+    'rate_sheet_approval' => [
+      'variables' => [
+        'content' => null,
+      ],
+      'template' => 'rate_sheet_approval'
+    ],
+    'rate_sheet_review' => [
+      'render element' => 'form',
+      'template' => 'rate_sheet_review'
+    ],
   ];
+}
+
+
+
+/**
+ * Implements hook_mail().
+ */
+function zcs_api_attributes_mail($key, &$message, $params) {
+  $options = array(
+    'langcode' => $message['langcode'],
+  );
+  switch ($key) {
+    case 'rate_sheet':
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = t('Price Plan Rate sheet Requested for Approval', $options);
+      $message['body'][] = Markup::create($params['message']);
+      $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed; delsp=yes';
+      break;
+  }
 }

@@ -1,0 +1,5 @@
+services:
+  zcs_api_attributes.twig.CustomTwig:
+    class: Drupal\zcs_api_attributes\Twig\RateSheetTwig
+    tags:
+      - { name: twig.extension }

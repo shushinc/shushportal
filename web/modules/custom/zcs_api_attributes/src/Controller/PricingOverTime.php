@@ -6,8 +6,35 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Link;
+use Drupal\Core\Database\Connection;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class NetworkAuthenticationPricingOverTime extends ControllerBase {
+class PricingOverTime extends ControllerBase {
+
+
+    /**
+   * Connection $database.
+   */
+  protected $database;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(Connection $connection) {
+    $this->database = $connection;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('database')
+    );
+  } 
+
+
+
   public function pricingPage() {
 
    $effective_date_1 = \Drupal::config('zcs_custom.api_attribute_settings')->get('effective_date_1');
@@ -49,7 +76,7 @@ class NetworkAuthenticationPricingOverTime extends ControllerBase {
     ];
   }
 
-  private function getAttributeValue($attributeValue){
+  private function getAttributeValue($attributeValue) {
     if($attributeValue == 'yes') {
        return Markup::create("<span class='attrib_yes'>Yes</span>");
     }
@@ -60,5 +87,45 @@ class NetworkAuthenticationPricingOverTime extends ControllerBase {
       return '';
     }
 
+  }
+
+  /**
+   * Display the Attributes Approval Page.
+   */
+  public function attributeApprovals() {
+    $data = [];
+    $resultSet = $this->database->select('attributes_page_data', 'apd')
+      ->fields('apd', ['id', 'submit_by', 'approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'created'])
+      ->execute()
+      ->fetchAll();
+    $statusSet = $this->database->select('attribute_status', 'as')
+      ->fields('as', ['id', 'status'])
+      ->execute()
+      ->fetchAll();
+    foreach ($statusSet as $status) {
+      $statuses[$status->id] = $status->status;
+    }
+    if (!empty($resultSet)) {
+      foreach ($resultSet as $result) {
+        $userStorage = $this->entityTypeManager()->getStorage('user');
+        $data[] = [
+          'id' => $result->id,
+          'submitted' => $userStorage->load($result->submit_by)->mail->value,
+          'approver1' => $userStorage->load($result->approver1_uid)->mail->value,
+          'approver2' => $userStorage->load($result->approver2_uid)->mail->value,
+          'approver1_status' => $statuses[$result->approver1_status],
+          'approver2_status' => $statuses[$result->approver2_status],
+          'status' => $statuses[$result->attribute_status],
+          'requested_time' => date('Y-m-d', $result->created)
+        ];
+      }
+    }
+    return [
+      '#theme' => 'rate_sheet_approval',
+      '#content' => $data,
+      '#attached' => [
+        'library' => ['zcs_api_attributes/rate-sheet-approval']
+      ]
+    ];
   }
 }

@@ -1,0 +1,25 @@
+
+<table>
+  <thead>
+    <tr>
+      <td>Submitted By</td>
+      <td>Requested Time</td>
+      <td>Approvers</td>
+      <td>Status</td>
+      <td>Action</td>
+    </tr>
+  </thead>
+  <tbody>
+    {% for data in content %}
+      <tr>
+        <td>{{ data.submitted }}</td>
+        <td>{{ data.requested_time }}</td>
+        <td>{{ data.approver1 }} <span class="{{ data.approver1_status|lower }}">{{ data.approver1_status }}</span>
+          <br> {{ data.approver2 }} <span class="{{ data.approver2_status|lower }}">{{ data.approver2_status }}</span>
+        </td>
+        <td class="{{ data.status|lower }}">{{ data.status }}</td>
+        <td><a href="/rate_sheet/review/{{ data.id }}" class="btn-primary use-ajax anchor-dropdown-btn" data-toggle='modal' data-dialog-type='modal'  data-dialog-options='{"width": 750, "title": "Review"}'>Review</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

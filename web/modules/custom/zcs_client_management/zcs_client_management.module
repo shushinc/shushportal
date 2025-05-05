@@ -10,11 +10,32 @@
  */
 function zcs_client_management_theme($existing, $type, $theme, $path) {
     return [
-      'client_image' => [
+      'client_view' => [
         'variables' => [
-          'image_url' => '',      
+          'image_url' => '',  
+          'client_name' => '',
+          'contact_name' => '',
+          'contact_email' => '',
+          'status' => '',
+          'description' => '',
+          'client_legal_contact' => '',
+          'legal_email' => '',
+          'address' => '',
+          'type' => '',
+          'industry' => '',
+          'agreement_effective_date' => '',
+          'currency' => '',
+          'prepayment_amount' => '',
+          'prepayment_balance_left' => '',
+          'prepayment_balance_used' => '',
+          'address_line_1' => '',
+          'address_line_2' => '',
+          'address_line_3' => '', 
+          'country_code' => '',
+          'postal_code' => '',
+          'agreement_covers' => '',
         ],
-        'template' => 'client-image',
+        'template' => 'client-view',
       ],
     ];
   }

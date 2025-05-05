@@ -566,10 +566,8 @@ main {
 .user-password,
 [class^="user-management-"],
 [class^="user-*-apps-android-edit"],
-.apps-create-from,
 .add-team,
 .teams-t-add-members,
-.create-client,
 .add-client-member {
   background: #c8e7ff;
 }
@@ -579,10 +577,8 @@ main {
 .user-password main,
 [class^="user-management-"] main,
 [class^="user-*-apps-android-edit"] main,
-.apps-create-from main,
 .add-team main,
 .teams-t-add-members main,
-.create-client main,
 .add-client-member main {
   padding-top: 3rem;
 }
@@ -592,10 +588,8 @@ main {
 .user-password main .layout-content,
 [class^="user-management-"] main .layout-content,
 [class^="user-*-apps-android-edit"] main .layout-content,
-.apps-create-from main .layout-content,
 .add-team main .layout-content,
 .teams-t-add-members main .layout-content,
-.create-client main .layout-content,
 .add-client-member main .layout-content {
   max-width: 600px;
   margin: 0 auto;
@@ -1023,13 +1017,22 @@ table tr td .edit-operation .edit-operation-wrap {
   right: 20px;
   background: #ffffff;
   border-radius: 5px;
-  padding: 5px 10px;
+  border: 1px solid #dce3ed;
+  min-width: 100px;
 }
 table tr td .edit-operation .edit-operation-wrap a {
   display: block;
   text-align: left;
   line-height: normal;
-  margin: 5px 0;
+  padding: 10px 10px;
+  border-bottom: 1px solid #dce3ed;
+  transition: all 0.3s ease-in-out;
+}
+table tr td .edit-operation .edit-operation-wrap a:last-child {
+  border: none;
+}
+table tr td .edit-operation .edit-operation-wrap a:hover {
+  background: #f5f8fc;
 }
 table tr td .edit-operation:hover .edit-operation-wrap {
   display: block;
@@ -1821,4 +1824,231 @@ form.user-logout-confirm #edit-submit {
   line-height: 1;
   height: 8px;
   width: 8px;
+}
+
+body.create-client, body.apps-create-from {
+  background: #fff;
+}
+
+.client-Layout-column-wrapper .js-form-item input,
+.client-Layout-column-wrapper .js-form-item .form-file,
+.client-Layout-column-wrapper .js-form-item select,
+.client-Layout-column-wrapper .js-form-item textarea {
+  min-height: auto;
+  border: none;
+  background: transparent;
+  color: #2e3b8f;
+  font-weight: 600;
+  line-height: 18px;
+  font-size: 14px;
+  font-family: "DM Sans", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.client-Layout-column-wrapper .js-form-item input:focus, .client-Layout-column-wrapper .js-form-item input:hover,
+.client-Layout-column-wrapper .js-form-item .form-file:focus,
+.client-Layout-column-wrapper .js-form-item .form-file:hover,
+.client-Layout-column-wrapper .js-form-item select:focus,
+.client-Layout-column-wrapper .js-form-item select:hover,
+.client-Layout-column-wrapper .js-form-item textarea:focus,
+.client-Layout-column-wrapper .js-form-item textarea:hover {
+  box-shadow: none;
+  outline: none;
+}
+.client-Layout-column-wrapper .js-form-item {
+  margin-bottom: 0;
+}
+.client-Layout-column-wrapper > .fieldset-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 40px;
+  align-items: stretch;
+}
+.client-Layout-column-wrapper .client-Layout-column-first {
+  flex: 0 0 67%;
+  max-width: 67%;
+}
+.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper > .form-wrapper:not(.client-contact-details-col-4) .fieldset-wrapper:not(.custom-fieldset .fieldset-wrapper) {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  height: 100%;
+}
+.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper > .form-wrapper:not(.client-contact-details-col-4) .fieldset-wrapper:not(.custom-fieldset .fieldset-wrapper) > .js-form-item {
+  font-family: "DM Sans", sans-serif;
+  background: #f5f8fc;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  flex: 1;
+}
+.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper > .form-wrapper:not(.client-contact-details-col-4) .fieldset-wrapper:not(.custom-fieldset .fieldset-wrapper) > .js-form-item:hover, .client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper > .form-wrapper:not(.client-contact-details-col-4) .fieldset-wrapper:not(.custom-fieldset .fieldset-wrapper) > .js-form-item:focus {
+  transition: all 0.3s ease-in-out;
+  background: #e1e5f3;
+  border: 1px solid #2e3b8f;
+}
+.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper .client-contact-details-col-4 #edit-address > .js-form-item {
+  font-family: "DM Sans", sans-serif;
+  background: #f5f8fc;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  flex: 1;
+}
+.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper .client-contact-details-col-4 #edit-address > .js-form-item:hover, .client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper .client-contact-details-col-4 #edit-address > .js-form-item:focus {
+  transition: all 0.3s ease-in-out;
+  background: #e1e5f3;
+  border: 1px solid #2e3b8f;
+}
+.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper #edit-address-country-code > .js-form-item {
+  flex: 0 0 49%;
+  font-family: "DM Sans", sans-serif;
+  background: #f5f8fc;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper #edit-address-country-code > .js-form-item:hover, .client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper #edit-address-country-code > .js-form-item:focus {
+  transition: all 0.3s ease-in-out;
+  background: #e1e5f3;
+  border: 1px solid #2e3b8f;
+}
+.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper .address-container-inline {
+  display: flex;
+  flex-wrap: wrap;
+}
+.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper .address-container-inline > .js-form-item {
+  flex: 0 0 49%;
+  margin-right: 0;
+  font-family: "DM Sans", sans-serif;
+  background: #f5f8fc;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper .address-container-inline > .js-form-item:first-child {
+  margin-right: 10px;
+}
+.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper .address-container-inline > .js-form-item:hover, .client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper .address-container-inline > .js-form-item:focus {
+  transition: all 0.3s ease-in-out;
+  background: #e1e5f3;
+  border: 1px solid #2e3b8f;
+}
+.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper #edit-address-info legend {
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  margin-bottom: 14px;
+  display: block;
+  border-bottom: 1px solid #000;
+}
+.client-Layout-column-wrapper .client-Layout-column-second {
+  flex: 0 0 30%;
+  max-width: 30%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: flex-start;
+  min-width: 250px;
+  height: 100%;
+}
+.client-Layout-column-wrapper .client-Layout-column-second > legend {
+  display: none;
+}
+.client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset {
+  font-family: "DM Sans", sans-serif;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
+.client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset .fieldset-legend {
+  display: none;
+}
+.client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset .fieldset-wrapper > .js-form-item {
+  font-family: "DM Sans", sans-serif;
+  background-color: #f0f3ff;
+  border: 1px solid #2e3b8f;
+  border-radius: 12px;
+  padding: 27px 25px;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset .fieldset-wrapper > .js-form-item select,
+.client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset .fieldset-wrapper > .js-form-item input {
+  outline: none;
+  box-shadow: none;
+  font-size: 32px;
+  line-height: normal;
+  text-align: center;
+}
+.client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset .fieldset-wrapper > .js-form-item select:focus, .client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset .fieldset-wrapper > .js-form-item select:hover,
+.client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset .fieldset-wrapper > .js-form-item input:focus,
+.client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset .fieldset-wrapper > .js-form-item input:hover {
+  outline: none;
+  box-shadow: none;
+}
+.client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset .fieldset-wrapper label {
+  font-family: "DM Sans", sans-serif;
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2e3b8f;
+  letter-spacing: 0.5px;
+  order: 2;
+  margin-top: 5px;
+}
+
+#edit-api-agreement-covers legend {
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  margin-bottom: 14px;
+  display: block;
+  border-bottom: 1px solid #000;
+}
+#edit-api-agreement-covers .fieldset-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+#edit-api-agreement-covers .fieldset-wrapper .js-form-item {
+  display: flex;
+  flex: 0 0 25%;
+  align-items: center;
+  margin-bottom: 10px;
+}
+#edit-api-agreement-covers .fieldset-wrapper .js-form-item input {
+  height: 20px;
+  width: 28px !important;
+  margin-bottom: 0;
+  margin-right: 6px;
+  background: #cb1b0c;
+  border: none;
+}
+#edit-api-agreement-covers .fieldset-wrapper .js-form-item input::before {
+  height: 12px;
+  width: 12px;
+  top: 4px;
+  left: 5px;
+}
+#edit-api-agreement-covers .fieldset-wrapper .js-form-item input:checked {
+  background: #05b487;
+}
+#edit-api-agreement-covers .fieldset-wrapper .js-form-item input:checked:before {
+  transform: translateX(8px);
+}
+#edit-api-agreement-covers .fieldset-wrapper label {
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: normal;
+  color: #2e3b8f;
 }

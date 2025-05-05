@@ -80,10 +80,8 @@ main {
 .user-password,
 [class^="user-management-"],
 [class^="user-*-apps-android-edit"],
-.apps-create-from,
 .add-team,
 .teams-t-add-members,
-.create-client,
 .add-client-member {
   background: $light-grey-rgb;
   main {
@@ -518,12 +516,22 @@ table {
           right: 20px;
           background: #ffffff;
           border-radius: 5px;
-          padding: 5px 10px;
+          border: 1px solid #dce3ed;
+          min-width: 100px;
+
           a {
             display: block;
             text-align: left;
             line-height: normal;
-            margin: 5px 0;
+            padding: 10px 10px;
+            border-bottom: 1px solid #dce3ed;
+            transition: all 0.3s ease-in-out;
+            &:last-child {
+              border: none;
+            }
+            &:hover {
+              background: #f5f8fc;
+            }
           }
         }
         &:hover {
