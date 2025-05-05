@@ -72,7 +72,7 @@ function zcs_user_management_schema() {
   }
 
 
-  
+
 
 
 function zcs_user_management_install() {
@@ -110,14 +110,63 @@ function zcs_user_management_uninstall() {
     // Drop the table.
     $schema->dropTable($table_name);
   }
-
-
-
    $view = \Drupal\views\Entity\View::load('user_management');
    if ($view) {
      $view->delete();
    }
+}
 
- 
+
+function zcs_user_management_update_9001(){
+  $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+  $menu_item_object = current($storage->loadByProperties(['title' => 'User Management']));
+  if($menu_item_object) {
+    $menu_item_object->delete();
+  }
+
+  $menu_item_object1 = current($storage->loadByProperties(['title' => 'API Attribute Status']));
+  if($menu_item_object1) {
+    $menu_item_object1->delete();
+  }
+
+
+  $menu_name = 'main';
+  // Create the parent menu link.
+  $parent_menu_link = MenuLinkContent::create([
+    'title' => 'Carrier',
+    'link' => ['uri' => 'route:<nolink>'],
+    'menu_name' => $menu_name,
+    'expanded' => TRUE,
+    'weight' => 1,
+  ]);
+  $parent_menu_link->save();
+  // Get the parent menu link ID.
+  $parent_id = 'menu_link_content:' . $parent_menu_link->uuid();
+
+  // Create the child menu link.
+  $carrier_menu_child_link1 = MenuLinkContent::create([
+    'title' => 'User Management',
+    'link' => ['uri' => 'internal:/user-management'], // Adjust path as needed.
+    'menu_name' => $menu_name,
+    'parent' => $parent_id, // Set the parent ID.
+    'weight' => 1,
+    'menu_per_role__show_role' => [
+      'administrator',
+      'carrier_admin',
+    ],
+  ]);
+  $carrier_menu_child_link1->save();
+
+  if (\Drupal::moduleHandler()->moduleExists('zcs_kong')) {
+    // Create the child menu link.
+    $carrier_menu_child_link2 = MenuLinkContent::create([
+      'title' => 'API Attribute Status',
+      'link' => ['uri' => 'internal:/api-attribute-status'], // Adjust path as needed.
+      'menu_name' => $menu_name,
+      'parent' => $parent_id, // Set the parent ID.
+      'weight' => 2,
+    ]);
+    $carrier_menu_child_link2->save();
+  }
 
 }

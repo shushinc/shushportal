@@ -28,7 +28,7 @@ class kongService  {
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
-  protected ConfigFactoryInterface $configFactory;  
+  protected ConfigFactoryInterface $configFactory;
 
   /**
    * The current user.
@@ -46,14 +46,14 @@ class kongService  {
 
   /**
    * Constructs a ConfigExistsConstraintValidator object.
-   * 
+   *
    * @param \Drupal\Core\Session\AccountInterface $currentUser
    *  The current user.
-   * 
+   *
    * @param \GuzzleHttp\ClientInterface $http_client
    *   The HTTP client.
    */
- 
+
   public function __construct(AccountInterface $currentUser, ClientInterface $http_client) {
     $this->currentUser = $currentUser;
     $this->httpClient = $http_client;
@@ -132,7 +132,7 @@ class kongService  {
           $group_id = $memberships[0]->getGroup()->id();
           $group = Group::load($group_id);
           if ($group) {
-             return $group->get('field_consumer_id')->getValue()[0]['value'];     
+             return $group->get('field_consumer_id')->getValue()[0]['value'];
           }
           else {
            // \Drupal::messenger()->addError('Problem in fetching the client details');
@@ -147,7 +147,7 @@ class kongService  {
       else {
        // \Drupal::messenger()->addError('Your are not part of client');
         return "error";
-      }    
+      }
     }
   }
 
@@ -161,7 +161,7 @@ class kongService  {
 
     if ($ttl == 'never_expires') {
       $ttl = '';
-    } 
+    }
     try {
       $body = [
         'consumer' => [
@@ -180,9 +180,9 @@ class kongService  {
         'body' => $request_body,
       ]);
       return $response;
-    }  
+    }
     catch (\Exception $e) {
-      \Drupal::messenger()->addError(('Request Error: ' . $e->getMessage())); 
+      \Drupal::messenger()->addError(('Request Error: ' . $e->getMessage()));
       return "error";
     }
   }
@@ -211,7 +211,7 @@ class kongService  {
       }
       else {
         \Drupal::messenger()->addError('Something Went wrong contact site adminstrator.');
-      }    
+      }
       return "error";
     }
   }
@@ -225,7 +225,7 @@ class kongService  {
       $group_id = $memberships[0]->getGroup()->id();
       $group = Group::load($group_id);
       if ($group) {
-        return $group;     
+        return $group;
       }
       else {
         \Drupal::messenger()->addError('Problem in fetching the client id');
@@ -258,7 +258,7 @@ class kongService  {
       return $response;
     }
     catch (\Exception $e) {
-      \Drupal::messenger()->addError(('Request Error: ' . $e->getMessage())); 
+      \Drupal::messenger()->addError(('Request Error: ' . $e->getMessage()));
       return 0;
     }
   }
@@ -273,12 +273,11 @@ class kongService  {
 
     $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
     $endpoint = $endpoint_url .'/consumers/'. $consumer_id .'/key-auth/'. $app_id;
-    
     try {
       $body = [
         "ttl" => (int) $ttl,
         "tags" => [$tag],
-        "key" =>  $app_key,  
+        "key" =>  $app_key,
       ];
       $request_body = json::encode($body);
       $response = $this->httpClient->request('PUT', $endpoint, [
@@ -291,7 +290,7 @@ class kongService  {
       return $response;
     }
     catch (\Exception $e) {
-      \Drupal::messenger()->addError(('Request Error: ' . $e->getMessage())); 
+      \Drupal::messenger()->addError(('Request Error: ' . $e->getMessage()));
       return 0;
     }
   }
@@ -312,7 +311,7 @@ class kongService  {
       return $response;
     }
     catch (\Exception $e) {
-      \Drupal::messenger()->addError(('Request Error: ' . $e->getMessage())); 
+      \Drupal::messenger()->addError(('Request Error: ' . $e->getMessage()));
       return 0;
     }
   }
@@ -323,12 +322,11 @@ class kongService  {
    */
   public function saveApp($client_id, $ttl, $response) {
     $group = $this->getGroupDetails($client_id);
-    $app = Json::decode($response); 
+    $app = Json::decode($response);
     if ($ttl!= 'never_expires') {
       $expiry_time = $ttl + time();
     }
 
-  
     // Create a new node object.
     $node = Node::create([
       'type' => 'app', // Replace with your content type machine name.
@@ -341,7 +339,7 @@ class kongService  {
       'field_ttl' => $ttl,
       'field_app_status' => 'active',
       'field_expiry_date' => $expiry_time ?? '',
-      'field_renewal_date' => '',  
+      'field_renewal_date' => '',
       'uid' => \Drupal::currentUser()->id(),
       'created' => time(), // Node creation timestamp.
     ]);
@@ -368,12 +366,11 @@ class kongService  {
    }
 
 
-  
      /**
    * {@inheritdoc}
    */
   public function updateAppNode($app_node_id, $ttl, $response) {
-    $app = Json::decode($response); 
+    $app = Json::decode($response);
     $node = Node::load($app_node_id);
     if ($ttl!= 'never_expires') {
       $expiry_time = $ttl + time();
@@ -388,6 +385,6 @@ class kongService  {
     $node->set('field_renewal_date', time());
     $node->save();
     return TRUE;
-  } 
+  }
 
 }

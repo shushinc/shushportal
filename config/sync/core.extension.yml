@@ -2,7 +2,6 @@ _core:
   default_config_hash: 4GIX5Esnc_umpXUBj4IIocRX7Mt5fPhm4AgXfE3E56E
 module:
   analytics: 0
-  analytics_batch_generator: 0
   announcements_feed: 0
   automated_cron: 0
   big_pipe: 0
@@ -37,7 +36,6 @@ module:
   menu_link_content: 0
   menu_per_role: 0
   menu_ui: 0
-  metabase: 0
   mimemail: 0
   mysql: 0
   node: 0
@@ -57,10 +55,11 @@ module:
   user: 0
   variationcache: 0
   views_ui: 0
+  zcs_api_attributes: 0
   zcs_apis: 0
+  zcs_aws: 0
   zcs_client_management: 0
   zcs_custom: 0
-  zcs_kong: 0
   zcs_user_management: 0
   views: 10
   standard: 1000

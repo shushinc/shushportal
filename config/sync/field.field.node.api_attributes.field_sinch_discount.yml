@@ -1,0 +1,19 @@
+uuid: 4d263698-39e4-42a0-9916-59124c92d061
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_sinch_discount
+    - node.type.api_attributes
+id: node.api_attributes.field_sinch_discount
+field_name: field_sinch_discount
+entity_type: node
+bundle: api_attributes
+label: 'Sinch Discount (%)'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

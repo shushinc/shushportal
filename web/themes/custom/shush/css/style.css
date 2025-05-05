@@ -62,8 +62,6 @@ body {
   font-size: 1rem;
   line-height: 28px;
   background: #F0F3FF;
-  min-height: 100vh;
-  overflow-x: hidden;
 }
 
 .btn-primary {
@@ -159,7 +157,8 @@ form .js-form-item input[aria-invalid="true"]:focus {
   padding: 0 16px;
   position: relative;
 }
-.region-primary-menu ul li a {
+.region-primary-menu ul li a,
+.region-primary-menu ul li span {
   font-family: "DM Sans", sans-serif;
   font-weight: 500;
   color: #666666;
@@ -172,7 +171,9 @@ form .js-form-item input[aria-invalid="true"]:focus {
   display: block;
   position: relative;
 }
-.region-primary-menu ul li a:hover, .region-primary-menu ul li a.is-active {
+.region-primary-menu ul li a:hover, .region-primary-menu ul li a.is-active,
+.region-primary-menu ul li span:hover,
+.region-primary-menu ul li span.is-active {
   color: #191a5b;
   opacity: 1;
   font-weight: 600;
@@ -254,7 +255,7 @@ form .js-form-item input[aria-invalid="true"]:focus {
 }
 .user__profile-block .user__profile .user-profile-list .user__profile-info {
   flex: 0 0 70%;
-  padding-left: 15px;
+  padding-left: 10px;
 }
 .user__profile-block .user__profile .user-profile-list .user__profile-info .user-profile-firstname,
 .user__profile-block .user__profile .user-profile-list .user__profile-info .user-app > a {
@@ -274,9 +275,14 @@ form .js-form-item input[aria-invalid="true"]:focus {
   line-height: 16px;
   color: #ffffff;
   text-overflow: ellipsis;
-  width: 85%;
-  white-space: nowrap;
+  width: 100%;
+  word-wrap: break-word;
+  white-space: pre-wrap;
   overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  max-width: 160px;
 }
 .user__profile-block .user__profile .user-profile-list .user__profile-info .user-profile-roles {
   font-weight: 500;
@@ -320,10 +326,6 @@ form .js-form-item input[aria-invalid="true"]:focus {
   z-index: 200;
   background: linear-gradient(180deg, #ffffff 43.72%, #9ed1f9 67.22%, #118df0 100%);
 }
-
-body.not-loggedin #block-shush-site-branding > a > img {
-  width: 498px;
-}
 .user-logged-in .layout-container {
   margin-left: 260px;
   padding-right: 1rem;
@@ -342,13 +344,17 @@ body.not-loggedin #block-shush-site-branding > a > img {
   width: 100%;
   padding: 0;
 }
+.user-logged-in .header__inner .site__menu {
+  max-height: 480px;
+  overflow-y: auto;
+}
 .user-logged-in .header__inner .site__logo {
   padding: 2rem 16px;
   border-bottom: 1px solid rgba(242, 244, 247, 0.5);
 }
 .user-logged-in .header__inner .site__sec-menu {
   position: absolute;
-  bottom: 0;
+  bottom: 40px;
 }
 .user-logged-in .region-primary-menu ul {
   padding: 2rem 0 0;
@@ -378,9 +384,35 @@ body.not-loggedin #block-shush-site-branding > a > img {
 }
 .user-logged-in .region-primary-menu ul li ul {
   padding: 0;
+  display: none;
 }
 .user-logged-in .region-primary-menu ul li ul li {
-  padding: 16px 0;
+  padding: 8px 15px;
+}
+.user-logged-in .region-primary-menu ul li ul li a {
+  font-size: 14px;
+}
+.user-logged-in .region-primary-menu ul li.menu-item--expanded {
+  position: relative;
+}
+.user-logged-in .region-primary-menu ul li.menu-item--expanded::after {
+  content: "";
+  background: url("../images/arrow-down.svg") no-repeat;
+  height: 16px;
+  width: 16px;
+  position: absolute;
+  right: 20px;
+  top: 22px;
+}
+.user-logged-in .region-primary-menu ul li.menu-item--expanded.menuexpand::after {
+  transform: rotateX(180deg);
+  top: 10px;
+}
+.user-logged-in .region-primary-menu ul li.menu-item--expanded.menuexpand ul {
+  display: block;
+}
+.user-logged-in .region-primary-menu ul li.menu-item--expanded.menu-item--active-trail ul {
+  display: block;
 }
 
 .layout-container.password-change-page {
@@ -403,7 +435,7 @@ body.not-loggedin #block-shush-site-branding > a > img {
 }
 .toolbar-horizontal.toolbar-fixed.toolbar-tray-open .site__sec-menu {
   position: absolute;
-  bottom: 5vh;
+  bottom: 40px;
 }
 
 .apps #block-shush-primary-admin-actions nav li a {
@@ -889,6 +921,7 @@ table th {
   text-align: left;
   border-bottom: 1px solid #ddd;
   color: #a3aed0;
+  line-height: normal;
 }
 table th a {
   text-decoration: none;
@@ -1012,10 +1045,25 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   display: none;
 }
 
-.zcs-kong-app-list table tr td {
+#block-shush-primary-admin-actions
+[data-drupal-link-system-path="create-aws-key"].button-action {
+  background: #fff;
+  border: 2px solid #118df0;
+  color: #118df0;
+  border-radius: 50px;
+  padding: 10px 15px;
+}
+
+.zcs-kong-app-list table tr td,
+.zcs-aws-app-list table tr td {
   position: relative;
 }
-.zcs-kong-app-list table tr td .pwd-copy {
+.zcs-kong-app-list table tr td .pwd-copy,
+.zcs-kong-app-list table tr td .secret-password,
+.zcs-kong-app-list table tr td .client-password,
+.zcs-aws-app-list table tr td .pwd-copy,
+.zcs-aws-app-list table tr td .secret-password,
+.zcs-aws-app-list table tr td .client-password {
   position: absolute;
   top: 50%;
   right: 30px;
@@ -1023,7 +1071,12 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   opacity: 0;
   visibility: hidden;
 }
-.zcs-kong-app-list table tr td .pwd-copy::after {
+.zcs-kong-app-list table tr td .pwd-copy::after,
+.zcs-kong-app-list table tr td .secret-password::after,
+.zcs-kong-app-list table tr td .client-password::after,
+.zcs-aws-app-list table tr td .pwd-copy::after,
+.zcs-aws-app-list table tr td .secret-password::after,
+.zcs-aws-app-list table tr td .client-password::after {
   content: "";
   background: url("../images/copy-files.svg") no-repeat;
   height: 12px;
@@ -1034,19 +1087,22 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   margin-left: 5px;
   cursor: pointer;
 }
-.zcs-kong-app-list table tr td.api-keys {
+.zcs-kong-app-list table tr td.api-keys,
+.zcs-aws-app-list table tr td.api-keys {
   -webkit-text-security: disc;
   /* For WebKit browsers */
   text-security: disc;
   position: relative;
 }
-.zcs-kong-app-list table tr td.api-keys .pwd-toggle {
+.zcs-kong-app-list table tr td.api-keys .pwd-toggle,
+.zcs-aws-app-list table tr td.api-keys .pwd-toggle {
   position: absolute;
   top: 50%;
   right: 10px;
   margin-top: -14px;
 }
-.zcs-kong-app-list table tr td.api-keys .pwd-toggle::after {
+.zcs-kong-app-list table tr td.api-keys .pwd-toggle::after,
+.zcs-aws-app-list table tr td.api-keys .pwd-toggle::after {
   content: "";
   background: url("../images/eye-hidden.png") no-repeat;
   height: 12px;
@@ -1057,12 +1113,14 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   margin-left: 5px;
   cursor: pointer;
 }
-.zcs-kong-app-list table tr td.password-show {
+.zcs-kong-app-list table tr td.password-show,
+.zcs-aws-app-list table tr td.password-show {
   -webkit-text-security: none;
   text-security: none;
   padding-right: 50px;
 }
-.zcs-kong-app-list table tr td.password-show .pwd-toggle::after {
+.zcs-kong-app-list table tr td.password-show .pwd-toggle::after,
+.zcs-aws-app-list table tr td.password-show .pwd-toggle::after {
   content: "";
   background: url("../images/eye-visible.png") no-repeat;
   height: 12px;
@@ -1073,15 +1131,38 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   margin-left: 5px;
   cursor: pointer;
 }
-.zcs-kong-app-list table tr td.password-show .pwd-copy {
+.zcs-kong-app-list table tr td.password-show .pwd-copy,
+.zcs-kong-app-list table tr td.password-show .client-password,
+.zcs-kong-app-list table tr td.password-show .secret-password,
+.zcs-aws-app-list table tr td.password-show .pwd-copy,
+.zcs-aws-app-list table tr td.password-show .client-password,
+.zcs-aws-app-list table tr td.password-show .secret-password {
   visibility: visible;
   opacity: 1;
 }
-.zcs-kong-app-list table tr td.app-operations {
+.zcs-kong-app-list table tr td.password-show .client-key,
+.zcs-kong-app-list table tr td.password-show .secret-key,
+.zcs-aws-app-list table tr td.password-show .client-key,
+.zcs-aws-app-list table tr td.password-show .secret-key {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+  display: inline-block;
+  width: 100px;
+  vertical-align: middle;
+}
+.zcs-kong-app-list table tr td.password-show .secret-key,
+.zcs-aws-app-list table tr td.password-show .secret-key {
+  width: 180px;
+}
+.zcs-kong-app-list table tr td.app-operations,
+.zcs-aws-app-list table tr td.app-operations {
   font-size: 0;
   text-align: center;
 }
-.zcs-kong-app-list table tr td.app-operations::before {
+.zcs-kong-app-list table tr td.app-operations::before,
+.zcs-aws-app-list table tr td.app-operations::before {
   content: "";
   background: url("../images/dropdown.svg") no-repeat;
   height: 12px;
@@ -1092,7 +1173,8 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   transform: rotate(90deg);
   cursor: pointer;
 }
-.zcs-kong-app-list table tr td.app-operations .kong-app-list-edit {
+.zcs-kong-app-list table tr td.app-operations .kong-app-list-edit,
+.zcs-aws-app-list table tr td.app-operations .kong-app-list-edit {
   display: none;
   font-size: 14px;
   position: absolute;
@@ -1102,13 +1184,15 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   border-radius: 5px;
   padding: 5px 10px;
 }
-.zcs-kong-app-list table tr td.app-operations .kong-app-list-edit a {
+.zcs-kong-app-list table tr td.app-operations .kong-app-list-edit a,
+.zcs-aws-app-list table tr td.app-operations .kong-app-list-edit a {
   display: block;
   text-align: left;
   line-height: normal;
   margin: 5px 0;
 }
-.zcs-kong-app-list table tr td.app-operations.active-dropdown .kong-app-list-edit {
+.zcs-kong-app-list table tr td.app-operations.active-dropdown .kong-app-list-edit,
+.zcs-aws-app-list table tr td.app-operations.active-dropdown .kong-app-list-edit {
   display: block;
 }
 
@@ -1362,8 +1446,9 @@ table tr td .edit-operation:hover .edit-operation-wrap {
 
 .user-management-header {
   background: transparent;
-  padding-top: 1rem;
+  padding-top: 1.5rem;
   padding-left: 1rem;
+  padding-bottom: 1.5rem;
 }
 .user-management-header h5 {
   font-family: "Montserrat", sans-serif;
@@ -1391,6 +1476,16 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   font-size: 14px;
   font-weight: 700;
   text-transform: capitalize;
+}
+
+.page-aws-apps .user-management-header {
+  padding-left: 0;
+}
+.page-aws-apps #block-shush-primary-admin-actions {
+  text-align: right;
+}
+.page-aws-apps #block-shush-primary-admin-actions nav {
+  margin: 1rem 0 0.5rem;
 }
 
 body.password-change-page {
@@ -1445,6 +1540,25 @@ body.password-change-page {
   color: #a3aed0;
   font-size: 1rem;
   line-height: 16px;
+}
+
+nav ul.js-pager__items {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+nav ul.js-pager__items li {
+  padding: 20px;
+}
+nav ul.js-pager__items li a {
+  text-decoration: none;
+}
+nav ul.js-pager__items li a span + span {
+  font-size: 24px;
+}
+
+.api-attribute-status table tr td:nth-child(2) {
+  font-weight: 400;
 }
 
 form.user-logout-confirm {

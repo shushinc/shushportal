@@ -22,16 +22,17 @@
       $(".user-profile-name").unbind().on( "click", function(event) {
         $(this).next('.user__profile').toggle();
       });
-      $(".zcs-kong-app-list table tr td.api-keys .pwd-toggle").unbind().on("click", function(event) {
+      $(".zcs-aws-app-list table tr td.api-keys .pwd-toggle").unbind().on("click", function(event) {
         $(this).parent().toggleClass('password-show');
-        $('.zcs-kong-app-list table tr td').not(this).parent().removeClass('password-show');
+        $('.zcs-aws-app-list table tr td').not(this).parent().removeClass('password-show');
       });
 
+
       //  Password copy
-      
+
       $(".pwd-copy").unbind().click(function () {
         const copiedtext = $(this).closest("tr").find(".kong-key").text();
-    
+
         if (navigator.clipboard) {
             // Use Clipboard API
           navigator.clipboard.writeText(copiedtext)
@@ -47,7 +48,7 @@
           textArea.value = copiedtext;
           document.body.appendChild(textArea);
           textArea.select();
-          
+
           try {
             document.execCommand("copy");
             alert('Text copied to clipboard successfully!');
@@ -58,7 +59,70 @@
           }
         }
       });
-    
+
+      $(".secret-password").unbind().click(function () {
+        console.log('sec click');
+        const copiedtext = $(this).closest("tr").find(".secret-key").text();
+
+        if (navigator.clipboard) {
+            // Use Clipboard API
+          navigator.clipboard.writeText(copiedtext)
+            .then(() => {
+              alert('Text copied to clipboard successfully!');
+            })
+            .catch((error) => {
+              console.error('Failed to copy text: ', error);
+            });
+        } else {
+          // Fallback for browsers without Clipboard API
+          const textArea = document.createElement("textarea");
+          textArea.value = copiedtext;
+          document.body.appendChild(textArea);
+          textArea.select();
+
+          try {
+            document.execCommand("copy");
+            alert('Text copied to clipboard successfully!');
+          } catch (err) {
+            console.error('Failed to copy text: ', err);
+          } finally {
+            document.body.removeChild(textArea);
+          }
+        }
+      });
+
+      $(".client-password").unbind().click(function () {
+        console.log('cli click');
+        const copiedtext = $(this).closest("tr").find(".client-key").text();
+
+        if (navigator.clipboard) {
+            // Use Clipboard API
+          navigator.clipboard.writeText(copiedtext)
+            .then(() => {
+              alert('Text copied to clipboard successfully!');
+            })
+            .catch((error) => {
+              console.error('Failed to copy text: ', error);
+            });
+        } else {
+          // Fallback for browsers without Clipboard API
+          const textArea = document.createElement("textarea");
+          textArea.value = copiedtext;
+          document.body.appendChild(textArea);
+          textArea.select();
+
+          try {
+            document.execCommand("copy");
+            alert('Text copied to clipboard successfully!');
+          } catch (err) {
+            console.error('Failed to copy text: ', err);
+          } finally {
+            document.body.removeChild(textArea);
+          }
+        }
+      });
+
+
       $('.zcs-kong-app-list table tr').each(function() {
         var lastTd = $(this).find('td.app-operations');
         var lastTdLinks = lastTd.find('a');
@@ -83,8 +147,11 @@
         slidesToScroll: 1,
         autoplay: true,
         autoplaySpeed: 5000,
-      }); 
-     
+      });
+      $(".site__menu ul.menu .menu-item--expanded").unbind().on( "click", function(event) {
+        console.log('menu expand');
+        $(this).toggleClass('menuexpand');
+      });
     }
   };
 })(jQuery, Drupal);

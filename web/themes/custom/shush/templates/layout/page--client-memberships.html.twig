@@ -98,11 +98,11 @@
 	{% endif %}
 
 	<div class="user-management-header">
-		<h5>{{ 'You are currently viewing the'|t }}</h5>
-		<h3>{{ 'Client Memberships'|t }}</h3>
-		{% for role in user.roles(TRUE) %}
+		{# <h5>{{ 'You are currently viewing the'|t }}</h5> #}
+		<h3>{{ 'Client User Management'|t }}</h3>
+		{# {% for role in user.roles(TRUE) %}
 			<div class="user-roles">{{ role }}</div>
-		{% endfor %}
+		{% endfor %} #}
 	</div>
 	<main role="main">
 		<div class="container-wrap">

@@ -42,7 +42,7 @@
         },
         labels: {
           formatter: function(val) {
-            return formatChange(val, id);
+            return (id !== 'chart4' && id !== 'chart2' && id !== 'chart1') ? formatChange(val, id) + " ms" : formatChange(val, id);
           }
         }
       },
@@ -124,7 +124,7 @@
 
   function formatChange(val, id = null) {
     var num = new Intl.NumberFormat('en-US', { style: 'decimal' }).format(val);
-    return (id == 'chart4') ? '$' + num : num;
+    return (id == 'chart4') ? '$' + num : num + ' ';
   }
 
 })(jQuery, drupalSettings);

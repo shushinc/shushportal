@@ -8,8 +8,11 @@ dependencies:
     - field.field.node.app.field_app_id
     - field.field.node.app.field_app_key
     - field.field.node.app.field_app_status
+    - field.field.node.app.field_client_id
+    - field.field.node.app.field_client_secret
     - field.field.node.app.field_consumer_id
     - field.field.node.app.field_expiry_date
+    - field.field.node.app.field_gateway
     - field.field.node.app.field_renewal_date
     - field.field.node.app.field_tag
     - field.field.node.app.field_ttl
@@ -41,8 +44,11 @@ hidden:
   field_app_id: true
   field_app_key: true
   field_app_status: true
+  field_client_id: true
+  field_client_secret: true
   field_consumer_id: true
   field_expiry_date: true
+  field_gateway: true
   field_renewal_date: true
   field_tag: true
   field_ttl: true

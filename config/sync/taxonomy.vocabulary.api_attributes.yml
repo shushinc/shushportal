@@ -1,0 +1,9 @@
+uuid: eb320ce0-5494-468f-98be-76727f1768bf
+langcode: en
+status: true
+dependencies: {  }
+name: 'API Attributes'
+vid: api_attributes
+description: null
+weight: 0
+new_revision: false

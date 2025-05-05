@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for zcs_api_attributes module.
+ */
+
+function zcs_api_attributes_theme() {
+  return [
+    'attributes_page' => [
+      'variables' => [
+        'content' => null,
+      ],
+      'template' => 'attributes_page'
+    ],
+    'change_network_authentication_pricing' => [
+      'variables' => [
+        'content' => null,
+      ],
+      'template' => 'change_network_authentication_pricing'
+    ],
+    'network_authentication_pricing_over_time' => [
+      'variables' => [
+        'content' => null,
+      ],
+      'template' => 'network_authentication_pricing_over_time'
+    ],
+    'demand_partner_discounts_or_different_pricing' => [
+      'variables' => [
+        'content' => null,
+      ],
+      'template' => 'demand_partner_discounts_or_different_pricing'
+    ],
+  ];
+}

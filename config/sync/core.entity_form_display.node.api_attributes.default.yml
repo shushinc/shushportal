@@ -1,0 +1,143 @@
+uuid: 81340986-ca81-47f9-aa11-01c95b32d4dc
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.api_attributes.body
+    - field.field.node.api_attributes.field_able_to_be_used
+    - field.field.node.api_attributes.field_api_attributes_status
+    - field.field.node.api_attributes.field_carrier_enabled_3rd_party
+    - field.field.node.api_attributes.field_current_standard_pricing
+    - field.field.node.api_attributes.field_disc_pricing
+    - field.field.node.api_attributes.field_effective_date1_price_call
+    - field.field.node.api_attributes.field_effective_date2_price_call
+    - field.field.node.api_attributes.field_effective_date3_price_call
+    - field.field.node.api_attributes.field_infobip_discount
+    - field.field.node.api_attributes.field_price_per_call
+    - field.field.node.api_attributes.field_sinch_discount
+    - field.field.node.api_attributes.field_successfully_integrated_cn
+    - field.field.node.api_attributes.field_twilio_discount
+    - node.type.api_attributes
+id: node.api_attributes.default
+targetEntityType: node
+bundle: api_attributes
+mode: default
+content:
+  field_able_to_be_used:
+    type: options_select
+    weight: 27
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_api_attributes_status:
+    type: options_select
+    weight: 26
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_carrier_enabled_3rd_party:
+    type: options_select
+    weight: 28
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_current_standard_pricing:
+    type: string_textfield
+    weight: 30
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_disc_pricing:
+    type: string_textfield
+    weight: 36
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_effective_date1_price_call:
+    type: string_textfield
+    weight: 32
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_effective_date2_price_call:
+    type: string_textfield
+    weight: 33
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_effective_date3_price_call:
+    type: string_textfield
+    weight: 34
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_infobip_discount:
+    type: string_textfield
+    weight: 38
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_price_per_call:
+    type: string_textfield
+    weight: 31
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sinch_discount:
+    type: string_textfield
+    weight: 37
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_successfully_integrated_cn:
+    type: options_select
+    weight: 29
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_twilio_discount:
+    type: string_textfield
+    weight: 35
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    weight: 5
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  body: true
+  created: true
+  path: true
+  promote: true
+  sticky: true
+  uid: true

@@ -24,7 +24,8 @@
     li {
       padding: 0 16px;
       position: relative;
-      a {
+      a,
+      span {
         font-family: $sans;
         font-weight: 500;
         color: $black-rgb;
@@ -127,7 +128,7 @@
       }
       .user__profile-info {
         flex: 0 0 70%;
-        padding-left: 15px;
+        padding-left: 10px;
         .user-profile-firstname,
         .user-app > a {
           font-family: $sans;
@@ -146,9 +147,14 @@
           line-height: 16px;
           color: $white;
           text-overflow: ellipsis;
-          width: 85%;
-          white-space: nowrap;
+          width: 100%;
+          word-wrap: break-word;
+          white-space: pre-wrap;
           overflow: hidden;
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          max-width: 160px;
         }
         .user-profile-roles {
           font-weight: 500;
@@ -219,13 +225,17 @@
       width: 100%;
       padding: 0;
     }
+    .site__menu {
+      max-height: 480px;
+      overflow-y: auto;
+    }
     .site__logo {
       padding: 2rem 16px;
       border-bottom: 1px solid rgba(242, 244, 247, 0.5);
     }
     .site__sec-menu {
       position: absolute;
-      bottom: 0;
+      bottom: 40px;
     }
   }
   .region-primary-menu {
@@ -258,8 +268,38 @@
         }
         ul {
           padding: 0;
+          display: none;
           li {
-            padding: 16px 0;
+            padding: 8px 15px;
+            a {
+              font-size: 14px;
+            }
+          }
+        }
+        &.menu-item--expanded {
+          position: relative;
+          &::after {
+            content: "";
+            background: url("../images/arrow-down.svg") no-repeat;
+            height: 16px;
+            width: 16px;
+            position: absolute;
+            right: 20px;
+            top: 22px;
+          }
+          &.menuexpand {
+            &::after {
+              transform: rotateX(180deg);
+              top: 10px;
+            }
+            ul {
+              display: block;
+            }
+          }
+          &.menu-item--active-trail {
+            ul {
+              display: block;
+            }
           }
         }
       }
@@ -290,7 +330,7 @@
   }
   .site__sec-menu {
     position: absolute;
-    bottom: 5vh;
+    bottom: 40px;
   }
 }
 

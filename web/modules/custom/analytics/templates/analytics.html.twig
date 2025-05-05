@@ -1,11 +1,10 @@
 <div class="chart-wrapper">
-	<div class="top-banner">
+    <img src="/modules/custom/analytics/images/dashboard.png" alt="Module Image" style="width: 100%;">
+	 <div class="top-banner" style="display:none;">
 		<div class="banner banner-1">
 			<div class="banner-title">{{ 'Total Successful API Transactions this month' }}</div>
 			<div class="report-wrap">
 				<div class="banner-number">{{ content.totalSuccessCalls|round|convert_number }}</div>
-				{# <div class="data-report-type successfull">{{ 'Successful' }}</div> #}
-
 			</div>
 			<div class="data-report-type successfull-avg">Average
 				{{ content.totalSuccessCallsAvg |round|convert_number }}
@@ -23,8 +22,9 @@
 				/ day</div>
 		</div>
 		<div class="banner banner-3">
-			<div class="banner-content-wrap">
-				<div class="banner-icon"><img src="/modules/custom/analytics/icons/Phonecall.svg" width="18" height="18"/></div>
+			<div
+				class="banner-content-wrap">
+				{# <div class="banner-icon"><img src="/modules/custom/analytics/icons/Phonecall.svg" width="18" height="18"/></div> #}
 				<div class="banner-content">
 					<div class="banner-title">{{ 'Highest # of API calls per Day' }}</div>
 					<div class="report-wrap">
@@ -35,8 +35,9 @@
 			</div>
 		</div>
 		<div class="banner banner-4">
-			<div class="banner-content-wrap">
-				<div class="banner-icon"><img src="/modules/custom/analytics/icons/bar.svg" width="18" height="18"/></div>
+			<div
+				class="banner-content-wrap">
+				{# <div class="banner-icon"><img src="/modules/custom/analytics/icons/bar.svg" width="18" height="18"/></div> #}
 				<div class="banner-content">
 					<div class="banner-title">{{ 'Average Latency per Day' }}</div>
 					<div class="report-wrap">
@@ -47,8 +48,9 @@
 			</div>
 		</div>
 		<div class="banner banner-5">
-			<div class="banner-content-wrap">
-				<div class="banner-icon"><img src="/modules/custom/analytics/icons/bar.svg" width="18" height="18"/></div>
+			<div
+				class="banner-content-wrap">
+				{# <div class="banner-icon"><img src="/modules/custom/analytics/icons/bar.svg" width="18" height="18"/></div> #}
 				<div class="banner-content">
 					<div class="banner-title">{{ 'Average # of API Calls per Day' }}</div>
 					<div class="report-wrap">
@@ -63,7 +65,7 @@
 	<div class="charts-selects">
 		<div class="charts-dropdown-carrier">
 			<select>
-				<option value=''>Carrier</option>
+				<option value=''>All Carriers</option>
 				{% for i,term in content.carrierArray %}
 					<option value={{ i }}>{{ term }}</option>
 				{% endfor %}
@@ -71,7 +73,7 @@
 		</div>
 		<div class="charts-dropdown-attributes">
 			<select>
-				<option value=''>Attribute</option>
+				<option value=''>All Attributes</option>
 				{% for i,term in content.attributeArray %}
 					<option value={{ i }}>{{ term }}</option>
 				{% endfor %}
@@ -80,7 +82,7 @@
 		<div class="charts-dropdown-partner">
 
 			<select>
-				<option value=''>Demand Partner</option>
+				<option value=''>All Clients</option>
 				{% for i,partner in content.partnerArray %}
 					<option value={{ i }}>{{ partner }}</option>
 				{% endfor %}
@@ -88,7 +90,7 @@
 		</div>
 		<div class="charts-dropdown-customer">
 			<select>
-				<option value=''>End Customer</option>
+				<option value=''>All End Customers</option>
 				{% for i,term in content.customerArray %}
 					<option value={{ i }}>{{ term }}</option>
 				{% endfor %}

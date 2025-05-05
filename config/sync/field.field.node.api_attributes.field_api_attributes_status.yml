@@ -1,0 +1,29 @@
+uuid: 3dd7792c-6cd2-4237-933f-381c148e3cb5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_api_attributes_status
+    - node.type.api_attributes
+    - taxonomy.vocabulary.api_attributes
+id: node.api_attributes.field_api_attributes_status
+field_name: field_api_attributes_status
+entity_type: node
+bundle: api_attributes
+label: 'API  Category'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      api_attributes: api_attributes
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

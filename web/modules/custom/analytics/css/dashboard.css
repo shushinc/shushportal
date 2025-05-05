@@ -29,10 +29,10 @@
 }
 
 .charts-dropdown-attributes select {
-  background-image: url(/modules/custom/analytics/icons/bar.svg);
+  background-image: url("/modules/custom/analytics/icons/arrow_drop.svg");
   background-repeat: no-repeat, no-repeat;
-  background-size: 16px;
-  background-position: 12px center;
+  background-size: 22px;
+  background-position: right center;
   padding: 0.8em 2em 0.8em 2.5em;
   border: 0;
   background-color: rgba(244, 247, 254, 1);
@@ -49,10 +49,10 @@
 
 .charts-dropdown-months select,
 .charts-dropdown-years select {
-  background-image: url(/modules/custom/analytics/icons/calendar.svg);
+  background-image: url("/modules/custom/analytics/icons/arrow_drop.svg");
   background-repeat: no-repeat, no-repeat;
-  background-size: 16px;
-  background-position: 12px 14px;
+  background-size: 22px;
+  background-position: right center;
   padding: 0.5em 2em 0.5em 2.5em;
   border: 0;
   background-color: rgba(244, 247, 254, 1);
@@ -65,10 +65,10 @@
 }
 
 .charts-dropdown-carrier select {
-  background-image: url(/modules/custom/analytics/icons/carrier.png);
+  background-image: url("/modules/custom/analytics/icons/arrow_drop.svg");
   background-repeat: no-repeat, no-repeat;
-  background-size: 16px;
-  background-position: 12px 14px;
+  background-size: 22px;
+  background-position: right center;
   padding: 0.5em 2em 0.5em 2.5em;
   border: 0;
   background-color: rgba(244, 247, 254, 1);
@@ -81,10 +81,10 @@
 }
 
 .charts-dropdown-customer select {
-  background-image: url(/modules/custom/analytics/icons/customer.png);
+  background-image: url("/modules/custom/analytics/icons/arrow_drop.svg");
   background-repeat: no-repeat, no-repeat;
-  background-size: 16px;
-  background-position: 12px 14px;
+  background-size: 22px;
+  background-position: right center;
   padding: 0.5em 2em 0.5em 2.5em;
   border: 0;
   background-color: rgba(244, 247, 254, 1);
@@ -95,10 +95,10 @@
   appearance: none;
 }
 .charts-dropdown-partner select {
-  background-image: url(/modules/custom/analytics/icons/customer.png);
+  background-image: url("/modules/custom/analytics/icons/arrow_drop.svg");
   background-repeat: no-repeat, no-repeat;
-  background-size: 16px;
-  background-position: 12px 14px;
+  background-size: 22px;
+  background-position: right center;
   padding: 0.5em 2em 0.5em 2.5em;
   border: 0;
   background-color: rgba(244, 247, 254, 1);
@@ -107,6 +107,42 @@
   -moz-appearance: none;
   -webkit-appearance: none;
   appearance: none;
+}
+.charts-dropdown-months::before,
+.charts-dropdown-attributes::before,
+.charts-dropdown-years::before,
+.charts-dropdown-customer::before,
+.charts-dropdown-carrier::before,
+.charts-dropdown-partner::before {
+  content: "";
+  height: 16px;
+  width: 16px;
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  margin-top: -10px;
+  background-size: 16px;
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+.charts-dropdown-months::before,
+.charts-dropdown-years::before {
+  background-image: url(/modules/custom/analytics/icons/calendar.svg);
+}
+
+.charts-dropdown-attributes::before {
+  background-image: url(/modules/custom/analytics/icons/bar.svg);
+}
+
+.charts-dropdown-carrier::before {
+  background-image: url(/modules/custom/analytics/icons/carrier.png);
+}
+.charts-dropdown-partner::before {
+  background-image: url(/modules/custom/analytics/icons/customer.png);
+}
+.charts-dropdown-customer::before {
+  background-image: url(/modules/custom/analytics/icons/customer.png);
 }
 
 .charts-dropdown-months,
@@ -124,22 +160,6 @@
 .charts-dropdown-partner,
 .charts-dropdown-customer {
   background: rgba(244, 247, 254, 1);
-}
-.charts-dropdown-months::after,
-.charts-dropdown-attributes::after,
-.charts-dropdown-years::after,
-.charts-dropdown-customer::after,
-.charts-dropdown-carrier::after,
-.charts-dropdown-partner::after {
-  content: "";
-  background-image: url("/modules/custom/analytics/icons/arrow_drop.svg");
-  height: 16px;
-  width: 16px;
-  display: block;
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  margin-top: -10px;
 }
 
 .chart-1-block,
@@ -244,6 +264,7 @@
   min-height: 120px;
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
 }
 .top-banner .banner .banner-title {
   font-family: Montserrat;
@@ -253,12 +274,15 @@
   letter-spacing: -0.02em;
   text-align: left;
   color: rgba(163, 174, 208, 1);
+  text-align: center;
+  min-height: 32px;
 }
 
 .top-banner .banner .report-wrap {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
 }
 .top-banner .banner .banner-number,
 .top-banner .banner .data-report-type {
@@ -284,7 +308,7 @@
   display: flex;
   align-items: center;
 }
-.top-banner .banner .banner-icon {
+/* .top-banner .banner .banner-icon {
   height: 32px;
   width: 32px;
   background: rgba(244, 247, 254, 1);
@@ -293,7 +317,7 @@
   align-items: center;
   justify-content: center;
   margin-right: 8px;
-}
+} */
 .page-chart-title {
   font-size: 34px;
   line-height: 42px;

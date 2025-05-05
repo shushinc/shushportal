@@ -1,0 +1,5 @@
+services:
+  zcs_aws.aws_gateway:
+    class: Drupal\zcs_aws\Services\AwsHelperService
+    arguments:
+      - '@current_user'

@@ -17,4 +17,4 @@ description: 'Describes the API details and APIs specification.'
 help: null
 new_revision: false
 preview_mode: 1
-display_submitted: trued
+display_submitted: true

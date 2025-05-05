@@ -7,8 +7,11 @@ dependencies:
     - field.field.node.app.field_app_id
     - field.field.node.app.field_app_key
     - field.field.node.app.field_app_status
+    - field.field.node.app.field_client_id
+    - field.field.node.app.field_client_secret
     - field.field.node.app.field_consumer_id
     - field.field.node.app.field_expiry_date
+    - field.field.node.app.field_gateway
     - field.field.node.app.field_renewal_date
     - field.field.node.app.field_tag
     - field.field.node.app.field_ttl
@@ -61,6 +64,22 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_client_id:
+    type: string_textfield
+    weight: 133
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_client_secret:
+    type: string_textfield
+    weight: 134
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_consumer_id:
     type: string_textfield
     weight: 129
@@ -74,6 +93,14 @@ content:
     weight: 130
     region: content
     settings: {  }
+    third_party_settings: {  }
+  field_gateway:
+    type: string_textfield
+    weight: 135
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   field_renewal_date:
     type: datetime_timestamp

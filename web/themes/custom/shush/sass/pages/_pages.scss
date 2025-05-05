@@ -420,6 +420,7 @@ table {
     text-align: left;
     border-bottom: 1px solid #ddd;
     color: rgba(163, 174, 208, 1);
+    line-height: normal;
     a {
       text-decoration: none;
       color: $white;
@@ -550,11 +551,24 @@ table {
     }
   }
 }
-.zcs-kong-app-list {
+
+#block-shush-primary-admin-actions
+  [data-drupal-link-system-path="create-aws-key"].button-action {
+  background: #fff;
+  border: 2px solid rgba(17, 141, 240, 1);
+  color: rgba(17, 141, 240, 1);
+  border-radius: 50px;
+  padding: 10px 15px;
+}
+
+.zcs-kong-app-list,
+.zcs-aws-app-list {
   table tr {
     td {
       position: relative;
-      .pwd-copy {
+      .pwd-copy,
+      .secret-password,
+      .client-password {
         position: absolute;
         top: 50%;
         right: 30px;
@@ -610,9 +624,24 @@ table {
           margin-left: 5px;
           cursor: pointer;
         }
-        .pwd-copy {
+        .pwd-copy,
+        .client-password,
+        .secret-password {
           visibility: visible;
           opacity: 1;
+        }
+        .client-key,
+        .secret-key {
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+          position: relative;
+          display: inline-block;
+          width: 100px;
+          vertical-align: middle;
+        }
+        .secret-key {
+          width: 180px;
         }
       }
       &.app-operations {
@@ -919,8 +948,9 @@ table {
 
 .user-management-header {
   background: transparent;
-  padding-top: 1rem;
+  padding-top: 1.5rem;
   padding-left: 1rem;
+  padding-bottom: 1.5rem;
   h5 {
     font-family: $Montserrat;
     color: rgba(176, 187, 213, 1);
@@ -949,7 +979,17 @@ table {
     text-transform: capitalize;
   }
 }
-
+.page-aws-apps {
+  .user-management-header {
+    padding-left: 0;
+  }
+  #block-shush-primary-admin-actions {
+    text-align: right;
+    nav {
+      margin: 1rem 0 0.5rem;
+    }
+  }
+}
 body.password-change-page {
   background: $white;
 }
@@ -1003,5 +1043,30 @@ body.password-change-page {
     color: rgba(163, 174, 208, 1);
     font-size: 1rem;
     line-height: 16px;
+  }
+}
+
+nav {
+  ul.js-pager__items {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    li {
+      padding: 20px;
+      a {
+        text-decoration: none;
+        span + span {
+          font-size: 24px;
+        }
+      }
+    }
+  }
+}
+
+.api-attribute-status {
+  table tr td {
+    &:nth-child(2) {
+      font-weight: 400;
+    }
   }
 }

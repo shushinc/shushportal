@@ -61,7 +61,7 @@ final class UserInviteForm extends FormBase {
       '#type' => 'actions',
       'submit' => [
         '#type' => 'submit',
-        '#value' => $this->t('Invite User'),
+        '#value' => $this->t('Invite Carrier User'),
       ],
     ];
     return $form;
@@ -74,8 +74,8 @@ final class UserInviteForm extends FormBase {
     // @todo Validate the form here.
     // @endcode
     parent::validateForm($form, $form_state);
-    $user_email = $form_state->getValue('user_mail'); 
-    $user_name = $form_state->getValue('user_name'); 
+    $user_email = $form_state->getValue('user_mail');
+    $user_name = $form_state->getValue('user_name');
     $users = \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['mail' => $user_email]);
     if ($users) {
       $form_state->setError($form['user_mail'], $this->t('This user is already registered or has an active invitation. Please verify their details and try again.'));
@@ -92,7 +92,7 @@ final class UserInviteForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state): void {
     $token = $this->generateToken();
     $passkey = $this->randomPassword();
-    $user_email = $form_state->getValue('user_mail'); 
+    $user_email = $form_state->getValue('user_mail');
     $role = $form_state->getValue('user_role');
     $user_name = $form_state->getValue('user_name');
 
@@ -100,9 +100,9 @@ final class UserInviteForm extends FormBase {
       'name' => $user_name,
       'mail' => $user_email,
       'pass' => $passkey,
-      'status' => 0, // 
-      'roles' => $role, 
-    ]);  
+      'status' => 0, //
+      'roles' => $role,
+    ]);
     $user->save();
     $save_invitation = $this->saveInvitation($user_email, $role, $token, $passkey, $user_name);
     $send_emai = $this->sendInvitationMail($user_email, $role, $token, $passkey, $user_name);
@@ -203,7 +203,7 @@ final class UserInviteForm extends FormBase {
         $n = rand(0, $alphaLength);
         $pass[] = $alphabet[$n];
     }
-    return implode($pass); //turn the array into a string 
+    return implode($pass); //turn the array into a string
   }
 
 

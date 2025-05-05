@@ -1,0 +1,4 @@
+attributes-page:
+  css:
+    theme:
+      css/attribute-page.css: {}

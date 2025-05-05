@@ -301,7 +301,7 @@ display:
           entity_type: user
           entity_field: mail
           plugin_id: field
-          label: Email
+          label: 'Client User Email'
           exclude: false
           alter:
             alter_text: false
@@ -830,7 +830,7 @@ display:
           admin_label: ''
           plugin_id: text_custom
           empty: true
-          content: '<a href="/add-client-member?destination=/client-memberships" class="btn-primary use-ajax anchor-dropdown-btn" data-toggle=''modal''  data-dialog-type=''modal''  data-dialog-options=''{"width": 400, "title": "Invite Client Member"}''>Invite Client Member</a>'
+          content: '<a href="/add-client-member?destination=/client-memberships" class="btn-primary use-ajax anchor-dropdown-btn" data-toggle=''modal''  data-dialog-type=''modal''  data-dialog-options=''{"width": 400, "title": "Invite Client User"}''>Invite Client User</a>'
           tokenize: false
       footer: {  }
       display_extenders: {  }

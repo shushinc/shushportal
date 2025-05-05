@@ -56,15 +56,16 @@ final class EditClientForm extends FormBase {
 
     $gid = $this->request->get('id');
     $group = Group::load($gid);
-    
+
     $form['partner_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Name'),
       '#required' => TRUE,
       '#attributes' => [
         'autocomplete' => 'off'
-      ],   
-      '#default_value' =>  $group->get('label')->value ?? '',     
+      ],
+      '#maxlength' => 20,
+      '#default_value' =>  $group->get('label')->value ?? '',
     ];
 
     $form['contact_name'] = [
@@ -73,8 +74,8 @@ final class EditClientForm extends FormBase {
       '#required' => TRUE,
       '#attributes' => [
         'autocomplete' => 'off'
-      ],  
-      '#default_value' =>  $group->get('field_contact_name')->value ?? '',      
+      ],
+      '#default_value' =>  $group->get('field_contact_name')->value ?? '',
     ];
 
     $form['contact_email'] = [
@@ -110,7 +111,7 @@ final class EditClientForm extends FormBase {
          'active' => 'Active',
          'in_active' => 'Inactive',
         ],
-      '#default_value' => 'active',  
+      '#default_value' => 'active',
       '#required' => TRUE,
       '#default_value' => $group->get('field_partner_status')->value ?? '',
     ];
@@ -144,12 +145,12 @@ final class EditClientForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
-    $partner_name = $form_state->getValue('partner_name'); 
-    $contact_name = $form_state->getValue('contact_name'); 
-    $contact_email = $form_state->getValue('contact_email'); 
-    $partner_description = $form_state->getValue('partner_description'); 
-    $partner_status = $form_state->getValue('partner_status'); 
-    $partner_type = $form_state->getValue('partner_type'); 
+    $partner_name = $form_state->getValue('partner_name');
+    $contact_name = $form_state->getValue('contact_name');
+    $contact_email = $form_state->getValue('contact_email');
+    $partner_description = $form_state->getValue('partner_description');
+    $partner_status = $form_state->getValue('partner_status');
+    $partner_type = $form_state->getValue('partner_type');
 
     $gid = $this->request->get('id');
     $group = Group::load($gid);
@@ -160,8 +161,8 @@ final class EditClientForm extends FormBase {
     $group->set('field_description', $partner_description);
     $group->set('field_partner_status', $partner_status);
     $group->set('field_partner_type', $partner_type);
-    
-    $group->save();    
+
+    $group->save();
     $this->messenger()->addMessage($this->t('Client is updated successfully.'));
     $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
   }
