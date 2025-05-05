@@ -3,6 +3,7 @@ _core:
 module:
   address: 0
   analytics: 0
+  analytics_batch_generator: 0
   announcements_feed: 0
   automated_cron: 0
   big_pipe: 0
@@ -37,6 +38,7 @@ module:
   menu_link_content: 0
   menu_per_role: 0
   menu_ui: 0
+  metabase: 0
   mimemail: 0
   mysql: 0
   node: 0
