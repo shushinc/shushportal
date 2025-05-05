@@ -18,13 +18,6 @@ use GuzzleHttp\ClientInterface;
 class ProxyService {
 
   /**
-   * Target website to proxy.
-   *
-   * @var string
-   */
-  protected $targetSite = 'http://host.docker.internal:3000';
-
-  /**
    * The HTTP client.
    *
    * @var \GuzzleHttp\ClientInterface
@@ -70,13 +63,15 @@ class ProxyService {
 
     $config = $this->configFactory->get('metabase.settings');
 
+    $targetSite = $config->get('metabase.external.base_url');
+
     $path = $request->getPathInfo();
     $path = str_replace('/proxy', '', $path);
 
     // Construct the target URL.
-    $targetUrl = $this->targetSite . $path;
+    $targetUrl = $targetSite . $path;
     if (empty($path)) {
-      $targetUrl = $this->targetSite;
+      $targetUrl = $targetSite;
     }
 
     // Get query parameters.
