@@ -115,9 +115,57 @@ class ProxyService {
         }
       }
 
+      $contentType = $proxyResponse->getHeader('Content-Type');
+
+      if (is_array($contentType) && count($contentType) > 0) {
+        $contentType = $contentType[0];
+        \Drupal::logger('metabase')->info($contentType);
+      }
+
+      if (!$request->isMethod('GET')) {
+        // For other requests, return the response as is.
+        $response = new Response(
+          (string) $proxyResponse->getBody(),
+          $proxyResponse->getStatusCode(),
+          $responseHeaders
+        );
+
+        return $response;
+      }
+
+      if ($contentType == 'text/html;charset=utf-8') {
+        // Get the entire content.
+        $content = (string) $proxyResponse->getBody();
+        $content = str_replace('"app/', '"proxy/app/', $content);
+
+        // Create and return the response.
+        $response = new Response(
+          $content,
+          $proxyResponse->getStatusCode(),
+          $responseHeaders
+        );
+
+        return $response;
+      }
+
+      if ($contentType == 'text/plain') {
+        // Get the entire content.
+        $content = (string) $proxyResponse->getBody();
+        $content = str_replace('"app/', '"proxy/app/', $content);
+
+        // Create and return the response.
+        $response = new Response(
+          $content,
+          $proxyResponse->getStatusCode(),
+          $responseHeaders
+        );
+
+        return $response;
+      }
+
+
       // For GET requests that match CSS files, modify the content.
       if (
-        $request->isMethod('GET') &&
         strpos($targetUrl, '/app/dist/styles.') !== FALSE &&
         strpos($targetUrl, '.css') !== FALSE
       ) {
@@ -141,7 +189,7 @@ class ProxyService {
 
         return $response;
       }
-      elseif ($request->isMethod('GET') &&
+      elseif (
         strpos($targetUrl, '/app/dist/runtime.') !== FALSE &&
         strpos($targetUrl, '.js') !== FALSE
       ){
