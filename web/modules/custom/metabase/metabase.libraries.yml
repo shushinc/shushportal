@@ -2,6 +2,9 @@ iframe-resize:
   version: 1.x
   js:
     assets/js/iframe.resize.js: {}
+  css:
+    theme:
+      assets/css/styles.css: {}
   dependencies:
     - core/drupal
     - core/once

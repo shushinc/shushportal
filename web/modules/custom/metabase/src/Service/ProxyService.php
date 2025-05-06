@@ -173,7 +173,7 @@ class ProxyService {
         // Get the entire content.
         $content = (string) $proxyResponse->getBody();
 
-        $css = $config->get('overwrite.css');
+        $css = "\r\n" . $config->get('overwrite.css');
 
         if ($css) {
           $content .= $css;
@@ -196,7 +196,7 @@ class ProxyService {
         // Get the entire content.
         $content = (string) $proxyResponse->getBody();
 
-        $js = $config->get('overwrite.js');
+        $js = "\r\n" . $config->get('overwrite.js');
 
         if ($js) {
           $content .= $js;
