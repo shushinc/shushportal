@@ -2,8 +2,8 @@ body {
   &.create-client,
   &.apps-create-from {
     background: #fff;
-    #edit-actions {
-      text-align: left;
+    #edit-actions .form-submit:hover {
+      background: #4f9bf5;
     }
   }
 }
@@ -29,7 +29,7 @@ body {
       font-size: 14px;
       font-family: "DM Sans", sans-serif;
       margin: 0;
-      padding: 0 8px;
+      padding: 5px 8px;
       transition: all 0.3s ease-in-out;
       &:focus,
       &:hover,
@@ -40,6 +40,16 @@ body {
         background: #fff;
       }
     }
+    input,
+    textarea {
+      &:focus,
+      &:hover,
+      &:focus-visible {
+        border-bottom: 2px solid #2e3b8f;
+        border-radius: 6px 6px 0 0;
+      }
+    }
+
     .form-textarea {
       min-height: 384px !important;
     }
@@ -111,7 +121,30 @@ body {
     & > legend {
       display: none;
     }
-
+    .select2-container--default {
+      .select2-selection--single {
+        border: none;
+        background: none;
+        border-radius: 0;
+        .select2-selection__rendered {
+          line-height: normal;
+          color: #2e3b8f;
+          font-size: 32px;
+        }
+        .select2-selection__arrow {
+          b {
+            margin-top: 6px;
+          }
+        }
+      }
+      &.select2-container--open {
+        .select2-selection__arrow {
+          b {
+            margin-top: -2px;
+          }
+        }
+      }
+    }
     & > .js-form-item {
       font-family: "DM Sans", sans-serif;
       background-color: #f0f3ff;
@@ -126,7 +159,7 @@ body {
       input {
         outline: none;
         box-shadow: none;
-        font-size: 32px;
+        font-size: 34px;
         line-height: normal;
         text-align: center;
         &:focus,
@@ -150,7 +183,38 @@ body {
     }
   }
 }
-
+.select2-container--default {
+  .select2-selection--single {
+    border: none;
+    background: none;
+    border-radius: 0;
+    height: 38px;
+    position: relative;
+    border: none;
+    .select2-selection__rendered {
+      line-height: normal;
+      color: #2e3b8f;
+      padding: 0;
+    }
+    .select2-selection__arrow {
+      b {
+        background: url("../images/arrow-down.svg") no-repeat;
+        border: none;
+        height: 14px;
+        width: 14px;
+        transition: all 0.3s ease-in-out;
+      }
+    }
+  }
+  &.select2-container--open {
+    .select2-selection__arrow {
+      b {
+        transform: rotateX(180deg);
+        margin-top: -8px;
+      }
+    }
+  }
+}
 #edit-api-agreement-covers {
   legend {
     font-family: "DM Sans", sans-serif;

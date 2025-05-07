@@ -1825,8 +1825,8 @@ form.user-logout-confirm #edit-submit {
 body.create-client, body.apps-create-from {
   background: #fff;
 }
-body.create-client #edit-actions, body.apps-create-from #edit-actions {
-  text-align: left;
+body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit-actions .form-submit:hover {
+  background: #4f9bf5;
 }
 
 .client-Layout-column-wrapper {
@@ -1849,7 +1849,7 @@ body.create-client #edit-actions, body.apps-create-from #edit-actions {
   font-size: 14px;
   font-family: "DM Sans", sans-serif;
   margin: 0;
-  padding: 0 8px;
+  padding: 5px 8px;
   transition: all 0.3s ease-in-out;
 }
 .client-Layout-column-wrapper .js-form-item input:focus, .client-Layout-column-wrapper .js-form-item input:hover, .client-Layout-column-wrapper .js-form-item input:focus-visible,
@@ -1866,6 +1866,13 @@ body.create-client #edit-actions, body.apps-create-from #edit-actions {
   box-shadow: none;
   border: none;
   background: #fff;
+}
+.client-Layout-column-wrapper .js-form-item input:focus, .client-Layout-column-wrapper .js-form-item input:hover, .client-Layout-column-wrapper .js-form-item input:focus-visible,
+.client-Layout-column-wrapper .js-form-item textarea:focus,
+.client-Layout-column-wrapper .js-form-item textarea:hover,
+.client-Layout-column-wrapper .js-form-item textarea:focus-visible {
+  border-bottom: 2px solid #2e3b8f;
+  border-radius: 6px 6px 0 0;
 }
 .client-Layout-column-wrapper .js-form-item .form-textarea {
   min-height: 384px !important;
@@ -1933,6 +1940,22 @@ body.create-client #edit-actions, body.apps-create-from #edit-actions {
 .client-Layout-column-wrapper .client-Layout-column-second > legend {
   display: none;
 }
+.client-Layout-column-wrapper .client-Layout-column-second .select2-container--default .select2-selection--single {
+  border: none;
+  background: none;
+  border-radius: 0;
+}
+.client-Layout-column-wrapper .client-Layout-column-second .select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: normal;
+  color: #2e3b8f;
+  font-size: 32px;
+}
+.client-Layout-column-wrapper .client-Layout-column-second .select2-container--default .select2-selection--single .select2-selection__arrow b {
+  margin-top: 6px;
+}
+.client-Layout-column-wrapper .client-Layout-column-second .select2-container--default.select2-container--open .select2-selection__arrow b {
+  margin-top: -2px;
+}
 .client-Layout-column-wrapper .client-Layout-column-second > .js-form-item {
   font-family: "DM Sans", sans-serif;
   background-color: #f0f3ff;
@@ -1948,7 +1971,7 @@ body.create-client #edit-actions, body.apps-create-from #edit-actions {
 .client-Layout-column-wrapper .client-Layout-column-second > .js-form-item input {
   outline: none;
   box-shadow: none;
-  font-size: 32px;
+  font-size: 34px;
   line-height: normal;
   text-align: center;
 }
@@ -1969,6 +1992,31 @@ body.create-client #edit-actions, body.apps-create-from #edit-actions {
   letter-spacing: 0.5px;
   order: 2;
   margin-top: 5px;
+}
+
+.select2-container--default .select2-selection--single {
+  border: none;
+  background: none;
+  border-radius: 0;
+  height: 38px;
+  position: relative;
+  border: none;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: normal;
+  color: #2e3b8f;
+  padding: 0;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+  background: url("../images/arrow-down.svg") no-repeat;
+  border: none;
+  height: 14px;
+  width: 14px;
+  transition: all 0.3s ease-in-out;
+}
+.select2-container--default.select2-container--open .select2-selection__arrow b {
+  transform: rotateX(180deg);
+  margin-top: -8px;
 }
 
 #edit-api-agreement-covers legend {
