@@ -125,28 +125,10 @@ final class EditClientForm extends FormBase {
     $gid = $this->request->get('id');
     $group = Group::load($gid);
     
-    $form['client_Layout_column_wrapper'] = [
-      '#type' => 'fieldset',
-      '#attributes' => [
-        'class' => ['client-Layout-column-wrapper'],
-      ],
-    ];
-    $form['client_Layout_column_wrapper']['client_Layout_column_first'] = [
-      '#type' => 'fieldset',
-      '#attributes' => [
-        'class' => ['client-Layout-column-first'],
-      ],
-    ];
-    
-    $form ['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_1'] = [
-      '#type' => 'fieldset',
-      '#attributes' => [
-        'class' => ['client-contact-details-col-1'],
-      ],
-    ];
 
 
-    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_1']['partner_name'] = [
+
+    $form['partner_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Name'),
       '#required' => TRUE,
@@ -154,10 +136,11 @@ final class EditClientForm extends FormBase {
         'autocomplete' => 'off'
       ],
       '#maxlength' => 20,      
-      '#default_value' =>  $group->get('label')->value ?? '',     
+      '#default_value' =>  $group->get('label')->value ?? '',  
+      '#prefix' => '<div class="client-Layout-column-wrapper"><div class="tiles-wrapper client-Layout-column-first"><div class="partner-info grid-layout-column">',        
     ];
 
-    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_1']['contact_name'] = [
+    $form['contact_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Contact Name'),
       '#required' => TRUE,
@@ -167,7 +150,7 @@ final class EditClientForm extends FormBase {
       '#default_value' =>  $group->get('field_contact_name')->value ?? '',      
     ];
 
-    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_1']['contact_email'] = [
+    $form['contact_email'] = [
       '#type' => 'email',
       '#title' => 'Contact Email',
       '#required' => TRUE,
@@ -176,33 +159,21 @@ final class EditClientForm extends FormBase {
         'readonly' => 'readonly',
       ],
       '#default_value' =>  $group->get('field_contact_email')->value ?? '',
+      '#suffix' => '</div>', 
     ];
 
-    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_2'] = [
-      '#type' => 'fieldset',
-      '#attributes' => [
-        'class' => ['client-contact-details-col-2'],
-      ],
-    ];
-
-    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_2']['partner_description'] = [
-      '#type' => 'textarea',
-      '#title' => $this->t('Description'),
-      '#required' => TRUE,
-      '#default_value' =>  strip_tags($group->get('field_description')->value) ?? '',
-    ];
-
-    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_2']['client_legal_contact'] = [
+    $form['client_legal_contact'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Legal Contact'),
       '#required' => TRUE,
       '#attributes' => [
         'autocomplete' => 'off'
       ],
-      '#default_value' =>  $group->get('field_client_legal_contact')->value ?? '',       
+      '#default_value' =>  $group->get('field_client_legal_contact')->value ?? '',   
+      '#prefix' => '<div class="partner-contact-info grid-layout-column">',     
     ];
 
-    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_2']['client_point_of_contact'] = [
+    $form['client_point_of_contact'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Point of Contact'),
       '#required' => TRUE,
@@ -212,25 +183,32 @@ final class EditClientForm extends FormBase {
       '#default_value' =>  $group->get('field_client_point_of_contact')->value ?? '',        
     ];
 
-    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_3'] = [
-      '#type' => 'fieldset',
-      '#attributes' => [
-        'class' => ['client-contact-details-col-3'],
-      ],
+    $form['agreement_effective_date'] = [
+      '#type' => 'date',
+      '#title' => $this->t('Agreement Effective Date'),
+      '#default_value' => $group->get('field_agreement_effective_date')->value ?? '',
+      '#date_date_format' => 'Y-m-d',
+      '#disabled' => TRUE,
+      '#suffix' => '</div>',
     ];
-    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_3']['partner_type'] = [
+   
+
+
+
+    $form['partner_type'] = [
       '#type' => 'select',
       '#title' => $this->t('Type'),
       '#options' => [
-         'demandpartner' => 'Demand Partner',
+         'demand_partner' => 'Demand Partner',
          'enterprise' => 'Enterprise',
         ],
       '#required' => TRUE,
       '#default_value' => $group->get('field_partner_type')->value ?? '',
+      '#prefix' => '<div class="partner-details grid-layout-column">',
     ];
 
 
-    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_3']['industry'] = [
+    $form['industry'] = [
       '#type' => 'select',
       '#title' => $this->t('Industry'),
       '#options' => [
@@ -246,14 +224,8 @@ final class EditClientForm extends FormBase {
       '#default_value' =>  $group->get('field_industry')->value ?? '',
     ];
 
-    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_3']['agreement_effective_date'] = [
-      '#type' => 'date',
-      '#title' => $this->t('Agreement Effective Date'),
-      '#default_value' => $group->get('field_agreement_effective_date')->value ?? '',
-      '#date_date_format' => 'Y-m-d',
-      '#disabled' => TRUE,
-    ];
-    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_3']['partner_status'] = [
+   
+    $form['partner_status'] = [
       '#type' => 'select',
       '#title' => $this->t('Status'),
       '#options' => [
@@ -263,50 +235,46 @@ final class EditClientForm extends FormBase {
       '#default_value' => 'active',  
       '#required' => TRUE,
       '#default_value' => $group->get('field_partner_status')->value ?? '',
+      '#suffix' => '</div>',
     ];
-    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_4'] = [
+
+
+    $form['client_Layout_column_wrapper_text'] = [
       '#type' => 'fieldset',
       '#attributes' => [
         'class' => ['client-contact-details-col-4'],
       ],
     ];
-    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_4']['address_info'] = [
-      '#type' => 'fieldset',
-      '#title' => $this->t('Address'),
-      '#attributes' => [
-        'class' => ['custom-fieldset'],
-      ],
-    ];
+
     $address = $group->get('field_address')->getValue();
     $address_value = isset($address[0]) ? $address[0]: '';
-    $form['client_Layout_column_wrapper']['client_Layout_column_first']['client_contact_details_col_4']['address_info']['address'] = [
+    $form['client_Layout_column_wrapper_text']['address'] = [
       '#type' => 'address',
       '#title' => $this->t('Address'),
       '#required' => TRUE,  
-      '#default_value' => $address_value ?? '',    
+      '#default_value' => $address_value ?? '', 
+      '#suffix' => '</div>',   
+      '#after_build' => [[$this, 'customAddressAlter']],
     ];
 
-    $form['client_Layout_column_wrapper']['client_Layout_column_second'] = [
-      '#type' => 'fieldset',
-      '#attributes' => [
-        'class' => ['client-Layout-column-second'],
-      ],
-    ];
-    $form['client_Layout_column_wrapper']['client_Layout_column_second']['prepayment_info'] = [
-      '#type' => 'fieldset',
-      '#title' => $this->t('Prepayment Information'),
-      '#attributes' => [
-        'class' => ['custom-fieldset'],
-      ],
+
+    $form['client_Layout_column_wrapper_text']['partner_description'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Description'),
+      '#required' => TRUE,
+      '#default_value' =>  strip_tags($group->get('field_description')->value) ?? '',
+      '#prefix' => '<div class="partner-desc">',
+      '#suffix' => '</div></div>',
     ];
 
-    $form['client_Layout_column_wrapper']['client_Layout_column_second']['prepayment_info']['currencies'] = [
+    $form['currencies'] = [
       '#type' => 'select',
       '#options' => $currencies,
       '#default_value' =>  $group->get('field_currency')->value ?? '',
+      '#prefix' => '<div class="payment-details client-Layout-column-second">',
     ];
 
-    $form['client_Layout_column_wrapper']['client_Layout_column_second']['prepayment_info']['prepayment_amount'] = [
+    $form['prepayment_amount'] = [
       '#type' => 'number',
       '#title' => 'Prepayment Amount',
       '#min' => 0,
@@ -314,7 +282,7 @@ final class EditClientForm extends FormBase {
       '#step' => 0.001,
     ];
 
-    $form['client_Layout_column_wrapper']['client_Layout_column_second']['prepayment_info']['prepayment_balance_left'] = [
+    $form['prepayment_balance_left'] = [
       '#type' => 'number',
       '#title' => 'Prepayment Balance left',
       '#min' => 0,
@@ -322,12 +290,13 @@ final class EditClientForm extends FormBase {
       '#step' => 0.001,
     ];
 
-    $form['client_Layout_column_wrapper']['client_Layout_column_second']['prepayment_info']['prepayment_balance_used'] = [
+    $form['prepayment_balance_used'] = [
       '#type' => 'number',
       '#title' => 'Prepayment Balance left',
       '#min' => 0,
       '#default_value' =>  $group->get('field_prepayment_balance_used')->value ?? '',
       '#step' => 0.001,
+      '#suffix' => '</div></div>',
     ];
 
 
@@ -338,6 +307,7 @@ final class EditClientForm extends FormBase {
       '#attributes' => [
         'class' => ['custom-fieldset'],
       ],
+      '#prefix' => '<div class="agreement-covers">',
     ];
 
     $api_aggreement_covers_array = [];
@@ -360,9 +330,10 @@ final class EditClientForm extends FormBase {
       }
     }
 
-    $form['nodes'] = [
+    $form['api_agreement_covers']['nodes'] = [
       '#type' => 'hidden',
       '#value' => implode(",", $nids),
+      '#suffix' => '</div>',
     ];
 
 
@@ -488,4 +459,21 @@ final class EditClientForm extends FormBase {
     $this->messenger()->addMessage($this->t('Client is updated successfully.'));
     $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
   }
+
+
+
+  function customAddressAlter(array $element, \Drupal\Core\Form\FormStateInterface $form_state) {
+    // Remove specific subfields
+    unset($element['address_line2']);
+    unset($element['address_line2']);
+    unset($element['address_line3']);
+    unset($element['organization']);
+    unset($element['given_name']);
+    unset($element['family_name']);
+    return $element;
+  }
 }
+
+
+
+

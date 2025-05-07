@@ -62,7 +62,6 @@ body {
   font-size: 1rem;
   line-height: 28px;
   background: #F0F3FF;
-  min-height: 100vh;
 }
 
 .btn-primary {
@@ -326,9 +325,6 @@ form .js-form-item input[aria-invalid="true"]:focus {
   top: 0;
   z-index: 200;
   background: linear-gradient(180deg, #ffffff 43.72%, #9ed1f9 67.22%, #118df0 100%);
-}
-body.not-loggedin #block-shush-site-branding>a>img {
-  width: 498px;
 }
 .user-logged-in .layout-container {
   margin-left: 260px;
@@ -1829,7 +1825,17 @@ form.user-logout-confirm #edit-submit {
 body.create-client, body.apps-create-from {
   background: #fff;
 }
+body.create-client #edit-actions, body.apps-create-from #edit-actions {
+  text-align: left;
+}
 
+.client-Layout-column-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 40px;
+  align-items: stretch;
+}
 .client-Layout-column-wrapper .js-form-item input,
 .client-Layout-column-wrapper .js-form-item .form-file,
 .client-Layout-column-wrapper .js-form-item select,
@@ -1843,39 +1849,40 @@ body.create-client, body.apps-create-from {
   font-size: 14px;
   font-family: "DM Sans", sans-serif;
   margin: 0;
-  padding: 0;
+  padding: 0 8px;
+  transition: all 0.3s ease-in-out;
 }
-.client-Layout-column-wrapper .js-form-item input:focus, .client-Layout-column-wrapper .js-form-item input:hover,
+.client-Layout-column-wrapper .js-form-item input:focus, .client-Layout-column-wrapper .js-form-item input:hover, .client-Layout-column-wrapper .js-form-item input:focus-visible,
 .client-Layout-column-wrapper .js-form-item .form-file:focus,
 .client-Layout-column-wrapper .js-form-item .form-file:hover,
+.client-Layout-column-wrapper .js-form-item .form-file:focus-visible,
 .client-Layout-column-wrapper .js-form-item select:focus,
 .client-Layout-column-wrapper .js-form-item select:hover,
+.client-Layout-column-wrapper .js-form-item select:focus-visible,
 .client-Layout-column-wrapper .js-form-item textarea:focus,
-.client-Layout-column-wrapper .js-form-item textarea:hover {
-  box-shadow: none;
+.client-Layout-column-wrapper .js-form-item textarea:hover,
+.client-Layout-column-wrapper .js-form-item textarea:focus-visible {
   outline: none;
+  box-shadow: none;
+  border: none;
+  background: #fff;
+}
+.client-Layout-column-wrapper .js-form-item .form-textarea {
+  min-height: 384px !important;
 }
 .client-Layout-column-wrapper .js-form-item {
   margin-bottom: 0;
-}
-.client-Layout-column-wrapper > .fieldset-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  margin-bottom: 40px;
-  align-items: stretch;
 }
 .client-Layout-column-wrapper .client-Layout-column-first {
   flex: 0 0 67%;
   max-width: 67%;
 }
-.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper > .form-wrapper:not(.client-contact-details-col-4) .fieldset-wrapper:not(.custom-fieldset .fieldset-wrapper) {
+.client-Layout-column-wrapper .client-Layout-column-first .grid-layout-column {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  height: 100%;
 }
-.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper > .form-wrapper:not(.client-contact-details-col-4) .fieldset-wrapper:not(.custom-fieldset .fieldset-wrapper) > .js-form-item {
+.client-Layout-column-wrapper .client-Layout-column-first .grid-layout-column > .js-form-item {
   font-family: "DM Sans", sans-serif;
   background: #f5f8fc;
   border: 1px solid transparent;
@@ -1884,68 +1891,34 @@ body.create-client, body.apps-create-from {
   margin-bottom: 10px;
   flex: 1;
 }
-.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper > .form-wrapper:not(.client-contact-details-col-4) .fieldset-wrapper:not(.custom-fieldset .fieldset-wrapper) > .js-form-item:hover, .client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper > .form-wrapper:not(.client-contact-details-col-4) .fieldset-wrapper:not(.custom-fieldset .fieldset-wrapper) > .js-form-item:focus {
+.client-Layout-column-wrapper .client-Layout-column-first .grid-layout-column > .js-form-item:hover, .client-Layout-column-wrapper .client-Layout-column-first .grid-layout-column > .js-form-item:focus {
   transition: all 0.3s ease-in-out;
   background: #e1e5f3;
   border: 1px solid #2e3b8f;
 }
-.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper .client-contact-details-col-4 #edit-address > .js-form-item {
+.client-Layout-column-wrapper .client-Layout-column-first .client-contact-details-col-4 > legend {
+  display: none;
+}
+.client-Layout-column-wrapper .client-Layout-column-first .client-contact-details-col-4 > .fieldset-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.client-Layout-column-wrapper .client-Layout-column-first .client-contact-details-col-4 > .fieldset-wrapper .js-form-item {
   font-family: "DM Sans", sans-serif;
   background: #f5f8fc;
   border: 1px solid transparent;
   border-radius: 8px;
   padding: 10px;
   margin-bottom: 10px;
-  flex: 1;
-}
-.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper .client-contact-details-col-4 #edit-address > .js-form-item:hover, .client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper .client-contact-details-col-4 #edit-address > .js-form-item:focus {
-  transition: all 0.3s ease-in-out;
-  background: #e1e5f3;
-  border: 1px solid #2e3b8f;
-}
-.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper #edit-address-country-code > .js-form-item {
-  flex: 0 0 49%;
-  font-family: "DM Sans", sans-serif;
-  background: #f5f8fc;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper #edit-address-country-code > .js-form-item:hover, .client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper #edit-address-country-code > .js-form-item:focus {
-  transition: all 0.3s ease-in-out;
-  background: #e1e5f3;
-  border: 1px solid #2e3b8f;
-}
-.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper .address-container-inline {
-  display: flex;
-  flex-wrap: wrap;
-}
-.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper .address-container-inline > .js-form-item {
-  flex: 0 0 49%;
   margin-right: 0;
-  font-family: "DM Sans", sans-serif;
-  background: #f5f8fc;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 10px;
+  flex: 1;
+  display: block;
 }
-.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper .address-container-inline > .js-form-item:first-child {
-  margin-right: 10px;
-}
-.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper .address-container-inline > .js-form-item:hover, .client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper .address-container-inline > .js-form-item:focus {
+.client-Layout-column-wrapper .client-Layout-column-first .client-contact-details-col-4 > .fieldset-wrapper .js-form-item:hover, .client-Layout-column-wrapper .client-Layout-column-first .client-contact-details-col-4 > .fieldset-wrapper .js-form-item:focus {
   transition: all 0.3s ease-in-out;
   background: #e1e5f3;
   border: 1px solid #2e3b8f;
-}
-.client-Layout-column-wrapper .client-Layout-column-first .fieldset-wrapper #edit-address-info legend {
-  font-family: "DM Sans", sans-serif;
-  font-size: 16px;
-  font-weight: 300;
-  margin-bottom: 14px;
-  display: block;
-  border-bottom: 1px solid #000;
 }
 .client-Layout-column-wrapper .client-Layout-column-second {
   flex: 0 0 30%;
@@ -1960,42 +1933,34 @@ body.create-client, body.apps-create-from {
 .client-Layout-column-wrapper .client-Layout-column-second > legend {
   display: none;
 }
-.client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset {
-  font-family: "DM Sans", sans-serif;
-  background-color: transparent;
-  border: none;
-  border-radius: 0;
-  padding: 0;
-}
-.client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset .fieldset-legend {
-  display: none;
-}
-.client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset .fieldset-wrapper > .js-form-item {
+.client-Layout-column-wrapper .client-Layout-column-second > .js-form-item {
   font-family: "DM Sans", sans-serif;
   background-color: #f0f3ff;
   border: 1px solid #2e3b8f;
   border-radius: 12px;
-  padding: 27px 25px;
+  padding: 45px 25px;
   margin-bottom: 1rem;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
 }
-.client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset .fieldset-wrapper > .js-form-item select,
-.client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset .fieldset-wrapper > .js-form-item input {
+.client-Layout-column-wrapper .client-Layout-column-second > .js-form-item select,
+.client-Layout-column-wrapper .client-Layout-column-second > .js-form-item input {
   outline: none;
   box-shadow: none;
   font-size: 32px;
   line-height: normal;
   text-align: center;
 }
-.client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset .fieldset-wrapper > .js-form-item select:focus, .client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset .fieldset-wrapper > .js-form-item select:hover,
-.client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset .fieldset-wrapper > .js-form-item input:focus,
-.client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset .fieldset-wrapper > .js-form-item input:hover {
+.client-Layout-column-wrapper .client-Layout-column-second > .js-form-item select:focus, .client-Layout-column-wrapper .client-Layout-column-second > .js-form-item select:hover, .client-Layout-column-wrapper .client-Layout-column-second > .js-form-item select:focus-visible,
+.client-Layout-column-wrapper .client-Layout-column-second > .js-form-item input:focus,
+.client-Layout-column-wrapper .client-Layout-column-second > .js-form-item input:hover,
+.client-Layout-column-wrapper .client-Layout-column-second > .js-form-item input:focus-visible {
   outline: none;
   box-shadow: none;
+  border: none;
 }
-.client-Layout-column-wrapper .client-Layout-column-second .custom-fieldset .fieldset-wrapper label {
+.client-Layout-column-wrapper .client-Layout-column-second label {
   font-family: "DM Sans", sans-serif;
   display: block;
   font-size: 16px;
