@@ -152,6 +152,11 @@
         console.log('menu expand');
         $(this).toggleClass('menuexpand');
       });
+      $(document).ready(function() {
+        $('.client-Layout-column-wrapper select').select2({
+          dropdownCssClass: "custom-scroll" // optional custom styling
+        });
+      });
     }
   };
 })(jQuery, Drupal);
