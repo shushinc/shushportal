@@ -379,9 +379,9 @@ form .js-form-item input[aria-invalid="true"]:focus {
   opacity: 1;
   font-weight: 600;
 }
-.user-logged-in .region-primary-menu ul li a:hover::after, .user-logged-in .region-primary-menu ul li a.is-active::after {
+/* .user-logged-in .region-primary-menu ul li a:hover::after, .user-logged-in .region-primary-menu ul li a.is-active::after {
   border-right: 3px solid #0f8df0;
-}
+} */
 .user-logged-in .region-primary-menu ul li ul {
   padding: 0;
   display: none;
@@ -513,7 +513,7 @@ footer.footer .region-footer ul li a:hover {
 main {
   margin-top: 1rem;
   margin-bottom: 1rem;
-  min-height: 590px;
+  min-height: 100px;
 }
 
 .path-frontpage main {
@@ -2065,3 +2065,18 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   line-height: normal;
   color: #2e3b8f;
 }
+/* V3 UI Changes*/
+.login {height: 100vh !important;}
+.user-login main, .user-password main { margin-top: 80px;}
+.not-loggedin div#block-shush-sitelogo img { height: 85px; }
+.not-loggedin .header-site-logo { padding-top: 0 !important; margin-top: 0px !important; position: relative; top: 100px; }
+.login #block-shush-content { position: relative; top: 90px; }
+
+#block-shush-content .charts-selects select { font-family: "Roboto", sans-serif !important; font-size: 16px; }
+
+.child-menu {  display: none;  padding-left: 20px;}
+li.parent-menu.menuexpand span { color: #191a5b; font-weight: bold; opacity: 1;margin-bottom: 10px;}
+.parent-menu.menuexpand ul.child-menu { display: block; }
+
+.parent-menu::after { content: ""; background: url(../images/arrow-down.svg) no-repeat; height: 16px; width: 16px; position: absolute; right: 20px; top: 20px; }
+.parent-menu.menuexpand::after { transform: rotateX(180deg); top: 10px; }
