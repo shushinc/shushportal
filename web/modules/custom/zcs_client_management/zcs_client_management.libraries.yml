@@ -2,3 +2,4 @@ client-view-page:
   css:
     theme:
       css/client-view.css: {}
+      css/client-form.css: {}

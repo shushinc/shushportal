@@ -352,6 +352,7 @@ final class EditClientForm extends FormBase {
         '#value' => $this->t('Update Client'),
       ],
     ];
+    $form['#attached']['library'][] = 'zcs_client_management/client-view-page';
     return $form;
   }
 
