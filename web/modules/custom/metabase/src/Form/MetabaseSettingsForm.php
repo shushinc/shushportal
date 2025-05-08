@@ -32,28 +32,6 @@ class MetabaseSettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('metabase.settings');
 
-    $form['api_settings'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Metabase API Settings'),
-      '#open' => TRUE,
-    ];
-
-    $form['api_settings']['base_url'] = [
-      '#type' => 'url',
-      '#title' => $this->t('Base URL'),
-      '#description' => $this->t('The base URL of the Metabase API (e.g., https://metabase.example.com).'),
-      '#default_value' => $config->get('api.base_url'),
-      '#required' => TRUE,
-    ];
-
-    $form['api_settings']['api_token'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('API Token'),
-      '#description' => $this->t('The API authentication token for Metabase.'),
-      '#default_value' => $config->get('api.api_token'),
-      '#required' => TRUE,
-    ];
-
     $form['metabase_details'] = [
       '#type' => 'details',
       '#title' => $this->t('Metabase Settings'),
@@ -83,7 +61,7 @@ class MetabaseSettingsForm extends ConfigFormBase {
     ];
 
     $form['embeding_settings']['embed_base_url'] = [
-      '#type' => 'url',
+      '#type' => 'textfield',
       '#title' => $this->t('Base URL'),
       '#description' => $this->t('The base URL of the Metabase API (e.g., https://metabase.example.com).'),
       '#default_value' => $config->get('embeding.base_url'),
@@ -100,17 +78,25 @@ class MetabaseSettingsForm extends ConfigFormBase {
 
     $form['embeding_settings']['top_dashboard_id'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Dashboard ID (Top)'),
+      '#title' => $this->t('Dashboard ID (Top - Carrier Admin)'),
       '#description' => $this->t('Enter the default Dashboard ID.'),
       '#default_value' => $config->get('embeding.dashboard.top'),
       '#required' => TRUE,
     ];
 
-    $form['embeding_settings']['bottom_dashboard_id'] = [
+    $form['embeding_settings']['main_dashboard_id'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Dashboard ID (Bottom)'),
+      '#title' => $this->t('Dashboard ID (Main - Carrier Admin)'),
       '#description' => $this->t('Enter the default Dashboard ID.'),
-      '#default_value' => $config->get('embeding.dashboard.bottom'),
+      '#default_value' => $config->get('embeding.dashboard.main'),
+      '#required' => TRUE,
+    ];
+
+    $form['embeding_settings']['other_dashboard_id'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Dashboard ID (Main - Other)'),
+      '#description' => $this->t('Enter the default Dashboard ID.'),
+      '#default_value' => $config->get('embeding.dashboard.other'),
       '#required' => TRUE,
     ];
 
@@ -141,13 +127,6 @@ class MetabaseSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    $base_url = $form_state->getValue('base_url');
-
-    // Ensure the base URL does not end with a trailing slash.
-    if (substr($base_url, -1) === '/') {
-      $form_state->setValueForElement($form['api_settings']['base_url'], rtrim($base_url, '/'));
-    }
-
     parent::validateForm($form, $form_state);
   }
 
@@ -156,14 +135,13 @@ class MetabaseSettingsForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->config('metabase.settings')
-      ->set('api.base_url', $form_state->getValue('base_url'))
-      ->set('api.api_token', $form_state->getValue('api_token'))
       ->set('metabase.internal.base_url', $form_state->getValue('metabase_internal_base_url'))
       ->set('metabase.external.base_url', $form_state->getValue('metabase_external_base_url'))
       ->set('embeding.base_url', $form_state->getValue('embed_base_url'))
       ->set('embeding.api_token', $form_state->getValue('secret_key'))
       ->set('embeding.dashboard.top', $form_state->getValue('top_dashboard_id'))
-      ->set('embeding.dashboard.bottom', $form_state->getValue('bottom_dashboard_id'))
+      ->set('embeding.dashboard.main', $form_state->getValue('main_dashboard_id'))
+      ->set('embeding.dashboard.other', $form_state->getValue('other_dashboard_id'))
       ->set('overwrite.css', $form_state->getValue('css'))
       ->set('overwrite.js', $form_state->getValue('js'))
       ->save();

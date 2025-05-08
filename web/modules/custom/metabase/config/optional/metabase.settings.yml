@@ -1,18 +1,15 @@
-api:
-  base_url: 'http://web:80/metabase/dashboard'
-  api_token: mb_fTL9m7197FDGr1GHTFe+gmDqRZWsDzmpSVzb2ILfGbA=
 metabase:
   internal:
-    base_url: 'http://127.0.0.1:3001'
+    base_url: 'http://localhost:3001'
   external:
-    base_url: 'http://127.0.0.1:3001'
+    base_url: 'http://localhost:3001'
 embeding:
   api_token: 8e46bda4aafce675fc0a55f0dbff98d631551a7e52fa5988924434ca3634fe40
-  base_url: 'https://dev.moriarty.shush.tech/proxy'
-  dashboard_id: '2'
+  base_url: /proxy
   dashboard:
     top: '2'
-    bottom: '1'
+    main: '1'
+    other: '3'
 overwrite:
-  css: "\r\nbody {\r\n  background-color: transparent !important;\r\n}\r\nheader {\r\n  display:none !important;\r\n}\r\n#root > div, #root > div > div {\r\n  background-color: transparent !important;\r\n}\r\nfooter{\r\n  display:none !important;\r\n}\r\na {\r\n  color: red !important;\r\n}\r\n.decrease {\r\n    background-color: #FF7F7F !important;\r\n    color: red;\r\n}\r\n.increase {\r\n    background-color: #90EE90 !important;\r\n    color: green;\r\n}"
-  js: "\r\n(function () {\r\n  'use strict';\r\n  setInterval(() => {\r\n    document.querySelectorAll('[data-testid=\"dashcard\"]').forEach(container => {\r\n      const card = container.querySelector('div[data-testid=\"scalar-container\"]> span');\r\n      if (!card) return;\r\n\r\n      const text = card.innerText.trim();\r\n\r\n      if (text.includes('%') && text.includes('-')) {\r\n        if (!container.classList.contains(\"decrease\")) {\r\n          container.classList.add(\"decrease\");\r\n        }\r\n      }\r\n      else if (text.includes('%')) {\r\n        if (!container.classList.contains(\"increase\")) {\r\n          container.classList.add(\"increase\");\r\n        }\r\n      }\r\n    });\r\n  }, 3000);\r\n})();"
+  css: "body {\r\n  background-color: transparent !important;\r\n}\r\nheader {\r\n  display:none !important;\r\n}\r\n#root > div, #root > div > div {\r\n  background-color: transparent !important;\r\n}\r\nfooter{\r\n  display:none !important;\r\n}\r\na {\r\n  color: red !important;\r\n}\r\n.decrease {\r\n    background-color: #FF7F7F !important;\r\n    color: red;\r\n}\r\n.increase {\r\n    background-color: #90EE90 !important;\r\n    color: green;\r\n}"
+  js: "(function() {\r\n    'use strict';\r\n    setInterval( () => {\r\n        document.querySelectorAll('[data-testid=\"dashcard\"]').forEach(container => {\r\n            const card = container.querySelector('div[data-testid=\"scalar-container\"]> span');\r\n            if (!card)\r\n                return;\r\n\r\n            const text = card.innerText.trim();\r\n\r\n            if (text.includes('%') && text.includes('-')) {\r\n                if (!container.classList.contains(\"decrease\")) {\r\n                    container.classList.add(\"decrease\");\r\n                }\r\n            } else if (text.includes('%')) {\r\n                if (!container.classList.contains(\"increase\")) {\r\n                    container.classList.add(\"increase\");\r\n                }\r\n            }\r\n        }\r\n        );\r\n    }\r\n    , 3000);\r\n}\r\n)();"
