@@ -293,6 +293,8 @@ class CreateClientForm extends FormBase {
       ],
     ];
 
+    $form['#attached']['library'][] = 'zcs_client_management/client-view-page';
+
     return $form;
   }
 
