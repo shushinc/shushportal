@@ -8,17 +8,13 @@ metabase.settings:
 
 
 metabase.dashboard:
-  path: '/mb/dashboard/{group}'
+  path: '/mb/dashboard'
   defaults:
     _controller: '\Drupal\metabase\Controller\DashboardController::dashboard'
     _title: 'Dashboard'
     group: null
   requirements:
     _access: 'TRUE'
-  options:
-    parameters:
-      group:
-        type: entity:group
     # _permission: 'access metalite dashboard'
 
 metabase.proxy:

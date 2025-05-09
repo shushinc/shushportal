@@ -6,7 +6,6 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Url;
-use Drupal\group\Entity\GroupInterface;
 use Drupal\metabase\Service\MetabaseService;
 use Firebase\JWT\JWT;
 use GuzzleHttp\ClientInterface;
@@ -89,13 +88,7 @@ class DashboardController extends ControllerBase {
    * @return array|RedirectResponse
    *   A render array for the dashboard or a redirect if there's an error.
    */
-  public function dashboard(GroupInterface $group = NULL) {
-
-    $groups = $this->getCurrentUserGroups();
-
-    if ($group == NULL) {
-      $group = $this->entityTypeManager->getStorage('group')->load(array_keys($groups)[0]);
-    }
+  public function dashboard() {
 
     $build = [
       '#cache' => [
@@ -109,31 +102,16 @@ class DashboardController extends ControllerBase {
       ],
     ];
 
-    if (count($groups) == 0) {
-      $build['message'] = [
-        '#type' => 'html_tag',
-        '#tag' => 'p',
-        '#value' => $this->t('You are not a member of any client. Please contact your administrator.'),
-      ];
-      return $build;
+    $user = \Drupal::currentUser();
+    $roles = $user->getRoles();
+    $frames = ['other'];
+    if (in_array('administrator', $roles) || in_array('carrier_admin', $roles)) {
+      $frames = ['top', 'main'];
     }
 
-    if (count($groups) > 1) {
-      foreach ($groups as $key => $value) {
-        $build['links'][$key] = [
-          '#type' => 'link',
-          '#title' => $value,
-          '#url' => Url::fromRoute('metabase.dashboard', ['group' => $key]),
-          '#attributes' => [
-            'class' => ['group-link', 'client-link'],
-          ],
-        ];
-      }
-    }
-
-    foreach (['top', 'bottom'] as $value) {
+    foreach ($frames as $value) {
       // Get the embed URL from the API service.
-      $embed_url = $this->getEmbedUrl($group, $value);
+      $embed_url = $this->getEmbedUrl($value);
 
       if (empty($embed_url)) {
         $this->messenger()->addError($this->t('Unable to load the @position dashboard. Please check your configuration.', ['@position' => $value]));
@@ -150,6 +128,7 @@ class DashboardController extends ControllerBase {
           'allowfullscreen' => 'true',
           'title' => $this->t('Dashboard'),
           'allowtransparency' => 'true',
+          'class' => [$value, 'mb-iframe'],
         ],
       ];
     }
@@ -163,9 +142,9 @@ class DashboardController extends ControllerBase {
    * @return string|null
    *   The embed URL, or NULL if there was an error.
    */
-  public function getEmbedUrl(GroupInterface $group, $position = 'top') {
+  public function getEmbedUrl($position = 'top') {
     $config = \Drupal::config('metabase.settings');
-    $base_url = $config->get('embeding.base_url');
+    $base_url = \Drupal::request()->getSchemeAndHttpHost() . $config->get('embeding.base_url');
     $secket_key = $config->get('embeding.api_token');
     $dashboard_id = $config->get('embeding.dashboard.' . $position);
 
@@ -178,7 +157,6 @@ class DashboardController extends ControllerBase {
     $params = [];
     $params = [
       'user_id' => \Drupal::currentUser()->id(),
-      'client' => $group->label(),
     ];
 
     // Create JWT payload.
@@ -202,25 +180,6 @@ class DashboardController extends ControllerBase {
       $this->logger->error('Error fetching embed URL from API: @error', ['@error' => $e->getMessage()]);
       return "";
     }
-  }
-
-  function getCurrentUserGroups() {
-    // Get the group membership service.
-    $group_membership_service = \Drupal::service('group.membership_loader');
-
-    // Load all group memberships for this user.
-    $memberships = $group_membership_service->loadByUser(\Drupal::currentUser());
-
-    // Initialize an array to store the groups.
-    $groups = [];
-
-    // Extract the group from each membership.
-    foreach ($memberships as $membership) {
-      $group = $membership->getGroup();
-      $groups[$group->id()] = $group->label();
-    }
-
-    return $groups;
   }
 
 }
