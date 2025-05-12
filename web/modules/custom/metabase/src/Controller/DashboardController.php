@@ -155,9 +155,6 @@ class DashboardController extends ControllerBase {
     }
 
     $params = [];
-    $params = [
-      'user_id' => \Drupal::currentUser()->id(),
-    ];
 
     // Create JWT payload.
     $payload = [

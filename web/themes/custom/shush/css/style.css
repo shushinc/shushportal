@@ -691,8 +691,7 @@ main {
 }
 .user-login main .login-footer-logo,
 .user-register main .login-footer-logo,
-.user-password main .login-footer-logo,
-.login main .login-footer-logo {
+.user-password main .login-footer-logo {
   position: absolute;
   bottom: 0;
   max-width: 228px;
@@ -700,6 +699,12 @@ main {
   width: 100%;
   left: 50%;
   margin-left: -120px;
+}
+
+.login main .login-footer-logo {
+  max-width: 228px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .login main #block-shush-page-title {
@@ -713,16 +718,16 @@ main {
 .login main #block-shush-content {
   padding: 0;
 }
-.login main .custom-content {
+/* .login main .custom-content {
   padding-top: 5rem;
-}
+} */
 .login main .custom-content h1 {
   color: #2b3674;
   font-size: 64px;
   font-weight: 700;
   line-height: 56px;
   letter-spacing: -0.2px;
-  margin: 2rem 0;
+  margin: 0 0 2rem 0;
 }
 .login main .custom-content .btn-primary {
   max-width: 400px;
@@ -2080,3 +2085,31 @@ li.parent-menu.menuexpand span { color: #191a5b; font-weight: bold; opacity: 1;m
 
 .parent-menu::after { content: ""; background: url(../images/arrow-down.svg) no-repeat; height: 16px; width: 16px; position: absolute; right: 20px; top: 20px; }
 .parent-menu.menuexpand::after { transform: rotateX(180deg); top: 10px; }
+
+body.login.not-loggedin.path-login main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+body.login.not-loggedin.path-login main>.header-site-logo {
+  order: 0;
+}
+
+body.login.not-loggedin.path-login main > .container {
+  order: 1;
+}
+
+body.login.not-loggedin.path-login main > .highlighted {
+  order: 2;
+}
+
+body.login.not-loggedin.path-login main > .login-footer-logo {
+  order: 3;
+}
+
+body.login.not-loggedin.path-login main div#block-shush-site-branding>a>img {
+  width: 100%;
+  max-width: 400px;
+}
