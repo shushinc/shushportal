@@ -1,0 +1,131 @@
+:root {
+  --mb-default-font-family: "RedHatDisplay" !important;
+}
+
+@font-face {
+  font-family: "RedHatDisplay";
+  font-style: normal;
+  font-weight: 700;
+  src: url("https://shushportal.ddev.site/themes/custom/shush/assets/fonts/Red_Hat_Display/RedHatDisplay-VariableFont_wght.ttf");
+}
+
+@font-face {
+  font-family: "RedHatDisplay";
+  font-style: normal;
+  font-weight: 900;
+  src: url("https://shushportal.ddev.site/themes/custom/shush/assets/fonts/Red_Hat_Display/RedHatDisplay-VariableFont_wght.ttf");
+}
+
+body {
+  background-color: transparent !important;
+}
+
+header {
+  display: none !important;
+}
+
+#root>div,
+#root>div>div {
+  background-color: transparent !important;
+}
+
+footer {
+  display: none !important;
+}
+
+a {
+  color: red !important;
+}
+
+.dashcard,
+.decrease,
+.increase,
+.equals {
+  border-radius: 24px !important;
+}
+
+.dashcard {
+  background-color: #e0e5f2 !important;
+  border: 1px solid #7f85ae !important;
+  color: #2b3674;
+}
+
+div.dashcard>div>div>div {
+  align-items: flex-start !important;
+}
+
+div.dashcard>div>div>div>div[data-testid="scalar-title"] {
+  justify-content: flex-start !important;
+}
+
+div.dashcard h1 {
+  font-size: 5rem !important;
+}
+
+div.dashcard h3 {
+  font-size: 1.5rem !important;
+}
+
+.decrease h1,
+.decrease h3,
+.increase h1,
+.increase h3,
+.equals h1,
+.equals h3 {
+  font-size: 2rem !important;
+  font-weight: 200 !important;
+  line-height: 2rem !important;
+}
+
+.decrease {
+  background-color: #ffefef !important;
+  border: 1px solid #ff8080 !important;
+  color: #a80202;
+}
+
+.increase {
+  background-color: #d0fff3 !important;
+  border: 1px solid #7bbdab !important;
+  color: #005d42;
+}
+
+.equals {
+  background-color: #eeeeee !important;
+  border: 1px solid #9c9c9c !important;
+  color: #373838;
+}
+
+.increase>div>div>div,
+.decrease>div>div>div,
+.equals>div>div>div {
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}
+
+.increase>div>div>div>div[data-testid="scalar-title"],
+.decrease>div>div>div>div[data-testid="scalar-title"],
+.equals>div>div>div>div[data-testid="scalar-title"] {
+  display: block !important;
+  max-height: 100% !important;
+  text-overflow: inherit;
+  width: auto !important;
+}
+
+div[data-testid="dashcard-container"].container-small,
+div.DashCard.container-small {
+  height: 80px !important;
+}
+
+div[data-testid="dashboard-parameters-widget-container"] {
+  background-color: transparent !important;
+}
+
+.increase h1:before {
+  content: "\25B2";
+  font-size: 1.5rem;
+}
+
+.decrease h1:before {
+  content: "\25BC";
+  font-size: 1.5rem;
+}

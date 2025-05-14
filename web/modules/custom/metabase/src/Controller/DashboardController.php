@@ -102,6 +102,11 @@ class DashboardController extends ControllerBase {
       ],
     ];
 
+    $build['title'] = [
+      '#type' => 'markup',
+      '#markup' => '<div class="user-management-header"><h3>Main Dashboard</h3></div>',
+    ];
+
     $user = \Drupal::currentUser();
     $roles = $user->getRoles();
     $frames = ['other'];
@@ -115,6 +120,13 @@ class DashboardController extends ControllerBase {
 
       if (empty($embed_url)) {
         $this->messenger()->addError($this->t('Unable to load the @position dashboard. Please check your configuration.', ['@position' => $value]));
+      }
+
+      if ($value == 'main') {
+        $build['chart'] = [
+          '#type' => 'markup',
+          '#markup' => '<div class="user-management-header"><h3>Charts</h3></div>',
+        ];
       }
 
       $build[$value] = [
