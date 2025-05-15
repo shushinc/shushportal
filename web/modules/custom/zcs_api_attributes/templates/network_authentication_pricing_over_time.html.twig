@@ -1,37 +1,22 @@
 <div>
-
+{# {{ content.edit_page }} #}
   <table class="attributes-table">
     <thead>
       <tr>
-        <th>API Category</th>
-        <th>API Attribute</th>
-        <th>Effective Date
-          </br>
-           {{ content.effective_date_1 }}
-        </th>
-        <th>Effective Date
-          </br>
-         {{ content.effective_date_2 }}
-        </th>
-        <th>Effective Date
-         </br>
-         {{ content.effective_date_3 }}
-        </th>
+        <td>Title</td>
+        {% for date , atts in content.header_date %}
+          <td> Estimated Prices <br>{{ atts }}</td>
+        {% endfor %}
       </tr>
     </thead>
     <tbody>
-      {% for mainkey, attributes in content.final %}
-          {% for key, att in attributes %}
-          <tr>
-            {% if key == 0 %} 
-              <td rowspan={{ attributes|length }}>{{ content.titles[mainkey].name }}</td>
-            {% endif %}
-            <td>{{ att.title }}</td>
-            <td><span class=" ">{{ att.effective_date_1_price_per_call}}</span></td>
-            <td><span class=" ">{{ att.effective_date_2_price_per_call}}</span></td>
-            <td><span class=" ">{{ att.effective_date_3_price_per_call}}</span></td>
-          </tr>
-          {% endfor %}
+      {% for key, att in content.final %}
+      <tr>
+        <td>{{ att.title }}</td>
+        {% for key, date in content.header_date %}
+           <td> {{ content.symbols[key] }} {{ att['price' ~ key] }}</td>
+        {% endfor %}
+      </tr>
       {% endfor %}
     </tbody>
   </table>

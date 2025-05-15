@@ -1,0 +1,10 @@
+bootstrap_multiselect:
+  js:
+    js/bootstrap-multiselect.js: {}     
+    js/zcs_user_management.js: {}
+  dependencies:
+    - core/jquery  
+bootstrap_multiselect_css:
+  css:
+    theme:
+      css/bootstrap-multiselect.css: {}

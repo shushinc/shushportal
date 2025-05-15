@@ -128,10 +128,10 @@ class PriceRateSheet extends FormBase {
       '#weight' => 2,
     ];
 
-    $form['approval_page'] = [
-      '#type' => 'markup',
-      '#markup' => Link::createFromRoute('Approval Page', 'zcs_api_attributes.rate_sheet.approval')->toString(),
-    ];
+    // $form['approval_page'] = [
+    //   '#type' => 'markup',
+    //   '#markup' => Link::createFromRoute('Approval Page', 'zcs_api_attributes.rate_sheet.approval')->toString(),
+    // ];
 
     $existing = $this->database->select('attributes_page_data', 'apd')
       ->fields('apd', ['id', 'submit_by'])

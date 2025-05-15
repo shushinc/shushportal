@@ -34,11 +34,12 @@ final class UserInviteForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $roles = Role::loadMultiple();
-    $role_to_keep = 'carrier_admin';
+    $roles_to_keep = ['carrier_admin', 'finance_admin'];
     $role_options = [];
+    
     foreach ($roles as $role) {
-      if ($role->id() == $role_to_keep) {
-        $role_options[$role->id()] = $role->label();
+      if (in_array($role->id(), $roles_to_keep)) {
+          $role_options[$role->id()] = $role->label();
       }
     }
     $form['user_name'] = [
@@ -56,6 +57,10 @@ final class UserInviteForm extends FormBase {
       '#title' => $this->t('User Role'),
       '#options' => $role_options,
       '#empty_option' => $this->t('- Select a role -'),
+      '#multiple' => true,
+      '#attributes' => [
+        'class' => ['multi-select']
+      ]
     ];
     $form['actions'] = [
       '#type' => 'actions',
@@ -64,6 +69,9 @@ final class UserInviteForm extends FormBase {
         '#value' => $this->t('Invite Carrier User'),
       ],
     ];
+    $form['#attached']['library'][] = 'zcs_user_management/bootstrap_multiselect';
+    $form['#attached']['library'][] = 'zcs_user_management/bootstrap_multiselect_css';
+
     return $form;
   }
 
@@ -93,7 +101,7 @@ final class UserInviteForm extends FormBase {
     $token = $this->generateToken();
     $passkey = $this->randomPassword();
     $user_email = $form_state->getValue('user_mail'); 
-    $role = $form_state->getValue('user_role');
+    $roles = $form_state->getValue('user_role');
     $user_name = $form_state->getValue('user_name');
 
     $user = User::create([
@@ -101,7 +109,7 @@ final class UserInviteForm extends FormBase {
       'mail' => $user_email,
       'pass' => $passkey,
       'status' => 0, // 
-      'roles' => $role, 
+      'roles' => array_keys($roles)
     ]);  
     $user->save();
     $save_invitation = $this->saveInvitation($user_email, $role, $token, $passkey, $user_name);

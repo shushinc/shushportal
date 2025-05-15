@@ -249,3 +249,35 @@ function zcs_api_attributes_update_9002() {
     ->execute();
 }
 
+
+
+
+function zcs_api_attributes_update_9003(){
+  $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+
+  $menu_item_object1 = current($storage->loadByProperties(['title' => 'Finance Approval']));
+  if($menu_item_object1) {
+    $menu_item_object1->delete();
+  }
+  $menu_item_object2 = current($storage->loadByProperties(['title' => 'Change Pricing']));
+  if($menu_item_object2) {
+    $menu_item_object2->delete();
+  }
+
+
+
+  $parent_menu = current($storage->loadByProperties(['title' => 'Price']));
+  $parent_id = 'menu_link_content:' . $parent_menu->uuid();
+
+  // Create the child menu link.
+  $finance_approval_menu_child_link3 = MenuLinkContent::create([
+    'title' => 'Finance Approval',
+    'link' => ['uri' => 'internal:/finance-approval'], // Adjust path as needed.
+    'menu_name' => 'main',
+    'parent' => $parent_id, // Set the parent ID.
+    'weight' => 4,
+  ]);
+  $finance_approval_menu_child_link3->save();
+  
+
+}

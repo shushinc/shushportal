@@ -8,6 +8,8 @@ use Drupal\Core\Render\Markup;
 use Drupal\Core\Link;
 use Drupal\Core\Database\Connection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Component\Serialization\Json;
+use NumberFormatter;
 
 class PricingOverTime extends ControllerBase {
 
@@ -37,35 +39,38 @@ class PricingOverTime extends ControllerBase {
 
   public function pricingPage() {
 
-   $effective_date_1 = \Drupal::config('zcs_custom.api_attribute_settings')->get('effective_date_1');
-   $effective_date_2 = \Drupal::config('zcs_custom.api_attribute_settings')->get('effective_date_2');
-   $effective_date_3 = \Drupal::config('zcs_custom.api_attribute_settings')->get('effective_date_3');
+    $url = Url::fromRoute('zcs_api_attributes.rate_sheet')->toString();
 
     $contents = $this->entityTypeManager()->getStorage('node')->loadByProperties(['type' => 'api_attributes']);
+
+    $resultSet = $this->database->select('attributes_page_data', 'apd')
+      ->fields('apd', ['id','page_data', 'effective_date', 'currency_locale'])
+      ->condition('attribute_status', 2)
+      ->range(0, 3)
+      ->orderBy('id', 'DESC')
+      ->execute()->fetchAll();
+    $prices = $headerDate = $symbols = [];
+ 
+    foreach ($resultSet as $result) {
+      $prices[] = Json::decode($result->page_data);
+      $headerDate[] = $result->effective_date;
+      $number = new NumberFormatter($result->currency_locale, NumberFormatter::CURRENCY);
+      $symbols[] = $number->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
+    }
     if (!empty($contents)) {
       foreach ($contents as $content) {
-        if ($content->field_api_attributes_status->target_id) {
-          $titles[$content->field_api_attributes_status->target_id]['name'] = $this->entityTypeManager()->getStorage('taxonomy_term')->load($content->field_api_attributes_status->target_id)->name->value;
-          $final[$content->field_api_attributes_status->target_id][] = [
-            'title' => $content->title->value,
-            'price_per_call' => $content->field_price_per_call->value ?? 0,
-            'effective_date_1_price_per_call' => $content->field_effective_date1_price_call->value ?? 0,
-            'effective_date_2_price_per_call' => $content->field_effective_date2_price_call->value ?? 0,
-            'effective_date_3_price_per_call' => $content->field_effective_date3_price_call->value ?? 0,
-          ];
-        }
+        $final[] = [
+          'title' => $content->title->value,
+          'price0' => $prices[0][$content->id()] ?? 0.00,
+          'price1' => $prices[1][$content->id()] ?? 0.00,
+          'price2' => $prices[2][$content->id()] ?? 0.00
+        ];
       }
     }
-    $data['admin'] = 0;
-    $roles = $this->currentUser()->getRoles();
-    if (!empty(array_intersect(['administrator', 'carrier_admin'], $roles))) {
-      $data['admin'] = 1;
-    }
+    $data['symbols'] = $symbols;
+    $data['create_rate_sheet_url'] = $url;
     $data['final'] = $final;
-    $data['titles'] = $titles;
-    $data['effective_date_1'] = $effective_date_1;
-    $data['effective_date_2'] = $effective_date_2;
-    $data['effective_date_3'] = $effective_date_3;
+    $data['header_date'] = $headerDate;
 
     return [
       '#theme' => 'network_authentication_pricing_over_time',
