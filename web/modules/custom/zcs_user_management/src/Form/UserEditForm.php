@@ -52,12 +52,17 @@ final class UserEditForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $uid = $this->request->get('uid');
     $user = User::load($uid);
-    $role_to_keep = 'carrier_admin';
+
     $roles = Role::loadMultiple();
+    $roles_to_keep = ['carrier_admin', 'finance_admin'];
     $role_options = [];
+
+
+    $user_roles = $user->getRoles();
+
     foreach ($roles as $role) {
-      if ($role->id() == $role_to_keep) {
-        $role_options[$role->id()] = $role->label();
+      if (in_array($role->id(), $roles_to_keep)) {
+          $role_options[$role->id()] = $role->label();
       }
     }
     $form['user_mail'] = [
@@ -82,7 +87,11 @@ final class UserEditForm extends FormBase {
       '#title' => $this->t('User Role'),
       '#options' => $role_options,
       '#empty_option' => $this->t('- Select a role -'),
-      '#default_value' => 'carrier_admin',
+      '#default_value' => $user_roles,
+      '#multiple' => true,
+      '#attributes' => [
+        'class' => ['multi-select']
+      ]
     ];
 
        // Define the status options.
@@ -106,6 +115,9 @@ final class UserEditForm extends FormBase {
         '#value' => $this->t('Update Carrier User'),
       ],
     ];
+
+    $form['#attached']['library'][] = 'zcs_user_management/bootstrap_multiselect';
+    $form['#attached']['library'][] = 'zcs_user_management/bootstrap_multiselect_css';
     return $form;
   }
 
@@ -122,7 +134,7 @@ final class UserEditForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
     $user_email = $form_state->getValue('user_mail'); 
-    $role = $form_state->getValue('user_role');
+    $roles = $form_state->getValue('user_role');
     $user_name = $form_state->getValue('user_name');
     $status = $form_state->getValue('status');
     $query = \Drupal::entityQuery('user')->condition('mail', $user_email);
@@ -132,6 +144,7 @@ final class UserEditForm extends FormBase {
       $uid = reset($uids);
       $user = User::load($uid);
       $user->set('status', $status);
+      $user->set('roles', array_keys($roles)); 
       $user->save();
       $this->messenger()->addMessage($this->t('User updated successfully.'));
       $form_state->setRedirectUrl(Url::fromRoute('view.user_management.page_1'));
