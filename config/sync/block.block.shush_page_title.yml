@@ -23,4 +23,4 @@ visibility:
   request_path:
     id: request_path
     negate: true
-    pages: "<front>\r\n/home\r\n/apps\r\n/dashboard\r\n/mb/dashboard\r\n/aws-apps\r\n/api-attribute-status\r\n/change-network-authentication-pricing\r\n/demand_partner_discounts_or_different_pricing\r\n/network_authentication_pricing_over_time"
+    pages: "<front>\r\n/home\r\n/apps\r\n/dashboard\r\n/old-dashboard\r\n/aws-apps\r\n/api-attribute-status\r\n/change-network-authentication-pricing\r\n/demand_partner_discounts_or_different_pricing\r\n/network_authentication_pricing_over_time"
