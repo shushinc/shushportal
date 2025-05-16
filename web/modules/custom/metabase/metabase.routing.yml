@@ -8,7 +8,7 @@ metabase.settings:
 
 
 metabase.dashboard:
-  path: '/mb/dashboard'
+  path: '/dashboard'
   defaults:
     _controller: '\Drupal\metabase\Controller\DashboardController::dashboard'
     _title: 'Dashboard'

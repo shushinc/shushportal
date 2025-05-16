@@ -1,5 +1,5 @@
 zcs_analytics.redirect:
-  path: '/dashboard'
+  path: '/old-dashboard'
   defaults:
     _controller: '\Drupal\analytics\Controller\AnalyticsController::analyticsDashboard'
     _title: 'Analytics'
@@ -16,7 +16,7 @@ zcs_analytics.ajax.dashboard:
   requirements:
     _role: 'authenticated'
   options:
-    no_cache: true  
+    no_cache: true
 
 
 zcs_analytics.node.add:

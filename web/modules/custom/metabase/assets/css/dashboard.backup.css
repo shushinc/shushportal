@@ -1,19 +1,20 @@
 :root {
   --mb-default-font-family: "RedHatDisplay" !important;
+  --default-font-family: "RedHatDisplay" !important;
 }
 
 @font-face {
   font-family: "RedHatDisplay";
   font-style: normal;
   font-weight: 700;
-  src: url("https://shushportal.ddev.site/themes/custom/shush/assets/fonts/Red_Hat_Display/RedHatDisplay-VariableFont_wght.ttf");
+  src: url("/themes/custom/shush/assets/fonts/Red_Hat_Display/RedHatDisplay-VariableFont_wght.ttf");
 }
 
 @font-face {
   font-family: "RedHatDisplay";
   font-style: normal;
   font-weight: 900;
-  src: url("https://shushportal.ddev.site/themes/custom/shush/assets/fonts/Red_Hat_Display/RedHatDisplay-VariableFont_wght.ttf");
+  src: url("/themes/custom/shush/assets/fonts/Red_Hat_Display/RedHatDisplay-VariableFont_wght.ttf");
 }
 
 body {
@@ -128,4 +129,27 @@ div[data-testid="dashboard-parameters-widget-container"] {
 .decrease h1:before {
   content: "\25BC";
   font-size: 1.5rem;
+}
+
+div[data-testid="fixed-width-filters"]>div {
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+div[data-testid="fixed-width-filters"]>div>fieldset {
+  flex-basis: 16.6%;
+}
+
+div[data-testid="fixed-width-filters"]>div>fieldset a .text-nowrap {
+  text-overflow: ellipsis;
+  max-width: 250px;
+  overflow: hidden;
+}
+
+div.LineAreaBarChart.CardVisualization>div:nth-child(2)>div:nth-child(1) {
+  display: none !important;
+}
+
+div.LineAreaBarChart.CardVisualization>div:nth-child(2)>div:last-child {
+  display: flex !important;
 }
