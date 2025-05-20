@@ -28,6 +28,19 @@
       else {
         if (!container.classList.contains("dashcard")) {
           container.classList.add("dashcard");
+          const heading = container.querySelector('h1.ScalarValue');
+          const parts = heading.textContent.split('|');
+
+          if (parts.length < 2) {
+            return;
+          }
+
+          const enhancedHTML = parts[0] + '<span>' + parts[1] + '</span>';
+          heading.innerHTML = enhancedHTML;
+
+          if (parts.length == 3) {
+            titleElement.innerHTML = titleElement.innerHTML.replace('###', parts[2]);
+          }
         }
       }
     }

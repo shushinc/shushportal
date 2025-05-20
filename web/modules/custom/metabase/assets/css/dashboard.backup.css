@@ -29,6 +29,9 @@ header {
 #root>div>div {
   background-color: transparent !important;
 }
+#root>div>div>main>div>div{
+  padding: 0px !important;
+}
 
 footer {
   display: none !important;
@@ -59,21 +62,12 @@ div.dashcard>div>div>div>div[data-testid="scalar-title"] {
   justify-content: flex-start !important;
 }
 
-div.dashcard h1 {
-  font-size: 5rem !important;
-}
-
-div.dashcard h3 {
-  font-size: 1.5rem !important;
-}
-
 .decrease h1,
 .decrease h3,
 .increase h1,
 .increase h3,
 .equals h1,
 .equals h3 {
-  font-size: 2rem !important;
   font-weight: 200 !important;
   line-height: 2rem !important;
 }
@@ -123,12 +117,10 @@ div[data-testid="dashboard-parameters-widget-container"] {
 
 .increase h1:before {
   content: "\25B2";
-  font-size: 1.5rem;
 }
 
 .decrease h1:before {
   content: "\25BC";
-  font-size: 1.5rem;
 }
 
 div[data-testid="fixed-width-filters"]>div {
@@ -152,4 +144,80 @@ div.LineAreaBarChart.CardVisualization>div:nth-child(2)>div:nth-child(1) {
 
 div.LineAreaBarChart.CardVisualization>div:nth-child(2)>div:last-child {
   display: flex !important;
+}
+
+@media (max-width: 799px) {
+  div.dashcard h1 {
+    font-size: 3rem !important;
+  }
+
+  div.dashcard h1 span {
+    font-size: 1.5rem !important;
+  }
+
+  div.dashcard h3 {
+    font-size: 1.5rem !important;
+  }
+
+  .decrease h1,
+  .decrease h3,
+  .increase h1,
+  .increase h3,
+  .equals h1,
+  .equals h3 {
+    font-size: 2rem !important;
+    font-weight: 200 !important;
+    line-height: 2rem !important;
+  }
+
+  div[data-testid="dashcard-container"].container-small,
+  div.DashCard.container-small {
+    height: 80px !important;
+  }
+
+  .increase h1:before {
+    font-size: 1.5rem;
+  }
+
+  .decrease h1:before {
+    font-size: 1.5rem;
+  }
+}
+@media (min-width: 800px) {
+  div.dashcard h1 {
+    font-size: 4vw !important;
+  }
+
+  div.dashcard h1 span {
+    font-size: 2.5vw !important;
+  }
+
+  div.dashcard h3 {
+    font-size: 1.4vw !important;
+    line-height: 1.5vw !important;
+  }
+
+  .decrease h1,
+  .decrease h3,
+  .increase h1,
+  .increase h3,
+  .equals h1,
+  .equals h3 {
+    font-size: 1.4vw !important;
+    font-weight: 200 !important;
+    line-height: 1.4vw !important;
+  }
+
+  div[data-testid="dashcard-container"].container-small,
+  div.DashCard.container-small {
+    height: 80px !important;
+  }
+
+  .increase h1:before {
+    font-size: 1.4vw;
+  }
+
+  .decrease h1:before {
+    font-size: 1.4vw;
+  }
 }
