@@ -44,6 +44,10 @@
         "drush/drush": "^12.5",
         "oomphinc/composer-installers-extender": "^2.0"
     },
+    "require-dev": {
+        "drupal/coder": "^8.3",
+        "phpunit/phpunit": "^9.6"
+    },
     "conflict": {
         "drupal/drupal": "*"
     },

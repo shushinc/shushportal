@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Batch\BatchBuilder;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Service for generating analytics nodes in batch.
@@ -13,6 +14,7 @@ use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 class AnalyticsNodeGenerator {
 
   use DependencySerializationTrait;
+  use StringTranslationTrait;
 
   /**
    * The entity type manager.
@@ -45,7 +47,7 @@ class AnalyticsNodeGenerator {
    * Generates analytics nodes for the past 3 years.
    */
   public function generateNodes($ago = 3, $mode = 'year') {
-    // Get current timestamp
+    // Get current timestamp.
     $current_time = $this->time->getCurrentTime();
 
     $ago = abs(intval($ago));
@@ -60,24 +62,26 @@ class AnalyticsNodeGenerator {
       $three_years_ago = $current_time - (365 * $ago * 24 * 60 * 60);
     }
 
-    // Create an array of timestamps for each day
+    // Create an array of timestamps for each day.
     $days = [];
     $timestamp = $three_years_ago;
     while ($timestamp <= $current_time) {
       $days[] = $timestamp;
-      $timestamp += 86400; // Add one day (in seconds)
+      // Add one day (in seconds)
+      $timestamp += 86400;
     }
 
-    // Set up the batch
+    // Set up the batch.
     $batch_builder = new BatchBuilder();
     $batch_builder
-      ->setTitle(t('Generating analytics nodes'))
-      ->setInitMessage(t('Starting node generation...'))
-      ->setProgressMessage(t('Processed @current out of @total days.'))
-      ->setErrorMessage(t('An error occurred during processing'));
+      ->setTitle($this->t('Generating analytics nodes'))
+      ->setInitMessage($this->t('Starting node generation...'))
+      ->setProgressMessage($this->t('Processed @current out of @total days.'))
+      ->setErrorMessage($this->t('An error occurred during processing'));
 
-    // Create batch operations for chunks of days
-    $chunks = array_chunk($days, 10); // Process 10 days per batch operation
+    // Create batch operations for chunks of days.
+    // Process 10 days per batch operation.
+    $chunks = array_chunk($days, 10);
 
     foreach ($chunks as $chunk) {
       $batch_builder->addOperation(
@@ -91,7 +95,7 @@ class AnalyticsNodeGenerator {
     batch_set($batch_builder->toArray());
 
     if (PHP_SAPI !== 'cli') {
-      // If not in drush, process the batch immediately
+      // If not in drush, process the batch immediately.
       batch_process();
     }
   }
@@ -109,13 +113,13 @@ class AnalyticsNodeGenerator {
 
     foreach ($days as $timestamp) {
       try {
-        // Load related taxonomy terms and entities for reference fields
+        // Load related taxonomy terms and entities for reference fields.
         $attributes = $this->getRandomTerms('analytics_attributes', 1);
         $carriers = $this->getRandomTerms('analytics_carrier', 1);
         $customers = $this->getRandomTerms('analytics_customer', 1);
         $partners = $this->getRandomGroups('partner', 1);
 
-        // Create node with random data for each field
+        // Create node with random data for each field.
         $node = $node_storage->create([
           'type' => 'analytics',
           'title' => 'Test',
@@ -147,7 +151,7 @@ class AnalyticsNodeGenerator {
       $context['results']['processed']++;
     }
 
-    $context['message'] = t('Created @created nodes out of @processed days processed.', [
+    $context['message'] = $this->t('Created @created nodes out of @processed days processed.', [
       '@created' => $context['results']['created'],
       '@processed' => $context['results']['processed'],
     ]);
@@ -158,14 +162,14 @@ class AnalyticsNodeGenerator {
    */
   public function finishNodeBatch($success, $results, $operations) {
     if ($success) {
-      $message = t('Successfully created @created analytics nodes from @processed days.', [
+      $message = $this->t('Successfully created @created analytics nodes from @processed days.', [
         '@created' => $results['created'],
         '@processed' => $results['processed'],
       ]);
       \Drupal::messenger()->addMessage($message);
     }
     else {
-      $message = t('Finished with an error.');
+      $message = $this->t('Finished with an error.');
       \Drupal::messenger()->addError($message);
     }
   }

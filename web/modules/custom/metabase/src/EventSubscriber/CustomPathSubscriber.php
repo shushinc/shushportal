@@ -1,17 +1,11 @@
 <?php
 
-/**
- * File: src/EventSubscriber/CustomPathSubscriber.php
- */
-
 namespace Drupal\metabase\EventSubscriber;
 
-use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\metabase\Service\ProxyService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Custom path event subscriber.
@@ -39,7 +33,7 @@ class CustomPathSubscriber implements EventSubscriberInterface {
    * {@inheritdoc}
    */
   public static function getSubscribedEvents() {
-    // Use a high priority so this runs early, but not before routing
+    // Use a high priority so this runs early, but not before routing.
     $events[KernelEvents::REQUEST][] = ['checkPath', 100];
     return $events;
   }
@@ -51,7 +45,7 @@ class CustomPathSubscriber implements EventSubscriberInterface {
    *   The request event.
    */
   public function checkPath(RequestEvent $event) {
-    // Don't process subrequests
+    // Don't process subrequests.
     if (!$event->isMainRequest()) {
       return;
     }
@@ -66,4 +60,5 @@ class CustomPathSubscriber implements EventSubscriberInterface {
       return;
     }
   }
+
 }

@@ -6,7 +6,6 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\metabase\Service\ProxyService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Controller for proxying requests to another site.
@@ -54,4 +53,5 @@ class ProxyController extends ControllerBase {
     $response = $this->proxyService->process($request);
     return $response;
   }
+
 }
