@@ -204,6 +204,10 @@ class DashboardController extends ControllerBase {
 
     $params = [];
 
+    if ($position != 'top') {
+      $params['month'] = date("M");
+    }
+
     // Create JWT payload.
     $payload = [
       'resource' => ['dashboard' => (int) $dashboard_id],
