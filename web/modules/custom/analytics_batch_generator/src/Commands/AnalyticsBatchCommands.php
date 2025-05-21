@@ -43,14 +43,14 @@ class AnalyticsBatchCommands extends DrushCommands {
     array $options = [
       'ago' => 1,
       'mode' => 'day',
-    ]
+    ],
   ) {
     $this->output()->writeln('Starting batch process to generate analytics nodes...');
 
-    // Start the batch process
+    // Start the batch process.
     $this->nodeGenerator->generateNodes($options['ago'], $options['mode']);
 
-    // Process the batch directly in Drush
+    // Process the batch directly in Drush.
     $batch =& batch_get();
     $batch['progressive'] = FALSE;
 

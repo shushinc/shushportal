@@ -6,14 +6,10 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use GuzzleHttp\ClientInterface;
 
 /**
- * Class ProxyService.
+ * Metabase proxy service.
  */
 class ProxyService {
 
@@ -58,7 +54,9 @@ class ProxyService {
     $this->loggerFactory = $logger_factory;
   }
 
-
+  /**
+   * Process a request.
+   */
   public function process(Request $request) {
 
     $config = $this->configFactory->get('metabase.settings');
@@ -94,8 +92,8 @@ class ProxyService {
         'headers' => $headers,
         'body' => $request->getContent(),
         // 'cookies' => $request->cookies->all(),
-        'allow_redirects' => false,
-        'http_errors' => false,
+        'allow_redirects' => FALSE,
+        'http_errors' => FALSE,
       ];
 
       // Send the request.
@@ -163,7 +161,6 @@ class ProxyService {
         return $response;
       }
 
-
       // For GET requests that match CSS files, modify the content.
       if (
         strpos($targetUrl, '/app/dist/styles.') !== FALSE &&
@@ -179,7 +176,6 @@ class ProxyService {
           $content .= $css;
         }
         // $content .= 'footer{display:none !important;}';
-
         // Create and return the response.
         $response = new Response(
           $content,
@@ -192,7 +188,7 @@ class ProxyService {
       elseif (
         strpos($targetUrl, '/app/dist/runtime.') !== FALSE &&
         strpos($targetUrl, '.js') !== FALSE
-      ){
+      ) {
         // Get the entire content.
         $content = (string) $proxyResponse->getBody();
 
@@ -227,4 +223,5 @@ class ProxyService {
     }
 
   }
+
 }

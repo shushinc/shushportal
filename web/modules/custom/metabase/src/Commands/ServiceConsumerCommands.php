@@ -2,9 +2,13 @@
 
 namespace Drupal\metabase\Commands;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\metabase\Service\MetabaseService;
 use Drush\Commands\DrushCommands;
 
+/**
+ * Metabase commands.
+ */
 class ServiceConsumerCommands extends DrushCommands {
 
   /**
@@ -15,14 +19,27 @@ class ServiceConsumerCommands extends DrushCommands {
   protected $metabaseService;
 
   /**
+   * The config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
    * ApigeeEdgeCommands constructor.
    *
    * @param \Drupal\metabase\Service\MetabaseService $metabase_service
    *   The metabase service.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
    */
-  public function __construct(MetabaseService $metabase_service) {
+  public function __construct(
+    MetabaseService $metabase_service,
+    ConfigFactoryInterface $config_factory,
+  ) {
     parent::__construct();
     $this->metabaseService = $metabase_service;
+    $this->configFactory = $config_factory;
   }
 
   /**
@@ -36,25 +53,24 @@ class ServiceConsumerCommands extends DrushCommands {
     $response = $this->metabaseService->get('api/database/');
 
     // $this->io()->writeln(print_r($response, TRUE));
-
-    // Define table headers
+    // Define table headers.
     $headers = [
       'ID',
       'Engine',
       'Name',
-      'Created At'
+      'Created At',
     ];
 
     $rows = [];
 
     if (isset($response['data'])) {
-      // Prepare table rows
-      $rows = array_map(function($item) {
+      // Prepare table rows.
+      $rows = array_map(function ($item) {
         return [
           $item['id'],
           $item['engine'],
           $item['name'],
-          $item['created_at']
+          $item['created_at'],
         ];
       }, $response['data']);
     }
@@ -67,6 +83,8 @@ class ServiceConsumerCommands extends DrushCommands {
    *
    * @param string $name
    *   The config name to be imported.
+   * @param array $options
+   *   The config options to be imported.
    *
    * @option model_id
    *   Metabase model id.
@@ -79,7 +97,7 @@ class ServiceConsumerCommands extends DrushCommands {
     $name,
     array $options = [
       'model_id' => NULL,
-    ]
+    ],
   ) {
 
     $configs = [
@@ -103,7 +121,7 @@ class ServiceConsumerCommands extends DrushCommands {
     }
 
     foreach ($configs[$name] as $key => $endpoint) {
-      $config = \Drupal::configFactory()->getEditable("metabase.settings.{$name}.{$key}");
+      $config = $this->configFactory->getEditable("metabase.settings.{$name}.{$key}");
 
       $model_id = $options['model_id'];
 
@@ -144,7 +162,7 @@ class ServiceConsumerCommands extends DrushCommands {
       ],
       'database' => [
         'default' => 'api/database/',
-      ]
+      ],
     ];
 
     if (!in_array($name, array_keys($configs))) {
@@ -159,7 +177,7 @@ class ServiceConsumerCommands extends DrushCommands {
 
     $endpoint = $configs[$name][$key];
 
-    $config = \Drupal::configFactory()->get("metabase.settings.{$name}.{$key}");
+    $config = $this->configFactory->get("metabase.settings.{$name}.{$key}");
 
     $items = $config->get('data');
     foreach ($items as $key => $value) {
@@ -172,4 +190,5 @@ class ServiceConsumerCommands extends DrushCommands {
       }
     }
   }
+
 }

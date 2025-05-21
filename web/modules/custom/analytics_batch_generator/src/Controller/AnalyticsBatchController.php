@@ -63,10 +63,11 @@ class AnalyticsBatchController extends ControllerBase {
    *   A redirect response.
    */
   public function startBatch() {
-    // Start the batch process
+    // Start the batch process.
     $this->nodeGenerator->generateNodes();
 
-    // The batch_process() in the generator will handle the redirect if not in CLI
+    // The batch_process() in the generator will handle the redirect if not in
+    // CLI.
     return $this->redirect('analytics_batch_generator.generator_form');
   }
 
