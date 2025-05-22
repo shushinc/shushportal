@@ -10,20 +10,29 @@ use Drupal\Core\Database\Connection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Serialization\Json;
 use NumberFormatter;
+use Drupal\Core\Pager\PagerManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class PricingOverTime extends ControllerBase {
 
 
-    /**
+  /**
    * Connection $database.
    */
   protected $database;
 
   /**
+   * Pager Variable.
+   */
+  protected $pagerManager;
+
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(Connection $connection) {
+  public function __construct(Connection $connection, PagerManagerInterface $pager_manager) {
     $this->database = $connection;
+    $this->pagerManager = $pager_manager;
   }
 
   /**
@@ -31,7 +40,8 @@ class PricingOverTime extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('database')
+      $container->get('database'),
+      $container->get('pager.manager')
     );
   } 
 
@@ -97,19 +107,35 @@ class PricingOverTime extends ControllerBase {
   /**
    * Display the Attributes Approval Page.
    */
-  public function attributeApprovals() {
-    $data = [];
-    $resultSet = $this->database->select('attributes_page_data', 'apd')
-      ->fields('apd', ['id', 'submit_by', 'approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'created'])
-      ->execute()
-      ->fetchAll();
+  public function attributeApprovals(Request $request) {
+
+    // add pager to table
+    $limit = 10;
+    $queryTotal = $this->database->select('attributes_page_data', 'apd');
+    if (!empty($request->get('status'))) {
+      $queryTotal->condition('apd.attribute_status', $request->get('status'));
+    }
+    $resultTotal = $queryTotal->countQuery()->execute()->fetchField();
+    $pager = $this->pagerManager->createPager($resultTotal, $limit);
+
+      // fetch results
+    $query = $this->database->select('attributes_page_data', 'apd')
+      ->fields('apd', ['id', 'submit_by', 'approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'created']);
+    if (!empty($request->get('status'))) {
+      $query->condition('apd.attribute_status', $request->get('status'));
+    }
+    $query->range($pager->getCurrentPage() * $limit, $limit);
+    $resultSet = $query->execute()->fetchAll();
+
     $statusSet = $this->database->select('attribute_status', 'as')
-      ->fields('as', ['id', 'status'])
-      ->execute()
-      ->fetchAll();
+    ->fields('as', ['id', 'status'])
+    ->execute()
+    ->fetchAll();
     foreach ($statusSet as $status) {
       $statuses[$status->id] = $status->status;
     }
+
+    $data = [];
     if (!empty($resultSet)) {
       foreach ($resultSet as $result) {
         $userStorage = $this->entityTypeManager()->getStorage('user');
@@ -121,16 +147,30 @@ class PricingOverTime extends ControllerBase {
           'approver1_status' => $statuses[$result->approver1_status],
           'approver2_status' => $statuses[$result->approver2_status],
           'status' => $statuses[$result->attribute_status],
-          'requested_time' => date('Y-m-d', $result->created)
+          'requested_time' => date('Y-m-d', $result->created),
+          'url' => Url::fromRoute('zcs_api_attributes.rate_sheet.review', ['id' => $result->id])
         ];
       }
     }
-    return [
+
+    $output[] = [
+      '#type' => 'select',
+      '#options' => ['- All -'] + $statuses,
+      '#title' => 'Status',
+      '#attributes' => [
+        'class' => ['select-status']
+      ],
+      '#value' => $request->get('status') ?? 0
+    ];
+
+    $output[] =  [
       '#theme' => 'rate_sheet_approval',
       '#content' => $data,
       '#attached' => [
         'library' => ['zcs_api_attributes/rate-sheet-approval']
-      ]
+      ],
     ];
+    $output[] = ['#type' => 'pager'];
+    return $output;
   }
 }

@@ -72,6 +72,7 @@ class EditClientMemberForm extends FormBase {
       $user_id = $membership->get('entity_id')->target_id;
       $user = User::load($user_id);
       $email = $user->getEmail();
+      $username = $user->getAccountName();
       $client_role = $membership->get('group_roles')->target_id;
     }
 
@@ -98,12 +99,19 @@ class EditClientMemberForm extends FormBase {
       '#default_value' => $gid,
       '#attributes' => ['disabled' => 'disabled'],
     ];
+
+    $form['user_name'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('User Full Name'),
+      '#required' => TRUE,
+      '#attributes' => ['disabled' => 'disabled'], 
+      '#default_value' => $username,
+    ];
  
     // To to validation fetch only the user who is not admin
     $form['client_email'] = [
       '#type' => 'email',
       '#title' => $this->t('User Email'),
-      '#weight' => '0',
       '#required' => TRUE,
       '#placeholder' => 'Enter the client Email',
       '#default_value' => $email,

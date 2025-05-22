@@ -1,5 +1,4 @@
 (function ($, drupalSettings) {
-
   // change currency symbol based on currency
   $('#edit-currencies').change(function() {
     location.href = location.origin + location.pathname + '?cur=' + $(this).val();
