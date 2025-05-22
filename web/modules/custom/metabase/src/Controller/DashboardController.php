@@ -229,7 +229,7 @@ class DashboardController extends ControllerBase {
     $payload = [
       'resource' => ['dashboard' => (int) $dashboard_id],
       'params' => (object) $params,
-      'exp' => time() + (60 * 10),
+      'exp' => time() + (60 * 60), // 60 minutes
     ];
 
     try {
