@@ -171,7 +171,7 @@ display:
           entity_type: null
           entity_field: label
           plugin_id: field
-          label: 'Client Name'
+          label: Client
           exclude: false
           alter:
             alter_text: false
@@ -236,7 +236,7 @@ display:
           entity_type: user
           entity_field: name
           plugin_id: field
-          label: Name
+          label: 'User Full Name'
           exclude: false
           alter:
             alter_text: false
@@ -301,7 +301,7 @@ display:
           entity_type: user
           entity_field: mail
           plugin_id: field
-          label: 'Client User Email'
+          label: 'User Email'
           exclude: false
           alter:
             alter_text: false

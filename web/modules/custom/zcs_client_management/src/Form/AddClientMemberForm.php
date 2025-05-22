@@ -80,7 +80,7 @@ class AddClientMemberForm extends FormBase {
    
     $form['user_name'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('User Name'),
+      '#title' => $this->t('User Full Name'),
       '#required' => TRUE,
       '#attributes' => [
         'autocomplete' => 'off'
@@ -88,7 +88,7 @@ class AddClientMemberForm extends FormBase {
     ];
     $form['user_mail'] = [
       '#type' => 'email',
-      '#title' => t('Client User Email'),
+      '#title' => t('User Email'),
       '#required' => TRUE,
       '#attributes' => [
         'autocomplete' => 'off'
