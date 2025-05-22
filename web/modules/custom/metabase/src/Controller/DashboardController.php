@@ -204,11 +204,32 @@ class DashboardController extends ControllerBase {
 
     $params = [];
 
+    if ($position != 'top') {
+      $params['month'] = date("M");
+    }
+
+    if ($position == 'other') {
+      $current_user = $this->currentUser;
+      $group_membership_service = \Drupal::service('group.membership_loader');
+      $group_memberships = $group_membership_service->loadByUser($current_user);
+
+      $groups = [];
+      foreach ($group_memberships as $group_membership) {
+        /** @var \Drupal\group\Entity\GroupInterface $group */
+        $group = $group_membership->getGroup();
+        $groups[] = $group->label();
+      }
+
+      if (!empty($groups)) {
+        $params['client'] = count($groups) == 1 ? $groups[0] : $groups;
+      }
+    }
+
     // Create JWT payload.
     $payload = [
       'resource' => ['dashboard' => (int) $dashboard_id],
       'params' => (object) $params,
-      'exp' => time() + (60 * 10),
+      'exp' => time() + (60 * 60), // 60 minutes
     ];
 
     try {
