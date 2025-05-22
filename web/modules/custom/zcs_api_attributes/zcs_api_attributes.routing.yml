@@ -69,7 +69,7 @@ zcs_api_attributes.rate_sheet.approval:
     _controller: '\Drupal\zcs_api_attributes\Controller\PricingOverTime::attributeApprovals'
     _title: 'Rate Sheet Approvals'
   requirements:
-    _role: 'finance_admin + administrator'
+    _role: 'finance_admin + administrator + financial_rate_sheet_approval_level_1 + financial_rate_sheet_approval_level_2'
   options:
     no_cache: 'TRUE'    
 
@@ -80,7 +80,7 @@ zcs_api_attributes.rate_sheet.review:
     _title: 'RateSheet Review'
     id: 0
   requirements:
-    _role: 'finance_admin + administrator'
+    _role: 'finance_admin + administrator + financial_rate_sheet_approval_level_1 + financial_rate_sheet_approval_level_2'
     id: \d+
   options:
     no_cache: 'TRUE'    

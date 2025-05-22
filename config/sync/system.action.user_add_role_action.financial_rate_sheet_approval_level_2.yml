@@ -1,0 +1,14 @@
+uuid: 4de53c1d-8332-4789-8c18-afa8f77d2135
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.financial_rate_sheet_approval_level_2
+  module:
+    - user
+id: user_add_role_action.financial_rate_sheet_approval_level_2
+label: 'Add the Financial Rate Sheet Approval Level 2 role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: financial_rate_sheet_approval_level_2

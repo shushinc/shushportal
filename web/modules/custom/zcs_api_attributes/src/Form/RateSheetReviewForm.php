@@ -11,6 +11,9 @@ use NumberFormatter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Render\Markup;
+
 
 class RateSheetReviewForm extends FormBase {
 
@@ -116,10 +119,16 @@ class RateSheetReviewForm extends FormBase {
 
     $by = '';
     $approvers = ['approver1', 'approver2'];
-    if ($this->currentUser()->id() === $data->approver1_uid){
+    // if ($this->currentUser()->id() === $data->approver1_uid){
+    //   $by = 'approver1';
+    // }
+    if (in_array('financial_rate_sheet_approval_level_1', $this->currentUser()->getRoles())) {
       $by = 'approver1';
     }
-    if ($this->currentUser()->id() === $data->approver2_uid){
+    // if ($this->currentUser()->id() === $data->approver2_uid){
+    //   $by = 'approver2';
+    // }
+    if (in_array('financial_rate_sheet_approval_level_2', $this->currentUser()->getRoles())) {
       $by = 'approver2';
     }
     $form['approved_by'] = [
@@ -136,7 +145,7 @@ class RateSheetReviewForm extends FormBase {
     $form['#theme'] = 'rate_sheet_review';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-review';
 
-    if (in_array($this->currentUser()->id(), [$data->approver1_uid, $data->approver2_uid]) && $data->attribute_status == 1 && $data->{$by . '_status'} == 1) {
+    if (((in_array('financial_rate_sheet_approval_level_1', $this->currentUser()->getRoles()) && !$data->approver1_uid) || (in_array('financial_rate_sheet_approval_level_2', $this->currentUser()->getRoles()) && !$data->approver2_uid && $data->approver1_uid)) && $data->attribute_status == 1 && $data->{$by . '_status'} == 1) {
       $form['status'] = [
         '#type' => 'select',
         '#options' => [2 => 'Approve', 3 => 'Reject'],
@@ -166,6 +175,7 @@ class RateSheetReviewForm extends FormBase {
     $values = $form_state->getValues();
     $updatedFields['updated'] =  \Drupal::time()->getRequestTime();
     $updatedFields[$values['approved_by'] . '_status'] = (int) $values['status'];
+    $updatedFields[$values['approved_by'] . '_uid'] = (int) $this->currentUser()->id();
     if ($values['another_approver_status'] == 2 && $values['status'] == 2) {
       $updatedFields['attribute_status'] = 2;
       foreach (explode(",", $values['nodes']) as $id) {
@@ -183,6 +193,40 @@ class RateSheetReviewForm extends FormBase {
       ->condition('id', $values['apid'])
       ->execute();
     $this->messenger()->addStatus('Status submitted successfully');
+
+    // Sending the email for approver2
+    if ($values['approved_by'] == 'approver1' && $values['status'] == 2) {
+      $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'financial_rate_sheet_approval_level_2', 'status' => 1]);
+      foreach ($users as $user) {
+        if ($user) {
+          $userMails[] = $user->mail->value;
+        }
+      }
+
+      $mailManager = \Drupal::service('plugin.manager.mail');
+      $modulePath = \Drupal::service('extension.path.resolver')->getPath('module', 'zcs_api_attributes');
+      $path = $modulePath . '/templates/attributes_approval_mail.html.twig';
+      $rendered = \Drupal::service('twig')->load($path)->render([
+        'user' => $this->entityTypeManager->getStorage('user')->load($this->currentUser()->id())->mail->value,
+        'effective_date' => $values['attribute_date'],
+        'approval' => Link::createFromRoute('Approval', 'zcs_api_attributes.rate_sheet')->toString(),
+        'site_name' => $this->config('system.site')->get('name')
+      ]);
+      $params['message'] = Markup::create(nl2br($rendered));
+      $langcode = \Drupal::currentUser()->getPreferredLangcode();
+      $send = true;
+
+      foreach ($userMails as $mail) {
+        $emails[] = $mailManager->mail('zcs_api_attributes', 'rate_sheet', $mail, $langcode, $params, NULL, $send);
+      }
+
+      if (reset($emails)['result'] != true && end($emails)['result'] != true) {
+        $this->messenger()->addError(t('There was a problem sending your email notification.'));
+      } else {
+        $this->messenger()->addStatus(t('An email notification has been sent.'));
+      }
+    }
+
     $form_state->setRedirect('zcs_api_attributes.rate_sheet.approval');
   }
 }

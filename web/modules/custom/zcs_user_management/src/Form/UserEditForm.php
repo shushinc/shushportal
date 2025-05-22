@@ -54,7 +54,7 @@ final class UserEditForm extends FormBase {
     $user = User::load($uid);
 
     $roles = Role::loadMultiple();
-    $roles_to_keep = ['carrier_admin', 'finance_admin'];
+    $roles_to_keep = ['carrier_admin', 'finance_admin', 'financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
     $role_options = [];
 
 

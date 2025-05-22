@@ -61,6 +61,12 @@ class PriceRateSheet extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'financial_rate_sheet_approval_level_1']);
+    foreach ($users as $user) {
+      if ($user) {
+        $userMails[] = $user->mail->value;
+      }
+    }
     $defaultCurrency = 'en_US';
     if (!empty($this->getRequest()->get('cur'))) {
       $defaultCurrency = $this->getRequest()->get('cur');
@@ -112,21 +118,21 @@ class PriceRateSheet extends FormBase {
     ];
 
     // to fetch users.
-    $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'finance_admin']);
-    $finalUsers = [];
-    if (!empty($users)) {
-      foreach ($users as $user) {
-        $finalUsers[$user->id()] = $user->mail->value; 
-      }
-    }
-    $form['users'] = [
-      '#type' => 'checkboxes',
-      '#options' => $finalUsers,
-      '#attributes' => [
-        'class' => ['users-check']
-      ],
-      '#weight' => 2,
-    ];
+    // $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'finance_admin']);
+    // $finalUsers = [];
+    // if (!empty($users)) {
+    //   foreach ($users as $user) {
+    //     $finalUsers[$user->id()] = $user->mail->value; 
+    //   }
+    // }
+    // $form['users'] = [
+    //   '#type' => 'checkboxes',
+    //   '#options' => $finalUsers,
+    //   '#attributes' => [
+    //     'class' => ['users-check']
+    //   ],
+    //   '#weight' => 2,
+    // ];
 
     // $form['approval_page'] = [
     //   '#type' => 'markup',
@@ -162,16 +168,16 @@ class PriceRateSheet extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    $values = $form_state->getValues();
-    $userCount = 0;
-    foreach ($values['users'] as $user) {
-      if ($user) {
-        $userCount++;
-      }
-    }
-    if ($userCount < 2) {
-      $form_state->setErrorByName('users', 'Should select 2 users');
-    }
+    // $values = $form_state->getValues();
+    // $userCount = 0;
+    // foreach ($values['users'] as $user) {
+    //   if ($user) {
+    //     $userCount++;
+    //   }
+    // }
+    // if ($userCount < 2) {
+    //   $form_state->setErrorByName('users', 'Should select 2 users');
+    // }
   }
 
 
@@ -185,15 +191,15 @@ class PriceRateSheet extends FormBase {
     foreach ($nids as $nid) {
       $json[$nid] = $values['price' . $nid];
     }
-    foreach ($values['users'] as $user) {
+    $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'financial_rate_sheet_approval_level_1', 'status' => 1]);
+    foreach ($users as $user) {
       if ($user) {
-        $users[] = $user;
-        $userMails[$user] = $this->entityTypeManager->getStorage('user')->load($user)->mail->value;
+        $userMails[] = $user->mail->value;
       }
     }
     $this->database->insert('attributes_page_data')
       ->fields(['submit_by', 'currency_locale', 'effective_date', 'page_data', 'approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'created', 'updated'])
-      ->values([$this->currentUser()->id(), $values['currencies'], $values['attribute_date'], Json::encode($json), reset($users), 1, end($users), 1, 1, \Drupal::time()->getRequestTime(), \Drupal::time()->getRequestTime()])
+      ->values([$this->currentUser()->id(), $values['currencies'], $values['attribute_date'], Json::encode($json), 0, 1, 0, 1, 1, \Drupal::time()->getRequestTime(), \Drupal::time()->getRequestTime()])
       ->execute();
     $mailManager = \Drupal::service('plugin.manager.mail');
 
@@ -202,8 +208,6 @@ class PriceRateSheet extends FormBase {
 
     $rendered = \Drupal::service('twig')->load($path)->render([
       'user' => $this->entityTypeManager->getStorage('user')->load($this->currentUser()->id())->mail->value,
-      'approver1' => $userMails[reset($users)],
-      'approver2' => $userMails[end($users)],
       'effective_date' => $values['attribute_date'],
       'approval' => Link::createFromRoute('Approval', 'zcs_api_attributes.rate_sheet')->toString(),
       'site_name' => $this->config('system.site')->get('name')
@@ -214,8 +218,8 @@ class PriceRateSheet extends FormBase {
     $langcode = \Drupal::currentUser()->getPreferredLangcode();
     $send = true;
 
-    foreach ($users as $uid) {
-      $emails[] = $mailManager->mail('zcs_api_attributes', 'rate_sheet', $userMails[$uid], $langcode, $params, NULL, $send);
+    foreach ($userMails as $mail) {
+      $emails[] = $mailManager->mail('zcs_api_attributes', 'rate_sheet', $mail, $langcode, $params, NULL, $send);
     }
 
     if (reset($emails)['result'] != true && end($emails)['result'] != true) {

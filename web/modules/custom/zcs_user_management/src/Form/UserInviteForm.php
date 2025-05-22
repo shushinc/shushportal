@@ -34,7 +34,7 @@ final class UserInviteForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $roles = Role::loadMultiple();
-    $roles_to_keep = ['carrier_admin', 'finance_admin'];
+    $roles_to_keep = ['carrier_admin','finance_admin', 'financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
     $role_options = [];
     
     foreach ($roles as $role) {
@@ -112,8 +112,8 @@ final class UserInviteForm extends FormBase {
       'roles' => array_keys($roles)
     ]);  
     $user->save();
-    $save_invitation = $this->saveInvitation($user_email, $role, $token, $passkey, $user_name);
-    $send_emai = $this->sendInvitationMail($user_email, $role, $token, $passkey, $user_name);
+    $save_invitation = $this->saveInvitation($user_email, 'carrier_admin', $token, $passkey, $user_name);
+    $send_emai = $this->sendInvitationMail($user_email, 'carrier_admin', $token, $passkey, $user_name);
     $form_state->setRedirectUrl(Url::fromRoute('view.user_management.page_1'));
   }
 

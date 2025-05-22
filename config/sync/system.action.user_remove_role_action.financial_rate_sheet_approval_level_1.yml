@@ -1,0 +1,14 @@
+uuid: fb598959-cced-48c5-91eb-a7ccf1869433
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.financial_rate_sheet_approval_level_1
+  module:
+    - user
+id: user_remove_role_action.financial_rate_sheet_approval_level_1
+label: 'Remove the Financial Rate Sheet Approval Level 1 role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: financial_rate_sheet_approval_level_1

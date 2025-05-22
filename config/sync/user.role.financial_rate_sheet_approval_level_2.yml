@@ -1,0 +1,9 @@
+uuid: dc26f36e-3fcb-47aa-868c-8538594ee0c8
+langcode: en
+status: true
+dependencies: {  }
+id: financial_rate_sheet_approval_level_2
+label: 'Financial Rate Sheet Approval Level 2'
+weight: 9
+is_admin: null
+permissions: {  }
