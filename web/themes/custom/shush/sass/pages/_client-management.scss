@@ -263,3 +263,44 @@ body {
     }
   }
 }
+
+.multiselect-native-select {
+  .multiselect {
+    text-align: left !important;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+    transition: all 0.3s ease-in-out;
+    box-shadow: none;
+    height: 38px;
+    margin-bottom: 0.5rem;
+    font-size: 13px;
+    padding: 3px 10px;
+  }
+  .multiselect-container {
+    width: 100%;
+    max-height: 120px !important;
+    .multiselect-option {
+      .form-check {
+        display: flex;
+        align-items: center;
+        .form-check-input {
+          height: 20px;
+          width: 20px;
+          padding: 0;
+          margin-right: 10px;
+        }
+      }
+      &.active {
+        background: transparent !important;
+        border: none;
+      }
+      &:hover {
+        background: transparent !important;
+        .form-check-label {
+          color: #118df0;
+        }
+      }
+    }
+  }
+}

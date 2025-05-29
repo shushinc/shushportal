@@ -2114,3 +2114,40 @@ body.login.not-loggedin.path-login main div#block-shush-site-branding>a>img {
   width: 100%;
   max-width: 400px;
 }
+
+.multiselect-native-select .multiselect {
+  text-align: left !important;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 100%;
+  transition: all 0.3s ease-in-out;
+  box-shadow: none;
+  height: 38px;
+  margin-bottom: 0.5rem;
+  font-size: 13px;
+  padding: 3px 10px;
+}
+.multiselect-native-select .multiselect-container {
+  width: 100%;
+  max-height: 120px !important;
+}
+.multiselect-native-select .multiselect-container .multiselect-option .form-check {
+  display: flex;
+  align-items: center;
+}
+.multiselect-native-select .multiselect-container .multiselect-option .form-check .form-check-input {
+  height: 20px;
+  width: 20px;
+  padding: 0;
+  margin-right: 10px;
+}
+.multiselect-native-select .multiselect-container .multiselect-option.active {
+  background: transparent !important;
+  border: none;
+}
+.multiselect-native-select .multiselect-container .multiselect-option:hover {
+  background: transparent !important;
+}
+.multiselect-native-select .multiselect-container .multiselect-option:hover .form-check-label {
+  color: #118df0;
+}
