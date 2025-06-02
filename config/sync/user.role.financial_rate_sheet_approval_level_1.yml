@@ -3,7 +3,7 @@ langcode: en
 status: true
 dependencies: {  }
 id: financial_rate_sheet_approval_level_1
-label: 'Financial Rate Sheet Approval Level 1'
+label: 'Rate Sheet Approval Level 1'
 weight: 8
 is_admin: null
 permissions: {  }

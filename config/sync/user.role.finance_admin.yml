@@ -3,7 +3,7 @@ langcode: en
 status: true
 dependencies: {  }
 id: finance_admin
-label: 'Finance Admin'
+label: 'Rate Sheet Admin'
 weight: 6
 is_admin: null
 permissions: {  }

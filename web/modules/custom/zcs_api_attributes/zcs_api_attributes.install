@@ -281,3 +281,33 @@ function zcs_api_attributes_update_9003(){
   
 
 }
+
+/*
+ * Adding new fields to add the integer format record of attribute pages.
+ */
+function zcs_api_attributes_update_9004() {
+  $spec = [
+    'type' => 'int',
+    'description' => "Effective Date Integer Format",
+    'length' => 20,
+    'not null' => FALSE,
+  ]; 
+  $schema = \Drupal::database()->schema();
+  $schema->addField('attributes_page_data', 'effective_date_integer', $spec);
+
+  $resultSet = \Drupal::database()->select('attributes_page_data', 'apd')
+    ->fields('apd', ['id', 'effective_date'])
+    ->execute()->fetchAll();
+  foreach ($resultSet as $result) {
+    \Drupal::database()->update('attributes_page_data')
+      ->fields(['effective_date_integer' => strtotime($result->effective_date)])
+      ->condition('id', $result->id)
+      ->execute();
+  }
+
+
+  $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+  $menu_item_object1 = current($storage->loadByProperties(['title' => 'Pricing Over Time']));
+  $menu_item_object1->set('title', 'Pricing History');
+  $menu_item_object1->save();
+}

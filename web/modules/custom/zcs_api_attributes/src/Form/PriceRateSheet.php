@@ -61,6 +61,7 @@ class PriceRateSheet extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+
     $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'financial_rate_sheet_approval_level_1']);
     foreach ($users as $user) {
       if ($user) {
@@ -117,27 +118,6 @@ class PriceRateSheet extends FormBase {
       '#value' => implode(",", $nids),
     ];
 
-    // to fetch users.
-    // $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'finance_admin']);
-    // $finalUsers = [];
-    // if (!empty($users)) {
-    //   foreach ($users as $user) {
-    //     $finalUsers[$user->id()] = $user->mail->value; 
-    //   }
-    // }
-    // $form['users'] = [
-    //   '#type' => 'checkboxes',
-    //   '#options' => $finalUsers,
-    //   '#attributes' => [
-    //     'class' => ['users-check']
-    //   ],
-    //   '#weight' => 2,
-    // ];
-
-    // $form['approval_page'] = [
-    //   '#type' => 'markup',
-    //   '#markup' => Link::createFromRoute('Approval Page', 'zcs_api_attributes.rate_sheet.approval')->toString(),
-    // ];
 
     $existing = $this->database->select('attributes_page_data', 'apd')
       ->fields('apd', ['id', 'submit_by'])
@@ -168,16 +148,7 @@ class PriceRateSheet extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    // $values = $form_state->getValues();
-    // $userCount = 0;
-    // foreach ($values['users'] as $user) {
-    //   if ($user) {
-    //     $userCount++;
-    //   }
-    // }
-    // if ($userCount < 2) {
-    //   $form_state->setErrorByName('users', 'Should select 2 users');
-    // }
+
   }
 
 
@@ -198,8 +169,8 @@ class PriceRateSheet extends FormBase {
       }
     }
     $this->database->insert('attributes_page_data')
-      ->fields(['submit_by', 'currency_locale', 'effective_date', 'page_data', 'approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'created', 'updated'])
-      ->values([$this->currentUser()->id(), $values['currencies'], $values['attribute_date'], Json::encode($json), 0, 1, 0, 1, 1, \Drupal::time()->getRequestTime(), \Drupal::time()->getRequestTime()])
+      ->fields(['submit_by', 'currency_locale', 'effective_date', 'effective_date_integer', 'page_data', 'approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'created', 'updated'])
+      ->values([$this->currentUser()->id(), $values['currencies'], $values['attribute_date'], strtotime($values['attribute_date']), Json::encode($json), 0, 1, 0, 1, 1, \Drupal::time()->getRequestTime(), \Drupal::time()->getRequestTime()])
       ->execute();
     $mailManager = \Drupal::service('plugin.manager.mail');
 

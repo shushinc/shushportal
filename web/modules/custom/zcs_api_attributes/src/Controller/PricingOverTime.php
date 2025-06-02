@@ -51,13 +51,20 @@ class PricingOverTime extends ControllerBase {
 
     $url = Url::fromRoute('zcs_api_attributes.rate_sheet')->toString();
 
-    $contents = $this->entityTypeManager()->getStorage('node')->loadByProperties(['type' => 'api_attributes']);
+    $nids = \Drupal::entityQuery('node')
+      ->condition('type', 'api_attributes')
+      ->sort('field_attribute_weight', 'ASC')
+      ->accessCheck()
+      ->execute();
+    $contents = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
+
 
     $resultSet = $this->database->select('attributes_page_data', 'apd')
-      ->fields('apd', ['id','page_data', 'effective_date', 'currency_locale'])
+      ->fields('apd', ['id','page_data', 'effective_date', 'effective_date_integer', 'currency_locale'])
       ->condition('attribute_status', 2)
+      ->condition('effective_date_integer', strtotime('now'), '<')
       ->range(0, 3)
-      ->orderBy('id', 'DESC')
+      ->orderBy('effective_date', 'DESC')
       ->execute()->fetchAll();
     $prices = $headerDate = $symbols = [];
  
