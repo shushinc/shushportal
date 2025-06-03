@@ -22,4 +22,4 @@ rate-sheet-review:
     theme:
       css/rate-sheet-review.css: {}
   js:
-    js/rate-sheet-review.js: {}    
+    js/rate-sheet-review.js: {}

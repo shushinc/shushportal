@@ -1,6 +1,32 @@
 .attributes-table {
   width: 100%;
 }
+.network_authentication_pricing_over_time
+  #block-shush-primary-admin-actions
+  nav
+  li
+  a {
+  background: #fff;
+  border: 2px solid #118df0;
+  color: #118df0;
+  border-radius: 50px;
+  padding: 10px 15px;
+}
+
+.network_authentication_pricing_over_time
+  #block-shush-primary-admin-actions
+  nav
+  li
+  a:hover {
+  background: #fff;
+  color: #118df0;
+}
+.network_authentication_pricing_over_time
+  #block-shush-primary-admin-actions
+  nav
+  li {
+  text-align: right;
+}
 .attributes-table,
 td {
   border: none;
@@ -25,21 +51,28 @@ table.attributes-table thead th,
 }
 table.attributes-table th:nth-child(2),
 .change-network-authentication-pricing table.attributes-table th:nth-child(2),
-.network_authentication_pricing_over_time
-  table.attributes-table
-  th:nth-child(2),
 .demand_partner_discounts_or_different_pricing
   table.attributes-table
   th:nth-child(2) {
   text-align: left;
 }
 .change-network-authentication-pricing table.attributes-table tr td,
-.demand_partner_discounts_or_different_pricing table.attributes-table tr td,
-.network_authentication_pricing_over_time table.attributes-table tr td {
+.demand_partner_discounts_or_different_pricing table.attributes-table tr td {
   padding: 10px;
   text-align: center;
 }
 
+.network_authentication_pricing_over_time
+  table.attributes-table
+  tr
+  td:nth-child(1) {
+  text-align: center;
+  font-weight: 700;
+}
+.network_authentication_pricing_over_time table.attributes-table tr td {
+  text-align: center;
+  padding: 10px 20px;
+}
 table.attributes-table tr td:first-child {
   width: 16%;
 }
@@ -60,7 +93,6 @@ table.attributes-table tr td:nth-child(2) {
 
 .api-attribute-status table tbody tr td:first-child,
 .change-network-authentication-pricing table tbody tr td:first-child,
-.network_authentication_pricing_over_time table tbody tr td:first-child,
 .demand_partner_discounts_or_different_pricing table tbody tr td:first-child {
   font-weight: 400 !important;
   padding: 10px;

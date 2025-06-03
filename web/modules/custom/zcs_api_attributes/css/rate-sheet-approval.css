@@ -1,15 +1,76 @@
-.pending {
-  background-color: #F7CB73;
+/* .pending {
+  background-color: #f7cb73;
   padding: 5px;
   border-radius: 5px;
 }
 .approved {
-  background-color: #BABF5E;
+  background-color: #babf5e;
   padding: 5px;
   border-radius: 5px;
 }
 .rejected {
-  background-color: #C94D3B;
+  background-color: #c94d3b;
   padding: 5px;
   border-radius: 5px;
+} */
+#block-shush-content > .form-type-select .select-status {
+  display: flex;
+  min-width: 180px;
+  width: auto;
+}
+#block-shush-content > .form-type-select label {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+}
+
+table.rate-sheet-approval {
+  margin-top: 1rem;
+}
+table.rate-sheet-approval tbody td span.approved,
+table.rate-sheet-approval tbody td span.rejected {
+  position: relative;
+  font-size: 0;
+}
+table.rate-sheet-approval tbody td span.pending {
+  position: relative;
+}
+table.rate-sheet-approval tbody td span.approved::before,
+table.rate-sheet-approval tbody td span.rejected::before,
+table.rate-sheet-approval tbody td span.pending::before {
+  content: "";
+  height: 12px;
+  width: 12px;
+  background: url("/themes/custom/shush/images/active-bg.svg") no-repeat;
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  background-size: cover;
+  margin-top: -11px;
+}
+
+table.rate-sheet-approval tbody td span.rejected::before {
+  background: url("/themes/custom/shush/images/error-bg.svg") no-repeat;
+  background-size: cover;
+}
+table.rate-sheet-approval tbody td span.pending::before {
+  background: url("/themes/custom/shush/images/pending.svg") no-repeat;
+  background-size: cover;
+  background-size: cover;
+  right: -17px;
+  left: auto;
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
+}
+table.rate-sheet-approval tbody td.approved {
+  color: #babf5e;
+}
+
+table.rate-sheet-approval tbody td.rejected {
+  color: #c94d3b;
+}
+
+table.rate-sheet-approval tbody td.pending {
+  color: #f7cb73;
 }

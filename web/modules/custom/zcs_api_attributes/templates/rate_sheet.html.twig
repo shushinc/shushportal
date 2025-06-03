@@ -3,41 +3,39 @@
 {{ form.form_id }}
 
 {% if form.message %}
-  <p class="message">{{ form.message }}</p>
+	<p class="message">{{ form.message }}</p>
 {% endif %}
-
-<div>
-  <span class="attributes-label">Select Currencies</span>
-  <span class="attribute-inputs">{{ form.currencies }}</span>
+<div class="rate-sheet-filter">
+	<div class="rate-sheet-filter-currencies">
+		<span class="attributes-label">Select Currencies</span>
+		<span class="attribute-inputs">{{ form.currencies }}</span>
+	</div>
+	<div class="rate-sheet-filter-effective">
+		<span class="attributes-label">Effective Date</span>
+		<span class="attribute-inputs">{{ form.attribute_date }}</span>
+	</div>
 </div>
 <div>
-  <span class="attributes-label">Effective Date</span>
-  <span class="attribute-inputs">{{ form.attribute_date }}</span>
+	<h2 class="attributes-label">Attributes and Prices</h2>
+	<span class="attribute-inputs">
+		<table class="attributes-table">
+			<thead>
+				<tr>
+					<th>Title</th>
+					<th>Estimated Prices</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for id, title in fetch_attributes() %}
+					<tr>
+						<td>{{ title }}</td>
+						<td>{{ form['price' ~ id] }}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</span>
 </div>
-<div>
-  <span class="attributes-label">Attributes and Prices</span>
-  <span class="attribute-inputs">
-    <table class="attributes-table">
-      <thead>
-        <tr>
-          <td>Title</td>
-          <td>Estimated Prices</td>
-        </tr>
-      </thead>
-      <tbody>
-        {% for id, title in fetch_attributes() %}
-        <tr>
-          <td>{{ title }}</td>
-          <td>{{ form['price' ~ id] }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </span>
-</div>
-
-
-
 
 
 {{ form.submit }}

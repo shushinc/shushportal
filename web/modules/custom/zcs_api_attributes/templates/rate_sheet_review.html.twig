@@ -2,26 +2,34 @@
 {{ form.form_token }}
 {{ form.form_id }}
 
-
-{{ form.currencies }}
-{{ form.attribute_date }}
+<div class="rate-sheet-filter">
+	<div class="rate-sheet-filter-currencies">
+		<span class="attribute-inputs">{{ form.currencies }}</span>
+	</div>
+	<div class="rate-sheet-filter-effective">
+		<span class="attribute-inputs">{{ form.attribute_date }}</span>
+	</div>
+</div>
 <table class="attributes-table">
-  <thead>
-    <tr>
-      <td>Title</td>
-      <td> Estimated Prices </td>
-    </tr>
-  </thead>
-  <tbody>
-    {% for id, title in fetch_attributes() %}
-    <tr>
-      <td>{{ title }}</td>
-      <td>{{ form['price' ~ id] }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
+	<thead>
+		<tr>
+			<th>Title</th>
+			<th>
+				Estimated Prices
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for id, title in fetch_attributes() %}
+			<tr>
+				<td>{{ title }}</td>
+				<td>{{ form['price' ~ id] }}</td>
+			</tr>
+		{% endfor %}
+	</tbody>
 </table>
 
 {{ form.status }}
 
-{{ form.approve }} {{ form.reject }}
+{{ form.approve }}
+{{ form.reject }}

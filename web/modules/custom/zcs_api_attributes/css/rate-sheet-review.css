@@ -1,0 +1,54 @@
+.ui-dialog .rate-sheet-filter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.ui-dialog .rate-sheet-filter .rate-sheet-filter-currencies,
+.ui-dialog .rate-sheet-filter .rate-sheet-filter-effective {
+  flex: 0 0 48%;
+}
+
+.ui-dialog table.attributes-table .form-item {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  margin: 0;
+}
+.ui-dialog table.attributes-table .form-item input {
+  margin: 0;
+}
+
+.ui-dialog .field-prefix {
+  margin-right: 10px;
+}
+.ui-dialog .attribute-review .js-form-item-status {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+.ui-dialog .attribute-review .js-form-item-status .form-select {
+  width: auto;
+  min-width: 280px;
+  margin-right: 20px;
+}
+
+.ui-dialog .attribute-review .form-submit {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  padding: 10px 60px;
+  border-radius: 3px;
+  text-transform: capitalize;
+  font-size: 18px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  text-decoration: none;
+  background-color: #4f9bf5;
+  color: #fff;
+  border: none;
+  margin-top: 1rem;
+}

@@ -1,0 +1,106 @@
+.message {
+  background-color: #eeb34c;
+  border-radius: 5px;
+  padding: 5px 50px;
+  font-size: 14px;
+  font-family: "Montserrat", sans-serif;
+}
+
+.rate-sheet-price .rate-sheet table.attributes-table .form-item {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  margin: 0;
+}
+.rate-sheet-price .rate-sheet table.attributes-table .form-item input {
+  margin: 0;
+}
+.rate-sheet-price .rate-sheet table.attributes-table th,
+.rate-sheet-price .rate-sheet table.attributes-table tr td {
+  text-align: center;
+}
+.rate-sheet-price .rate-sheet .field-prefix {
+  margin-right: 10px;
+}
+
+.rate-sheet-filter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  background: #fff;
+  padding: 10px;
+  border-radius: 15px;
+  margin-bottom: 1.5rem;
+}
+
+.rate-sheet-filter .rate-sheet-filter-currencies,
+.rate-sheet-filter .rate-sheet-filter-effective {
+  flex: 0 0 49%;
+}
+
+.rate-sheet-filter .attributes-label {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  color: #2b3674;
+  line-height: normal;
+  font-weight: 700;
+}
+.rate-sheet-price .rate-sheet .message {
+  position: relative;
+}
+.rate-sheet-price .rate-sheet .message::before {
+  content: "";
+  background: url("/themes/custom/shush/images/time.png") no-repeat;
+  height: 24px;
+  width: 24px;
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  margin-top: -14px;
+  background-size: cover;
+}
+
+.rate-sheet-price .rate-sheet h2.attributes-label {
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #2b3674;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+.rate-sheet-price .rate-sheet .attributes-table {
+  margin-bottom: 2rem;
+}
+
+.rate-sheet-price .rate-sheet #edit-submit {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  padding: 10px 60px;
+  border-radius: 3px;
+  text-transform: capitalize;
+  font-size: 18px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  text-decoration: none;
+  background-color: #4f9bf5;
+  color: #fff;
+  border: none;
+}
+
+.rate-sheet-price .rate-sheet input[disabled="disabled"]#edit-submit {
+  background-color: rgba(118, 118, 118, 0.3);
+  color: rgba(118, 118, 118, 0.3);
+  border-color: rgba(118, 118, 118, 0.3);
+}

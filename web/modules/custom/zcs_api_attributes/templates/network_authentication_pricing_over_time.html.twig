@@ -1,23 +1,26 @@
 <div>
-{# {{ content.edit_page }} #}
-  <table class="attributes-table">
-    <thead>
-      <tr>
-        <td>API Attribute</td>
-        {% for date , atts in content.header_date %}
-          <td> Price Effective<br>{{ atts }}</td>
-        {% endfor %}
-      </tr>
-    </thead>
-    <tbody>
-      {% for key, att in content.final %}
-      <tr>
-        <td>{{ att.title }}</td>
-        {% for key, date in content.header_date %}
-           <td> {{ content.symbols[key] }} {{ att['price' ~ key] }}</td>
-        {% endfor %}
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+	{# {{ content.edit_page }} #}
+	<table class="attributes-table">
+		<thead>
+			<tr>
+				<th>API Attribute</th>
+				{% for date , atts in content.header_date %}
+					<th>
+						Price Effective<br>{{ atts }}</th>
+				{% endfor %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for key, att in content.final %}
+				<tr>
+					<td>{{ att.title }}</td>
+					{% for key, date in content.header_date %}
+						<td>
+							{{ content.symbols[key] }}
+							{{ att['price' ~ key] }}</td>
+					{% endfor %}
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 </div>
