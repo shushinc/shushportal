@@ -150,13 +150,11 @@ class DashboardController extends ControllerBase {
       $frames = ['top', 'main'];
     }
 
-    foreach ($frames as $value) {
-      // Get the embed URL from the API service.
-      $embed_url = $this->getEmbedUrl($value);
+    $config = $this->configFactory->get('metabase.settings');
 
-      if (empty($embed_url)) {
-        $this->messenger()->addError($this->t('Unable to load the @position dashboard. Please check your configuration.', ['@position' => $value]));
-      }
+    $areas = [];
+
+    foreach ($frames as $value) {
 
       if ($value == 'main') {
         $build['chart'] = [
@@ -165,7 +163,44 @@ class DashboardController extends ControllerBase {
         ];
       }
 
+      $dashboard_ids = $config->get('embeding.dashboard.' . $value);
+
       $build[$value] = [
+        '#type' => 'container',
+        '#attributes' => [
+          'class' => [$value, 'iframe-container'],
+        ]
+      ];
+
+      if (strpos($dashboard_ids, ',') !== FALSE) {
+        // Get the embed URL from the API service.
+        $counter = 0;
+        foreach (explode(',', $dashboard_ids) as $id) {
+          $embed_url = $this->getEmbedUrl($value, $id);
+          if (empty($embed_url)) {
+            $this->messenger()->addError($this->t('Unable to load the @position dashboard. Please check your configuration.', ['@position' => $value]));
+            continue;
+          }
+          $build[$value]['iframe' . $counter] = $this->getIframe($this->getEmbedUrl($value, $dashboard_ids), $value);
+          $counter++;
+        }
+      }
+      else {
+        $build[$value]['iframe'] = $this->getIframe($this->getEmbedUrl($value, $dashboard_ids), $value);
+      }
+
+    }
+
+    return $build;
+  }
+
+  public function getIframe($embed_url, $value) {
+    return [
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => ['item'],
+      ],
+      'iframe' => [
         '#type' => 'html_tag',
         '#tag' => 'iframe',
         '#attributes' => [
@@ -178,10 +213,8 @@ class DashboardController extends ControllerBase {
           'allowtransparency' => 'true',
           'class' => [$value, 'mb-iframe'],
         ],
-      ];
-    }
-
-    return $build;
+      ]
+    ];
   }
 
   /**
@@ -190,11 +223,10 @@ class DashboardController extends ControllerBase {
    * @return string|null
    *   The embed URL, or NULL if there was an error.
    */
-  public function getEmbedUrl($position = 'top') {
+  public function getEmbedUrl($position = 'top', $dashboard_id = NULL) {
     $config = $this->configFactory->get('metabase.settings');
     $base_url = $this->requestStack->getCurrentRequest()->getSchemeAndHttpHost() . $config->get('embeding.base_url');
     $secket_key = $config->get('embeding.api_token');
-    $dashboard_id = $config->get('embeding.dashboard.' . $position);
 
     // Ensure we have all required configuration.
     if (empty($base_url) || empty($secket_key) || empty($dashboard_id)) {
