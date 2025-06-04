@@ -68,6 +68,13 @@ class MetabaseSettingsForm extends ConfigFormBase {
       '#required' => TRUE,
     ];
 
+    $form['embeding_settings']['force_https'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Force HTTPS'),
+      '#description' => $this->t('Check to force HTTPS.'),
+      '#default_value' => $config->get('embeding.force_https'),
+    ];
+
     $form['embeding_settings']['secret_key'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Metabase Secret Key'),
@@ -131,6 +138,7 @@ class MetabaseSettingsForm extends ConfigFormBase {
       ->set('metabase.internal.base_url', $form_state->getValue('metabase_internal_base_url'))
       ->set('metabase.external.base_url', $form_state->getValue('metabase_external_base_url'))
       ->set('embeding.base_url', $form_state->getValue('embed_base_url'))
+      ->set('embeding.force_https', $form_state->getValue('force_https'))
       ->set('embeding.api_token', $form_state->getValue('secret_key'))
       ->set('embeding.dashboard.top', $form_state->getValue('top_dashboard_id'))
       ->set('embeding.dashboard.main', $form_state->getValue('main_dashboard_id'))
