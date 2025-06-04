@@ -7,7 +7,7 @@ embeding:
   api_token: 8e46bda4aafce675fc0a55f0dbff98d631551a7e52fa5988924434ca3634fe40
   base_url: /proxy
   dashboard:
-    top: '2'
+    top: '2,4,5,6,7,8,9,10,11,12'
     main: '1'
     other: '3'
 overwrite:
