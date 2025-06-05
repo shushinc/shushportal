@@ -152,8 +152,6 @@ class DashboardController extends ControllerBase {
 
     $config = $this->configFactory->get('metabase.settings');
 
-    $areas = [];
-
     foreach ($frames as $value) {
 
       if ($value == 'main') {
@@ -181,7 +179,7 @@ class DashboardController extends ControllerBase {
             $this->messenger()->addError($this->t('Unable to load the @position dashboard. Please check your configuration.', ['@position' => $value]));
             continue;
           }
-          $build[$value]['iframe' . $counter] = $this->getIframe($this->getEmbedUrl($value, $dashboard_ids), $value);
+          $build[$value]['iframe' . $counter] = $this->getIframe($embed_url . '&iframe=' . $counter, $value);
           $counter++;
         }
       }
