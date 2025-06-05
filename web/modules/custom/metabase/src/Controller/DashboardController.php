@@ -226,7 +226,12 @@ class DashboardController extends ControllerBase {
   public function getEmbedUrl($position = 'top', $dashboard_id = NULL) {
     $config = $this->configFactory->get('metabase.settings');
     $base_url = $this->requestStack->getCurrentRequest()->getSchemeAndHttpHost() . $config->get('embeding.base_url');
+    $force_https = boolval($config->get('embeding.force_https'));
     $secket_key = $config->get('embeding.api_token');
+
+    if ($force_https === TRUE) {
+      $base_url = str_replace('http://', 'https://', $base_url);
+    }
 
     // Ensure we have all required configuration.
     if (empty($base_url) || empty($secket_key) || empty($dashboard_id)) {
@@ -235,10 +240,6 @@ class DashboardController extends ControllerBase {
     }
 
     $params = [];
-
-    if ($position != 'top') {
-      $params['month'] = date("M");
-    }
 
     if ($position == 'other') {
       $current_user = $this->currentUser;
