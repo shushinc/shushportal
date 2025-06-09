@@ -1,0 +1,16 @@
+sam.settings:
+  type: config_object
+  label: 'Multi SSO settings'
+  mapping:
+    enabled_providers:
+      type: sequence
+      label: 'Enabled SSO providers'
+      sequence:
+        type: string
+        label: 'Provider ID'
+    default_redirect:
+      type: string
+      label: 'Default redirect path after login'
+    auto_create_users:
+      type: boolean
+      label: 'Automatically create users'

@@ -46,6 +46,8 @@ module:
   page_cache: 0
   path: 0
   path_alias: 0
+  sam: 0
+  sam_saml: 0
   search: 0
   shortcut: 0
   smtp: 0

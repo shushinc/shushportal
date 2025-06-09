@@ -1,0 +1,21 @@
+sam.config:
+  path: '/admin/config/people/multi-sso'
+  defaults:
+    _form: '\Drupal\sam\Form\SamConfigForm'
+    _title: 'Multi SSO Configuration'
+  requirements:
+    _permission: 'administer site configuration'
+
+sam.authenticate:
+  path: '/sso/authenticate/{provider}'
+  defaults:
+    _controller: '\Drupal\sam\Controller\SsoController::authenticate'
+  requirements:
+    _access: 'TRUE'
+
+sam.callback:
+  path: '/sso/callback/{provider}'
+  defaults:
+    _controller: '\Drupal\sam\Controller\SsoController::callback'
+  requirements:
+    _access: 'TRUE'

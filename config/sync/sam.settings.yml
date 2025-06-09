@@ -1,0 +1,4 @@
+enabled_providers:
+  - saml
+default_redirect: ''
+auto_create_users: true

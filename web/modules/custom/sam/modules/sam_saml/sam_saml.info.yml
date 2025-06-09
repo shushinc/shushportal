@@ -1,0 +1,7 @@
+name: SSO Authentication Manager - SAML
+type: module
+description: 'SAML SSO provider for SAM module'
+package: Authentication
+core_version_requirement: ^10
+dependencies:
+  - sam:sam
