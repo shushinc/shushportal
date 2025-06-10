@@ -210,6 +210,7 @@ class DashboardController extends ControllerBase {
           'title' => $this->t('Dashboard'),
           'allowtransparency' => 'true',
           'class' => [$value, 'mb-iframe'],
+          'scrolling' => 'no',
         ],
       ]
     ];

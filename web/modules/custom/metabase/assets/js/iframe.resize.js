@@ -28,7 +28,11 @@
       // Function to resize iframe
       function resizeIframe(iframe) {
         let boddy = iframe.contentDocument.body;
-        iframe.style.height = (boddy.querySelectorAll('div#root > div > div')[0].clientHeight) + 'px';
+        let height = boddy.querySelectorAll('div#root > div > div')[0].clientHeight;
+        if (height < 450) {
+          height = 320;
+        }
+        iframe.style.height = (height) + 'px';
       }
     }
   };
