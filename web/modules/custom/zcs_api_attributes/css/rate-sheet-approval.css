@@ -13,14 +13,25 @@
   padding: 5px;
   border-radius: 5px;
 } */
+
+#block-shush-content > .form-type-select {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+}
+
 #block-shush-content > .form-type-select .select-status {
   display: flex;
   min-width: 180px;
   width: auto;
+  border-radius: 8px;
 }
 #block-shush-content > .form-type-select label {
   font-family: "Montserrat", sans-serif;
   font-size: 14px;
+  display: block;
+  width: 180px;
+  text-align: left;
 }
 
 table.rate-sheet-approval {
@@ -64,13 +75,16 @@ table.rate-sheet-approval tbody td span.pending::before {
   margin-top: -6px;
 }
 table.rate-sheet-approval tbody td.approved {
-  color: #babf5e;
+  color: #06b487;
 }
 
 table.rate-sheet-approval tbody td.rejected {
-  color: #c94d3b;
+  color: #cc1b0c;
 }
 
 table.rate-sheet-approval tbody td.pending {
-  color: #f7cb73;
+  color: #fcc418;
+}
+table.rate-sheet-approval .btn-primary:hover {
+  background: #4f9bf5;
 }
