@@ -136,9 +136,11 @@ div[data-testid="dashboard-parameters-widget-container"] {
   content: "\25BC";
 }
 
-div[data-testid="fixed-width-filters"]>div {
-  flex-wrap: nowrap;
-  width: 100%;
+@media (min-width: 1190px) {
+  div[data-testid="fixed-width-filters"]>div {
+    flex-wrap: nowrap;
+    width: 100%;
+  }
 }
 
 div[data-testid="fixed-width-filters"]>div>fieldset {
@@ -159,85 +161,39 @@ div.LineAreaBarChart.CardVisualization>div:nth-child(2)>div:last-child {
   display: flex !important;
 }
 
-@media (max-width: 799px) {
-  div.dashcard h1 {
-    font-size: 4rem !important;
-  }
-
-  div.dashcard h1 span {
-    font-size: 2.5rem !important;
-  }
-
-  div.dashcard h3 {
-    font-size: 1.5rem !important;
-    font-weight: 600 !important;
-  }
-
-  .decrease h1,
-  .increase h1,
-  .equals h1 {
-    font-size: 2.25rem !important;
-    font-weight: 400 !important;
-    line-height: 2.5rem !important;
-  }
-
-  .decrease h3,
-  .increase h3,
-  .equals h3 {
-    font-size: 1.5rem !important;
-    font-weight: 600 !important;
-    line-height: 2rem !important;
-  }
-
-  div[data-testid="dashcard-container"].container-small,
-  div.DashCard.container-small {
-    height: 80px !important;
-  }
-
-  .increase h1:before {
-    font-size: 2rem;
-  }
-
-  .decrease h1:before {
-    font-size: 2rem;
-  }
+div.dashcard h1 {
+  font-size: 24vw !important;
 }
 
-@media (min-width: 800px) {
-  div.dashcard h1 {
-    font-size: 4vw !important;
-  }
+div.dashcard h1 span {
+  font-size: 15vw !important;
+}
 
-  div.dashcard h1 span {
-    font-size: 2.5vw !important;
-  }
+div.dashcard h3 {
+  font-size: 8.4vw !important;
+  line-height: 9vw !important;
+}
 
-  div.dashcard h3 {
-    font-size: 1.4vw !important;
-    line-height: 1.5vw !important;
-  }
+.decrease h1,
+.decrease h3,
+.increase h1,
+.increase h3,
+.equals h1,
+.equals h3 {
+  font-size: 8.4vw !important;
+  font-weight: 400 !important;
+  line-height: 8.4vw !important;
+}
 
-  .decrease h1,
-  .decrease h3,
-  .increase h1,
-  .increase h3,
-  .equals h1,
-  .equals h3 {
-    font-size: 1.4vw !important;
-    font-weight: 400 !important;
-    line-height: 1.4vw !important;
-  }
+div[data-testid="dashcard-container"].container-small,
+div.DashCard.container-small {
+  height: 80px !important;
+}
 
-  div[data-testid="dashcard-container"].container-small,
-  div.DashCard.container-small {
-    height: 80px !important;
-  }
+.increase h1:before {
+  font-size: 8.4vw;
+}
 
-  .increase h1:before {
-    font-size: 1.4vw;
-  }
-
-  .decrease h1:before {
-    font-size: 1.4vw;
-  }
+.decrease h1:before {
+  font-size: 8.4vw;
 }

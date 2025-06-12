@@ -18,3 +18,23 @@ div.iframe-container.top {
 div.iframe-container.top>div.item{
   flex-basis: 19%;
 }
+
+@media (max-width: 1023px) {
+  div.iframe-container.top {
+    flex-flow: column wrap;
+    column-gap: 0;
+    row-gap: 0;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  div.iframe-container.top>div.item {
+    flex-basis: 49%;
+  }
+}
+
+@media (min-width: 1920px) {
+  div.iframe-container.top>div.item {
+    flex-basis: 9.5%;
+  }
+}
