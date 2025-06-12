@@ -1,0 +1,14 @@
+uuid: 94de06f0-406d-4806-b123-4a61d1ef44f4
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.api_attribute_approval_level_1
+  module:
+    - user
+id: user_add_role_action.api_attribute_approval_level_1
+label: 'Add the API Attribute Approval Level 1 role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: api_attribute_approval_level_1

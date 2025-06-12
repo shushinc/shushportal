@@ -1,0 +1,14 @@
+uuid: 9f61c066-8a9c-4c0c-bfd0-cd6c60dfa1d7
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.api_attribute_admin
+  module:
+    - user
+id: user_remove_role_action.api_attribute_admin
+label: 'Remove the API Attribute Admin role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: api_attribute_admin

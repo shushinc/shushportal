@@ -34,7 +34,15 @@ final class UserInviteForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $roles = Role::loadMultiple();
-    $roles_to_keep = ['carrier_admin','finance_admin', 'financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
+    $roles_to_keep = [
+       'carrier_admin',
+       'finance_admin', 
+       'financial_rate_sheet_approval_level_1', 
+       'financial_rate_sheet_approval_level_2',
+       'api_attribute_admin',
+       'api_attribute_approval_level_1',
+       'api_attribute_approval_level_2',
+      ];
     $role_options = [];
     
     foreach ($roles as $role) {

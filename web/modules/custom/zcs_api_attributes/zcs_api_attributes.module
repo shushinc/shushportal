@@ -46,6 +46,10 @@ function zcs_api_attributes_theme() {
       'render element' => 'form',
       'template' => 'rate_sheet_review'
     ],
+    'api_attribute_sheet' => [
+      'render element' => 'form',
+      'template' => 'api_attribute_sheet'
+    ],
   ];
 }
 
