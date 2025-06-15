@@ -1,0 +1,9 @@
+uuid: acccb045-c490-4f26-b2ad-e7832b73bcfe
+langcode: en
+status: true
+dependencies: {  }
+id: api_attribute_admin
+label: 'API Attribute Admin'
+weight: 10
+is_admin: null
+permissions: {  }

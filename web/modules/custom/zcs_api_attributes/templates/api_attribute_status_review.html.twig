@@ -1,0 +1,39 @@
+{{ form.form_build_id }}
+{{ form.form_token }}
+{{ form.form_id }}
+
+<div class="rate-sheet-filter">
+	<div class="rate-sheet-filter-currencies">
+		<span class="attribute-inputs">{{ form.currencies }}</span>
+	</div>
+	<div class="rate-sheet-filter-effective">
+		<span class="attribute-inputs">{{ form.attribute_date }}</span>
+	</div>
+</div>
+<table class="attributes-table">
+	<thead>
+		<tr>
+			<th>Title</th>
+			<th>
+				Network Connected
+			</th>
+			<th>
+				Able to be used
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for id, title in fetch_attributes() %}
+			<tr>
+				<td>{{ title }}</td>
+				<td>{{ form['network_connected' ~ id] }}</td>
+				<td>{{ form['able_to_be_used' ~ id] }}</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+{{ form.status }}
+
+{{ form.approve }}
+{{ form.reject }}

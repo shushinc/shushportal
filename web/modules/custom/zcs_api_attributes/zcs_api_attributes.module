@@ -42,9 +42,19 @@ function zcs_api_attributes_theme() {
       ],
       'template' => 'rate_sheet_approval'
     ],
+    'api_attribute_sheet_approval' => [
+      'variables' => [
+        'content' => null,
+      ],
+      'template' => 'api_attribute_sheet_approval'
+    ],
     'rate_sheet_review' => [
       'render element' => 'form',
       'template' => 'rate_sheet_review'
+    ],
+    'api_attribute_status_review' => [
+      'render element' => 'form',
+      'template' =>  'api_attribute_status_review'
     ],
     'api_attribute_sheet' => [
       'render element' => 'form',
@@ -69,5 +79,11 @@ function zcs_api_attributes_mail($key, &$message, $params) {
       $message['body'][] = Markup::create($params['message']);
       $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed; delsp=yes';
       break;
+    case 'api_attribute_sheet':
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = t('API Attribute Status sheet Requested for Approval', $options);
+      $message['body'][] = Markup::create($params['message']);
+      $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed; delsp=yes';
+      break;  
   }
 }

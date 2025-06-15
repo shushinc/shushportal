@@ -1,0 +1,9 @@
+uuid: 57b53c16-c391-4ef1-a803-ca63e4d78f61
+langcode: en
+status: true
+dependencies: {  }
+id: api_attribute_approval_level_2
+label: 'API Attribute Approval Level 2'
+weight: 12
+is_admin: null
+permissions: {  }

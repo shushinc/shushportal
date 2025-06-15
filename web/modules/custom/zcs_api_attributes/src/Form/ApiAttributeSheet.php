@@ -35,7 +35,6 @@ class ApiAttributeSheet extends FormBase {
    * {@inheritdoc}
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, Connection $connection) {
-    $this->list = require __DIR__ . '/../../resources/currencies.php';
     $this->entityTypeManager = $entity_type_manager;
     $this->database = $connection;
   }
@@ -54,7 +53,7 @@ class ApiAttributeSheet extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'create_api_attribute_sheet';
+    return 'api_attribute_sheet';
   }
 
   /**
@@ -90,7 +89,7 @@ class ApiAttributeSheet extends FormBase {
           '#type' => 'checkbox',
           '#default_value' => $network_connected,
         ];
-        $form['current_standard_price' . $content->id()] = [
+        $form['able_to_be_used' . $content->id()] = [
           '#type' => 'checkbox',
           '#default_value' => $field_able_to_be_used,
         ];
@@ -103,7 +102,7 @@ class ApiAttributeSheet extends FormBase {
     ];
 
 
-    $existing = $this->database->select('attributes_page_data', 'apd')
+    $existing = $this->database->select('api_attributes_page_data', 'apd')
       ->fields('apd', ['id', 'submit_by'])
       ->condition('attribute_status', '1')
       ->execute()->fetchObject();
@@ -142,15 +141,58 @@ class ApiAttributeSheet extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
+    $nids = explode(",", $values['nodes']);
+    foreach ($nids as $nid) {
+      $json[$nid]['network_connected'] = $values['network_connected' . $nid];
+      $json[$nid]['able_to_be_used'] = $values['able_to_be_used' . $nid];      
+    }
+   $this->database->insert('api_attributes_page_data')
+    ->fields([
+       'submit_by',
+       'page_data',
+       'approver1_uid',
+       'approver1_status',
+       'approver2_uid',
+       'approver2_status',
+       'attribute_status',
+       'created',
+       'updated'])
+    ->values([$this->currentUser()->id(),Json::encode($json),0,1,0,1,1,\Drupal::time()->getRequestTime(), \Drupal::time()->getRequestTime()])
+    ->execute();
+
     $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'api_attribute_approval_level_1', 'status' => 1]);
     foreach ($users as $user) {
       if ($user) {
         $userMails[] = $user->mail->value;
       }
     }
-    // To do: insert the review data.
-    // To do: sent the email
-    // integrate the email template.
-    // set the message.
+   
+    $mailManager = \Drupal::service('plugin.manager.mail');
+
+    $modulePath = \Drupal::service('extension.path.resolver')->getPath('module', 'zcs_api_attributes');
+    $path = $modulePath . '/templates/api_attributes_status_approval_mail.html.twig';
+
+    // Proper approval links needs to be generated.
+    $rendered = \Drupal::service('twig')->load($path)->render([
+      'user' => $this->entityTypeManager->getStorage('user')->load($this->currentUser()->id())->mail->value,
+      'approval' => Link::createFromRoute('Approval', 'zcs_api_attributes.rate_sheet')->toString(),
+      'site_name' => $this->config('system.site')->get('name')
+    ]);
+  
+
+    $params['message'] = Markup::create(nl2br($rendered));
+    $langcode = \Drupal::currentUser()->getPreferredLangcode();
+    $send = true;
+
+    foreach ($userMails as $mail) {
+      $emails[] = $mailManager->mail('zcs_api_attributes', 'api_attribute_sheet', $mail, $langcode, $params, NULL, $send);
+    }
+
+    if (reset($emails)['result'] != true && end($emails)['result'] != true) {
+      $this->messenger()->addError(t('There was a problem sending your email notification.'));
+    } else {
+      $this->messenger()->addStatus(t('An email notification has been sent.'));
+    }
+
   }
 }

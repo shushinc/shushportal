@@ -311,3 +311,105 @@ function zcs_api_attributes_update_9004() {
   $menu_item_object1->set('title', 'Pricing History');
   $menu_item_object1->save();
 }
+
+
+
+/**
+ * Adding new tables to add the audit record of API attribute pages.
+ */
+function zcs_api_attributes_update_9006() {
+  $tables['api_attributes_page_data'] = [
+    'description' => 'Table for storing information about attributes.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique aggregator static ID.',
+      ],
+      'submit_by' => [
+        'description' => 'Submitter User ID.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'page_data' => [
+        'type' => 'blob',
+        'size' => 'big',
+        'not null' => FALSE,
+        'description' => 'Attribute Page data for reference.',
+      ],
+      'approver1_uid' => [
+        'description' => 'Approver-1 User ID.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'approver1_status' => [
+        'description' => 'Approver-1 Status.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'approver2_uid' => [
+        'description' => 'Approver-2 User ID.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'approver2_status' => [
+        'description' => 'Approver-2 Status.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'attribute_status' => [
+        'description' => 'Attribute Status.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'created' => [
+        'description' => 'Attribute Page Created date.',
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => ''
+      ],
+      'updated' => [
+        'description' => 'Attribute Page Updated date.',
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => ''
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+  $database = \Drupal::database()->schema();
+  foreach ($tables as $table_name => $table) {
+    // First check if the tables exist and if missing...
+    if (!$database->tableExists($table_name)) {
+      $database->createTable($table_name, $table);
+    }
+  }
+
+  $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+  $parent_menu = current($storage->loadByProperties(['title' => 'Carrier']));
+  $parent_id = 'menu_link_content:' . $parent_menu->uuid();
+
+  // Create the child menu link.
+  $api_attribute_status_approval_menu_child_link2 = MenuLinkContent::create([
+    'title' => 'API Attribute Approval',
+    'link' => ['uri' => 'internal:/api-attribute-approval'], // Adjust path as needed.
+    'menu_name' => 'main',
+    'parent' => $parent_id, // Set the parent ID.
+    'weight' => 3,
+    'menu_per_role__show_role' => [
+      'administrator',
+      'api_attribute_admin',
+      'api_attribute_approval_level_1',
+      'api_attribute_approval_level_2',
+    ],
+  ]);
+  $api_attribute_status_approval_menu_child_link2->save();
+}

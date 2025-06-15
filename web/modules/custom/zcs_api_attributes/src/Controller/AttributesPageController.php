@@ -6,8 +6,43 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Link;
+use Symfony\Component\HttpFoundation\Request;
+use Drupal\Core\Database\Connection;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Pager\PagerManagerInterface;
 
 class AttributesPageController extends ControllerBase {
+
+   /**
+   * Connection $database.
+   */
+  protected $database;
+
+  /**
+   * Pager Variable.
+   */
+  protected $pagerManager;
+
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(Connection $connection, PagerManagerInterface $pager_manager) {
+    $this->database = $connection;
+    $this->pagerManager = $pager_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('database'),
+      $container->get('pager.manager')
+    );
+  }
+
+
   public function attributesPage() {
     $contents = $this->entityTypeManager()->getStorage('node')->loadByProperties(['type' => 'api_attributes']);
     if (!empty($contents)) {
@@ -40,5 +75,74 @@ class AttributesPageController extends ControllerBase {
       return '';
     }
 
+  }
+
+
+  /**
+   * Display the Attributes Approval Page.
+   */
+  public function apiAttributeApprovals(Request $request) {
+    // add pager to table
+    $limit = 10;
+    $queryTotal = $this->database->select('api_attributes_page_data', 'apd');
+    if (!empty($request->get('status'))) {
+      $queryTotal->condition('apd.attribute_status', $request->get('status'));
+    }
+    $resultTotal = $queryTotal->countQuery()->execute()->fetchField();
+    $pager = $this->pagerManager->createPager($resultTotal, $limit);
+
+      // fetch results
+    $query = $this->database->select('api_attributes_page_data', 'apd')
+      ->fields('apd', ['id', 'submit_by', 'approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'created']);
+    if (!empty($request->get('status'))) {
+      $query->condition('apd.attribute_status', $request->get('status'));
+    }
+    $query->range($pager->getCurrentPage() * $limit, $limit);
+    $resultSet = $query->execute()->fetchAll();
+    $statusSet = $this->database->select('attribute_status', 'as')
+    ->fields('as', ['id', 'status'])
+    ->execute()
+    ->fetchAll();
+    foreach ($statusSet as $status) {
+      $statuses[$status->id] = $status->status;
+    }
+
+    $data = [];
+    if (!empty($resultSet)) {
+      foreach ($resultSet as $result) {
+        $userStorage = $this->entityTypeManager()->getStorage('user');
+        $data[] = [
+          'id' => $result->id,
+          'submitted' => $userStorage->load($result->submit_by)->mail->value,
+          'approver1' => $userStorage->load($result->approver1_uid)->mail->value,
+          'approver2' => $userStorage->load($result->approver2_uid)->mail->value,
+          'approver1_status' => $statuses[$result->approver1_status],
+          'approver2_status' => $statuses[$result->approver2_status],
+          'status' => $statuses[$result->attribute_status],
+          'requested_time' => date('Y-m-d', $result->created),
+          'url' => Url::fromRoute('zcs_api_attributes.api_attribute_sheet.review', ['id' => $result->id])
+        ];
+      }
+    }
+
+    $output[] = [
+      '#type' => 'select',
+      '#options' => ['- All -'] + $statuses,
+      '#title' => 'Status',
+      '#attributes' => [
+        'class' => ['select-status']
+      ],
+      '#value' => $request->get('status') ?? 0
+    ];
+
+    $output[] =  [
+      '#theme' => 'api_attribute_sheet_approval',
+      '#content' => $data,
+      '#attached' => [
+      'library' => ['zcs_api_attributes/rate-sheet-approval']
+      ],
+    ];
+    $output[] = ['#type' => 'pager'];
+    return $output;
   }
 }
