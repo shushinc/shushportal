@@ -2110,6 +2110,10 @@ body.login.not-loggedin.path-login main > .login-footer-logo {
   order: 3;
 }
 
+#block-shush-site-branding {
+  text-align: center;
+}
+
 body.login.not-loggedin.path-login main div#block-shush-site-branding>a>img {
   width: 100%;
   max-width: 400px;
