@@ -81,8 +81,21 @@ div.dashcard>div>div>div>div[data-testid="scalar-title"] {
 .increase h3,
 .equals h1,
 .equals h3 {
+  font-size: 8.4vw !important;
   font-weight: 400 !important;
-  line-height: 2rem !important;
+  line-height: 8.4vw !important;
+}
+
+.decrease h1,
+.increase h1,
+.equals h1 {
+  font-weight: 400 !important;
+}
+
+.decrease h3,
+.increase h3,
+.equals h3 {
+  font-weight: 600 !important;
 }
 
 .decrease {
@@ -117,6 +130,7 @@ div.dashcard>div>div>div>div[data-testid="scalar-title"] {
   max-height: 100% !important;
   text-overflow: inherit;
   width: auto !important;
+  padding-right: 8px !important;
 }
 
 div[data-testid="dashcard-container"].container-small,
@@ -161,6 +175,14 @@ div.LineAreaBarChart.CardVisualization>div:nth-child(2)>div:last-child {
   display: flex !important;
 }
 
+div.dashcard>div>div>div>div:nth-child(2) {
+  padding: 0px 16px !important;
+}
+
+div.dashcard>div>div>div>div:nth-child(3) {
+  padding: 8px 16px 0 !important;
+}
+
 div.dashcard h1 {
   font-size: 24vw !important;
 }
@@ -172,28 +194,15 @@ div.dashcard h1 span {
 div.dashcard h3 {
   font-size: 8.4vw !important;
   line-height: 9vw !important;
-}
-
-.decrease h1,
-.decrease h3,
-.increase h1,
-.increase h3,
-.equals h1,
-.equals h3 {
-  font-size: 8.4vw !important;
-  font-weight: 400 !important;
-  line-height: 8.4vw !important;
+  max-height: 9vw !important;
 }
 
 div[data-testid="dashcard-container"].container-small,
 div.DashCard.container-small {
-  height: 80px !important;
+  height: 56px !important;
 }
 
-.increase h1:before {
+.increase h1:before, .decrease h1:before {
   font-size: 8.4vw;
-}
-
-.decrease h1:before {
-  font-size: 8.4vw;
+  padding: 0 8px;
 }
