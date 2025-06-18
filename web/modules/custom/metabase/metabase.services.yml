@@ -5,7 +5,7 @@ services:
 
   metabase.proxy:
     class: Drupal\metabase\Service\ProxyService
-    arguments: ['@http_client', '@config.factory', '@logger.factory']
+    arguments: ['@http_client', '@config.factory', '@logger.factory', '@cache.default']
 
   metabase.request_subscriber:
     class: Drupal\metabase\EventSubscriber\CustomPathSubscriber
