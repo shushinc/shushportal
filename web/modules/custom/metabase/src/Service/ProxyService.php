@@ -2,11 +2,14 @@
 
 namespace Drupal\metabase\Service;
 
+use Drupal\Core\Cache\CacheableResponse;
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use GuzzleHttp\ClientInterface;
+use Http\Client\Exception\RequestException;
 
 /**
  * Metabase proxy service.
@@ -35,6 +38,13 @@ class ProxyService {
   protected $loggerFactory;
 
   /**
+   * The cache.
+   *
+   * @var \Drupal\Core\Cache\CacheBackendInterface
+   */
+  protected $cache;
+
+  /**
    * Constructs a new MetabaseService object.
    *
    * @param \GuzzleHttp\ClientInterface $http_client
@@ -43,15 +53,19 @@ class ProxyService {
    *   The config factory.
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   The logger factory.
+   * @param \Drupal\Core\Cache\CacheBackendInterface $cache
+   *   The cache.
    */
   public function __construct(
     ClientInterface $http_client,
     ConfigFactoryInterface $config_factory,
     LoggerChannelFactoryInterface $logger_factory,
+    CacheBackendInterface $cache,
   ) {
     $this->httpClient = $http_client;
     $this->configFactory = $config_factory;
     $this->loggerFactory = $logger_factory;
+    $this->cache = $cache;
   }
 
   /**
@@ -120,46 +134,46 @@ class ProxyService {
         \Drupal::logger('metabase')->info($contentType);
       }
 
-      if (!$request->isMethod('GET')) {
-        // For other requests, return the response as is.
-        $response = new Response(
-          (string) $proxyResponse->getBody(),
-          $proxyResponse->getStatusCode(),
-          $responseHeaders
-        );
+      // if (!$request->isMethod('GET')) {
+      //   // For other requests, return the response as is.
+      //   $response = new CacheableResponse(
+      //     (string) $proxyResponse->getBody(),
+      //     $proxyResponse->getStatusCode(),
+      //     $responseHeaders
+      //   );
 
-        return $response;
-      }
+      //   return $response;
+      // }
 
-      if ($contentType == 'text/html;charset=utf-8') {
-        // Get the entire content.
-        $content = (string) $proxyResponse->getBody();
-        $content = str_replace('"app/', '"proxy/app/', $content);
+      // if ($contentType == 'text/html;charset=utf-8') {
+      //   // Get the entire content.
+      //   $content = (string) $proxyResponse->getBody();
+      //   $content = str_replace('"app/', '"proxy/app/', $content);
 
-        // Create and return the response.
-        $response = new Response(
-          $content,
-          $proxyResponse->getStatusCode(),
-          $responseHeaders
-        );
+      //   // Create and return the response.
+      //   $response = new CacheableResponse(
+      //     $content,
+      //     $proxyResponse->getStatusCode(),
+      //     $responseHeaders
+      //   );
 
-        return $response;
-      }
+      //   return $response;
+      // }
 
-      if ($contentType == 'text/plain') {
-        // Get the entire content.
-        $content = (string) $proxyResponse->getBody();
-        $content = str_replace('"app/', '"proxy/app/', $content);
+      // if ($contentType == 'text/plain') {
+      //   // Get the entire content.
+      //   $content = (string) $proxyResponse->getBody();
+      //   $content = str_replace('"app/', '"proxy/app/', $content);
 
-        // Create and return the response.
-        $response = new Response(
-          $content,
-          $proxyResponse->getStatusCode(),
-          $responseHeaders
-        );
+      //   // Create and return the response.
+      //   $response = new CacheableResponse(
+      //     $content,
+      //     $proxyResponse->getStatusCode(),
+      //     $responseHeaders
+      //   );
 
-        return $response;
-      }
+      //   return $response;
+      // }
 
       // For GET requests that match CSS files, modify the content.
       if (
@@ -167,21 +181,17 @@ class ProxyService {
         strpos($targetUrl, '.css') !== FALSE
       ) {
 
-        // Get the entire content.
         $content = (string) $proxyResponse->getBody();
+        $content = $this->cachedContent($request, 'css', $content, $path, $queryString);
 
-        $css = "\r\n" . $config->get('overwrite.css');
-
-        if ($css) {
-          $content .= $css;
-        }
-        // $content .= 'footer{display:none !important;}';
         // Create and return the response.
         $response = new Response(
           $content,
           $proxyResponse->getStatusCode(),
           $responseHeaders
         );
+        $response->setMaxAge(3600);
+        $response->setPublic();
 
         return $response;
       }
@@ -189,14 +199,8 @@ class ProxyService {
         strpos($targetUrl, '/app/dist/runtime.') !== FALSE &&
         strpos($targetUrl, '.js') !== FALSE
       ) {
-        // Get the entire content.
         $content = (string) $proxyResponse->getBody();
-
-        $js = "\r\n" . $config->get('overwrite.js');
-
-        if ($js) {
-          $content .= $js;
-        }
+        $content = $this->cachedContent($request, 'js', $content, $path, $queryString);
 
         // Create and return the response.
         $response = new Response(
@@ -204,6 +208,8 @@ class ProxyService {
           $proxyResponse->getStatusCode(),
           $responseHeaders
         );
+        $response->setMaxAge(3600);
+        $response->setPublic();
 
         return $response;
       }
@@ -222,6 +228,38 @@ class ProxyService {
       return new Response('Error: ' . $e->getMessage(), 500);
     }
 
+  }
+
+  private function cachedContent(Request $request, $type, $content, $path, $queryString) {
+    $cache_key = 'metabase:' . $type . ':' . md5($path) . ':' . md5($queryString);
+    $config = $this->configFactory->get('metabase.settings');
+
+    // Try to get from cache first
+    if ($cache = $this->cache->get($cache_key)) {
+      $content = $cache->data;
+    } else {
+
+      if ($type == 'css') {
+        $css = "\r\n" . $config->get('overwrite.css');
+        if ($css) {
+          $content .= $css;
+        }
+      }
+      elseif ($type == 'js') {
+        $js = "\r\n" . $config->get('overwrite.js');
+        if ($js) {
+          $content .= $js;
+        }
+      }
+
+      $this->cache->set(
+        $cache_key,
+        $content,
+        \Drupal::time()->getRequestTime() + 3600,
+        ['metabase:css']
+      );
+    }
+    return $content;
   }
 
 }
