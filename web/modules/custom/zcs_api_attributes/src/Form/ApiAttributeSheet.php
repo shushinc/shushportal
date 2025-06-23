@@ -120,7 +120,7 @@ class ApiAttributeSheet extends FormBase {
     //$form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => 'Create API Attribute Sheet',
+      '#value' => 'Update API Attributes',
       '#disabled' => $hide,
     ];
 

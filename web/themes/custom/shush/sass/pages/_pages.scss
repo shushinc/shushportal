@@ -28,7 +28,7 @@
   }
 }
 main {
-  margin-top: 1rem;
+  margin-top: 0;
   margin-bottom: 1rem;
   min-height: 590px;
 }
@@ -458,8 +458,7 @@ table {
         background: $white;
         padding: 0 20px;
       }
-      &:first-child,
-      &:nth-child(2) {
+      &:first-child {
         font-weight: 700;
         color: rgba(43, 54, 116, 1);
       }
@@ -699,7 +698,7 @@ table {
 }
 .user-grid-block {
   header {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
   }
   .view-content {
     display: flex;
@@ -958,7 +957,7 @@ table {
   background: transparent;
   padding-top: 1.5rem;
   padding-left: 1rem;
-  padding-bottom: 1.5rem;
+  padding-bottom: 0;
   h5 {
     font-family: $Montserrat;
     color: rgba(176, 187, 213, 1);

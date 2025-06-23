@@ -66,10 +66,10 @@ class AttributesPageController extends ControllerBase {
 
   private function getAttributeValue($attributeValue){
     if($attributeValue == 'yes') {
-       return Markup::create("<span class='attrib_yes'>Yes</span>");
+       return Markup::create("<span class='attrib_yes'></span>");
     }
     elseif($attributeValue == 'no') {
-      return Markup::create("<span class='attrib_no'>No</span>");
+      return Markup::create("<span class='attrib_no'></span>");
     }
     else {
       return '';

@@ -36,9 +36,11 @@ function zcs_api_attributes_install() {
         $menu_link->save();
     }
 
+
+
    // Create the parent menu link.
   $parent_menu_link = MenuLinkContent::create([
-    'title' => 'Pricing',
+    'title' => 'Price',
     'link' => ['uri' => 'route:<nolink>'],  // Adjust path as needed.
     'menu_name' => $menu_name,
     'expanded' => TRUE, // Keep it expanded to show child links.
@@ -92,7 +94,7 @@ function zcs_api_attributes_uninstall() {
 
 
   $query = \Drupal::entityQuery('menu_link_content')
-    ->condition('title', 'Pricing')
+    ->condition('title', 'Price')
     ->condition('menu_name', 'main');
   $parent_ids = $query->accessCheck()->execute();
 
@@ -247,6 +249,9 @@ function zcs_api_attributes_update_9002() {
     ->execute();
 }
 
+
+
+
 function zcs_api_attributes_update_9003(){
   $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
 
@@ -259,7 +264,9 @@ function zcs_api_attributes_update_9003(){
     $menu_item_object2->delete();
   }
 
-  $parent_menu = current($storage->loadByProperties(['title' => 'Pricing']));
+
+
+  $parent_menu = current($storage->loadByProperties(['title' => 'Price']));
   $parent_id = 'menu_link_content:' . $parent_menu->uuid();
 
   // Create the child menu link.
@@ -271,6 +278,7 @@ function zcs_api_attributes_update_9003(){
     'weight' => 4,
   ]);
   $finance_approval_menu_child_link3->save();
+  
 
 }
 
@@ -283,7 +291,7 @@ function zcs_api_attributes_update_9004() {
     'description' => "Effective Date Integer Format",
     'length' => 20,
     'not null' => FALSE,
-  ];
+  ]; 
   $schema = \Drupal::database()->schema();
   $schema->addField('attributes_page_data', 'effective_date_integer', $spec);
 

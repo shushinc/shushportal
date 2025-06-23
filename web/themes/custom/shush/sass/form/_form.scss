@@ -10,15 +10,16 @@ form.user-logout-confirm {
   nav {
     list-style-type: none;
     padding: 0;
-    margin: 2rem 0;
+    margin: 0 0 0.9rem;
     li {
+      text-align: right;
       a {
         font-family: $poppins;
         font-weight: 500;
         display: inline-block;
-        padding: 5px 40px;
-        border-radius: 3px;
-        color: $white;
+
+
+
         text-transform: capitalize;
         font-size: 16px;
         transition: all 0.3s;
@@ -26,14 +27,18 @@ form.user-logout-confirm {
         overflow: hidden;
         z-index: 1;
         text-decoration: none;
-        background-color: $light-grey;
-        border: none;
+        //background-color: $light-grey;
+        //border: none;
         //width: 100%;
         min-width: fit-content;
-        text-align: center;
+        background: #fff;
+        border: 2px solid #118df0;
+        color: #118df0;
+        border-radius: 50px;
+        padding: 10px 15px;
         &:hover {
-          color: #fff;
-          background: $primary-color;
+          color: #118df0;
+          background: #fff;
         }
       }
     }

@@ -53,7 +53,12 @@ final class UserInviteForm extends FormBase {
     $form['user_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('User Name'),
-      '#required' => TRUE
+      '#required' => TRUE,
+      '#maxlength' => 18,
+      '#attributes' => [
+        'autocomplete' => 'off',
+        'data-1password-disable' => 'true',
+      ],
     ];
     $form['user_mail'] = array(
       '#type' => 'email',
