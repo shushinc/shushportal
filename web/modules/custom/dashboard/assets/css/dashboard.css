@@ -1,0 +1,138 @@
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 700;
+  src: url("/themes/custom/shush/assets/fonts/Montserrat/Montserrat-VariableFont_wght.ttf");
+}
+
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 600;
+  src: url("/themes/custom/shush/assets/fonts/Montserrat/Montserrat-VariableFont_wght.ttf");
+}
+
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/themes/custom/shush/assets/fonts/Montserrat/Montserrat-VariableFont_wght.ttf");
+}
+
+/* Dashboard Main Container */
+.dashboard-container {
+  background-color: #f8f9fa;
+  font-family: "Montserrat", sans-serif;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.dashboard-container>h3 {
+  color: #2b3674;
+  font-size: 36px;
+  font-weight: 700;
+  margin: 1em 0 1em;
+}
+
+/* Metrics Cards Section */
+.dashboard-metrics {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 45px 5px;
+  margin-bottom: 30px;
+}
+
+.metric-card {
+  flex-basis: 19%;
+}
+
+.metric-card--parameter {
+  background-color: #e0e5f2 !important;
+  border: 1px solid #7f85ae !important;
+  border-radius: 20px;
+  color: #2b3674;
+  display: flex;
+  flex-flow: column wrap;
+  height: 235px;
+  justify-content: center;
+  margin-bottom: 5px;
+  padding: 16px;
+}
+
+.metric-card--parameter--value {
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1em;
+}
+.metric-card--parameter--value>span {
+  font-size: 40px;
+}
+.metric-card--parameter--title {
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.metric-card--change {
+  background-color: #eeeeee !important;
+  border: 1px solid #9c9c9c !important;
+  border-radius: 20px;
+  color: #373838;
+  height: 118px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items:center;
+  padding: 16px;
+}
+
+.metric-card--change--value {
+  font-size: 36px;
+  font-weight: 400;
+}
+
+.metric-card--change--period {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+
+.dashboard-filters--grid {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 32px 16px;
+  margin-bottom: 30px;
+}
+
+.dashboard-filters--grid>.filter-item {
+  display: flex;
+  flex-basis: calc(100% / 7);
+  flex-flow: column nowrap;
+}
+
+.filter-item--label {
+  color: #2b3674;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+.filter-item--select {
+  background-color: #eeeeee;
+  border: 1px solid #9c9c9c;
+  border-radius: 10px;
+  color: #373838;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 10px;
+  width: 100%;
+}
+
+
+
+
+.dashboard-charts>h4 {
+  color: #2b3674;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 1em 0 1em;
+}
