@@ -31,7 +31,7 @@
   color: #2b3674;
   font-size: 36px;
   font-weight: 700;
-  margin: 1em 0 1em;
+  margin: 2em 0 1em;
 }
 
 /* Metrics Cards Section */
@@ -43,7 +43,7 @@
 }
 
 .metric-card {
-  flex-basis: 19%;
+  flex-basis: calc(calc(100% - 20px) / 5);
 }
 
 .metric-card--parameter {
@@ -105,8 +105,9 @@
 
 .dashboard-filters--grid>.filter-item {
   display: flex;
-  flex-basis: calc(100% / 7);
+  flex-basis: calc(calc(100% - 80px) / 6);
   flex-flow: column nowrap;
+  box-sizing: border-box;
 }
 
 .filter-item--label {
@@ -130,9 +131,9 @@
 
 
 
-.dashboard-charts>h4 {
+.dashboard-charts h4 {
   color: #2b3674;
   font-size: 24px;
   font-weight: 700;
-  margin: 1em 0 1em;
+  margin: 2em 0 1em;
 }

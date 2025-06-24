@@ -108,102 +108,52 @@ class DataSource {
    */
   public function getFiltersData() {
 
-    $connection = \Drupal::database();
-
-    // Carriers.
-    $carriers_query = $this->loadSqlFromFile('filters/carriers');
-    $carriers = [];
-
-    if ($carriers_query !== FALSE) {
-      $results = $connection->query($carriers_query)->fetchAll();
-      foreach ($results as $result) {
-        $carriers[$result->id] = $result->name;
-      }
-    }
-
-    // Attributes.
-    $attributes_query = $this->loadSqlFromFile('filters/attributes');
-    $attributes = [];
-
-    if ($attributes_query !== FALSE) {
-      $results = $connection->query($attributes_query)->fetchAll();
-      foreach ($results as $result) {
-        $attributes[$result->id] = $result->name;
-      }
-    }
-
-    // Clients.
-    $clients_query = $this->loadSqlFromFile('filters/clients');
-    $clients = [];
-
-    if ($clients_query !== FALSE) {
-      $results = $connection->query($clients_query)->fetchAll();
-      foreach ($results as $result) {
-        $clients[$result->id] = $result->name;
-      }
-    }
-
-    // End Customers.
-    $end_customers_query = $this->loadSqlFromFile('filters/end_customers');
-    $end_customers = [];
-
-    if ($end_customers_query !== FALSE) {
-      $results = $connection->query($end_customers_query)->fetchAll();
-      foreach ($results as $result) {
-        $end_customers[$result->id] = $result->name;
-      }
-    }
-
-    // Months.
-    $months_query = $this->loadSqlFromFile('filters/months');
-    $months = [];
-
-    if ($months_query !== FALSE) {
-      $results = $connection->query($months_query)->fetchAll();
-      foreach ($results as $result) {
-        $months[$result->id] = $result->name;
-      }
-    }
-
-    // Years.
-    $years_query = $this->loadSqlFromFile('filters/years');
-    $years = [];
-
-    if ($years_query !== FALSE) {
-      $results = $connection->query($years_query)->fetchAll();
-      foreach ($results as $result) {
-        $years[$result->name] = $result->name;
-      }
-    }
-
-    return [
+    $filters = [
       'carriers' => [
         'label' => 'Carriers',
-        'options' => $carriers,
       ],
       'attributes' => [
         'label' => 'Attributes',
-        'options' => $attributes,
       ],
-      'client' => [
+      'clients' => [
         'label' => 'Client',
-        'options' => $clients,
       ],
       'end_customers' => [
         'label' => 'End Customers',
-        'options' => $end_customers,
       ],
-      'month' => [
+      'months' => [
         'label' => 'Month',
-        'options' => $months,
-        'selected' => 'jun',
       ],
-      'year' => [
+      'years' => [
         'label' => 'Year',
-        'options' => $years,
-        'selected' => '2025',
       ],
     ];
+
+    $connection = \Drupal::database();
+
+    foreach ($filters as $key => &$filter) {
+      // Carriers.
+      $query_string = $this->loadSqlFromFile('filters/' . $key);
+      $options = [];
+
+      if ($query_string !== FALSE) {
+        $results = $connection->query($query_string)->fetchAll();
+        foreach ($results as $result) {
+          if ($key != 'years') {
+            $options[$result->id] = $result->name;
+          }
+          else {
+            $options[$result->name] = $result->name;
+          }
+        }
+      }
+      $filter['options'] = $options;
+    }
+
+    $filters['months']['selected'] = '6';
+    $filters['years']['selected'] = '2025';
+
+    return $filters;
   }
 
   /**
