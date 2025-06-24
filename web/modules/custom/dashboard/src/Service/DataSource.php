@@ -80,10 +80,9 @@ class DataSource {
 
     foreach ($data as &$card) {
       if (isset($card['source'])) {
-        $top_query = $this->loadSqlFromFile('card-' . $card['source'] . '-top');
+        $top_query = $this->loadSqlFromFile('cards/' . $card['source'] . '-top');
         if ($top_query !== FALSE) {
           $results = $connection->query($top_query)->fetchAll();
-          // print_r($results);
           if (isset($results[0])) {
             list ($sign, $value, $suffix) = $this->formatNumber($results[0]->value);
             $card['value'] =  ($sign == '-' ? '-' : '' ) . $value;
@@ -108,50 +107,100 @@ class DataSource {
    *   Array of filter options.
    */
   public function getFiltersData() {
+
+    $connection = \Drupal::database();
+
+    // Carriers.
+    $carriers_query = $this->loadSqlFromFile('filters/carriers');
+    $carriers = [];
+
+    if ($carriers_query !== FALSE) {
+      $results = $connection->query($carriers_query)->fetchAll();
+      foreach ($results as $result) {
+        $carriers[$result->id] = $result->name;
+      }
+    }
+
+    // Attributes.
+    $attributes_query = $this->loadSqlFromFile('filters/attributes');
+    $attributes = [];
+
+    if ($attributes_query !== FALSE) {
+      $results = $connection->query($attributes_query)->fetchAll();
+      foreach ($results as $result) {
+        $attributes[$result->id] = $result->name;
+      }
+    }
+
+    // Clients.
+    $clients_query = $this->loadSqlFromFile('filters/clients');
+    $clients = [];
+
+    if ($clients_query !== FALSE) {
+      $results = $connection->query($clients_query)->fetchAll();
+      foreach ($results as $result) {
+        $clients[$result->id] = $result->name;
+      }
+    }
+
+    // End Customers.
+    $end_customers_query = $this->loadSqlFromFile('filters/end_customers');
+    $end_customers = [];
+
+    if ($end_customers_query !== FALSE) {
+      $results = $connection->query($end_customers_query)->fetchAll();
+      foreach ($results as $result) {
+        $end_customers[$result->id] = $result->name;
+      }
+    }
+
+    // Months.
+    $months_query = $this->loadSqlFromFile('filters/months');
+    $months = [];
+
+    if ($months_query !== FALSE) {
+      $results = $connection->query($months_query)->fetchAll();
+      foreach ($results as $result) {
+        $months[$result->id] = $result->name;
+      }
+    }
+
+    // Years.
+    $years_query = $this->loadSqlFromFile('filters/years');
+    $years = [];
+
+    if ($years_query !== FALSE) {
+      $results = $connection->query($years_query)->fetchAll();
+      foreach ($results as $result) {
+        $years[$result->name] = $result->name;
+      }
+    }
+
     return [
       'carriers' => [
         'label' => 'Carriers',
-        'options' => [
-          'account_status_change_retrieve' => 'Account Status Change Retrieve...',
-        ],
-        'selected' => 'account_status_change_retrieve',
+        'options' => $carriers,
       ],
       'attributes' => [
         'label' => 'Attributes',
-        'options' => [
-          'account_status_change_retrieve' => 'Account Status Change Retrieve...',
-        ],
-        'selected' => 'account_status_change_retrieve',
+        'options' => $attributes,
       ],
       'client' => [
         'label' => 'Client',
-        'options' => [
-          'clientA' => 'ClientA',
-        ],
-        'selected' => 'clientA',
+        'options' => $clients,
       ],
       'end_customers' => [
         'label' => 'End Customers',
-        'options' => [
-          'customerName' => 'customerName',
-        ],
-        'selected' => 'customerName',
+        'options' => $end_customers,
       ],
       'month' => [
         'label' => 'Month',
-        'options' => [
-          'jun' => 'Jun',
-          'jul' => 'Jul',
-          'aug' => 'Aug',
-        ],
+        'options' => $months,
         'selected' => 'jun',
       ],
       'year' => [
         'label' => 'Year',
-        'options' => [
-          '2024' => '2024',
-          '2025' => '2025',
-        ],
+        'options' => $years,
         'selected' => '2025',
       ],
     ];
