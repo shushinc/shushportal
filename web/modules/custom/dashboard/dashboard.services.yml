@@ -2,3 +2,7 @@ services:
   dashboard.data_source:
     class: Drupal\dashboard\Service\DataSource
     arguments: ['@database', '@config.factory', '@datetime.time', '@module_handler']
+
+  dashboard.query_service:
+    class: Drupal\dashboard\Service\DashboardQueryService
+    arguments: ['@database', '@logger.factory']

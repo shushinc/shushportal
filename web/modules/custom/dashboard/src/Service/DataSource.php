@@ -150,8 +150,8 @@ class DataSource {
       $filter['options'] = $options;
     }
 
-    $filters['months']['selected'] = '6';
-    $filters['years']['selected'] = '2025';
+    $filters['months']['selected'] = date('n');
+    $filters['years']['selected'] = date('Y');
 
     return $filters;
   }
