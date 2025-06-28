@@ -67,7 +67,7 @@ zcs_api_attributes.api_attribute_sheet:
   path: '/create-api-attribute-sheet'
   defaults:
     _form: '\Drupal\zcs_api_attributes\Form\ApiAttributeSheet'
-    _title: 'Create API Attribute Sheet'
+    _title: 'Update API Attributes'
   requirements:
     _role: 'api_attribute_admin + administrator'
   options:
