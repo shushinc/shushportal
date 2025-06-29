@@ -1,5 +1,0 @@
-zcs_api_attributes.create_rate_sheet:
-  route_name: zcs_api_attributes.rate_sheet
-  title: 'Create Rate Sheet'
-  appears_on:
-    - zcs_api_attributes.network_authentication_pricing_over_time  

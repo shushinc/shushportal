@@ -1,4 +1,4 @@
-uuid: 028d8123-d94e-42f6-8642-060f1688d509
+uuid: 7ab806a9-b5c3-463c-b9bb-fa6b57f41914
 langcode: en
 status: true
 dependencies:
@@ -7,10 +7,10 @@ dependencies:
 id: group.field_prepayment_amount
 field_name: field_prepayment_amount
 entity_type: group
-type: decimal
+type: integer
 settings:
-  precision: 15
-  scale: 3
+  unsigned: false
+  size: normal
 module: core
 locked: false
 cardinality: 1

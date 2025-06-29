@@ -1,8 +1,9 @@
 <div>
-	{# {{ content.edit_page }} #}
+	{{ content.link }}
 	<table class="attributes-table">
 		<thead>
 			<tr>
+			    <th>#</th>
 				<th>API Attribute</th>
 				{% for date , atts in content.header_date %}
 					<th>
@@ -11,8 +12,10 @@
 			</tr>
 		</thead>
 		<tbody>
+		{% set counter = 1 %}
 			{% for key, att in content.final %}
 				<tr>
+					<td>{{ counter }}</td>
 					<td>{{ att.title }}</td>
 					{% for key, date in content.header_date %}
 						<td>
@@ -20,7 +23,9 @@
 							{{ att['price' ~ key] }}</td>
 					{% endfor %}
 				</tr>
+					{% set counter = counter + 1 %}
 			{% endfor %}
+					
 		</tbody>
 	</table>
 </div>

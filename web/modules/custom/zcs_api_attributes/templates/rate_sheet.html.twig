@@ -7,30 +7,34 @@
 {% endif %}
 <div class="rate-sheet-filter">
 	<div class="rate-sheet-filter-currencies">
-		<span class="attributes-label">Select Currencies</span>
+		<span class="attributes-label">Select Currency</span>
 		<span class="attribute-inputs">{{ form.currencies }}</span>
 	</div>
 	<div class="rate-sheet-filter-effective">
-		<span class="attributes-label">Effective Date</span>
+		<span class="attributes-label">Effective Date of Proposed API Pricing</span>
 		<span class="attribute-inputs">{{ form.attribute_date }}</span>
 	</div>
 </div>
 <div>
-	<h2 class="attributes-label">Attributes and Prices</h2>
+<h2 class="attributes-label">API Attributes and Pricing</h2>
 	<span class="attribute-inputs">
 		<table class="attributes-table">
 			<thead>
 				<tr>
-					<th>Title</th>
-					<th>Estimated Prices</th>
+					<th>#</th>
+					<th>API Attributes</th>
+					<th>Proposed API Pricing</th>
 				</tr>
 			</thead>
 			<tbody>
-				{% for id, title in fetch_attributes() %}
-					<tr>
-						<td>{{ title }}</td>
-						<td>{{ form['price' ~ id] }}</td>
-					</tr>
+				{% set counter = 1 %}
+					{% for id, title in fetch_attributes() %}
+						<tr>
+							<td>{{ counter }}</td>
+							<td>{{ title }}</td>
+							<td>{{ form['price' ~ id] }}</td>
+						</tr>
+					{% set counter = counter + 1 %}
 				{% endfor %}
 			</tbody>
 		</table>

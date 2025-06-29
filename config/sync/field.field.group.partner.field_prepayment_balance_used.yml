@@ -1,4 +1,4 @@
-uuid: ab0b5c95-2b89-4e3f-96ea-09b664750b4f
+uuid: c8fece08-7578-4829-8258-8372236fffa0
 langcode: en
 status: true
 dependencies:
@@ -9,15 +9,15 @@ id: group.partner.field_prepayment_balance_used
 field_name: field_prepayment_balance_used
 entity_type: group
 bundle: partner
-label: ' Prepayment Balance Used'
+label: 'Prepayment Balance Used'
 description: ''
 required: false
 translatable: false
 default_value: {  }
 default_value_callback: ''
 settings:
-  min: null
+  min: 0
   max: null
   prefix: ''
   suffix: ''
-field_type: decimal
+field_type: integer

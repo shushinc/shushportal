@@ -78,12 +78,23 @@ class PricingOverTime extends ControllerBase {
       foreach ($contents as $content) {
         $final[] = [
           'title' => $content->title->value,
-          'price0' => $prices[0][$content->id()] ?? 0.00,
-          'price1' => $prices[1][$content->id()] ?? 0.00,
-          'price2' => $prices[2][$content->id()] ?? 0.00
+          'price0' => number_format(isset($prices[0][$content->id()]) ? $prices[0][$content->id()] : 0.00, 2),
+          'price1' => number_format(isset($prices[1][$content->id()]) ? $prices[1][$content->id()] : 0.00, 2),
+          'price2' => number_format(isset($prices[2][$content->id()]) ? $prices[2][$content->id()] : 0.00, 2),
         ];
       }
     }
+    $url = Url::fromRoute('zcs_api_attributes.rate_sheet');
+    $url->setOptions([
+      'attributes' => [
+        'class' => ['button', 'button--primary', 'use-ajax'],
+        'data-dialog-type' => 'modal',
+        'data-dialog-options' => json_encode(['width' => 800]),
+      ],
+    ]);
+    $pricing_api_link = Link::fromTextAndUrl($this->t('Proposed API Pricing'), $url)->toRenderable();
+    
+    $data['link'] = $pricing_api_link ;
     $data['symbols'] = $symbols;
     $data['create_rate_sheet_url'] = $url;
     $data['final'] = $final;

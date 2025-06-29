@@ -20,6 +20,7 @@ class ClientManagementCustomTwig extends AbstractExtension implements ExtensionI
 
   public function formatNumber($value) {
     $suffix = '';
+    $vaFormat = '';
     if ($value >= 0 && $value < 1000) {
       $vaFormat = $value;
     } else if ($value >= 1000 && $value < 1000000) {

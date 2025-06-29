@@ -80,7 +80,13 @@ class ViewClientController extends ControllerBase {
     }
     //dump($api_aggreement_covers_array);
     $api_covers = [];
-    $contents =  \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(['type' => 'api_attributes']);
+   // $contents =  \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(['type' => 'api_attributes']);
+    $nids = \Drupal::entityQuery('node')
+    ->condition('type', 'api_attributes')
+    ->sort('field_attribute_weight', 'ASC')
+    ->accessCheck()
+    ->execute();
+    $contents = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
     if (!empty($contents)) {
       foreach ($contents as $content) {
          $api_covers[$content->getTitle()] = isset($api_aggreement_covers_array[$content->id()]) ? $api_aggreement_covers_array[$content->id()] : 0;   
