@@ -15,6 +15,7 @@ class RateSheetTwig extends AbstractExtension implements ExtensionInterface {
   public function getFilters() {
     return [
       new TwigFilter('convert_number', [$this, 'convertNumber']),
+      new TwigFilter('field_value', [$this, 'fieldValue']),
     ];
   }
 
@@ -28,6 +29,10 @@ class RateSheetTwig extends AbstractExtension implements ExtensionInterface {
     return number_format($value);
   }
 
+  public function fieldValue($field) {
+    return $field['#value'];
+  }
+
   public function fetchAttributes() {
   $nids = \Drupal::entityQuery('node')
     ->condition('type', 'api_attributes')
@@ -35,12 +40,16 @@ class RateSheetTwig extends AbstractExtension implements ExtensionInterface {
     ->accessCheck()
     ->execute();
    $contents = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
-    $final = [];
+   // $final = [];
+    $titles = $prices = [];
     if (!empty($contents)) {
       foreach ($contents as $content) {
-        $final[$content->id()] = $content->title->value;
+        //$final[$content->id()] = $content->title->value;
+        $titles[$content->id()] = $content->title->value;
+        $prices[$content->id()] = $content->field_standard_price->value;
       }
     }
-    return $final;
+    //return $final;
+    return compact('titles', 'prices');
   }
 }
