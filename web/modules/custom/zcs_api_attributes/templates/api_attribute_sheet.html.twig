@@ -18,7 +18,8 @@
 			</thead>
 			<tbody>
 				{% set counter = 1 %}
-				{% for id, title in fetch_attributes() %}
+			    {% set attributes = fetch_attributes() %}
+	             {% for id, title in attributes.titles %}
 					<tr>
 						<td>{{ counter }}</td>
 						<td>{{ title }}</td>

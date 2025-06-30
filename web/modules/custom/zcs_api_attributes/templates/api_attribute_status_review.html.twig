@@ -23,7 +23,8 @@
 		</tr>
 	</thead>
 	<tbody>
-		{% for id, title in fetch_attributes() %}
+		  {% set attributes = fetch_attributes() %}
+	      {% for id, title in attributes.titles %}
 			<tr>
 				<td>{{ title }}</td>
 				<td>{{ form['network_connected' ~ id] }}</td>
