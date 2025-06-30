@@ -1,10 +1,14 @@
 <div>
-	{{ content.link }}
+	<div class="user-management-view api-attribute-status-header">
+		<header>
+			{{ content.link|merge({'#attributes': {'class': ['btn-primary']}}) }}
+		</header>
+	</div>
 	<table class="attributes-table">
 		<thead>
 			<tr>
 				<th>#</th>
-				<th>API Attribute</th>
+				<th>API Attributes</th>
 				<th>Network Connected</th>
 				<th>Able to be used</th>
 			</tr>

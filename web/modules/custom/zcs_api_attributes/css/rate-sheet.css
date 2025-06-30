@@ -1,9 +1,11 @@
 .message {
   background-color: #eeb34c;
   border-radius: 5px;
-  padding: 5px 50px;
+  padding: 10px 50px;
   font-size: 14px;
   font-family: "Montserrat", sans-serif;
+  line-height: normal;
+  position: relative;
 }
 
 .rate-sheet-price .rate-sheet table.attributes-table .form-item {
@@ -18,6 +20,11 @@
 .rate-sheet-price .rate-sheet table.attributes-table th,
 .rate-sheet-price .rate-sheet table.attributes-table tr td {
   text-align: center;
+}
+
+.rate-sheet-price .rate-sheet table.attributes-table th:nth-child(2),
+.rate-sheet-price .rate-sheet table.attributes-table tr td:nth-child(2) {
+  text-align: left;
 }
 .rate-sheet-price .rate-sheet .field-prefix {
   margin-right: 10px;
@@ -52,7 +59,11 @@
 .rate-sheet-price .rate-sheet .message {
   position: relative;
 }
-.rate-sheet-price .rate-sheet .message::before {
+.rate-sheet-price .rate-sheet .message::before,
+.network_authentication_pricing_over_time
+  .ui-dialog
+  .rate-sheet
+  .message::before {
   content: "";
   background: url("/themes/custom/shush/images/time.png") no-repeat;
   height: 24px;
@@ -69,7 +80,7 @@
   font-size: 16px;
   font-weight: 700;
   color: #2b3674;
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.5px;
   text-align: left;
   margin-bottom: 1rem;
@@ -94,13 +105,61 @@
   overflow: hidden;
   z-index: 1;
   text-decoration: none;
-  background-color: #4f9bf5;
-  color: #fff;
-  border: none;
+  background: #fff;
+  border: 2px solid #118df0;
+  color: #118df0;
+  border-radius: 50px;
 }
 
 .rate-sheet-price .rate-sheet input[disabled="disabled"]#edit-submit {
   background-color: rgba(118, 118, 118, 0.3);
   color: rgba(118, 118, 118, 0.3);
   border-color: rgba(118, 118, 118, 0.3);
+}
+
+.rate-sheet .form-submit.is-disabled {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  text-transform: capitalize;
+  font-size: 16px;
+  min-width: fit-content;
+  background-color: rgba(118, 118, 118, 0.3);
+  border: 2px solid rgba(118, 118, 118, 0.3);
+  color: rgba(118, 118, 118, 0.3);
+  border-radius: 50px;
+  padding: 10px 15px;
+  display: flex;
+  margin: 20px auto;
+}
+
+.ui-dialog .rate-sheet table th:first-child {
+  width: 10%;
+}
+
+.ui-dialog .rate-sheet table th:nth-child(2) {
+  width: 50%;
+  text-align: left;
+}
+.ui-dialog .rate-sheet table th:nth-child(3) {
+  width: 25%;
+}
+
+.ui-dialog .rate-sheet table tbody td .form-type-number {
+  position: relative;
+  padding-left: 15px;
+}
+
+.ui-dialog .rate-sheet table tbody td .form-type-number .field-prefix {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  margin-top: -12px;
+}
+
+.ui-dialog .rate-sheet table tbody td .form-type-number input {
+  margin: 0;
+}
+
+.ui-dialog .rate-sheet table tbody td:nth-child(2) {
+  text-align: left;
 }

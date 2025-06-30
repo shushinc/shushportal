@@ -49,6 +49,19 @@ table.attributes-table tr td {
   line-height: 20px;
   text-align: center;
 }
+.network_authentication_pricing_over_time
+  table.attributes-table
+  thead
+  th:nth-child(2) {
+  width: 30%;
+  text-align: left;
+}
+.network_authentication_pricing_over_time
+  table.attributes-table
+  tbody
+  td:nth-child(2) {
+  text-align: left;
+}
 table.attributes-table th:nth-child(2),
 table.attributes-table th:last-child,
 .change-network-authentication-pricing table.attributes-table th:nth-child(2),
@@ -56,6 +69,10 @@ table.attributes-table th:last-child,
   table.attributes-table
   th:nth-child(2) {
   text-align: left;
+}
+table.attributes-table th:nth-child(3),
+table.attributes-table th:nth-child(4) {
+  text-align: center;
 }
 .change-network-authentication-pricing table.attributes-table tr td,
 .demand_partner_discounts_or_different_pricing table.attributes-table tr td {
@@ -146,18 +163,20 @@ table.attributes-table tr td:first-child {
   color: #000;
   height: 100%;
   width: 100%;
-  padding: 10px 20px;
+  padding: 10px 60px;
   text-align: left;
+  max-width: 60px;
+  margin: 0 auto;
 }
-.api-attribute-status table tr td .attrib_no::after,
-.api-attribute-status table tr td .attrib_yes::after {
+.api-attribute-status table tr td .attrib_no::before,
+.api-attribute-status table tr td .attrib_yes::before {
   content: "";
   display: block;
   position: absolute;
   height: 100%;
   width: 100%;
   background: url("/themes/custom/shush/images/error-bg.svg") no-repeat;
-  background-position: left 20px center;
+  background-position: left 33px center;
   left: 0;
   bottom: 0;
   right: 0;
@@ -165,9 +184,9 @@ table.attributes-table tr td:first-child {
   z-index: -1;
 }
 
-.api-attribute-status table tr td .attrib_yes::after {
+.api-attribute-status table tr td .attrib_yes::before {
   background: url("/themes/custom/shush/images/active-bg.svg") no-repeat;
-  background-position: left 20px center;
+  background-position: left 33px center;
 }
 .api-attribute-status table tbody tr td:nth-child(2) {
   padding: 0 20px;
@@ -396,4 +415,23 @@ table.attributes-table tr td:first-child {
   width: 100%;
   text-align: center;
   line-height: 22px;
+}
+
+.api-attribute-status-header.user-management-view {
+  background: transparent;
+  margin-bottom: 16px;
+}
+
+.api-attribute-sheet .form-submit {
+  background: #fff;
+  border: 2px solid #118df0;
+  color: #118df0;
+  border-radius: 50px;
+  padding: 10px 15px;
+  margin: 20px auto;
+  display: flex;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  text-transform: capitalize;
+  font-size: 16px;
 }

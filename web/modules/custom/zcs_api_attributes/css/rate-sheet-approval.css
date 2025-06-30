@@ -27,7 +27,6 @@
   border-radius: 8px;
 }
 #block-shush-content > .form-type-select label {
-  font-family: "Montserrat", sans-serif;
   font-size: 14px;
   display: block;
   width: 180px;
@@ -35,7 +34,7 @@
 }
 
 table.rate-sheet-approval {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
 }
 table.rate-sheet-approval tbody td span.approved,
 table.rate-sheet-approval tbody td span.rejected {
@@ -87,4 +86,11 @@ table.rate-sheet-approval tbody td.pending {
 }
 table.rate-sheet-approval .btn-primary:hover {
   background: #4f9bf5;
+}
+
+.rate-sheet-approval .btn-primary {
+  background: #fff;
+  border: 2px solid #118df0;
+  color: #118df0;
+  border-radius: 50px;
 }

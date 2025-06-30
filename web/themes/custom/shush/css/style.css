@@ -140,6 +140,8 @@ form .js-form-item input[aria-invalid="true"]:focus {
 }
 .header .site__logo img {
   width: 180px;
+  display: block;
+  margin: 0 auto;
 }
 .header .header__inner {
   align-items: center;
@@ -379,9 +381,9 @@ form .js-form-item input[aria-invalid="true"]:focus {
   opacity: 1;
   font-weight: 600;
 }
-/* .user-logged-in .region-primary-menu ul li a:hover::after, .user-logged-in .region-primary-menu ul li a.is-active::after {
+.user-logged-in .region-primary-menu ul li a:hover::after, .user-logged-in .region-primary-menu ul li a.is-active::after {
   border-right: 3px solid #0f8df0;
-} */
+}
 .user-logged-in .region-primary-menu ul li ul {
   padding: 0;
   display: none;
@@ -511,9 +513,9 @@ footer.footer .region-footer ul li a:hover {
 }
 
 main {
-  margin-top: 1rem;
+  margin-top: 0;
   margin-bottom: 1rem;
-  min-height: 100px;
+  min-height: 590px;
 }
 
 .path-frontpage main {
@@ -547,13 +549,22 @@ main {
 
 #block-shush-page-title h1 {
   font-family: "Roboto", sans-serif;
-  font-size: 22px;
+  font-size: 34px;
+  line-height: 42px;
   font-weight: 700;
   color: #2b3674;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.2px;
   text-align: left;
-  margin: 2rem 0;
+  margin: 2rem 0 0;
+}
+
+.create-client #block-shush-page-title h1 {
+  margin-bottom: 2rem;
+}
+
+.rate-sheet-price #block-shush-page-title h1 {
+  margin-bottom: 0.5rem;
 }
 
 .user-invite,
@@ -624,7 +635,6 @@ main {
   background: linear-gradient(171.52deg, #ffffff 28.65%, #f8fcff 47.55%, #b4dbfa 68.65%, #118df0 93.52%);
   width: 100%;
   height: 100%;
-  min-height: 100vh;
 }
 .user-login main,
 .user-register main,
@@ -692,7 +702,8 @@ main {
 }
 .user-login main .login-footer-logo,
 .user-register main .login-footer-logo,
-.user-password main .login-footer-logo {
+.user-password main .login-footer-logo,
+.login main .login-footer-logo {
   position: absolute;
   bottom: 0;
   max-width: 228px;
@@ -700,12 +711,6 @@ main {
   width: 100%;
   left: 50%;
   margin-left: -120px;
-}
-
-.login main .login-footer-logo {
-  max-width: 228px;
-  margin: 0 auto;
-  width: 100%;
 }
 
 .login main #block-shush-page-title {
@@ -719,16 +724,16 @@ main {
 .login main #block-shush-content {
   padding: 0;
 }
-/* .login main .custom-content {
+.login main .custom-content {
   padding-top: 5rem;
-} */
+}
 .login main .custom-content h1 {
   color: #2b3674;
   font-size: 64px;
   font-weight: 700;
   line-height: 56px;
   letter-spacing: -0.2px;
-  margin: 0 0 2rem 0;
+  margin: 2rem 0;
 }
 .login main .custom-content .btn-primary {
   max-width: 400px;
@@ -814,9 +819,7 @@ form #edit-actions .form-submit {
   font-family: "Poppins", sans-serif;
   font-weight: 500;
   display: inline-block;
-  padding: 10px 60px;
   border-radius: 3px;
-  color: #ffffff;
   text-transform: capitalize;
   font-size: 18px;
   transition: all 0.3s;
@@ -824,14 +827,17 @@ form #edit-actions .form-submit {
   overflow: hidden;
   z-index: 1;
   text-decoration: none;
-  background-color: #4f9bf5;
-  border: none;
+  background-color: #ffffff;
   width: 100%;
   max-width: 320px;
+  border: 2px solid #118df0;
+  color: #118df0;
+  border-radius: 50px;
+  padding: 10px 15px;
 }
 form #edit-actions .form-submit:hover {
-  color: #fff;
-  background: #111532;
+  color: #118df0;
+  background: #ffffff !important;
 }
 form #edit-actions #edit-actions-delete {
   margin-left: 1rem;
@@ -929,6 +935,9 @@ table th a {
 }
 table th:last-child {
   text-align: right;
+}
+table th#view-created-table-column {
+  width: 12%;
 }
 table tr:nth-child(even) {
   background-color: transparent;
@@ -1052,6 +1061,12 @@ table tr td .edit-operation:hover .edit-operation-wrap {
 }
 .user-management-view header .ajax-progress-throbber {
   display: none;
+}
+.user-management-view table thead #view-nothing-1-table-column {
+  text-align: center;
+}
+.user-management-view table tbody tr td.views-field-nothing-1:last-child {
+  text-align: center;
 }
 
 #block-shush-primary-admin-actions
@@ -1570,6 +1585,33 @@ nav ul.js-pager__items li a span + span {
   font-weight: 400;
 }
 
+.api-attribute-sheet .attributes-table thead th:nth-child(2), .api-attribute-sheet .attributes-table thead th:nth-child(3) {
+  text-align: center;
+}
+.api-attribute-sheet .attributes-table tbody tr td .form-item {
+  margin-bottom: 0;
+}
+.api-attribute-sheet .attributes-table tbody tr td .form-item input {
+  height: 18px;
+}
+.api-attribute-sheet #edit-submit {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  background: #fff;
+  border: 2px solid #118df0;
+  color: #118df0;
+  border-radius: 50px;
+  padding: 15px 40px;
+  text-transform: capitalize;
+  font-size: 16px;
+  display: flex;
+  margin: 20px auto;
+}
+
+.top-actions .client-credentials-header {
+  margin-bottom: 1rem;
+}
+
 form.user-logout-confirm {
   text-align: center;
 }
@@ -1581,7 +1623,7 @@ form.user-logout-confirm #edit-submit {
 #block-shush-primary-admin-actions nav {
   list-style-type: none;
   padding: 0;
-   margin: 0 0 0.9rem;
+  margin: 0 0 0.9rem;
 }
 #block-shush-primary-admin-actions nav li {
   text-align: right;
@@ -1590,9 +1632,6 @@ form.user-logout-confirm #edit-submit {
   font-family: "Poppins", sans-serif;
   font-weight: 500;
   display: inline-block;
-
-
-
   text-transform: capitalize;
   font-size: 16px;
   transition: all 0.3s;
@@ -1600,8 +1639,6 @@ form.user-logout-confirm #edit-submit {
   overflow: hidden;
   z-index: 1;
   text-decoration: none;
- 
-
   min-width: fit-content;
   background: #fff;
   border: 2px solid #118df0;
@@ -1740,15 +1777,17 @@ form.user-logout-confirm #edit-submit {
 }
 .ui-dialog form.create-client-member-form .form-submit {
   width: 100%;
-  padding: 15px;
-  background: #118df0;
   border: none;
-  border-radius: 10px;
   font-size: 14px;
   letter-spacing: -0.2px;
   color: #fff;
   line-height: normal;
   margin-top: 1rem;
+  background: #fff;
+  border: 2px solid #118df0;
+  color: #118df0;
+  border-radius: 50px;
+  padding: 10px 15px;
 }
 .ui-dialog form.create-client-member-form #edit-user-type--wrapper .form-item-user-type {
   margin-bottom: 0;
@@ -2035,7 +2074,7 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
 #edit-api-agreement-covers legend {
   font-family: "DM Sans", sans-serif;
   font-size: 16px;
-  font-weight: 300;
+  font-weight: 700;
   margin-bottom: 14px;
   display: block;
   border-bottom: 1px solid #000;
@@ -2078,53 +2117,6 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   line-height: normal;
   color: #2e3b8f;
 }
-/* V3 UI Changes*/
-.login {height: 100vh !important;}
-.user-login main, .user-password main { margin-top: 80px;}
-.not-loggedin div#block-shush-sitelogo img { height: 85px; }
-.not-loggedin .header-site-logo { padding-top: 0 !important; margin-top: 0px !important; position: relative; top: 100px; }
-.login #block-shush-content { position: relative; top: 90px; }
-
-#block-shush-content .charts-selects select { font-family: "Roboto", sans-serif !important; font-size: 16px; }
-
-.child-menu {  display: none;  padding-left: 20px;}
-li.parent-menu.menuexpand span { color: #191a5b; font-weight: bold; opacity: 1;margin-bottom: 10px;}
-.parent-menu.menuexpand ul.child-menu { display: block; }
-
-.parent-menu::after { content: ""; background: url(../images/arrow-down.svg) no-repeat; height: 16px; width: 16px; position: absolute; right: 20px; top: 20px; }
-.parent-menu.menuexpand::after { transform: rotateX(180deg); top: 10px; }
-
-body.login.not-loggedin.path-login main {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-body.login.not-loggedin.path-login main>.header-site-logo {
-  order: 0;
-}
-
-body.login.not-loggedin.path-login main > .container {
-  order: 1;
-}
-
-body.login.not-loggedin.path-login main > .highlighted {
-  order: 2;
-}
-
-body.login.not-loggedin.path-login main > .login-footer-logo {
-  order: 3;
-}
-
-#block-shush-site-branding {
-  text-align: center;
-}
-
-body.login.not-loggedin.path-login main div#block-shush-site-branding>a>img {
-  width: 100%;
-  max-width: 400px;
-}
 
 .multiselect-native-select .multiselect {
   text-align: left !important;
@@ -2141,6 +2133,8 @@ body.login.not-loggedin.path-login main div#block-shush-site-branding>a>img {
 .multiselect-native-select .multiselect-container {
   width: 100%;
   max-height: 120px !important;
+  overflow-y: scroll !important;
+  appearance: none;
 }
 .multiselect-native-select .multiselect-container .multiselect-option .form-check {
   display: flex;

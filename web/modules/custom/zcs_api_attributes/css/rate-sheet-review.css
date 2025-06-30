@@ -16,6 +16,7 @@
 }
 .ui-dialog table.attributes-table .form-item input {
   margin: 0;
+  height: 18px;
 }
 
 .ui-dialog .field-prefix {
