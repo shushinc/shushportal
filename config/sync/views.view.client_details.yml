@@ -108,7 +108,7 @@ display:
           entity_type: null
           entity_field: label
           plugin_id: field
-          label: 'Client Name'
+          label: Client
           exclude: false
           alter:
             alter_text: false
@@ -300,7 +300,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "<div class=\"user__mangement-status {% if field_partner_status == \"inactive\" %} user-inactive {% else %} user-active  {% endif %}\">\r\n     {% if field_partner_status == \"inactive\" %} \r\n        {{ \"InActive\" }} \r\n    {% else %}\r\n      {{ field_partner_status }}\r\n   {% endif %}\r\n</div>"
+            text: "<div class=\"user__mangement-status {% if field_partner_status == \"Inactive\" %} user-inactive {% else %} user-active  {% endif %}\">\r\n     {% if field_partner_status == \"Inactive\" %} \r\n        {{ \"InActive\" }} \r\n    {% else %}\r\n      {{ field_partner_status }}\r\n   {% endif %}\r\n</div>"
             make_link: false
             path: ''
             absolute: false

@@ -83,7 +83,8 @@ class AddClientMemberForm extends FormBase {
       '#title' => $this->t('User Full Name'),
       '#required' => TRUE,
       '#attributes' => [
-        'autocomplete' => 'off'
+        'autocomplete' => 'off',
+        'maxlength' => 18,
       ],  
     ];
     $form['user_mail'] = [

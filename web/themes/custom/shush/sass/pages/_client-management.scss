@@ -219,7 +219,7 @@ body {
   legend {
     font-family: "DM Sans", sans-serif;
     font-size: 16px;
-    font-weight: 300;
+    font-weight: 700;
     margin-bottom: 14px;
     display: block;
     border-bottom: 1px solid #000;
@@ -280,6 +280,8 @@ body {
   .multiselect-container {
     width: 100%;
     max-height: 120px !important;
+    overflow-y: scroll !important;
+    appearance: none;
     .multiselect-option {
       .form-check {
         display: flex;

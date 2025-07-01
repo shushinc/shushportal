@@ -198,9 +198,7 @@ class CreateClientForm extends FormBase {
     $form['client_Layout_column_wrapper_text']['address'] = [
       '#type' => 'address',
       '#title' => $this->t('Address'),
-      '#required' => TRUE, 
-      // '#prefix' => '<div class="partner-address-details">',
-      // '#suffix' => '</div></div>',  
+      '#required' => TRUE,  
       '#after_build' => [[$this, 'customAddressAlter']],
       '#default_value' => [
         'country_code' => 'US',
@@ -228,7 +226,7 @@ class CreateClientForm extends FormBase {
       '#title' => 'Prepayment Amount',
       '#min' => 0,
       '#default_value' => 0.00,
-      '#step' => 0.001,
+     // '#step' => 0.001,
     ];
 
     $form['prepayment_balance_left'] = [
@@ -236,7 +234,7 @@ class CreateClientForm extends FormBase {
       '#title' => 'Prepayment Balance left',
       '#min' => 0,
       '#default_value' => 0.00,
-      '#step' => 0.001,
+     // '#step' => 0.001,
     ];
 
     $form['prepayment_balance_used'] = [
@@ -244,7 +242,7 @@ class CreateClientForm extends FormBase {
       '#title' => 'Prepayment Balance Used',
       '#min' => 0,
       '#default_value' => 0.00,
-      '#step' => 0.001,
+      //'#step' => 0.001,
       '#suffix' => '</div></div>',  
     ];
   
@@ -262,7 +260,13 @@ class CreateClientForm extends FormBase {
       '#prefix' => '<div class="agreement-covers">',
     ];
 
-    $contents =  \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(['type' => 'api_attributes']);
+    $nids = \Drupal::entityQuery('node')
+      ->condition('type', 'api_attributes')
+      ->sort('field_attribute_weight', 'ASC')
+      ->accessCheck()
+      ->execute();
+    $contents = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
+
     if (!empty($contents)) {
       foreach ($contents as $content) {
         $nids[] = $content->id();

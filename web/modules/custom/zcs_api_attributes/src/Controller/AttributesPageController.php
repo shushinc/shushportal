@@ -54,7 +54,20 @@ class AttributesPageController extends ControllerBase {
         ];
       }
     }
+    
+    $url = Url::fromRoute('zcs_api_attributes.api_attribute_sheet');
+    $url->setOptions([
+      'attributes' => [
+        'class' => ['button', 'button--primary', 'use-ajax'],
+        'data-dialog-type' => 'modal',
+        'data-dialog-options' => json_encode(['width' => 800]),
+      ],
+    ]);
+    $create_attribute_sheet_link = Link::fromTextAndUrl($this->t('Update API Attributes'), $url)->toRenderable();
+
     $data['final'] = $final;
+    $data['link'] = $create_attribute_sheet_link;
+
     return [
       '#theme' => 'attributes_page',
       '#content' => $data,
@@ -66,10 +79,10 @@ class AttributesPageController extends ControllerBase {
 
   private function getAttributeValue($attributeValue){
     if($attributeValue == 'yes') {
-       return Markup::create("<span class='attrib_yes'></span>");
+       return Markup::create("<span class='attrib_yes'>Yes</span>");
     }
     elseif($attributeValue == 'no') {
-      return Markup::create("<span class='attrib_no'></span>");
+      return Markup::create("<span class='attrib_no'>No</span>");
     }
     else {
       return '';

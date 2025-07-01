@@ -279,7 +279,7 @@ final class EditClientForm extends FormBase {
       '#title' => 'Prepayment Amount',
       '#min' => 0,
       '#default_value' =>  $group->get('field_prepayment_amount')->value ?? '',
-      '#step' => 0.001,
+     // '#step' => 0.001,
     ];
 
     $form['prepayment_balance_left'] = [
@@ -287,7 +287,7 @@ final class EditClientForm extends FormBase {
       '#title' => 'Prepayment Balance left',
       '#min' => 0,
       '#default_value' =>  $group->get('field_prepayment_balance_left')->value ?? '',
-      '#step' => 0.001,
+    //  '#step' => 0.001,
     ];
 
     $form['prepayment_balance_used'] = [
@@ -295,7 +295,7 @@ final class EditClientForm extends FormBase {
       '#title' => 'Prepayment Balance left',
       '#min' => 0,
       '#default_value' =>  $group->get('field_prepayment_balance_used')->value ?? '',
-      '#step' => 0.001,
+      //'#step' => 0.001,
       '#suffix' => '</div></div>',
     ];
 
@@ -313,8 +313,13 @@ final class EditClientForm extends FormBase {
     $api_aggreement_covers_array = [];
     if(!empty($group->get('field_apis_agreement_covers')->value)) {
       $api_aggreement_covers_array = json::decode($group->get('field_apis_agreement_covers')->value);
-    }
-    $contents =  \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(['type' => 'api_attributes']);
+    }   
+    $nids = \Drupal::entityQuery('node')
+      ->condition('type', 'api_attributes')
+      ->sort('field_attribute_weight', 'ASC')
+      ->accessCheck()
+      ->execute();
+      $contents = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
     if (!empty($contents)) {
       foreach ($contents as $content) {
         $nids[] = $content->id();

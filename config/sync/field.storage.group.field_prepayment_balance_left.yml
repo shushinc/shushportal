@@ -1,4 +1,4 @@
-uuid: b4a283df-cca5-45c1-ae07-e2dcc0afbd63
+uuid: 4445956e-1f74-402f-b10a-ae9d92b3820f
 langcode: en
 status: true
 dependencies:
@@ -7,10 +7,10 @@ dependencies:
 id: group.field_prepayment_balance_left
 field_name: field_prepayment_balance_left
 entity_type: group
-type: decimal
+type: integer
 settings:
-  precision: 15
-  scale: 3
+  unsigned: false
+  size: normal
 module: core
 locked: false
 cardinality: 1

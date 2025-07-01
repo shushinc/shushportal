@@ -130,21 +130,21 @@ content:
     third_party_settings: {  }
   field_prepayment_amount:
     type: number
-    weight: 33
+    weight: 38
     region: content
     settings:
       placeholder: ''
     third_party_settings: {  }
   field_prepayment_balance_left:
     type: number
-    weight: 34
+    weight: 39
     region: content
     settings:
       placeholder: ''
     third_party_settings: {  }
   field_prepayment_balance_used:
     type: number
-    weight: 38
+    weight: 40
     region: content
     settings:
       placeholder: ''
