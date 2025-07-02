@@ -73,6 +73,7 @@ class PriceRateSheet extends FormBase {
       $defaultCurrency = $this->getRequest()->get('cur');
     }
 
+    $defaultCurrency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
     // show the right currency symbol based on the chosen one.
     $number = new NumberFormatter($defaultCurrency, NumberFormatter::CURRENCY);
     $symbol = $number->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
@@ -88,7 +89,9 @@ class PriceRateSheet extends FormBase {
      $form['currencies'] = [
        '#type' => 'select',
        '#options' => $currencies,
-       '#default_value' => $defaultCurrency,
+     //  '#default_value' => $defaultCurrency,
+       '#default_value' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
+       '#disabled' => TRUE, // disables the field
        '#weight' => 0,
      ];
  
