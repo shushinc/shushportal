@@ -3,6 +3,7 @@
 		<tr>
 			<th>Submitted By</th>
 			<th>Requested Time</th>
+			<th>Effective Date</th>
 			<th>Approvers</th>
 			<th>Status</th>
 			<th>Action</th>
@@ -14,6 +15,7 @@
 				<tr>
 					<td>{{ data.submitted }}</td>
 					<td>{{ data.requested_time }}</td>
+					<td>{{ data.effective_date }}</td>
 					<td>{{ data.approver1 }}
 						<span class="{{ data.approver1_status|lower }}">{{ data.approver1_status }}</span>
 						<br>

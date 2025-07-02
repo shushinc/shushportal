@@ -71,7 +71,8 @@ class PricingOverTime extends ControllerBase {
     foreach ($resultSet as $result) {
       $prices[] = Json::decode($result->page_data);
       $headerDate[] = $result->effective_date;
-      $number = new NumberFormatter($result->currency_locale, NumberFormatter::CURRENCY);
+      $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
+      $number = new NumberFormatter($currency, NumberFormatter::CURRENCY);
       $symbols[] = $number->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
     }
     if (!empty($contents)) {
@@ -93,7 +94,6 @@ class PricingOverTime extends ControllerBase {
       ],
     ]);
     $pricing_api_link = Link::fromTextAndUrl($this->t('Proposed API Pricing'), $url)->toRenderable();
-    
     $data['link'] = $pricing_api_link ;
     $data['symbols'] = $symbols;
     $data['create_rate_sheet_url'] = $url;
@@ -138,7 +138,7 @@ class PricingOverTime extends ControllerBase {
 
       // fetch results
     $query = $this->database->select('attributes_page_data', 'apd')
-      ->fields('apd', ['id', 'submit_by', 'approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'created']);
+      ->fields('apd', ['id', 'submit_by', 'approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'created', 'effective_date']);
     if (!empty($request->get('status'))) {
       $query->condition('apd.attribute_status', $request->get('status'));
     }
@@ -166,6 +166,7 @@ class PricingOverTime extends ControllerBase {
           'approver2_status' => $statuses[$result->approver2_status],
           'status' => $statuses[$result->attribute_status],
           'requested_time' => date('Y-m-d', $result->created),
+          'effective_date' => $result->effective_date,
           'url' => Url::fromRoute('zcs_api_attributes.rate_sheet.review', ['id' => $result->id])
         ];
       }

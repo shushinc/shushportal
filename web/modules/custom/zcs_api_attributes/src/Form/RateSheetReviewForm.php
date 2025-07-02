@@ -67,9 +67,10 @@ class RateSheetReviewForm extends FormBase {
       ->fields('apd', ['approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status','currency_locale', 'effective_date', 'attribute_status', 'page_data'])
       ->condition('id', $id)
       ->execute()->fetchObject();
-
+      
+    $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
     // show the right currency symbol based on the chosen one.
-    $number = new NumberFormatter($data->currency_locale ?? 'en_US', NumberFormatter::CURRENCY);
+    $number = new NumberFormatter($currency, NumberFormatter::CURRENCY);
     $symbol = $number->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
 
     if (!empty($data)) {
@@ -95,7 +96,8 @@ class RateSheetReviewForm extends FormBase {
     $form['currencies'] = [
       '#type' => 'select',
       '#options' => $currencies,
-      '#default_value' => $data->currency_locale ?? 'en_US',
+      '#default_value' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
+      // '#default_value' => $data->currency_locale ?? 'en_US',
       '#disabled' => TRUE,
     ];
 
