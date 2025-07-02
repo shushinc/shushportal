@@ -9,7 +9,7 @@ SELECT
   NULL AS `Transaction_Type`,
   0 AS `Total_Volume`
 FROM (
-  SELECT DATE(CONCAT({{year_filter}}, '-', LPAD(MONTH(STR_TO_DATE({{month_filter}}, '%b')), 2, '0'), '-', LPAD(seq + 1, 2, '0'))) AS date
+  SELECT DATE(CONCAT(:year_filter, '-', LPAD(MONTH(STR_TO_DATE(:month_filter, '%b')), 2, '0'), '-', LPAD(seq + 1, 2, '0'))) AS date
   FROM (
     SELECT 0 AS seq UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
     UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9
@@ -19,12 +19,12 @@ FROM (
     UNION ALL SELECT 25 UNION ALL SELECT 26 UNION ALL SELECT 27 UNION ALL SELECT 28 UNION ALL SELECT 29
     UNION ALL SELECT 30
   ) AS days
-  WHERE seq < DAY(LAST_DAY(DATE(CONCAT({{year_filter}}, '-', LPAD(MONTH(STR_TO_DATE({{month_filter}}, '%b')), 2, '0'), '-01'))))
+  WHERE seq < DAY(LAST_DAY(DATE(CONCAT(:year_filter, '-', LPAD(MONTH(STR_TO_DATE(:month_filter, '%b')), 2, '0'), '-01'))))
 ) d
 CROSS JOIN (
   SELECT name FROM taxonomy_term_field_data
   WHERE vid = 'analytics_attributes'
-  [[AND name = {{attribute_filter}}]]
+  [[AND name = :attribute_filter]]
 ) a
 
 UNION
@@ -89,12 +89,12 @@ LEFT JOIN node__field_api_volume_in_mil
   AND node.vid = node__field_api_volume_in_mil.revision_id
   AND node.type = node__field_api_volume_in_mil.bundle
 WHERE node.type = 'analytics'
-  [[AND taxonomy_term_field_data_0.name = {{attribute_filter}}]]
-  [[AND taxonomy_term_field_data_1.name = {{carrier_filter}}]]
-  [[AND groups_field_data.label = {{client_filter}}]]
-  [[AND taxonomy_term_field_data_2.name = {{end_customer_filter}}]]
-  [[AND DATE_FORMAT(CAST(node__field_date.field_date_value AS DATETIME), '%b') = {{month_filter}}]]
-  [[AND CAST(YEAR(CAST(node__field_date.field_date_value AS DATETIME)) AS CHAR) = {{year_filter}}]]
+  -- [[AND taxonomy_term_field_data_0.name = :attribute_filter]]
+  -- [[AND taxonomy_term_field_data_1.name = :carrier_filter]]
+  -- [[AND groups_field_data.label = :client_filter]]
+  -- [[AND taxonomy_term_field_data_2.name = :end_customer_filter]]
+  -- [[AND DATE_FORMAT(CAST(node__field_date.field_date_value AS DATETIME), '%b') = :month_filter]]
+  -- [[AND CAST(YEAR(CAST(node__field_date.field_date_value AS DATETIME)) AS CHAR) = :year_filter]]
 GROUP BY
   `Date`,
   `Year`,

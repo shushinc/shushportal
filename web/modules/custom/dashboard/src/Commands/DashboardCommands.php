@@ -6,7 +6,6 @@ use Drupal\dashboard\Service\DashboardQueryService;
 use Drush\Attributes as CLI;
 use Drush\Commands\DrushCommands;
 use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Dashboard Drush commands.
