@@ -1,0 +1,13 @@
+chartjs:
+  version: 4.4.0
+  js:
+    https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js: { type: external, minified: true }
+    assets/js/apexcharts.min.js: {}
+    assets/js/dashboard.js: {}
+  css:
+    component:
+      assets/css/apexcharts.css: {}
+      assets/css/dashboard.css: {}
+  dependencies:
+    - core/drupal
+    - core/jquery

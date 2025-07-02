@@ -1,0 +1,23 @@
+dashboard.main:
+  path: '/new-dashboard'
+  defaults:
+    _controller: '\Drupal\dashboard\Controller\DashboardController::main'
+    _title: 'Dashboard'
+  requirements:
+    _permission: 'access dashboard'
+
+dashboard.settings:
+  path: '/admin/config/dashboard/settings'
+  defaults:
+    _form: '\Drupal\dashboard\Plugin\Form\DashboardSettingsForm'
+    _title: 'Dashboard Settings'
+  requirements:
+    _permission: 'administer dashboard'
+
+# dashboard.api.data:
+#   path: '/dashboard/api/data'
+#   defaults:
+#     _controller: '\Drupal\dashboard\Controller\DashboardController::apiData'
+#   requirements:
+#     _permission: 'access dashboard'
+#   methods: [GET]
