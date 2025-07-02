@@ -57,6 +57,8 @@ class DashboardQueryService {
         throw new \InvalidArgumentException('Only SELECT queries are allowed for security reasons.');
       }
 
+      $query = $this->processConditionalQuery($query, $args);
+
       // Log the query execution
       $this->logger->info('Executing query: @query', ['@query' => $query]);
 
@@ -144,6 +146,37 @@ class DashboardQueryService {
     }
 
     return TRUE;
+  }
+
+  /**
+   * Process SQL query with conditional segments.
+   */
+  private function processConditionalQuery($query, array $parameters = []) {
+    // Pattern to match [[...]] segments
+    $pattern = '/\[\[(.*?)\]\]/';
+
+    // Process each conditional segment
+    $processed_query = preg_replace_callback($pattern, function ($matches) use ($parameters) {
+      $segment = $matches[1]; // Content between [[ and ]]
+
+      // Extract parameter name from the segment (look for :parameter_name)
+      if (preg_match('/:(\w+)/', $segment, $param_matches)) {
+        $param_name = $param_matches[1];
+
+        // Include segment only if parameter exists and has a value
+        if (isset($parameters[$param_name]) && $parameters[$param_name] !== null && $parameters[$param_name] !== '') {
+          return $segment; // Return the segment without [[ ]]
+        }
+      }
+
+      return ''; // Remove the entire segment
+    }, $query);
+
+    // Clean up extra whitespace and line breaks
+    $processed_query = preg_replace('/\s+/', ' ', $processed_query);
+    $processed_query = preg_replace('/\s*--\s*$/', '', $processed_query); // Remove trailing --
+
+    return trim($processed_query);
   }
 
 }

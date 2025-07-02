@@ -59,6 +59,9 @@ final class DashboardCommands extends DrushCommands {
   #[CLI\Option(name: 'query', description: 'The SQL query to execute (SELECT statements only)')]
   #[CLI\Option(name: 'format', description: 'Output format: table, json, csv', suggestedValues: ['table', 'json', 'csv'])]
   #[CLI\Option(name: 'limit', description: 'Limit the number of rows returned')]
+  #[CLI\Option(name: 'filter-year', description: 'Filter by year')]
+  #[CLI\Option(name: 'filter-month', description: 'Filter by month')]
+  #[CLI\Option(name: 'filter-attribute', description: 'Filter by attribute')]
   #[CLI\Usage(name: 'drush dashboard:query --query="SELECT * FROM {node} LIMIT 10"', description: 'Execute a SELECT query')]
   #[CLI\Usage(name: 'drush dq --query="SELECT nid, title FROM {node_field_data} WHERE status = 1" --format=json', description: 'Execute query with JSON output')]
   #[CLI\Usage(name: 'cat query.sql | drush dq --format=table', description: 'Execute query from file via pipe')]
@@ -66,7 +69,24 @@ final class DashboardCommands extends DrushCommands {
     'query' => NULL,
     'format' => 'table',
     'limit' => NULL,
+    'filter-year' => NULL,
+    'filter-month' => NULL,
+    'filter-attribute' => NULL,
   ]): void {
+
+    // Get all input options to capture dynamic filter arguments
+    $input = $this->input();
+    $allOptions = [];
+
+    // Get all option definitions from the command
+    foreach ($input->getOptions() as $name => $value) {
+      if ($value !== NULL) {
+        $allOptions[$name] = $value;
+      }
+    }
+
+    // Extract dynamic filter arguments
+    $filters = $this->extractFilterArguments($allOptions);
 
     $query = $options['query'];
     $format = $options['format'] ?? 'table';
@@ -102,7 +122,7 @@ final class DashboardCommands extends DrushCommands {
     }
 
     // Execute the query
-    $result = $this->queryService->executeQuery($query);
+    $result = $this->queryService->executeQuery($query, $filters);
 
     // Handle errors
     if (!$result['success']) {
@@ -218,6 +238,31 @@ final class DashboardCommands extends DrushCommands {
 
       $this->output()->writeln(implode(',', $csvRow));
     }
+  }
+
+  /**
+   * Extract filter arguments from options.
+   *
+   * @param array $options
+   *   All command options.
+   *
+   * @return array
+   *   Array of filter arguments with 'filter-' prefix removed.
+   */
+  private function extractFilterArguments(array $options): array {
+    $filters = [];
+
+    foreach ($options as $key => $value) {
+      // Check if the option starts with 'filter-'
+      if (strpos($key, 'filter-') === 0 && $value !== NULL && $value !== '') {
+        // Remove 'filter-' prefix and convert to snake_case for service use
+        $filterKey = str_replace('filter-', '', $key);
+        $filterKey = str_replace('-', '_', $filterKey);
+        $filters[$filterKey] = $value;
+      }
+    }
+
+    return $filters;
   }
 
 }
