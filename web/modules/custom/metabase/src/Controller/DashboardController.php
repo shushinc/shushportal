@@ -124,7 +124,7 @@ class DashboardController extends ControllerBase {
    * @return array|RedirectResponse
    *   A render array for the dashboard or a redirect if there's an error.
    */
-  public function dashboard() {
+  public function dashboard($name = null) {
 
     $build = [
       '#cache' => [
@@ -148,6 +148,9 @@ class DashboardController extends ControllerBase {
     $frames = ['other'];
     if (in_array('administrator', $roles) || in_array('carrier_admin', $roles)) {
       $frames = ['top', 'main'];
+      if ($name == 'mb') {
+        $frames = ['elango', 'main'];
+      }
     }
 
     $config = $this->configFactory->get('metabase.settings');
