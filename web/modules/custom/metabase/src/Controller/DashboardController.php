@@ -148,7 +148,7 @@ class DashboardController extends ControllerBase {
     $frames = ['other'];
     if (in_array('administrator', $roles) || in_array('carrier_admin', $roles)) {
       $frames = ['top', 'main'];
-      if ($name == 'mb') {
+      if ($name != 'mb') {
         $frames = ['elango', 'main'];
       }
     }
