@@ -366,23 +366,10 @@ form .js-form-item input[aria-invalid="true"]:focus {
   padding: 10px 16px;
   position: relative;
 }
-.user-logged-in .region-primary-menu ul li a::after {
-  content: "";
-  border-right: 3px solid transparent;
-  position: absolute;
-  right: -16px;
-  height: 100%;
-  width: 100%;
-  margin-top: -21px;
-  display: block;
-}
 .user-logged-in .region-primary-menu ul li a:hover, .user-logged-in .region-primary-menu ul li a.is-active {
   color: #191a5b;
   opacity: 1;
   font-weight: 600;
-}
-.user-logged-in .region-primary-menu ul li a:hover::after, .user-logged-in .region-primary-menu ul li a.is-active::after {
-  border-right: 3px solid #0f8df0;
 }
 .user-logged-in .region-primary-menu ul li ul {
   padding: 0;
@@ -412,6 +399,11 @@ form .js-form-item input[aria-invalid="true"]:focus {
 }
 .user-logged-in .region-primary-menu ul li.menu-item--expanded.menuexpand ul {
   display: block;
+}
+.user-logged-in .region-primary-menu ul li.menu-item--expanded.menu-item--active-trail span {
+  color: #191a5b;
+  opacity: 1;
+  font-weight: 700;
 }
 .user-logged-in .region-primary-menu ul li.menu-item--expanded.menu-item--active-trail ul {
   display: block;
@@ -699,6 +691,13 @@ main {
   max-width: 400px;
   background: #118df0;
   border-radius: 10px;
+  color: #ffffff;
+}
+.user-login main #block-shush-content form #edit-actions .form-submit:hover,
+.user-register main #block-shush-content form #edit-actions .form-submit:hover,
+.user-password main #block-shush-content form #edit-actions .form-submit:hover,
+.login main #block-shush-content form #edit-actions .form-submit:hover {
+  color: #118df0;
 }
 .user-login main .login-footer-logo,
 .user-register main .login-footer-logo,
@@ -1572,13 +1571,17 @@ nav ul.js-pager__items {
   margin: 20px 0;
 }
 nav ul.js-pager__items li {
-  padding: 20px;
+  padding: 5px 16px;
+  background: #ffff;
+  margin: 2px;
+  border-radius: 5px;
+  border: 1px solid #eee;
 }
 nav ul.js-pager__items li a {
   text-decoration: none;
 }
 nav ul.js-pager__items li a span + span {
-  font-size: 24px;
+  font-size: 16px;
 }
 
 .api-attribute-status table tr td:nth-child(2) {
