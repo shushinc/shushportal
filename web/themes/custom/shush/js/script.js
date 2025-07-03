@@ -25,6 +25,11 @@
       $(".zcs-aws-app-list table tr td.api-keys .pwd-toggle").unbind().on("click", function(event) {
         $(this).parent().toggleClass('password-show');
         $('.zcs-aws-app-list table tr td').not(this).parent().removeClass('password-show');
+
+      $(".zcs-kong-app-list table tr td.api-keys .pwd-toggle").unbind().on("click", function(event) {
+        $(this).parent().toggleClass('password-show');
+        $('.zcs-kong-app-list table tr td').not(this).parent().removeClass('password-show');
+      });
       });
       
 
@@ -149,7 +154,6 @@
         autoplaySpeed: 5000,
       }); 
       $(".site__menu ul.menu .menu-item--expanded").unbind().on( "click", function(event) {
-        console.log('menu expand');
         $(this).toggleClass('menuexpand');
       });
       $(document).ready(function() {
@@ -170,17 +174,21 @@ jQuery(document).ready(function($){
   // Show child-menu if it contains an active link
   $('.child-menu').has('a.is-active').show().closest('.parent-menu').addClass('menuexpand');
   // Toggle child menu visibility when the parent menu is clicked
-  $('.parent-menu > span').click(function(){
+  $('.parent-menu > span').click(function() {
     var $parentMenu = $(this).parent('.parent-menu');
     var $childMenu = $(this).next('.child-menu');
-    // Toggle child menu visibility
+  
+    // Collapse all other menus
+    $('.parent-menu').not($parentMenu).removeClass('menuexpand');
+    $('.parent-menu .child-menu').not($childMenu).slideUp();
+  
+    // Toggle clicked menu
     $childMenu.stop(true, true).slideToggle();
-    // Add or remove 'menuexpand' class when the menu is toggled
     $parentMenu.toggleClass('menuexpand');
   });
-});
 
-
-jQuery(document).ready(function($){
+  $('.anchor-dropdown-btn').click(function(e) {
+    e.preventDefault();
+  });
   $('.login .header-site-logo').insertBefore('main .highlighted');
 });

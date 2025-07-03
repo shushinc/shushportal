@@ -248,24 +248,11 @@
         padding: 10px 16px;
         position: relative;
         a {
-          &::after {
-            content: "";
-            border-right: 3px solid transparent;
-            position: absolute;
-            right: -16px;
-            height: 100%;
-            width: 100%;
-            margin-top: -21px;
-            display: block;
-          }
           &:hover,
           &.is-active {
             color: #191a5b;
             opacity: 1;
             font-weight: 600;
-            &::after {
-              border-right: 3px solid $link-color;
-            }
           }
         }
         ul {
@@ -299,6 +286,11 @@
             }
           }
           &.menu-item--active-trail {
+            span {
+              color: #191a5b;
+              opacity: 1;
+              font-weight: 700;
+            }
             ul {
               display: block;
             }

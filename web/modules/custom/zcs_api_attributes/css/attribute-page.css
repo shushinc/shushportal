@@ -435,3 +435,25 @@ table.attributes-table tr td:first-child {
   text-transform: capitalize;
   font-size: 16px;
 }
+
+.message {
+  background-color: #eeb34c;
+  border-radius: 5px;
+  padding: 10px 50px;
+  font-size: 14px;
+  font-family: "Montserrat", sans-serif;
+  line-height: normal;
+  position: relative;
+}
+
+.api-attribute-status .ui-dialog .api-attribute-sheet .message::before {
+  content: "";
+  background: url("/themes/custom/shush/images/time.png") no-repeat;
+  height: 24px;
+  width: 24px;
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  margin-top: -14px;
+  background-size: cover;
+}

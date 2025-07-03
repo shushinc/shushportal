@@ -65,15 +65,25 @@ main {
 }
 #block-shush-page-title h1 {
   font-family: $roboto;
-  font-size: 22px;
+  font-size: 34px;
+  line-height: 42px;
   font-weight: 700;
   color: rgba(43, 54, 116, 1);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.2px;
   text-align: left;
-  margin: 2rem 0;
+  margin: 2rem 0 0;
 }
-
+.create-client {
+  #block-shush-page-title h1 {
+    margin-bottom: 2rem;
+  }
+}
+.rate-sheet-price {
+  #block-shush-page-title h1 {
+    margin-bottom: 0.5rem;
+  }
+}
 .user-invite,
 .user-login,
 .user-register,
@@ -172,6 +182,10 @@ main {
           max-width: 400px;
           background: rgba(17, 141, 240, 1);
           border-radius: 10px;
+          color: $white;
+          &:hover {
+            color: #118df0;
+          }
         }
       }
     }
@@ -305,9 +319,7 @@ form {
       font-family: $poppins;
       font-weight: 500;
       display: inline-block;
-      padding: 10px 60px;
       border-radius: 3px;
-      color: $white;
       text-transform: capitalize;
       font-size: 18px;
       transition: all 0.3s;
@@ -315,13 +327,16 @@ form {
       overflow: hidden;
       z-index: 1;
       text-decoration: none;
-      background-color: $light-grey;
-      border: none;
+      background-color: $white;
       width: 100%;
       max-width: 320px;
+      border: 2px solid #118df0;
+      color: #118df0;
+      border-radius: 50px;
+      padding: 10px 15px;
       &:hover {
-        color: #fff;
-        background: $primary-color;
+        color: #118df0;
+        background: $white !important;
       }
     }
     #edit-actions-delete {
@@ -425,6 +440,9 @@ table {
     }
     &:last-child {
       text-align: right;
+    }
+    &#view-created-table-column {
+      width: 12%;
     }
   }
   tr {
@@ -555,6 +573,18 @@ table {
     }
     .ajax-progress-throbber {
       display: none;
+    }
+  }
+  table {
+    thead {
+      #view-nothing-1-table-column {
+        text-align: center;
+      }
+    }
+    tbody {
+      tr td.views-field-nothing-1:last-child {
+        text-align: center;
+      }
     }
   }
 }
@@ -1059,11 +1089,15 @@ nav {
     justify-content: center;
     margin: 20px 0;
     li {
-      padding: 20px;
+      padding: 5px 16px;
+      background: #ffff;
+      margin: 2px;
+      border-radius: 5px;
+      border: 1px solid #eee;
       a {
         text-decoration: none;
         span + span {
-          font-size: 24px;
+          font-size: 16px;
         }
       }
     }
@@ -1075,5 +1109,49 @@ nav {
     &:nth-child(2) {
       font-weight: 400;
     }
+  }
+}
+
+.api-attribute-sheet {
+  .attributes-table {
+    thead {
+      th {
+        &:nth-child(2),
+        &:nth-child(3) {
+          text-align: center;
+        }
+      }
+    }
+    tbody {
+      tr {
+        td {
+          .form-item {
+            margin-bottom: 0;
+            input {
+              height: 18px;
+            }
+          }
+        }
+      }
+    }
+  }
+  #edit-submit {
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    background: #fff;
+    border: 2px solid #118df0;
+    color: #118df0;
+    border-radius: 50px;
+    padding: 15px 40px;
+    text-transform: capitalize;
+    font-size: 16px;
+    display: flex;
+    margin: 20px auto;
+  }
+}
+
+.top-actions {
+  .client-credentials-header {
+    margin-bottom: 1rem;
   }
 }
