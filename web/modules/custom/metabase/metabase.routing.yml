@@ -6,13 +6,12 @@ metabase.settings:
   requirements:
     _permission: 'administer module reports'
 
-
 metabase.dashboard:
-  path: '/dashboard'
+  path: '/dashboard/{name}'
   defaults:
     _controller: '\Drupal\metabase\Controller\DashboardController::dashboard'
     _title: 'Analytics'
-    group: null
+    name: null
   requirements:
     _access: 'TRUE'
     # _permission: 'access metalite dashboard'

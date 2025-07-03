@@ -91,6 +91,14 @@ class MetabaseSettingsForm extends ConfigFormBase {
       '#required' => TRUE,
     ];
 
+    $form['embeding_settings']['elango_top_dashboard_id'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Dashboard ID (Elango - Top - Carrier Admin)'),
+      '#description' => $this->t('Enter the default Dashboard ID.'),
+      '#default_value' => $config->get('embeding.dashboard.elango'),
+      '#required' => TRUE,
+    ];
+
     $form['embeding_settings']['main_dashboard_id'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Dashboard ID (Main - Carrier Admin)'),
@@ -140,6 +148,7 @@ class MetabaseSettingsForm extends ConfigFormBase {
       ->set('embeding.base_url', $form_state->getValue('embed_base_url'))
       ->set('embeding.force_https', $form_state->getValue('force_https'))
       ->set('embeding.api_token', $form_state->getValue('secret_key'))
+      ->set('embeding.dashboard.elango', $form_state->getValue('elango_top_dashboard_id'))
       ->set('embeding.dashboard.top', $form_state->getValue('top_dashboard_id'))
       ->set('embeding.dashboard.main', $form_state->getValue('main_dashboard_id'))
       ->set('embeding.dashboard.other', $form_state->getValue('other_dashboard_id'))
