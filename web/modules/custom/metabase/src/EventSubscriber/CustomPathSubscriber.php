@@ -59,6 +59,20 @@ class CustomPathSubscriber implements EventSubscriberInterface {
       $event->setResponse($response);
       return;
     }
+
+    // Define patterns that you want to catch.
+    if (preg_match('|^/fonts/|', $path)) {
+      $response = $this->proxyService->processFont($event->getRequest(), $path);
+      $event->setResponse($response);
+      return;
+    }
+
+    // Define patterns that you want to catch.
+    if (preg_match('|^/app/|', $path)) {
+      $response = $this->proxyService->processFont($event->getRequest(), $path);
+      $event->setResponse($response);
+      return;
+    }
   }
 
 }

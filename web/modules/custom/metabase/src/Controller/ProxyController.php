@@ -54,4 +54,20 @@ class ProxyController extends ControllerBase {
     return $response;
   }
 
+  /**
+   * Proxies requests to the target site.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current request.
+   * @param string $path
+   *   The path to proxy.
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   *   The proxied response.
+   */
+  public function fonts(Request $request, $path = '') {
+    $response = $this->proxyService->processFont($request, $path);
+    return $response;
+  }
+
 }

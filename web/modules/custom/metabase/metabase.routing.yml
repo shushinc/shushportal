@@ -14,7 +14,6 @@ metabase.dashboard:
     name: null
   requirements:
     _access: 'TRUE'
-    # _permission: 'access metalite dashboard'
 
 metabase.proxy:
   path: '/proxy'
@@ -24,7 +23,6 @@ metabase.proxy:
   methods: [GET, POST, PUT, DELETE, HEAD, OPTIONS, PATCH]
   requirements:
     _access: 'TRUE'
-    # _permission: 'access content'
   options:
     no_cache: 'TRUE'
 
@@ -36,7 +34,22 @@ metabase.proxy.path:
   methods: [GET, POST, PUT, DELETE, HEAD, OPTIONS, PATCH]
   requirements:
      _access: 'TRUE'
-    # _permission: 'access content'
+  options:
+    no_cache: 'TRUE'
+    parameters:
+      path:
+        type: path
+
+metabase.fonts.path:
+  path: '/fonts/{path?}'
+  defaults:
+    _controller: '\Drupal\metabase\Controller\ProxyController::fonts'
+    _title: 'Fonts'
+    path: ''
+  methods: [GET, POST, PUT, DELETE, HEAD, OPTIONS, PATCH]
+  requirements:
+    path: .+
+    _access: 'TRUE'
   options:
     no_cache: 'TRUE'
     parameters:
