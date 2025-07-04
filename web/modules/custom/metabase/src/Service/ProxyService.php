@@ -259,7 +259,7 @@ class ProxyService {
   }
 
   private function cachedContent(Request $request, $type, $content, $path, $queryString) {
-    $cache_key = 'metabase:' . $type . ':' . md5($path) . ':' . md5($queryString);
+    $cache_key = 'metabase:' . $type . ':' . md5($path ?? ' ') . ':' . md5($queryString ?? '?');
     $config = $this->configFactory->get('metabase.settings');
 
     // Try to get from cache first
