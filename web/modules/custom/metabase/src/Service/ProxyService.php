@@ -127,52 +127,10 @@ class ProxyService {
         }
       }
 
-      $contentType = $proxyResponse->getHeader('Content-Type');
-
-      if (is_array($contentType) && count($contentType) > 0) {
-        $contentType = $contentType[0];
-        \Drupal::logger('metabase')->info($contentType);
-      }
-
-      // if (!$request->isMethod('GET')) {
-      //   // For other requests, return the response as is.
-      //   $response = new CacheableResponse(
-      //     (string) $proxyResponse->getBody(),
-      //     $proxyResponse->getStatusCode(),
-      //     $responseHeaders
-      //   );
-
-      //   return $response;
-      // }
-
-      // if ($contentType == 'text/html;charset=utf-8') {
-      //   // Get the entire content.
-      //   $content = (string) $proxyResponse->getBody();
-      //   $content = str_replace('"app/', '"proxy/app/', $content);
-
-      //   // Create and return the response.
-      //   $response = new CacheableResponse(
-      //     $content,
-      //     $proxyResponse->getStatusCode(),
-      //     $responseHeaders
-      //   );
-
-      //   return $response;
-      // }
-
-      // if ($contentType == 'text/plain') {
-      //   // Get the entire content.
-      //   $content = (string) $proxyResponse->getBody();
-      //   $content = str_replace('"app/', '"proxy/app/', $content);
-
-      //   // Create and return the response.
-      //   $response = new CacheableResponse(
-      //     $content,
-      //     $proxyResponse->getStatusCode(),
-      //     $responseHeaders
-      //   );
-
-      //   return $response;
+      // $contentType = $proxyResponse->getHeader('Content-Type');
+      // if (is_array($contentType) && count($contentType) > 0) {
+      //   $contentType = $contentType[0];
+      //   \Drupal::logger('metabase')->info($contentType);
       // }
 
       // For GET requests that match CSS files, modify the content.
@@ -227,7 +185,77 @@ class ProxyService {
     catch (RequestException $e) {
       return new Response('Error: ' . $e->getMessage(), 500);
     }
+  }
 
+  /**
+   * Process a request.
+   */
+  public function processFont(Request $request, $path = '') {
+    $config = $this->configFactory->get('metabase.settings');
+
+    $targetSite = $config->get('metabase.external.base_url');
+
+    // Construct the target URL.
+    $targetUrl = $targetSite . $path;
+    if (empty($path)) {
+      $targetUrl = $targetSite;
+    }
+
+    // Get query parameters.
+    $queryString = $request->getQueryString();
+    if ($queryString) {
+      $targetUrl .= '?' . $queryString;
+    }
+
+    // Get request headers.
+    $headers = [];
+    foreach ($request->headers->all() as $key => $value) {
+      if (strtolower($key) !== 'host') {
+        $headers[$key] = $value[0];
+      }
+    }
+
+    try {
+      // Make the request to the target site.
+      $options = [
+        'headers' => $headers,
+        'body' => $request->getContent(),
+        // 'cookies' => $request->cookies->all(),
+        'allow_redirects' => FALSE,
+        'http_errors' => FALSE,
+      ];
+
+      // Send the request.
+      $proxyResponse = $this->httpClient->request(
+        $request->getMethod(),
+        $targetUrl,
+        $options
+      );
+
+      // Get response headers.
+      $responseHeaders = [];
+      $excludedHeaders = ['content-encoding', 'content-length', 'transfer-encoding', 'connection'];
+
+      foreach ($proxyResponse->getHeaders() as $name => $values) {
+        if (!in_array(strtolower($name), $excludedHeaders)) {
+          $responseHeaders[$name] = implode(', ', $values);
+        }
+      }
+
+      // Create and return the response.
+      $response = new Response(
+        $proxyResponse->getBody(),
+        $proxyResponse->getStatusCode(),
+        $responseHeaders
+      );
+      $response->setMaxAge(3600);
+      $response->setPublic();
+
+      return $response;
+    }
+    catch (RequestException $e) {
+      return new Response('Error: ' . $e->getMessage(), 500);
+    }
   }
 
   private function cachedContent(Request $request, $type, $content, $path, $queryString) {
