@@ -56,6 +56,19 @@ a {
 
 /* Dashboard - Cards */
 
+#iframe-elango div.react-grid-layout {
+  display: flex !important;
+  flex-flow: row wrap !important;
+  height: auto !important;
+  width: auto !important;
+}
+
+#iframe-elango div.react-grid-layout>.react-grid-item {
+  flex-basis: calc(100% / 5) !important;
+  position: relative !important;
+  transform: none !important;
+}
+
 .dashcard,
 .decrease,
 .increase,

@@ -53,17 +53,28 @@
 
 (function (document, window) {
   'use strict';
+
+  const url = window.location.href;
+  const hashPart = url.split('#')[1];
+  let id = null;
+
+  if (hashPart) {
+    const params = new URLSearchParams(hashPart);
+    id = params.get('id');
+    document.getElementsByTagName('body')[0].setAttribute('id', id);
+  }
+
   // Listen for clicks and send to parent
   document.addEventListener('click', function (event) {
 
-    const url = window.location.href;
-    const hashPart = url.split('#')[1];
-    let id = null;
+    // const url = window.location.href;
+    // const hashPart = url.split('#')[1];
+    // let id = null;
 
-    if (hashPart) {
-      const params = new URLSearchParams(hashPart);
-      id = params.get('id');
-    }
+    // if (hashPart) {
+    //   const params = new URLSearchParams(hashPart);
+    //   id = params.get('id');
+    // }
 
     window.parent.postMessage({
       type: 'iframe-click',
