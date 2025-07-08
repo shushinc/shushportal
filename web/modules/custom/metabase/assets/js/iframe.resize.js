@@ -28,6 +28,9 @@
       // Function to resize iframe
       function resizeIframe(iframe) {
         let boddy = iframe.contentDocument.body;
+        if (boddy.querySelectorAll('div#root > div > div')[0] === undefined) {
+          return;
+        }
         let height = boddy.querySelectorAll('div#root > div > div')[0].clientHeight;
         if (height < 450) {
           height = 290;
@@ -37,3 +40,23 @@
     }
   };
 })(Drupal, once);
+
+
+// In parent document
+window.addEventListener('message', function (event) {
+  const iframes = document.getElementsByTagName('iframe');
+
+  if (event.data.type === 'iframe-click') {
+    const sourceIframe = event.data.iframeId;
+    const sourceElement = this.document.getElementById(sourceIframe);
+
+    for (const iframe of iframes) {
+      if (iframe !== sourceElement) {
+        iframe.contentWindow.postMessage({
+          type: 'propagated-click',
+          sourceIframe: sourceIframe,
+        }, '*');
+      }
+    }
+  }
+});

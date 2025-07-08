@@ -205,7 +205,8 @@ class DashboardController extends ControllerBase {
         '#type' => 'html_tag',
         '#tag' => 'iframe',
         '#attributes' => [
-          'src' => $embed_url,
+          'id' => "iframe-{$value}",
+          'src' => $embed_url . "&id=iframe-{$value}",
           'frameborder' => '0',
           'width' => '100%',
           // 'height' => '800px',

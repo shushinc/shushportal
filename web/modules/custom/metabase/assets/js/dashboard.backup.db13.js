@@ -50,3 +50,34 @@
   }, 50);
 }
 )();
+
+(function (document, window) {
+  'use strict';
+  // Listen for clicks and send to parent
+  document.addEventListener('click', function (event) {
+
+    const url = window.location.href;
+    const hashPart = url.split('#')[1];
+    let id = null;
+
+    if (hashPart) {
+      const params = new URLSearchParams(hashPart);
+      id = params.get('id');
+    }
+
+    window.parent.postMessage({
+      type: 'iframe-click',
+      iframeId: id,
+    }, '*');
+  });
+
+  // Listen for propagated clicks from parent
+  window.addEventListener('message', function (event) {
+    if (event.data.type === 'propagated-click' && event.data.targetIframe !== window.name) {
+      if (event.data.sourceIframe) {
+        console.log('Received click from iframe:', event.data.sourceIframe);
+        // Call the event than hides the dropdown options in the filters.
+      }
+    }
+  });
+})(document, window);
