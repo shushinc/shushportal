@@ -54,6 +54,21 @@ a {
   color: red !important;
 }
 
+/* Dashboard - Cards */
+
+#iframe-elango div.react-grid-layout {
+  display: flex !important;
+  flex-flow: row wrap !important;
+  height: auto !important;
+  width: auto !important;
+}
+
+#iframe-elango div.react-grid-layout>.react-grid-item {
+  flex-basis: calc(100% / 5) !important;
+  position: relative !important;
+  transform: none !important;
+}
+
 .dashcard,
 .decrease,
 .increase,
@@ -150,31 +165,6 @@ div[data-testid="dashboard-parameters-widget-container"] {
   content: "\25BC";
 }
 
-@media (min-width: 1190px) {
-  div[data-testid="fixed-width-filters"]>div {
-    flex-wrap: nowrap;
-    width: 100%;
-  }
-}
-
-div[data-testid="fixed-width-filters"]>div>fieldset {
-  flex-basis: 16.6%;
-}
-
-div[data-testid="fixed-width-filters"]>div>fieldset a .text-nowrap {
-  text-overflow: ellipsis;
-  max-width: 250px;
-  overflow: hidden;
-}
-
-div.LineAreaBarChart.CardVisualization>div:nth-child(2)>div:nth-child(1) {
-  display: none !important;
-}
-
-div.LineAreaBarChart.CardVisualization>div:nth-child(2)>div:last-child {
-  display: flex !important;
-}
-
 div.dashcard>div>div>div>div:nth-child(2) {
   padding: 0px 16px !important;
 }
@@ -205,4 +195,39 @@ div.DashCard.container-small {
 .increase h1:before, .decrease h1:before {
   font-size: 24px;
   padding: 0 8px;
+}
+
+/* Dashboard - Charts */
+
+@media (min-width: 1190px) {
+  div[data-testid="fixed-width-filters"]>div {
+    flex-wrap: nowrap;
+    width: 100%;
+  }
+}
+
+div[data-testid="fixed-width-filters"]>div>div {
+  flex-basis: 16.6%;
+}
+
+div[data-testid="fixed-width-filters"]>div>div fieldset a .text-nowrap {
+  text-overflow: ellipsis;
+  max-width: 250px;
+  overflow: hidden;
+}
+
+div[data-viz-ui-name="Bar"]>div>div>div:nth-child(2)>div:nth-child(1) {
+  display: none !important;
+}
+
+div[data-viz-ui-name="Bar"]>div>div>div:nth-child(2)>div:last-child {
+  display: flex !important;
+}
+
+div[data-testid="legend-caption"]>div{
+  font-size: 28px !important;
+}
+
+div[data-testid="chart-container"]>div>svg>g>text[text-anchor="middle"]{
+  font-size: 24px !important;
 }
