@@ -60,13 +60,20 @@ a {
   display: flex !important;
   flex-flow: row wrap !important;
   height: auto !important;
-  width: auto !important;
+  width: 100% !important;
+  gap: 5px;
 }
 
 #iframe-elango div.react-grid-layout>.react-grid-item {
-  flex-basis: calc(100% / 5) !important;
+  flex-basis: calc(calc(100% - 35px) / 5) !important;
+  width: auto !important;
   position: relative !important;
   transform: none !important;
+  padding: 100px 0 !important;
+}
+
+#iframe-elango div.react-grid-layout>.react-grid-item.container-small {
+  padding: 0 !important;
 }
 
 .dashcard,
@@ -80,6 +87,7 @@ a {
   background-color: #e0e5f2 !important;
   border: 1px solid #7f85ae !important;
   color: #2b3674;
+  padding: 30px 0;
 }
 
 div.dashcard>div>div>div {
@@ -148,11 +156,6 @@ div.dashcard>div>div>div>div[data-testid="scalar-title"] {
   padding-right: 8px !important;
 }
 
-div[data-testid="dashcard-container"].container-small,
-div.DashCard.container-small {
-  height: 80px !important;
-}
-
 div[data-testid="dashboard-parameters-widget-container"] {
   background-color: transparent !important;
 }
@@ -190,6 +193,7 @@ div.dashcard h3 {
 div[data-testid="dashcard-container"].container-small,
 div.DashCard.container-small {
   height: 56px !important;
+  margin-bottom: 24px !important;
 }
 
 .increase h1:before, .decrease h1:before {
