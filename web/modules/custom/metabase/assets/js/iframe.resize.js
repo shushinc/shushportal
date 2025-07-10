@@ -60,3 +60,16 @@ window.addEventListener('message', function (event) {
     }
   }
 });
+
+window.addEventListener('mousedown', function (event) {
+  const iframes = document.getElementsByTagName('iframe');
+
+  if (iframes[0] !== undefined) {
+    for (const iframe of iframes) {
+      iframe.contentWindow.postMessage({
+        type: 'propagated-click',
+        sourceIframe: 'iframe-top',
+      }, '*');
+    }
+  }
+});
