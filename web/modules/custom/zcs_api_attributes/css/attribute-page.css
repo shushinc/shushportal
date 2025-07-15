@@ -91,6 +91,13 @@ table.attributes-table th:nth-child(4) {
   text-align: center;
   padding: 10px 20px;
 }
+.network_authentication_pricing_over_time
+  table.attributes-table
+  tr
+  td
+  .text-bold {
+  font-weight: 700;
+}
 table.attributes-table tr td:first-child {
   width: 16%;
 }

@@ -191,4 +191,19 @@ jQuery(document).ready(function($){
     e.preventDefault();
   });
   $('.login .header-site-logo').insertBefore('main .highlighted');
+  const wordsToWrap = ['CAMARA', 'TS.43'];
+  const regex = new RegExp(wordsToWrap.join('|'), 'g');
+
+  // Select all tables with class "attributes-table"
+  const tables = document.querySelectorAll('.attributes-table');
+
+  tables.forEach(table => {
+    const cells = table.getElementsByTagName('td');
+    for (let i = 0; i < cells.length; i++) {
+      cells[i].innerHTML = cells[i].innerHTML.replace(
+        regex,
+        (match) => `<strong class="text-bold">${match}</strong>`
+      );
+    }
+  });
 });

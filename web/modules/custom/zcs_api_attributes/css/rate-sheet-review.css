@@ -14,26 +14,34 @@
   align-items: baseline;
   margin: 0;
 }
+.ui-dialog table.attributes-table .form-item input.form-checkbox {
+  height: 18px;
+  margin: 0;
+}
+
 .ui-dialog table.attributes-table .form-item input {
   margin: 0;
-  height: 18px;
+  height: 28px;
 }
 
 .ui-dialog .field-prefix {
   margin-right: 10px;
 }
-.ui-dialog .attribute-review .js-form-item-status {
+.ui-dialog .attribute-review .js-form-item-status,
+.ui-dialog .api-attribute-review .js-form-item-status {
   display: flex;
   justify-content: center;
   margin-top: 1rem;
 }
-.ui-dialog .attribute-review .js-form-item-status .form-select {
+.ui-dialog .attribute-review .js-form-item-status .form-select,
+.ui-dialog .api-attribute-review .js-form-item-status .form-select {
   width: auto;
   min-width: 280px;
   margin-right: 20px;
 }
 
-.ui-dialog .attribute-review .form-submit {
+.ui-dialog .attribute-review .form-submit,
+.ui-dialog .api-attribute-review .form-submit {
   display: flex;
   justify-content: center;
   margin: 0 auto;
