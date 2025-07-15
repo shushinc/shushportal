@@ -12,4 +12,5 @@
       $(".users-check:not(:checked)").removeAttr('disabled');
     }
   });
+  
 })(jQuery, drupalSettings);

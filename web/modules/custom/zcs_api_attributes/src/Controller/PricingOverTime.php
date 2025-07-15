@@ -142,6 +142,7 @@ class PricingOverTime extends ControllerBase {
     if (!empty($request->get('status'))) {
       $query->condition('apd.attribute_status', $request->get('status'));
     }
+    $query->orderBy('apd.created', 'DESC');
     $query->range($pager->getCurrentPage() * $limit, $limit);
     $resultSet = $query->execute()->fetchAll();
 

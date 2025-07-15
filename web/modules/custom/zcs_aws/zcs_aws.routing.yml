@@ -1,28 +1,28 @@
 zcs_aws.create_key:
-  path: '/create-aws-key'
+  path: "/create-aws-key"
   defaults:
-    _title: 'Create Client Credentials'
+    _title: "Create Client Credentials"
     _form: '\Drupal\zcs_aws\Form\CreateAwsAppForm'
   requirements:
     _custom_access: '\Drupal\zcs_aws\Form\CreateAwsAppForm::access'
 
 zcs_aws.app_list:
-  path: '/aws-apps'
+  path: "/aws-apps"
   defaults:
-    _title: 'API Keys'
+    _title: "Client Credentials"
     _form: 'Drupal\zcs_aws\Form\AwsAppListForm'
   requirements:
-    _permission: 'access content'
+    _permission: "access content"
 
 zcs_aws.edit_key:
-  path: '/aws-key/{id}/edit'
+  path: "/aws-key/{id}/edit"
   defaults:
-    _title: 'Update App'
+    _title: "Update App"
     _form: 'Drupal\zcs_aws\Form\UpdateAwsAppForm'
   requirements:
     _custom_access: '\Drupal\zcs_aws\Form\UpdateAwsAppForm::access'
 zcs_aws.delete_key:
-  path: '/aws-key/{id}/delete'
+  path: "/aws-key/{id}/delete"
   defaults:
     _controller: '\Drupal\zcs_aws\Controller\AwsDeleteController::deleteKey'
   requirements:
