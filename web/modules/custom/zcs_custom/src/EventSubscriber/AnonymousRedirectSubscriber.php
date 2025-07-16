@@ -51,6 +51,7 @@ class AnonymousRedirectSubscriber implements EventSubscriberInterface {
         && \Drupal::service('path.current')->getPath() !== '/session/token'
         && \Drupal::service('path.current')->getPath() !== '/analytics/node/add'
         && \Drupal::service('path.current')->getPath() !== '/user/login'
+        && \Drupal::service('path.current')->getPath() !== '/external-login/callback'
         && (strpos(\Drupal::service('path.current')->getPath(), '/user/reset') === FALSE)
         && (strpos(\Drupal::service('path.current')->getPath(), '/user/registrationpassword') === FALSE)
         && (strpos(\Drupal::service('path.current')->getPath(), '/verify_invitation') === FALSE)

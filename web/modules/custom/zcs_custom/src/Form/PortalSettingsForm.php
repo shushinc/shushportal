@@ -103,6 +103,30 @@ final class PortalSettingsForm extends ConfigFormBase {
         '#description' => t('Provide values comma seperated eg: resourcetype/read, resourcetype/write.'),
       ];
     }
+    //$defaultCurrency = 'en_US';
+    $lists = require __DIR__ . '/../../resources/currencies.php';
+    // to fetch currencies.
+    $currencies = [];
+    foreach ($lists as $list) {
+      if (!empty($list['locale'])) {
+        $currencies[$list['locale']] = $list['currency'] .' ('. $list['alphabeticCode'] .')';
+      }
+    }
+    $form['currency_settings'] = [
+      '#type' => 'details',
+      '#open' => FALSE,
+      '#title' => $this->t('Currency'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#description' => t('Add the currency configuration'),
+      '#tree' => TRUE,
+    ];
+    $form['currency_settings']['currency'] = [
+      '#type' => 'select',
+      '#options' => $currencies,
+      '#default_value' => $this->config('zcs_custom.settings')->get('currency') ?? 'en_US',
+      '#description' => t('Provide a currency value.'),
+    ];
     return parent::buildForm($form, $form_state);
   }
 
@@ -141,6 +165,7 @@ final class PortalSettingsForm extends ConfigFormBase {
      $config->set('allowed_oauth_flows', $form_state->getValue('aws_details')['allowed_oauth_flows']);
      $config->set('allowed_oauth_scopes', $form_state->getValue('aws_details')['allowed_oauth_scopes']);
    }
+   $config->set('currency', $form_state->getValue('currency_settings')['currency']);
    $config->save();
    parent::submitForm($form, $form_state);
   }
