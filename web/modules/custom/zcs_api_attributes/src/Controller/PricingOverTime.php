@@ -175,8 +175,7 @@ class PricingOverTime extends ControllerBase {
 
     $output[] = [
       '#type' => 'select',
-      '#options' => ['- All -'] + $statuses,
-      '#title' => 'Status',
+      '#options' => ['- All Status'] + $statuses,
       '#attributes' => [
         'class' => ['select-status']
       ],

@@ -677,7 +677,7 @@ display:
           admin_label: ''
           plugin_id: text_custom
           empty: true
-          content: '<a href="/create-client?destination=/client-management" class="btn-primary use-ajax anchor-dropdown-btn" data-toggle="modal" data-dialog-type="modal" data-dialog-options="{&quot;width&quot;: 400, &quot;title&quot;: &quot;IClient Management&quot;}" data-once="ajax">Invite Client</a>'
+          content: '<a href="/create-client?destination=/client-management" class="btn-primary use-ajax anchor-dropdown-btn" data-toggle="modal" data-dialog-type="modal" data-dialog-options=''{"width": 1000, "title": "Client Management"}''>Invite Client</a>'
           tokenize: false
       footer: {  }
       display_extenders: {  }
