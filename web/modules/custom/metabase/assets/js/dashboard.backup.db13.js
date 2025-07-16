@@ -51,6 +51,7 @@
 }
 )();
 
+// Function to communicate between iframes.
 (function (document, window) {
   'use strict';
 
@@ -86,3 +87,46 @@
     }
   });
 })(document, window);
+
+// AddFilter hack area.
+function waitForReactToLoad(callback) {
+  const observer = new MutationObserver((mutations, obs) => {
+    const reactRoot = document.querySelector('#root') || document.querySelector('[data-reactroot]');
+    if (reactRoot && reactRoot.children.length > 0) {
+      const hasReactContent = reactRoot.querySelector('[data-react-helmet]') || reactRoot.innerHTML.trim().length > 0;
+      if (hasReactContent) {
+        obs.disconnect();
+        callback();
+      }
+    }
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+}
+
+// Usage
+waitForReactToLoad(() => {
+  setTimeout(() => {
+    document.querySelectorAll('div[data-testid="field-set-content"]').forEach(filter => {
+      filter.addEventListener('click', () => {
+        setTimeout(() => {
+          document.querySelectorAll('[data-testid="field-values-widget"] > ul > li > div').forEach(option => {
+            // option.removeEventListener('click', addFilterHandler);
+            option.addEventListener('click', addFilterHandler);
+          });
+        }, 500);
+      });
+    });
+  }, 500);
+});
+
+function addFilterHandler() {
+  setTimeout(() => {
+    document.querySelectorAll('div.mb-mantine-Popover-dropdown > form > div > button').forEach(button => {
+      button.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    });
+  }, 200);
+}

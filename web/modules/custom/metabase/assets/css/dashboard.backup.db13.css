@@ -236,3 +236,10 @@ div[data-testid="legend-caption"]>div{
 div[data-testid="chart-container"]>div>svg>g>text[text-anchor="middle"]{
   font-size: 24px !important;
 }
+
+div.mb-mantine-Popover-dropdown>form>div>button {
+  font-size: 0.1em;
+  padding: 0;
+  margin: 0;
+  height: 1px;
+}
