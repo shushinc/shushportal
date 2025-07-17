@@ -1620,6 +1620,10 @@ nav ul.js-pager__items li a span + span {
   margin-bottom: 1rem;
 }
 
+table tbody td .text-bold {
+  font-weight: 700;
+}
+
 form.user-logout-confirm {
   text-align: center;
 }

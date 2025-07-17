@@ -52,6 +52,12 @@ table.attributes-table tr td {
 .network_authentication_pricing_over_time
   table.attributes-table
   thead
+  th:first-child {
+  text-align: left;
+}
+.network_authentication_pricing_over_time
+  table.attributes-table
+  thead
   th:nth-child(2) {
   width: 30%;
   text-align: left;
@@ -61,6 +67,12 @@ table.attributes-table tr td {
   tbody
   td:nth-child(2) {
   text-align: left;
+}
+table.attributes-table {
+  table-layout: fixed;
+}
+table.attributes-table th:first-child {
+  width: 5%;
 }
 table.attributes-table th:nth-child(2),
 table.attributes-table th:last-child,
@@ -84,20 +96,15 @@ table.attributes-table th:nth-child(4) {
   table.attributes-table
   tr
   td:nth-child(1) {
-  text-align: center;
+  text-align: left;
   font-weight: 700;
+  width: 1%;
 }
 .network_authentication_pricing_over_time table.attributes-table tr td {
   text-align: center;
   padding: 10px 20px;
 }
-.network_authentication_pricing_over_time
-  table.attributes-table
-  tr
-  td
-  .text-bold {
-  font-weight: 700;
-}
+
 table.attributes-table tr td:first-child {
   width: 16%;
 }
@@ -429,18 +436,18 @@ table.attributes-table tr td:first-child {
   margin-bottom: 16px;
 }
 
-.api-attribute-sheet .form-submit {
-  background: #fff;
-  border: 2px solid #118df0;
-  color: #118df0;
-  border-radius: 50px;
+.ui-dialog .api-attribute-sheet .form-submit {
+  background: #118df0;
+  color: #fff;
+  border-radius: 10px;
   padding: 10px 15px;
-  margin: 20px auto;
-  display: flex;
-  font-family: "Poppins", sans-serif;
-  font-weight: 500;
-  text-transform: capitalize;
-  font-size: 16px;
+  font-size: 14px;
+  border: none;
+  letter-spacing: -0.2px;
+  max-width: 200px;
+  display: block;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .message {

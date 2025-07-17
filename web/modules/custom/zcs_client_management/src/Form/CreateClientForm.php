@@ -88,7 +88,6 @@ class CreateClientForm extends FormBase {
         $currencies[$list['locale']] = $list['currency'] .' ('. $list['alphabeticCode'] .')';
       }
     }
-    $defaultCurrency = 'en_US';
     $form['partner_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Name'),
@@ -217,7 +216,8 @@ class CreateClientForm extends FormBase {
     $form['currencies'] = [
       '#type' => 'select',
       '#options' => $currencies,
-      '#default_value' => $defaultCurrency,
+      '#default_value' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
+      '#disabled' => TRUE, // disables the field
       '#prefix' => '<div class="payment-details client-Layout-column-second">',
     ];
 

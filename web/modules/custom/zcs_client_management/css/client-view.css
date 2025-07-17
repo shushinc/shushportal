@@ -6,6 +6,7 @@ body[class^="view-"] {
   width: 100%;
   font-family: "Inter", sans-serif;
   color: #1c1c1c;
+  margin-top: 2rem;
 }
 
 .client-wrapper {

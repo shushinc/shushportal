@@ -126,12 +126,25 @@
   background-color: rgba(118, 118, 118, 0.3);
   border: 2px solid rgba(118, 118, 118, 0.3);
   color: rgba(118, 118, 118, 0.3);
-  border-radius: 50px;
+  border-radius: 10px;
   padding: 10px 15px;
   display: flex;
   margin: 20px auto;
 }
 
+.ui-dialog .rate-sheet .form-submit:not(.is-disabled) {
+  background: #118df0;
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 15px;
+  font-size: 14px;
+  border: none;
+  letter-spacing: -0.2px;
+  max-width: 200px;
+  margin: 0 auto;
+  display: block;
+  width: 100%;
+}
 .ui-dialog .rate-sheet table th:first-child {
   width: 10%;
 }

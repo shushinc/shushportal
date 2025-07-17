@@ -270,7 +270,8 @@ final class EditClientForm extends FormBase {
     $form['currencies'] = [
       '#type' => 'select',
       '#options' => $currencies,
-      '#default_value' =>  $group->get('field_currency')->value ?? '',
+      '#default_value' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
+      '#disabled' => TRUE, // disables the field
       '#prefix' => '<div class="payment-details client-Layout-column-second">',
     ];
 

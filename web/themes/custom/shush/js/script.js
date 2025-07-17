@@ -195,7 +195,7 @@ jQuery(document).ready(function($){
   const regex = new RegExp(wordsToWrap.join('|'), 'g');
 
   // Select all tables with class "attributes-table"
-  const tables = document.querySelectorAll('.attributes-table');
+  const tables = document.querySelectorAll('table');
 
   tables.forEach(table => {
     const cells = table.getElementsByTagName('td');
@@ -206,4 +206,26 @@ jQuery(document).ready(function($){
       );
     }
   });
+  const observer = new MutationObserver((mutationsList) => {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'childList') {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1 && node.querySelectorAll) {
+            const tables = node.querySelectorAll('table.attributes-table');
+            tables.forEach(table => {
+              const cells = table.getElementsByTagName('td');
+              for (let i = 0; i < cells.length; i++) {
+                cells[i].innerHTML = cells[i].innerHTML.replace(
+                  regex,
+                  (match) => `<strong class="text-bold">${match}</strong>`
+                );
+              }
+            });
+          }
+        });
+      }
+    }
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
 });

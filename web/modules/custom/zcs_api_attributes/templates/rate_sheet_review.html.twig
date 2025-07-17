@@ -14,18 +14,22 @@
 	<thead>
 		<tr>
 			<th>API Attributes</th>
-			<td>Current API Pricing</td>
+			<th>Current API Pricing</th>
 			<th>
 				Estimated Prices
 			</th>
 		</tr>
 	</thead>
 	<tbody>
-	    {% set attributes = fetch_attributes() %}
-	    {% for id, title in attributes.titles %}
+		{% set attributes = fetch_attributes() %}
+		{% for id, title in attributes.titles %}
 			<tr>
 				<td>{{ title }}</td>
-				<td>{{ attributes.prices[id] }} {% if form['price' ~ id]|field_value != attributes.prices[id] %}<span class="price-variation" style="color: red; font-size: 20px;">*</span>{% endif %}</td>
+				<td>{{ attributes.prices[id] }}
+					{% if form['price' ~ id]|field_value != attributes.prices[id] %}
+						<span class="price-variation" style="color: red; font-size: 20px;">*</span>
+					{% endif %}
+				</td>
 				<td>{{ form['price' ~ id] }}</td>
 			</tr>
 		{% endfor %}
