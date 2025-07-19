@@ -69,7 +69,7 @@ main {
   line-height: 42px;
   font-weight: 700;
   color: rgba(43, 54, 116, 1);
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.2px;
   text-align: left;
   margin: 2rem 0 0;
@@ -1159,4 +1159,18 @@ nav {
   .client-credentials-header {
     margin-bottom: 1rem;
   }
+}
+
+table {
+  tbody {
+    td {
+      .text-bold {
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+.ui-dialog .api-attribute-review .attributes-table tr td:first-child {
+  font-weight: 300;
 }

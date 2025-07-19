@@ -545,7 +545,7 @@ main {
   line-height: 42px;
   font-weight: 700;
   color: #2b3674;
-  text-transform: lowercase;
+  text-transform: capitalize;
   letter-spacing: 0.2px;
   text-align: left;
   margin: 2rem 0 0;
@@ -1622,6 +1622,10 @@ nav ul.js-pager__items li a span + span {
 
 table tbody td .text-bold {
   font-weight: 700;
+}
+
+.ui-dialog .api-attribute-review .attributes-table tr td:first-child {
+  font-weight: 300;
 }
 
 form.user-logout-confirm {
