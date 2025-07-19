@@ -36,6 +36,9 @@
 table.rate-sheet-approval {
   margin-top: 1.5rem;
 }
+table.rate-sheet-approval tr th:last-child {
+  text-align: left;
+}
 table.rate-sheet-approval tbody td span.approved,
 table.rate-sheet-approval tbody td span.rejected {
   position: relative;
@@ -93,4 +96,10 @@ table.rate-sheet-approval .btn-primary:hover {
   border: 2px solid #118df0;
   color: #118df0;
   border-radius: 50px;
+  display: block;
+  text-align: center;
+}
+
+.rate-sheet-approval .ajax-progress-throbber {
+  display: none;
 }

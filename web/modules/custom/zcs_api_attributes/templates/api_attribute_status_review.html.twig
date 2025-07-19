@@ -13,7 +13,7 @@
 <table class="attributes-table">
 	<thead>
 		<tr>
-			<th>Title</th>
+			<th>API Attributes</th>
 			<th>
 				Network Connected
 			</th>
@@ -23,8 +23,8 @@
 		</tr>
 	</thead>
 	<tbody>
-		  {% set attributes = fetch_attributes() %}
-	      {% for id, title in attributes.titles %}
+		{% set attributes = fetch_attributes() %}
+		{% for id, title in attributes.titles %}
 			<tr>
 				<td>{{ title }}</td>
 				<td>{{ form['network_connected' ~ id] }}</td>

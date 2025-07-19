@@ -1229,6 +1229,10 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   display: block;
 }
 
+.zcs-aws-app-list .responsive-enabled tr th:last-child {
+  text-align: left;
+}
+
 .apps #block-shush-primary-admin-actions nav {
   text-align: right;
   margin: 0 0 10px;
@@ -1652,9 +1656,10 @@ table tbody td .text-bold {
   z-index: 1000;
 }
 
-.ui-dialog form .fieldset-wrapper .form-item .fieldset-legend {
+.ui-dialog form .fieldset-legend {
   font-weight: 700;
   margin-bottom: 1rem;
+  display: block;
 }
 .ui-dialog form .fieldset-wrapper .form-item.form-type-checkbox {
   display: flex;
@@ -1673,6 +1678,31 @@ table tbody td .text-bold {
 .ui-dialog .form-actions {
   max-width: 300px;
   margin: 0 auto;
+}
+
+.ui-dialog .attribute-review .attributes-table tr td:last-child {
+  width: 21%;
+}
+.ui-dialog .attribute-review .attributes-table tbody tr td:first-child {
+  font-weight: 300;
+}
+
+.select2-container .select2-dropdown {
+  border: 1px solid #ddd;
+}
+.select2-container .select2-dropdown .select2-search--dropdown .select2-search__field {
+  border: 1px solid #ddd;
+}
+.select2-container .select2-results .select2-results__option {
+  color: #2b3674;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: -0.2px;
+  background-color: transparent;
+}
+.select2-container .select2-results .select2-results__option:hover {
+  background: transparent;
+  color: #118df0;
 }
 
 form.user-logout-confirm {

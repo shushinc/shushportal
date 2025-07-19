@@ -158,7 +158,10 @@
   text-align: left;
 }
 
-.ui-dialog .rate-sheet .attributes-label {
+.ui-dialog .rate-sheet h2.attributes-label {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
 }
 
 .ui-dialog .rate-sheet table tbody td .form-type-number {

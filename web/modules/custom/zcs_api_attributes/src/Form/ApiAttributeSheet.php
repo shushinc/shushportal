@@ -193,6 +193,6 @@ class ApiAttributeSheet extends FormBase {
     } else {
       $this->messenger()->addStatus(t('An email notification has been sent.'));
     }
-
+    $form_state->setRedirect('zcs_api_attributes.attribute.page');
   }
 }

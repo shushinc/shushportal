@@ -56,9 +56,26 @@ class AttributesPageController extends ControllerBase {
     }
     
     $url = Url::fromRoute('zcs_api_attributes.api_attribute_sheet');
+    $route_name = $url->getRouteName();
+    $route_parameters = $url->getRouteParameters();
+    
+    // Use access manager to check access
+    $access = \Drupal::service('access_manager')->checkNamedRoute(
+      $route_name,
+      $route_parameters,
+      \Drupal::currentUser(),
+      TRUE // return AccessResult object
+    );
+
+    // Build class list dynamically
+    $classes = ['button', 'button--primary', 'use-ajax'];
+    if (!$access->isAllowed()) {
+      $classes[] = 'disable-link';
+    }
+
     $url->setOptions([
       'attributes' => [
-        'class' => ['button', 'button--primary', 'use-ajax'],
+        'class' => $classes,
         'data-dialog-type' => 'modal',
         'data-dialog-options' => json_encode(['width' => 800]),
       ],
@@ -110,6 +127,7 @@ class AttributesPageController extends ControllerBase {
     if (!empty($request->get('status'))) {
       $query->condition('apd.attribute_status', $request->get('status'));
     }
+    $query->orderBy('apd.created', 'DESC');
     $query->range($pager->getCurrentPage() * $limit, $limit);
     $resultSet = $query->execute()->fetchAll();
     $statusSet = $this->database->select('attribute_status', 'as')
