@@ -97,7 +97,7 @@ table.attributes-table th:nth-child(4) {
   tr
   td:nth-child(1) {
   text-align: left;
-  font-weight: 700;
+  font-weight: 300;
   width: 1%;
 }
 .network_authentication_pricing_over_time table.attributes-table tr td {

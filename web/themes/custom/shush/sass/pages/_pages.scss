@@ -553,6 +553,9 @@ table {
               background: #f5f8fc;
             }
           }
+          .ajax-progress-throbber {
+            display: none;
+          }
         }
         &:hover {
           .edit-operation-wrap {
@@ -1161,6 +1164,18 @@ nav {
     font-size: 16px;
     display: flex;
     margin: 20px auto;
+  }
+}
+.ui-dialog .api-attribute-sheet {
+  .attributes-table {
+    tr {
+      th {
+        &:nth-child(3),
+        &:nth-child(4) {
+          width: 10%;
+        }
+      }
+    }
   }
 }
 

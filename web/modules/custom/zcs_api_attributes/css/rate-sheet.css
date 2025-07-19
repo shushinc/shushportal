@@ -146,7 +146,7 @@
   width: 100%;
 }
 .ui-dialog .rate-sheet table th:first-child {
-  width: 10%;
+  width: 3%;
 }
 
 .ui-dialog .rate-sheet table th:nth-child(2) {
@@ -154,7 +154,11 @@
   text-align: left;
 }
 .ui-dialog .rate-sheet table th:nth-child(3) {
-  width: 25%;
+  width: 12%;
+  text-align: left;
+}
+
+.ui-dialog .rate-sheet .attributes-label {
 }
 
 .ui-dialog .rate-sheet table tbody td .form-type-number {

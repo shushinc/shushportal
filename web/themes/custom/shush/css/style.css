@@ -1049,6 +1049,9 @@ table tr td .edit-operation .edit-operation-wrap a:last-child {
 table tr td .edit-operation .edit-operation-wrap a:hover {
   background: #f5f8fc;
 }
+table tr td .edit-operation .edit-operation-wrap .ajax-progress-throbber {
+  display: none;
+}
 table tr td .edit-operation:hover .edit-operation-wrap {
   display: block;
 }
@@ -1623,6 +1626,10 @@ nav ul.js-pager__items li a span + span {
   font-size: 16px;
   display: flex;
   margin: 20px auto;
+}
+
+.ui-dialog .api-attribute-sheet .attributes-table tr th:nth-child(3), .ui-dialog .api-attribute-sheet .attributes-table tr th:nth-child(4) {
+  width: 10%;
 }
 
 .top-actions .client-credentials-header {
