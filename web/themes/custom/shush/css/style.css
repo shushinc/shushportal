@@ -172,6 +172,7 @@ form .js-form-item input[aria-invalid="true"]:focus {
   opacity: 0.5;
   display: block;
   position: relative;
+  z-index: 10;
 }
 .region-primary-menu ul li a:hover, .region-primary-menu ul li a.is-active,
 .region-primary-menu ul li span:hover,
@@ -392,6 +393,7 @@ form .js-form-item input[aria-invalid="true"]:focus {
   position: absolute;
   right: 20px;
   top: 22px;
+  z-index: 1;
 }
 .user-logged-in .region-primary-menu ul li.menu-item--expanded.menuexpand::after {
   transform: rotateX(180deg);

@@ -152,9 +152,6 @@
         slidesToScroll: 1,
         autoplay: true,
         autoplaySpeed: 5000,
-      }); 
-      $(".site__menu ul.menu .menu-item--expanded").unbind().on( "click", function(event) {
-        $(this).toggleClass('menuexpand');
       });
       $(document).ready(function() {
         $('.client-Layout-column-wrapper select').select2({
@@ -164,6 +161,7 @@
     }
   };
 })(jQuery, Drupal);
+
 jQuery(document).ready(function($){
   // Add the 'parent-menu' class to <li> elements that have a <ul> (i.e., parent menus)
   $('li:has(ul)').addClass('parent-menu');
@@ -174,18 +172,29 @@ jQuery(document).ready(function($){
   // Show child-menu if it contains an active link
   $('.child-menu').has('a.is-active').show().closest('.parent-menu').addClass('menuexpand');
   // Toggle child menu visibility when the parent menu is clicked
-  $('.parent-menu > span').click(function() {
-    var $parentMenu = $(this).parent('.parent-menu');
-    var $childMenu = $(this).next('.child-menu');
-  
-    // Collapse all other menus
-    $('.parent-menu').not($parentMenu).removeClass('menuexpand');
-    $('.parent-menu .child-menu').not($childMenu).slideUp();
-  
-    // Toggle clicked menu
-    $childMenu.stop(true, true).slideToggle();
-    $parentMenu.toggleClass('menuexpand');
+  $('.site__menu .menu-item--expanded > span').on('click', function (e) {
+    e.preventDefault();
+    
+    const $parentMenu = $(this).closest('.menu-item--expanded');
+    
+    const $childMenu = $parentMenu.children('ul.menu');
+    
+    const isExpanded = $parentMenu.hasClass('menuexpand');
+
+    // Collapse other menus
+    $('.site__menu .menu-item--expanded').not($parentMenu)
+      .removeClass('menuexpand')
+      .children('ul.menu').slideUp();
+
+    if (!isExpanded) {
+      $childMenu.stop(true, true).slideDown();
+      $parentMenu.addClass('menuexpand');
+    } else {
+      $childMenu.stop(true, true).slideUp();
+      $parentMenu.removeClass('menuexpand');
+    }
   });
+  
 
   $('.anchor-dropdown-btn').click(function(e) {
     e.preventDefault();

@@ -2,8 +2,6 @@ uuid: 3c16f0a1-9dba-4a87-8bfe-6fc2e55586f2
 langcode: en
 status: true
 dependencies:
-  module:
-    - system
   theme:
     - shush
 _core:
@@ -19,8 +17,4 @@ settings:
   label: 'Page title'
   label_display: '0'
   provider: core
-visibility:
-  request_path:
-    id: request_path
-    negate: true
-    pages: '<front>'
+visibility: {  }

@@ -39,6 +39,7 @@
         opacity: 0.5;
         display: block;
         position: relative;
+        z-index: 10;
         &:hover,
         &.is-active {
           color: #191a5b;
@@ -275,6 +276,7 @@
             position: absolute;
             right: 20px;
             top: 22px;
+            z-index: 1;
           }
           &.menuexpand {
             &::after {
