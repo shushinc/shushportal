@@ -1595,14 +1595,21 @@ nav ul.js-pager__items li a span + span {
   font-weight: 400;
 }
 
-.api-attribute-sheet .attributes-table thead th:nth-child(2), .api-attribute-sheet .attributes-table thead th:nth-child(3) {
+.api-attribute-sheet .attributes-table thead th:nth-child(2), .api-attribute-sheet .attributes-table thead th:nth-child(3), .api-attribute-sheet .attributes-table thead th:nth-child(4) {
   text-align: center;
+}
+.api-attribute-sheet .attributes-table thead th:nth-child(2) {
+  width: 47%;
+  text-align: left;
 }
 .api-attribute-sheet .attributes-table tbody tr td .form-item {
   margin-bottom: 0;
 }
 .api-attribute-sheet .attributes-table tbody tr td .form-item input {
   height: 18px;
+}
+.api-attribute-sheet .attributes-table tbody tr td:nth-child(3), .api-attribute-sheet .attributes-table tbody tr td:nth-child(4) {
+  padding: 0 1.5rem;
 }
 .api-attribute-sheet #edit-submit {
   font-family: "Poppins", sans-serif;
@@ -1628,6 +1635,37 @@ table tbody td .text-bold {
 
 .ui-dialog .api-attribute-review .attributes-table tr td:first-child {
   font-weight: 300;
+}
+
+.ui-widget.ui-widget-content {
+  top: 50% !important;
+  left: 50% !important;
+  /* Start 50% into remaining space */
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+.ui-dialog form .fieldset-wrapper .form-item .fieldset-legend {
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+.ui-dialog form .fieldset-wrapper .form-item.form-type-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 0.8rem;
+}
+.ui-dialog form .fieldset-wrapper .form-item.form-type-checkbox .form-checkbox {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+.ui-dialog form .fieldset-wrapper .form-item.form-type-checkbox label {
+  margin: 0;
+}
+.ui-dialog .form-actions {
+  max-width: 300px;
+  margin: 0 auto;
 }
 
 form.user-logout-confirm {

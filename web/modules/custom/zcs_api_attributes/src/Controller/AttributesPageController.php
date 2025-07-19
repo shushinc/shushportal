@@ -63,7 +63,7 @@ class AttributesPageController extends ControllerBase {
         'data-dialog-options' => json_encode(['width' => 800]),
       ],
     ]);
-    $create_attribute_sheet_link = Link::fromTextAndUrl($this->t('Update API Attributes'), $url)->toRenderable();
+    $create_attribute_sheet_link = Link::fromTextAndUrl($this->t('Update API Attribute'), $url)->toRenderable();
 
     $data['final'] = $final;
     $data['link'] = $create_attribute_sheet_link;

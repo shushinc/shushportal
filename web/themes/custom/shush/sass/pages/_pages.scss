@@ -1122,8 +1122,13 @@ nav {
     thead {
       th {
         &:nth-child(2),
-        &:nth-child(3) {
+        &:nth-child(3),
+        &:nth-child(4) {
           text-align: center;
+        }
+        &:nth-child(2) {
+          width: 47%;
+          text-align: left;
         }
       }
     }
@@ -1135,6 +1140,10 @@ nav {
             input {
               height: 18px;
             }
+          }
+          &:nth-child(3),
+          &:nth-child(4) {
+            padding: 0 1.5rem;
           }
         }
       }
@@ -1173,4 +1182,44 @@ table {
 
 .ui-dialog .api-attribute-review .attributes-table tr td:first-child {
   font-weight: 300;
+}
+
+.ui-widget.ui-widget-content {
+  top: 50% !important;
+  left: 50% !important; /* Start 50% into remaining space */
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+.ui-dialog {
+  form {
+    .fieldset-wrapper {
+      .form-item {
+        .fieldset-legend {
+          font-weight: 700;
+          margin-bottom: 1rem;
+        }
+        &.form-type-checkbox {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin: 0 0 0.8rem;
+
+          .form-checkbox {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+          }
+
+          label {
+            margin: 0;
+          }
+        }
+      }
+    }
+  }
+  .form-actions {
+    max-width: 300px;
+    margin: 0 auto;
+  }
 }
