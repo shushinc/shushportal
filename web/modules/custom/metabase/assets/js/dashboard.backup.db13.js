@@ -51,6 +51,23 @@
 }
 )();
 
+(function (document) {
+  'use strict';
+  setInterval(function () {
+    const svgs = document.querySelectorAll('#iframe-main div[data-testid="chart-container"] svg');
+    if (svgs.length === 0) {
+      return;
+    }
+    svgs[0].querySelectorAll('text[dominant-baseline="central"][text-anchor="end"]').forEach(
+      e => {
+        if (/^\d+(\.\d+)?k?$/.test(e.textContent)) {
+          e.textContent = '$' + e.textContent
+        }
+      }
+    )
+  }, 50);
+})(document);
+
 // Function to communicate between iframes.
 (function (document, window) {
   'use strict';
