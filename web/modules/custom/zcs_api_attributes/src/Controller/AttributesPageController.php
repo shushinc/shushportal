@@ -43,8 +43,13 @@ class AttributesPageController extends ControllerBase {
   }
 
 
-  public function attributesPage() {
-    $contents = $this->entityTypeManager()->getStorage('node')->loadByProperties(['type' => 'api_attributes']);
+  public function attributesPage() {;
+    $nids = \Drupal::entityQuery('node')
+      ->condition('type', 'api_attributes')
+      ->sort('field_attribute_weight', 'ASC')
+      ->accessCheck()
+      ->execute();
+    $contents = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
     if (!empty($contents)) {
       foreach ($contents as $content) {
         $final[$content->id()][] = [

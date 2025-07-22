@@ -38,6 +38,7 @@ table.rate-sheet-approval {
 }
 table.rate-sheet-approval tr th:last-child {
   text-align: left;
+  width: 10%;
 }
 table.rate-sheet-approval tbody td span.approved,
 table.rate-sheet-approval tbody td span.rejected {

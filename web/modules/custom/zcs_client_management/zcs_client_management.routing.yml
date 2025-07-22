@@ -1,5 +1,5 @@
 zcs_client_management.create_client:
-  path: 'create-client'
+  path: '/client/create-client'
   defaults:
     _title: 'Create Client'
     _form: 'Drupal\zcs_client_management\Form\CreateClientForm'

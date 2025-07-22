@@ -7,7 +7,7 @@ zcs_aws.create_key:
     _custom_access: '\Drupal\zcs_aws\Form\CreateAwsAppForm::access'
 
 zcs_aws.app_list:
-  path: "/aws-apps"
+  path: "/client/aws-apps"
   defaults:
     _title: "Client Credentials"
     _form: 'Drupal\zcs_aws\Form\AwsAppListForm'

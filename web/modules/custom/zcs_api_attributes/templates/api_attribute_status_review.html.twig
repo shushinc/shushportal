@@ -13,6 +13,7 @@
 <table class="attributes-table">
 	<thead>
 		<tr>
+			<th>#</th>
 			<th>API Attributes</th>
 			<th>
 				Network Connected
@@ -23,13 +24,16 @@
 		</tr>
 	</thead>
 	<tbody>
+		{% set counter = 1 %}
 		{% set attributes = fetch_attributes() %}
 		{% for id, title in attributes.titles %}
 			<tr>
+				<td>{{ counter }}</td>
 				<td>{{ title }}</td>
 				<td>{{ form['network_connected' ~ id] }}</td>
 				<td>{{ form['able_to_be_used' ~ id] }}</td>
 			</tr>
+			{% set counter = counter + 1 %}
 		{% endfor %}
 	</tbody>
 </table>

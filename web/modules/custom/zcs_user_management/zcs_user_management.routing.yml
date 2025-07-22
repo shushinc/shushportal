@@ -1,5 +1,5 @@
 zcs_user_management.user_invite:
-  path: '/user-invite'
+  path: '/carrier/user-invite'
   defaults:
     _title: 'User Invite'
     _form: 'Drupal\zcs_user_management\Form\UserInviteForm'
@@ -7,7 +7,7 @@ zcs_user_management.user_invite:
     _permission: 'access user invite'
 
 zcs_user_management.user_edit_form:
-  path: '/user-management/{uid}/edit'
+  path: '/carrier/user-management/{uid}/edit'
   defaults:
     _title: 'Update Carrier User'
     _form: 'Drupal\zcs_user_management\Form\UserEditForm'

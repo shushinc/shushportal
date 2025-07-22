@@ -578,6 +578,10 @@ table {
       font-size: 14px;
       border: none;
       letter-spacing: -0.2px;
+      &.disable-link {
+        background: #999;
+        pointer-events: none;
+      }
     }
     .ajax-progress-throbber {
       display: none;
@@ -1213,25 +1217,15 @@ table {
   form {
     .fieldset-legend {
       font-weight: 700;
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
       display: block;
     }
     .fieldset-wrapper {
       .form-item {
         &.form-type-checkbox {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          margin: 0 0 0.8rem;
-
-          .form-checkbox {
-            width: 18px;
-            height: 18px;
-            margin: 0;
-          }
-
           label {
             margin: 0;
+            font-size: 13px;
           }
         }
       }

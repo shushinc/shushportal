@@ -16,7 +16,6 @@ module:
   config_ignore: 0
   contact: 0
   contextual: 0
-  dashboard: 0
   datetime: 0
   dblog: 0
   dynamic_page_cache: 0
@@ -39,7 +38,6 @@ module:
   menu_link_content: 0
   menu_per_role: 0
   menu_ui: 0
-  metabase: 0
   mimemail: 0
   mysql: 0
   node: 0
@@ -64,6 +62,7 @@ module:
   zcs_aws: 0
   zcs_client_management: 0
   zcs_custom: 0
+  zcs_menu: 0
   zcs_user_management: 0
   views: 10
   standard: 1000

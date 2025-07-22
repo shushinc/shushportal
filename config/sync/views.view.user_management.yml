@@ -544,7 +544,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "<div class=\"edit-operation\">\r\n<div class=\"edit-operation-wrap\">\r\n<a href=\"/user-management/{{ uid }}/edit?destination=/user-management\" class=\"use-ajax anchor-dropdown-btn\"  data-toggle='modal'  data-dialog-type='modal'  data-dialog-options='{\"width\": 400, \"title\": \"Update Carrier User\"}'>Edit</a>\r\n</div>\r\n</div>"
+            text: "<div class=\"edit-operation\">\r\n<div class=\"edit-operation-wrap\">\r\n<a href=\"/carrier/user-management/{{ uid }}/edit?destination=/carrier/user-management\" class=\"use-ajax anchor-dropdown-btn\"  data-toggle='modal'  data-dialog-type='modal'  data-dialog-options='{\"width\": 400, \"title\": \"Update Carrier User\"}'>Edit</a>\r\n</div>\r\n</div>"
             make_link: false
             path: ''
             absolute: false
@@ -876,7 +876,7 @@ display:
           plugin_id: text
           empty: true
           content:
-            value: '<a href="/user-invite?destination=/user-management" class="btn-primary use-ajax anchor-dropdown-btn" data-toggle=''modal''  data-dialog-type=''modal''  data-dialog-options=''{"width": 400, "title": "Invite Carrier User"}''>Invite Carrier User</a>'
+            value: '<a href="/carrier/user-invite?destination=/carrier/user-management" class="btn-primary use-ajax anchor-dropdown-btn" data-toggle=''modal''  data-dialog-type=''modal''  data-dialog-options=''{"width": 400, "title": "Invite Carrier User"}''>Invite Carrier User</a>'
             format: full_html
           tokenize: false
       footer: {  }
@@ -896,7 +896,7 @@ display:
     position: 1
     display_options:
       display_extenders: {  }
-      path: user-management
+      path: carrier/user-management
     cache_metadata:
       max-age: -1
       contexts:

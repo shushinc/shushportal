@@ -87,3 +87,13 @@ function zcs_api_attributes_mail($key, &$message, $params) {
       break;  
   }
 }
+
+function zcs_api_attributes_preprocess_html(&$variables) {
+  if (\Drupal::routeMatch()->getRouteName() == 'zcs_api_attributes.attribute.page') {
+    $variables['attributes']['class'][] = 'api-attribute-status';
+  }
+  if (\Drupal::routeMatch()->getRouteName() == 'zcs_api_attributes.pricing_history') {
+    $variables['attributes']['class'][] = 'network_authentication_pricing_over_time';
+  }
+  
+}

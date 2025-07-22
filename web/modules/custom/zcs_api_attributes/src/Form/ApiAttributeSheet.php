@@ -68,7 +68,13 @@ class ApiAttributeSheet extends FormBase {
       }
     }
 
-    $contents = $this->entityTypeManager->getStorage('node')->loadByProperties(['type' => 'api_attributes']);
+    $nids = \Drupal::entityQuery('node')
+      ->condition('type', 'api_attributes')
+      ->sort('field_attribute_weight', 'ASC')
+      ->accessCheck()
+      ->execute();
+    $contents = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
+    
     if (!empty($contents)) {
       foreach ($contents as $content) {
         if($content->field_successfully_integrated_cn->value == 'yes') {

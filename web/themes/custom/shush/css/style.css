@@ -1068,6 +1068,10 @@ table tr td .edit-operation:hover .edit-operation-wrap {
   border: none;
   letter-spacing: -0.2px;
 }
+.user-management-view header .btn-primary.disable-link {
+  background: #999;
+  pointer-events: none;
+}
 .user-management-view header .ajax-progress-throbber {
   display: none;
 }
@@ -1499,7 +1503,6 @@ table tr td .edit-operation:hover .edit-operation-wrap {
 .user-management-header h3 {
   font-size: 34px;
   line-height: 42px;
-  margin-bottom: 0.5em;
   font-weight: 700;
   color: #2b3674;
   letter-spacing: 0.2px;
@@ -1659,22 +1662,12 @@ table tbody td .text-bold {
 
 .ui-dialog form .fieldset-legend {
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   display: block;
-}
-.ui-dialog form .fieldset-wrapper .form-item.form-type-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 0.8rem;
-}
-.ui-dialog form .fieldset-wrapper .form-item.form-type-checkbox .form-checkbox {
-  width: 18px;
-  height: 18px;
-  margin: 0;
 }
 .ui-dialog form .fieldset-wrapper .form-item.form-type-checkbox label {
   margin: 0;
+  font-size: 13px;
 }
 .ui-dialog .form-actions {
   max-width: 300px;
@@ -2161,7 +2154,8 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   margin-top: -8px;
 }
 
-#edit-api-agreement-covers legend {
+#edit-api-agreement-covers legend,
+[id^="edit-api-agreement-covers--"] legend {
   font-family: "DM Sans", sans-serif;
   font-size: 16px;
   font-weight: 700;
@@ -2169,38 +2163,68 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   display: block;
   border-bottom: 1px solid #000;
 }
-#edit-api-agreement-covers .fieldset-wrapper {
+#edit-api-agreement-covers .fieldset-wrapper,
+[id^="edit-api-agreement-covers--"] .fieldset-wrapper {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
 }
-#edit-api-agreement-covers .fieldset-wrapper .js-form-item {
+#edit-api-agreement-covers .fieldset-wrapper .js-form-item,
+[id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item {
   display: flex;
   flex: 0 0 25%;
   align-items: center;
+  align-self: baseline;
   margin-bottom: 10px;
+  position: relative;
+  padding-right: 12px;
 }
-#edit-api-agreement-covers .fieldset-wrapper .js-form-item input {
+#edit-api-agreement-covers .fieldset-wrapper .js-form-item label,
+[id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item label {
+  position: relative;
+  padding-left: 40px;
+}
+#edit-api-agreement-covers .fieldset-wrapper .js-form-item label::after,
+[id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item label::after {
+  content: "";
+  width: 32px;
   height: 20px;
-  width: 28px !important;
-  margin-bottom: 0;
-  margin-right: 6px;
-  background: #cb1b0c;
-  border: none;
+  background-color: #cb1b0c;
+  border-radius: 4px;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
-#edit-api-agreement-covers .fieldset-wrapper .js-form-item input::before {
-  height: 12px;
-  width: 12px;
+#edit-api-agreement-covers .fieldset-wrapper .js-form-item label::before,
+[id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item label::before {
+  content: "";
+  transform: translateX(-10px);
+  transition: all 0.3s ease-in-out;
+}
+#edit-api-agreement-covers .fieldset-wrapper .js-form-item input[type="checkbox"],
+[id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item input[type="checkbox"] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+#edit-api-agreement-covers .fieldset-wrapper .js-form-item input[type="checkbox"]:checked + label::before,
+[id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item input[type="checkbox"]:checked + label::before {
+  transform: translateX(10px);
+  border-radius: 50%;
+  content: "";
+  position: absolute;
   top: 4px;
-  left: 5px;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  transition: all 0.3s ease-in-out;
+  z-index: 10;
 }
-#edit-api-agreement-covers .fieldset-wrapper .js-form-item input:checked {
-  background: #05b487;
-}
-#edit-api-agreement-covers .fieldset-wrapper .js-form-item input:checked:before {
-  transform: translateX(8px);
-}
-#edit-api-agreement-covers .fieldset-wrapper label {
+#edit-api-agreement-covers .fieldset-wrapper label,
+[id^="edit-api-agreement-covers--"] .fieldset-wrapper label {
   font-family: "DM Sans", sans-serif;
   font-size: 13px;
   font-weight: 500;
@@ -2225,6 +2249,22 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   max-height: 120px !important;
   overflow-y: scroll !important;
   appearance: none;
+  scrollbar-width: auto;
+  /* Firefox */
+  -ms-overflow-style: auto;
+  /* IE 10+ */
+}
+.multiselect-native-select .multiselect-container::-webkit-scrollbar {
+  width: 8px;
+  /* or any size */
+  height: 8px;
+  background: #f0f0f0;
+  /* track color */
+}
+.multiselect-native-select .multiselect-container::-webkit-scrollbar-thumb {
+  background: #888;
+  /* thumb color */
+  border-radius: 4px;
 }
 .multiselect-native-select .multiselect-container .multiselect-option .form-check {
   display: flex;
