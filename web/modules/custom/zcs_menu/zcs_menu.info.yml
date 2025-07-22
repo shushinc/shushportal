@@ -1,0 +1,5 @@
+name: 'zcs_menu'
+type: module
+description: 'Menu'
+package: Custom
+core_version_requirement: ^10 || ^11

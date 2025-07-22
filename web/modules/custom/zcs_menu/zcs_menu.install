@@ -1,0 +1,245 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the zcs_menu module.
+ */
+
+
+use Drupal\menu_link_content\Entity\MenuLinkContent;
+
+function zcs_menu_install() {
+    $menu_links = \Drupal::entityTypeManager()
+    ->getStorage('menu_link_content')
+    ->loadByProperties(['menu_name' => 'main']);
+
+    foreach ($menu_links as $menu_link) {
+       $menu_link->delete();
+    }
+
+
+
+  $menu_name = 'main';
+  // Create the parent menu link.
+  $carrier_parent_menu_link = MenuLinkContent::create([
+    'title' => 'Carrier',
+    'link' => ['uri' => 'route:<nolink>'],
+    'menu_name' => $menu_name,
+    'expanded' => TRUE,
+    'weight' => 1,
+    'menu_per_role__show_role' => [
+        'authenticated',
+      ],
+  ]);
+  $carrier_parent_menu_link->save();
+  // Get the parent menu link ID.
+  $carrier_parent_id = 'menu_link_content:' . $carrier_parent_menu_link->uuid();
+
+  // Create the child menu link.
+  $carrier_menu_child_link1 = MenuLinkContent::create([
+    'title' => 'User Management',
+    'link' => ['uri' => 'internal:/carrier/user-management'], // Adjust path as needed.
+    'menu_name' => $menu_name,
+    'parent' => $carrier_parent_id, // Set the parent ID.
+    'weight' => 2,
+    'menu_per_role__show_role' => [
+      'administrator',
+      'carrier_admin',
+    ],
+  ]);
+  $carrier_menu_child_link1->save();
+
+  $carrier_menu_child_link2 = MenuLinkContent::create([
+    'title' => 'API Attribute Status',
+    'link' => ['uri' => 'internal:/carrier/api-attribute-status'], // Adjust path as needed.
+    'menu_name' => $menu_name,
+    'parent' => $carrier_parent_id, // Set the parent ID.
+    'weight' => 3,
+    'menu_per_role__show_role' => [
+      'administrator',
+      'authenticated',
+    ],
+  ]);
+  $carrier_menu_child_link2->save();
+
+  $carrier_menu_child_link3 = MenuLinkContent::create([
+    'title' => 'API Attribute Review',
+    'link' => ['uri' => 'internal:/carrier/api-attribute-review'], // Adjust path as needed.
+    'menu_name' => $menu_name,
+    'parent' => $carrier_parent_id, // Set the parent ID.
+    'weight' => 4,
+    'menu_per_role__show_role' => [
+      'administrator',
+      'carrier_admin',
+      'api_attribute_admin',
+      'api_attribute_approval_level_1',
+      'api_attribute_approval_level_2',
+    ],
+  ]);
+  $carrier_menu_child_link3->save();
+
+  // Create the parent menu link.
+  $client_parent_menu_link = MenuLinkContent::create([
+    'title' => 'Client',
+    'link' => ['uri' => 'route:<nolink>'],
+    'menu_name' => $menu_name,
+    'expanded' => TRUE,
+    'weight' => 5,
+    'menu_per_role__show_role' => [
+        'authenticated',
+      ],
+  ]);
+  $client_parent_menu_link->save();
+
+   // Get the parent menu link ID.
+   $client_parent_id = 'menu_link_content:' . $client_parent_menu_link->uuid();
+
+   // Create the child menu link.
+   $client_menu_child_link1 = MenuLinkContent::create([
+     'title' => 'Client Management',
+     'link' => ['uri' => 'internal:/client/client-management'], // Adjust path as needed.
+     'menu_name' => $menu_name,
+     'parent' => $client_parent_id, // Set the parent ID.
+     'weight' => 6,
+     'menu_per_role__show_role' => [
+       'administrator',
+       'carrier_admin',
+     ],
+   ]);
+   $client_menu_child_link1->save();
+
+    // Create the child menu link.
+    $client_menu_child_link2 = MenuLinkContent::create([
+    'title' => 'User Management',
+    'link' => ['uri' => 'internal:/client/user-management'], // Adjust path as needed.
+    'menu_name' => $menu_name,
+    'parent' => $client_parent_id, // Set the parent ID.
+    'weight' => 7,
+    'menu_per_role__show_role' => [
+        'administrator',
+        'carrier_admin',
+        'client_admin',
+    ],
+    ]);
+    $client_menu_child_link2->save();
+
+
+        // Create the child menu link.
+        $client_menu_child_link3 = MenuLinkContent::create([
+            'title' => 'Client Credentials',
+            'link' => ['uri' => 'internal:/client/aws-apps'], // Adjust path as needed.
+            'menu_name' => $menu_name,
+            'parent' => $client_parent_id, // Set the parent ID.
+            'weight' => 8,
+            'menu_per_role__show_role' => [
+                'administrator',
+                'authenticated',
+            ],
+            ]);
+            $client_menu_child_link3->save();
+
+
+     // Create the parent menu link.
+  $price_parent_menu_link = MenuLinkContent::create([
+    'title' => 'Pricing',
+    'link' => ['uri' => 'route:<nolink>'],
+    'menu_name' => $menu_name,
+    'expanded' => TRUE,
+    'weight' => 9,
+    'menu_per_role__show_role' => [
+        'authenticated',
+      ],
+  ]);
+  $price_parent_menu_link->save(); 
+
+  $pricing_parent_id = 'menu_link_content:' . $price_parent_menu_link->uuid();
+  
+  
+         // Create the child menu link.
+         $pricing_menu_child_link1 = MenuLinkContent::create([
+            'title' => 'Pricing History',
+            'link' => ['uri' => 'internal:/pricing/history'], // Adjust path as needed.
+            'menu_name' => $menu_name,
+            'parent' => $pricing_parent_id, // Set the parent ID.
+            'weight' => 10,
+            'menu_per_role__show_role' => [
+                'administrator',
+                'authenticated',
+            ],
+            ]);
+            $pricing_menu_child_link1->save();
+
+              // Create the child menu link.
+         $pricing_menu_child_link2 = MenuLinkContent::create([
+            'title' => 'Pricing Review',
+            'link' => ['uri' => 'internal:/pricing/review'], // Adjust path as needed.
+            'menu_name' => $menu_name,
+            'parent' => $pricing_parent_id, // Set the parent ID.
+            'weight' => 11,
+            'menu_per_role__show_role' => [
+                'administrator',
+                'carrier_admin',
+                'finance_admin',
+                'api_attribute_approval_level_1',
+                'api_attribute_approval_level_2',
+            ],
+            ]);
+            $pricing_menu_child_link2->save();
+
+  // Create the parent menu link.
+  $use_case_review_parent_menu_link = MenuLinkContent::create([
+    'title' => 'Use Case Review',
+    'link' => ['uri' => 'route:<nolink>'],
+    'menu_name' => $menu_name,
+    'expanded' => TRUE,
+    'weight' => 12,
+    'menu_per_role__show_role' => [
+        'authenticated',
+      ],
+  ]);
+  $use_case_review_parent_menu_link->save();
+  // Get the parent menu link ID.
+  $use_case_parent_id = 'menu_link_content:' . $use_case_review_parent_menu_link->uuid();
+
+    // Create the child menu link.
+    $usecase_menu_child_link2 = MenuLinkContent::create([
+        'title' => 'Use Case Intake Form',
+        'link' => [
+            'uri' => 'https://carriers.zohocreatorportal.com/#Form:Client_Intake_Form',
+            'options' => [
+              'attributes' => [
+                'target' => '_blank',
+              ],
+            ],
+           ],
+        'menu_per_role__show_role' => [
+          'authenticated',
+        ],
+        'menu_name' => $menu_name,
+        'parent' => $use_case_parent_id, // Set the parent ID.
+        'weight' => 13,
+    ]);
+    $usecase_menu_child_link2->save();
+
+
+      // Create the parent menu link.
+  $api_sandbox_review_parent_menu_link = MenuLinkContent::create([
+    'title' => 'API Sandbox',
+    'link' => [
+        'uri' => 'https://shush-szad.readme.io/reference/silent_authentication_verify_ip_address_silent_authentication_v0_verify_ip_address_post',
+        'options' => [
+          'attributes' => [
+            'target' => '_blank',
+          ],
+        ],
+    ],
+    'menu_per_role__show_role' => [
+       'authenticated',
+    ],
+    'menu_name' => $menu_name,
+    'expanded' => TRUE,
+    'weight' => 14,
+  ]);
+  $api_sandbox_review_parent_menu_link->save();
+
+}
