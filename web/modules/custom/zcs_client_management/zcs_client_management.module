@@ -49,7 +49,7 @@ function zcs_client_management_mail($key, &$message, $params) {
     $email_from = \Drupal::config('system.site')->get('mail');
     switch ($key) {
         case 'client_member_invite':
-            $message['from'] = 'zebraconsultancyservices1@gmail.com';
+            $message['from'] = \Drupal::config('system.site')->get('mail');
             $message['subject'] = t('Partner Onboarding - Activate your account');
             $message['body'][] = $params['message'];
             break;

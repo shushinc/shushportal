@@ -113,8 +113,9 @@ class AddClientMemberForm extends FormBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
-    $user_email = $form_state->getValue('user_name'); 
-    $user_name = $form_state->getValue('user_mail'); 
+    $user_name = $form_state->getValue('user_name'); 
+    $user_email = $form_state->getValue('user_mail'); 
+
     $users = \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['mail' => $user_email]);
     if ($users) {
       $form_state->setError($form['user_name'], $this->t('This user is already registered or has an active invitation. Please verify their details and try again.'));

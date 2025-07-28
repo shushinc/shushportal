@@ -7,7 +7,7 @@ zcs_kong.create_key:
     _custom_access: '\Drupal\zcs_kong\Form\CreatekeyForm::access'
 
 zcs_kong.app_list:
-  path: '/apps'
+  path: '/client/apps'
   defaults:
     _title: 'API Keys'
     _form: 'Drupal\zcs_kong\Form\AppListForm'

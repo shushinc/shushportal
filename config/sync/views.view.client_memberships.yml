@@ -546,7 +546,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "<div class=\"user__mangement-edit\"></div>\r\n<div class=\"edit-operation\">\r\n<div class=\"edit-operation-wrap\">\r\n<a href=\"/client/{{ id }}/member/{{ id_1 }}/edit?destination=/client-memberships\" class=\"use-ajax\" data-toggle='modal'  data-dialog-type='modal'  data-dialog-options='{\"width\": 400, \"title\": \"Update Client Member\"}'>Edit</a>\r\n</div>"
+            text: "<div class=\"user__mangement-edit\"></div>\r\n<div class=\"edit-operation\">\r\n<div class=\"edit-operation-wrap\">\r\n<a href=\"/client/{{ id }}/member/{{ id_1 }}/edit?destination=/client/user-management\" class=\"use-ajax\" data-toggle='modal'  data-dialog-type='modal'  data-dialog-options='{\"width\": 400, \"title\": \"Update Client Member\"}'>Edit</a>\r\n</div>"
             make_link: false
             path: ''
             absolute: false
@@ -830,7 +830,7 @@ display:
           admin_label: ''
           plugin_id: text_custom
           empty: true
-          content: '<a href="/add-client-member?destination=/client-memberships" class="btn-primary use-ajax anchor-dropdown-btn" data-toggle=''modal''  data-dialog-type=''modal''  data-dialog-options=''{"width": 400, "title": "Invite Client User"}''>Invite Client User</a>'
+          content: '<a href="/add-client-member?destination=/client/user-management" class="btn-primary use-ajax anchor-dropdown-btn" data-toggle=''modal''  data-dialog-type=''modal''  data-dialog-options=''{"width": 400, "title": "Invite Client User"}''>Invite Client User</a>'
           tokenize: false
       footer: {  }
       display_extenders: {  }
