@@ -7,7 +7,7 @@ function zcs_user_management_mail($key, &$message, $params) {
     $email_from = \Drupal::config('system.site')->get('mail');
     switch ($key) {
         case 'user_invite':
-          $message['from'] = 'zebraconsultancyservices1@gmail.com';
+          $message['from'] = \Drupal::config('system.site')->get('mail');
           $message['subject'] = t('Activate your account');
           $message['body'][] = $params['message'];
           break;

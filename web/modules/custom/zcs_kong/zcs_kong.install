@@ -7,42 +7,38 @@ use Drupal\user\Entity\Role;
 
 
 function zcs_kong_install() {
+  $menu_name = 'main';
+  $title = 'API Keys';
+  $link_uri = 'internal:/client/apps';
 
-    $menu_name = 'main';
-    $title = 'API Keys';
-    $link_uri = 'internal:/apps';
+  // Check if a menu link with the same properties already exists.
+  $existing_menu_links = \Drupal::entityTypeManager()->getStorage('menu_link_content')->loadByProperties([
+    'menu_name' => $menu_name,
+    'title' => $title,
+    'link__uri' => $link_uri,
+  ]);
 
-    // Check if a menu link with the same properties already exists.
-    $existing_menu_links = \Drupal::entityTypeManager()->getStorage('menu_link_content')->loadByProperties([
-      'menu_name' => $menu_name,
+  if (empty($existing_menu_links)) {
+    $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+    $parent_menu = current($storage->loadByProperties(['title' => 'Client']));
+    $parent_id = 'menu_link_content:' . $parent_menu->uuid();
+    // Create the child menu link.
+    $kong_menu_link = MenuLinkContent::create([
       'title' => $title,
-      'link__uri' => $link_uri,
+      'link' => ['uri' => $link_uri], // Adjust path as needed.
+      'menu_name' => $menu_name,
+      'parent' => $parent_id, // Set the parent ID.
+      'weight' => 8,
     ]);
-
-    if (empty($existing_menu_links)) {
-
-     // Add a sample link to the main menu.
-        $menu_link = MenuLinkContent::create([
-          'menu_name' => 'main',
-          'title' => 'API Keys',
-          'link' => [
-             ['uri' => 'internal:/apps']
-          ],
-          'weight' => 5,
-          'menu_per_role__show_role' => [
-            'authenticated',
-          ],
-        ]);
-        $menu_link->save();
-    }
-
+    $kong_menu_link->save();
+  }
 }
 
 
 
 function zcs_kong_uninstall() {
   $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
-  $menu_items = $storage->loadByProperties(['link__uri' => 'internal:/apps']);
+  $menu_items = $storage->loadByProperties(['link__uri' => 'internal:/client/apps']);
   foreach ($menu_items as $menu_item) {
     $menu_item->delete();
   }

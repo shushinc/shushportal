@@ -123,7 +123,6 @@ final class AwsAppListForm extends FormBase {
             }
             $apps[] = [
               'api_name' => $app->getTitle(),
-              'description' => $description,
               'app' => $app->get('field_tag')->value ?? '',
               'created' => date('d M Y' , (int)$created_time),
               'client_id' => [
