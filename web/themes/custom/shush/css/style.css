@@ -2202,6 +2202,16 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   content: "";
   transform: translateX(-10px);
   transition: all 0.3s ease-in-out;
+  border-radius: 50%;
+  position: absolute;
+  top: 4px;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  transition: all 0.3s ease-in-out;
+  z-index: 10;
+  opacity: 0;
 }
 #edit-api-agreement-covers .fieldset-wrapper .js-form-item input[type="checkbox"],
 [id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item input[type="checkbox"] {
@@ -2212,7 +2222,7 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
 }
 #edit-api-agreement-covers .fieldset-wrapper .js-form-item input[type="checkbox"]:checked + label::before,
 [id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item input[type="checkbox"]:checked + label::before {
-  transform: translateX(10px);
+  transform: translateX(15px);
   border-radius: 50%;
   content: "";
   position: absolute;
@@ -2223,6 +2233,12 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   background-color: white;
   transition: all 0.3s ease-in-out;
   z-index: 10;
+  opacity: 1;
+}
+#edit-api-agreement-covers .fieldset-wrapper .js-form-item input[type="checkbox"]:checked + label::after,
+[id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item input[type="checkbox"]:checked + label::after {
+  content: "";
+  background-color: #06b487;
 }
 #edit-api-agreement-covers .fieldset-wrapper label,
 [id^="edit-api-agreement-covers--"] .fieldset-wrapper label {

@@ -145,6 +145,9 @@ body[class^="view-"] {
   flex: 0 0 25%;
   line-height: normal;
   color: #2e3b8f;
+  padding-left: 20px;
+  position: relative;
+  padding-right: 10px;
 }
 .api-aggreement-covers .enabled::before,
 .api-aggreement-covers .disabled::before {
@@ -156,6 +159,10 @@ body[class^="view-"] {
   background-repeat: no-repeat;
   margin-right: 8px;
   border-radius: 50%;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  margin-top: -7px;
 }
 
 /* Tick mark background */
