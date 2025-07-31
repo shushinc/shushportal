@@ -8,7 +8,7 @@ use Drupal\user\Entity\Role;
 
 function zcs_kong_install() {
   $menu_name = 'main';
-  $title = 'API Keys';
+  $title = 'Client Credentials';
   $link_uri = 'internal:/client/apps';
 
   // Check if a menu link with the same properties already exists.

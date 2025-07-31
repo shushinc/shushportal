@@ -37,25 +37,28 @@ final class AppListForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
-    // $url = Url::fromRoute('zcs_aws.create_key');
-    // $url->setOptions([
-    // 'attributes' => [
-    // 'class' => ['use-ajax'],
-    // 'data-dialog-type' => 'modal',
-    // 'data-dialog-options' => json_encode(['width' => 700]),
-    // ],
-    // ]);
-
-    // $link = Link::fromTextAndUrl($this->t('Create Client Credentials'), $url)->toRenderable();
-    // $link['#attached']['library'][] = 'core/drupal.dialog.ajax'];
-
-    // // Add the link to the form before the table.
-    // $form['create_link'] = [
-    // '#type' => 'container',
-    // '#attributes' => ['class' => ['zcs-create-link']],
-    // 'link' => $link,
-    // ];
-
+    $url = Url::fromRoute('zcs_kong.create_key');
+    $url->setOptions([
+      'attributes' => [
+        'class' => ['button', 'btn-primary', 'button--primary', 'use-ajax'],
+        'data-dialog-type' => 'modal',
+        'data-dialog-options' => json_encode(['width' => 400]),
+      ],
+    ]);
+  
+    $form['top_actions'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['top-actions']],
+      'create_link_wrapper' => [
+        '#type' => 'html_tag',
+        '#tag' => 'header',
+        '#attributes' => [
+          'class' => ['client-credentials-header'],
+        ],
+        '#children' => Link::fromTextAndUrl($this->t('Create Client Credentials'), $url)->toString(),
+      ],
+      '#weight' => -10,
+    ];
 
 
     $header = [

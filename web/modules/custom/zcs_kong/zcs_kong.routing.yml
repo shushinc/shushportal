@@ -1,7 +1,7 @@
 zcs_kong.create_key:
   path: 'create-key'
   defaults:
-    _title: 'Generate API key'
+    _title: 'Create Client Credentials'
     _form: 'Drupal\zcs_kong\Form\CreatekeyForm'
   requirements:
     _custom_access: '\Drupal\zcs_kong\Form\CreatekeyForm::access'
@@ -9,7 +9,7 @@ zcs_kong.create_key:
 zcs_kong.app_list:
   path: '/client/apps'
   defaults:
-    _title: 'API Keys'
+    _title: 'Client Credentials'
     _form: 'Drupal\zcs_kong\Form\AppListForm'
   requirements:
     _permission: 'access content' 
@@ -17,7 +17,7 @@ zcs_kong.app_list:
 zcs_kong.edit_key:
   path: '/key/{id}/edit'
   defaults:
-    _title: 'Update API key'
+    _title: 'Update APP'
     _form: 'Drupal\zcs_kong\Form\UpdateKeyForm'
   requirements:
     _custom_access: '\Drupal\zcs_kong\Form\UpdateKeyForm::access'

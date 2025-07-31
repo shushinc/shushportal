@@ -124,7 +124,7 @@ final class UpdateKeyForm extends FormBase {
       '#type' => 'actions',
       'submit' => [
         '#type' => 'submit',
-        '#value' => $this->t('Regenerate Key'),
+        '#value' => $this->t('Update App'),
       ],
     ];
     return $form;
@@ -163,7 +163,7 @@ final class UpdateKeyForm extends FormBase {
         $this->messenger()->addMessage('App updated Successfully');  
         $form_state->setRedirectUrl(Url::fromRoute('zcs_kong.app_list'));   
       }else {
-        $this->messenger()->addError('Unable to update App. Please try again later or check Adminstrator');
+        $this->messenger()->addError('Gateway connection failure to update App.Please contact the administrator for further assistance');
       }
     }
     $form_state->setRedirectUrl(Url::fromRoute('zcs_kong.app_list'));

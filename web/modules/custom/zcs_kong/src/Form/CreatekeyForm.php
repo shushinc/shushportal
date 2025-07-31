@@ -139,7 +139,7 @@ final class CreateKeyForm extends FormBase {
       $response_key_details = \Drupal::service('zcs_kong.kong_gateway')->generateKey($client_id, $tags, $ttl);
       if (!empty($response_key_details)) {
         if ($response_key_details == 'error') {
-          $this->messenger()->addError('Something went wrong');  
+          \Drupal::messenger()->addError('Gateway connection failure to create App.Please contact the administrator for further assistance.');  
           $form_state->setRedirectUrl(Url::fromRoute('zcs_kong.app_list'));  
         }
         else {
@@ -153,14 +153,14 @@ final class CreateKeyForm extends FormBase {
         }  
       }
       else {
-        $this->messenger()->addError('something went wrong');
-        $form_state->setRedirectUrl(Url::fromRoute('zcs_kong.create_key'));
+        \Drupal::messenger()->addError('Gateway connection failure to create App.Please contact the administrator for further assistance.');  
+        $form_state->setRedirectUrl(Url::fromRoute('zcs_kong.app_list'));  
       } 
     }
     else {
       $consumer_id =  \Drupal::service('zcs_kong.kong_gateway')->checkUserAccessGeneratekey(); 
       if ($consumer_id == 'error'){
-        \Drupal::messenger()->addMessage('Something went wrong....!');
+        \Drupal::messenger()->addError('Sorry! You dont have access to create App.');  
       } 
       else {
         $response_key_details = \Drupal::service('zcs_kong.kong_gateway')->generateKey($consumer_id, $tags, $ttl);
@@ -173,8 +173,8 @@ final class CreateKeyForm extends FormBase {
           }
         }
         else {
-          $this->messenger()->addError('something went wrong');
-          $form_state->setRedirectUrl(Url::fromRoute('zcs_kong.create_key'));
+          \Drupal::messenger()->addError('Gateway connection failure to create App.Please contact the administrator for further assistance');  
+          $form_state->setRedirectUrl(Url::fromRoute('zcs_kong.app_list'));
         }    
       }
     }

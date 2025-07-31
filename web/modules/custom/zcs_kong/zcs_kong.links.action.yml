@@ -1,6 +1,0 @@
-zcs_kong.create_key:
-  route_name: zcs_kong.create_key
-  title: 'Generate Key'
-  appears_on:
-    - zcs_kong.app_list
-  popup: true  

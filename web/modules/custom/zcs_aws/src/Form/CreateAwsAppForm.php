@@ -94,10 +94,9 @@ class CreateAwsAppForm extends FormBase {
       \Drupal::messenger()->addMessage($this->t('App created successfully in AWS Gateway'), 'status', TRUE);;
     }
     else {
-      \Drupal::messenger()->addError($this->t('Something went wrong. Please contact Administrator'), 'status', TRUE);
+      \Drupal::messenger()->addError($this->t('Gateway connection failure to create App.Please contact the administrator for further assistance.'));
       $form_state->setRedirectUrl(Url::fromRoute('zcs_aws.app_list'));
     }
-
   }
 
   /**

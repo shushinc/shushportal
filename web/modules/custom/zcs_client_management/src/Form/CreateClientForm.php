@@ -430,46 +430,49 @@ class CreateClientForm extends FormBase {
       // create consumer in kong: 
       try {
         $response = \Drupal::service('zcs_kong.kong_gateway')->createConsumer($contact_name, $contact_email);
-        $status_code = $response->getStatusCode();
-        if ($status_code == '201') {  
-          $group = Group::create([
-            'type' => 'partner',
-            'label' => $partner_name,
-            'field_contact_name' => $contact_name,
-            'field_contact_email' => $contact_email,
-            'field_description' => $partner_description,
-            'field_partner_status' => $partner_status,
-            'field_partner_type' => $partner_type,
-            'user_id' => \Drupal::currentUser()->id(),
-            'created' => \Drupal::time()->getRequestTime(),
-          ]);
-          $group->save(); 
-          $uid = \Drupal::currentUser()->id();
-          $user = User::load($uid);
-          $group->addMember($user, ['group_roles' => ['partner-admin']]);
-          $group->save();
-          $user = User::create([
-            'name' => $contact_name,
-            'mail' => $contact_email,
-            'status' => 0, // 
-            'roles' => 'authenticated', 
-          ]);  
-          $user->save();
-    
-          $token = $this->generateToken();
-          $save_invitation = $this->saveInvitation($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
-          $send_email = $this->sendInvitationMail($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
-        
-          $kong_response = $response->getBody()->getContents();
-          $response = Json::decode($kong_response);
-          $group->set('field_consumer_id', $response['id']);
-          $group->save();   
-          $this->messenger()->addMessage($this->t('Client is invited successfully.'));
-          $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
+        if($response != 'error'){
+          $status_code = $response->getStatusCode();
+          if ($status_code == '201') {  
+            $group = Group::create([
+              'type' => 'partner',
+              'label' => $partner_name,
+              'field_contact_name' => $contact_name,
+              'field_contact_email' => $contact_email,
+              'field_description' => $partner_description,
+              'field_partner_status' => $partner_status,
+              'field_partner_type' => $partner_type,
+              'user_id' => \Drupal::currentUser()->id(),
+              'created' => \Drupal::time()->getRequestTime(),
+            ]);
+            $group->save(); 
+            $uid = \Drupal::currentUser()->id();
+            $user = User::load($uid);
+            $group->addMember($user, ['group_roles' => ['partner-admin']]);
+            $group->save();
+            $user = User::create([
+              'name' => $contact_name,
+              'mail' => $contact_email,
+              'status' => 0, // 
+              'roles' => 'authenticated', 
+            ]);  
+            $user->save();
+      
+            $token = $this->generateToken();
+            $save_invitation = $this->saveInvitation($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
+            $send_email = $this->sendInvitationMail($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
+          
+            $kong_response = $response->getBody()->getContents();
+            $response = Json::decode($kong_response);
+            $group->set('field_consumer_id', $response['id']);
+            $group->save();   
+            $this->messenger()->addMessage($this->t('Client is invited successfully.'));
+            $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
+          }
+          else {
+            // logger
+          }
         }
-        else {
-          // logger
-        }
+     
       } catch (RequestException $e) {
         if ($e->hasResponse()) {
           $error_response = $e->getResponse();

@@ -108,7 +108,7 @@ final class UpdateAwsAppForm extends FormBase {
       }
     }
     else {
-      \Drupal::messenger()->addError('An error occurred while updating App.', 'error');
+      \Drupal::messenger()->addError($this->t('Gateway connection failure to Update App.Please contact the administrator for further assistance.'));
       $form_state->setRedirectUrl(Url::fromRoute('zcs_aws.app_list'));
     }
   }

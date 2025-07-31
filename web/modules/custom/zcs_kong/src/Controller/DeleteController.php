@@ -40,7 +40,7 @@ class DeleteController extends ControllerBase {
       }
     }
     else {
-      \Drupal::messenger()->addError('Something went wrong in gateway');
+      \Drupal::messenger()->addError('Gateway connection failure to delete App.Please contact the administrator for further assistance.');
     }
     $response = new RedirectResponse(Url::fromRoute('zcs_kong.app_list')->toString());
     return $response->send();

@@ -34,7 +34,7 @@ class AwsDeleteController extends ControllerBase {
       return $response->send();
     }
     else {
-      \Drupal::messenger()->addError('An error occurred while Deletion.', 'error');
+      \Drupal::messenger()->addError($this->t('Gateway connection failure to delete App.Please contact the administrator for further assistance.'));
       $response = new RedirectResponse(Url::fromRoute('zcs_aws.app_list')->toString());
       return $response->send();
     }

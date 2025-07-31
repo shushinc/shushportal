@@ -87,14 +87,20 @@ class kongService  {
     ];
 
     $request_body = json::encode($body);
-    $response = $this->httpClient->request('POST', $endpoint, [
-      'headers' => [
-       'content-type' => 'application/json',
-      ],
-      'verify' => FALSE,
-      'body' => $request_body,
-    ]);
-    return $response;
+    try {
+      $response = $this->httpClient->request('POST', $endpoint, [
+        'headers' => [
+        'content-type' => 'application/json',
+        ],
+        'verify' => FALSE,
+        'body' => $request_body,
+      ]);
+      return $response;
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('kong')->info('Error in creating consumer in kong gateway : @message', ['@message' => $e->getMessage()]);
+      return "error";
+    }
   }
 
    /**
@@ -177,12 +183,13 @@ class kongService  {
         'content-type' => 'application/json',
         ],
         'verify' => FALSE,
+        'timeout' => 400,
         'body' => $request_body,
       ]);
       return $response;
     }
     catch (\Exception $e) {
-      \Drupal::messenger()->addError(('Request Error: ' . $e->getMessage()));
+      \Drupal::logger('kong')->info('Error in Generating the kong app key : @message', ['@message' => $e->getMessage()]);
       return "error";
     }
   }
@@ -210,7 +217,7 @@ class kongService  {
         \Drupal::messenger()->addError('No API keys available or problem in fetching Details');
       }
       else {
-        \Drupal::messenger()->addError('Something Went wrong contact site adminstrator.');
+        \Drupal::messenger()->addError('Gateway connection failure to create App.Please contact the administrator for further assistance.');
       }
       return "error";
     }
@@ -291,7 +298,7 @@ class kongService  {
       return $response;
     }
     catch (\Exception $e) {
-      \Drupal::messenger()->addError(('Request Error: ' . $e->getMessage()));
+      \Drupal::logger('kong')->info('Error in updating the kong app key : @message', ['@message' => $e->getMessage()]);
       return 0;
     }
   }
@@ -312,7 +319,9 @@ class kongService  {
       return $response;
     }
     catch (\Exception $e) {
-      \Drupal::messenger()->addError(('Request Error: ' . $e->getMessage()));
+      //\Drupal::messenger()->addError(('Request Error: ' . $e->getMessage()));
+      \Drupal::logger('kong')->info('Error in deleting the kong app key : @message', ['@message' => $e->getMessage()]);
+
       return 0;
     }
   }
