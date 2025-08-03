@@ -79,7 +79,7 @@ class RateSheetReviewForm extends FormBase {
         $form['price' . $key] = [
           '#type' => 'number',
           '#min' => 0,
-          '#default_value' => $value ?? 0.00,
+          '#default_value' => $value ?? 0.000,
           '#step' => 0.001,
           '#field_prefix' => $symbol,
           '#disabled' => TRUE,

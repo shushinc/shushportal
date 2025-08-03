@@ -21,6 +21,7 @@ module:
   dblog: 0
   dynamic_page_cache: 0
   editor: 0
+  email_registration: 0
   entity: 0
   field: 0
   field_ui: 0
@@ -64,6 +65,7 @@ module:
   zcs_aws: 0
   zcs_client_management: 0
   zcs_custom: 0
+  zcs_menu: 0
   zcs_user_management: 0
   views: 10
   standard: 1000

@@ -109,7 +109,7 @@ class PriceRateSheet extends FormBase {
         $form['price' . $content->id()] = [
           '#type' => 'number',
           '#min' => 0,
-          '#default_value' => $content->field_standard_price->value ?? 0.00,
+          '#default_value' => $content->field_standard_price->value ?? 0.000,
           '#step' => 0.001,
           '#field_prefix' => $symbol,
         ];
@@ -163,7 +163,11 @@ class PriceRateSheet extends FormBase {
     $values = $form_state->getValues();
     $nids = explode(",", $values['nodes']);
     foreach ($nids as $nid) {
-      $json[$nid] = $values['price' . $nid];
+      $price = $values['price' . $nid];
+      if($values['price' . $nid]== 0) {
+       $price =  number_format(isset($values['price' . $nid]) ? $values['price' . $nid] : 0.000, 3);
+      }
+      $json[$nid] =  $price;
     }
     $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'financial_rate_sheet_approval_level_1', 'status' => 1]);
     foreach ($users as $user) {

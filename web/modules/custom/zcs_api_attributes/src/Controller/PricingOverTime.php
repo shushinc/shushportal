@@ -79,9 +79,9 @@ class PricingOverTime extends ControllerBase {
       foreach ($contents as $content) {
         $final[] = [
           'title' => $content->title->value,
-          'price0' => number_format(isset($prices[0][$content->id()]) ? $prices[0][$content->id()] : 0.00, 2),
-          'price1' => number_format(isset($prices[1][$content->id()]) ? $prices[1][$content->id()] : 0.00, 2),
-          'price2' => number_format(isset($prices[2][$content->id()]) ? $prices[2][$content->id()] : 0.00, 2),
+          'price0' => number_format(isset($prices[0][$content->id()]) ? $prices[0][$content->id()] : 0.000, 3),
+          'price1' => number_format(isset($prices[1][$content->id()]) ? $prices[1][$content->id()] : 0.000, 3),
+          'price2' => number_format(isset($prices[2][$content->id()]) ? $prices[2][$content->id()] : 0.000, 3),
         ];
       }
     }
