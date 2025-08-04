@@ -22,6 +22,7 @@
 				<tr>
 					<th>#</th>
 					<th>API Attributes</th>
+					<th>Current API Pricing</th>
 					<th>Proposed API Pricing</th>
 				</tr>
 			</thead>
@@ -32,6 +33,10 @@
 						<tr>
 							<td>{{ counter }}</td>
 							<td>{{ title }}</td>
+							<td>{{ attributes.prices[id] }}
+								{# {% if form['price' ~ id]|field_value != attributes.prices[id] %}
+								   <span class="price-variation" style="color: red; font-size: 20px;">*</span>
+								{% endif %} #}
 							<td>{{ form['price' ~ id] }}</td>
 						</tr>
 					{% set counter = counter + 1 %}
