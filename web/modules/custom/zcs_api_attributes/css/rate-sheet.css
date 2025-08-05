@@ -149,12 +149,17 @@
   width: 3%;
 }
 
-.ui-dialog .rate-sheet table th:nth-child(2) {
-  width: 50%;
+.ui-dialog .rate-sheet table.attributes-table thead th:nth-child(2) {
+  width: 60%;
   text-align: left;
 }
-.ui-dialog .rate-sheet table th:nth-child(3) {
-  width: 12%;
+.ui-dialog .rate-sheet table.attributes-table thead th:nth-child(3) {
+  width: 20%;
+  text-align: left;
+}
+
+.ui-dialog .rate-sheet table.attributes-table thead th:nth-child(4) {
+  width: 20%;
   text-align: left;
 }
 

@@ -61,3 +61,14 @@
   border: none;
   margin-top: 1rem;
 }
+
+.rate-sheet-filter .attributes-label {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  color: #2b3674;
+  line-height: normal;
+  font-weight: 700;
+}

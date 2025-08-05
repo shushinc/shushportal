@@ -48,7 +48,7 @@ final class AppListForm extends FormBase {
   
     $form['top_actions'] = [
       '#type' => 'container',
-      '#attributes' => ['class' => ['top-actions']],
+      '#attributes' => ['class' => ['top-actions', 'user-management-view']],
       'create_link_wrapper' => [
         '#type' => 'html_tag',
         '#tag' => 'header',

@@ -295,6 +295,13 @@
             }
             ul {
               display: block;
+              li.menu-item--active-trail {
+                a {
+                  color: #191a5b;
+                  font-weight: 700;
+                  opacity: 1;
+                }
+              }
             }
           }
         }

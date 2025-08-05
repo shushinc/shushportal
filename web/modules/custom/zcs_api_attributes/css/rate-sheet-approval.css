@@ -25,6 +25,7 @@
   min-width: 180px;
   width: auto;
   border-radius: 8px;
+  height: 48px;
 }
 #block-shush-content > .form-type-select label {
   font-size: 14px;
@@ -34,7 +35,7 @@
 }
 
 table.rate-sheet-approval {
-  margin-top: 1.5rem;
+  margin-top: 1.8rem;
 }
 table.rate-sheet-approval tr th:last-child {
   text-align: left;
@@ -79,14 +80,17 @@ table.rate-sheet-approval tbody td span.pending::before {
 }
 table.rate-sheet-approval tbody td.approved {
   color: #06b487;
+  font-weight: 700;
 }
 
 table.rate-sheet-approval tbody td.rejected {
   color: #cc1b0c;
+  font-weight: 700;
 }
 
 table.rate-sheet-approval tbody td.pending {
   color: #fcc418;
+  font-weight: 700;
 }
 table.rate-sheet-approval .btn-primary:hover {
   background: #4f9bf5;

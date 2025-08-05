@@ -25,11 +25,12 @@
       $(".zcs-aws-app-list table tr td.api-keys .pwd-toggle").unbind().on("click", function(event) {
         $(this).parent().toggleClass('password-show');
         $('.zcs-aws-app-list table tr td').not(this).parent().removeClass('password-show');
+      });
 
       $(".zcs-kong-app-list table tr td.api-keys .pwd-toggle").unbind().on("click", function(event) {
+        console.log('asd');
         $(this).parent().toggleClass('password-show');
         $('.zcs-kong-app-list table tr td').not(this).parent().removeClass('password-show');
-      });
       });
       
 
@@ -153,24 +154,18 @@
         autoplay: true,
         autoplaySpeed: 5000,
       });
-      $(document).ready(function() {
-        $('.client-Layout-column-wrapper select').select2({
-          dropdownCssClass: "custom-scroll" // optional custom styling
-        });
+      $('.client-Layout-column-wrapper select.country').select2({
+        dropdownParent: $('body'),
+        dropdownAutoWidth: true,
+        minimumResultsForSearch: 0,
       });
+      
     }
   };
 })(jQuery, Drupal);
 
 jQuery(document).ready(function($){
-  // Add the 'parent-menu' class to <li> elements that have a <ul> (i.e., parent menus)
-  $('li:has(ul)').addClass('parent-menu');
-  // Add the 'child-menu' class to <ul> elements that are inside a parent <li>
-  $('li:has(ul) > ul').addClass('child-menu');
-  // Initially hide all child menus
-  $('.child-menu').hide();
-  // Show child-menu if it contains an active link
-  $('.child-menu').has('a.is-active').show().closest('.parent-menu').addClass('menuexpand');
+
   // Toggle child menu visibility when the parent menu is clicked
   $('.site__menu .menu-item--expanded > span').on('click', function (e) {
     e.preventDefault();

@@ -302,6 +302,9 @@ form {
         outline: 1px solid rgba(15, 141, 240, 1);
         box-shadow: 0 0 5px #0f8df0;
       }
+      &[readonly="readonly"] {
+        background: #eee;
+      }
     }
     textarea {
       min-height: 140px;
@@ -483,7 +486,8 @@ table {
         font-weight: 700;
         color: rgba(43, 54, 116, 1);
       }
-      .user-active {
+      .user-active,
+      .key-active {
         position: relative;
         padding-left: 20px;
         &::before {
@@ -499,7 +503,8 @@ table {
           margin-top: -8px;
         }
       }
-      .user-inactive {
+      .user-inactive,
+      .key-inactive {
         position: relative;
         padding-left: 20px;
         &::before {
@@ -691,6 +696,12 @@ table {
         }
         .secret-key {
           width: 180px;
+        }
+        .kong-key {
+          width: 140px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
       &.app-operations {
@@ -1048,9 +1059,14 @@ body.password-change-page {
 
 .password-background {
   background: url("../images/password-bg.png") no-repeat;
-  height: 100vh;
   background-size: contain;
   background-position: center right;
+  height: 100vh;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
   .layout-content {
     padding-top: 8rem;
     padding-bottom: 5rem;
@@ -1251,6 +1267,7 @@ table {
 .select2-container {
   .select2-dropdown {
     border: 1px solid #ddd;
+    width: 300px !important;
     .select2-search--dropdown {
       .select2-search__field {
         border: 1px solid #ddd;
@@ -1269,5 +1286,50 @@ table {
         color: #118df0;
       }
     }
+  }
+}
+
+.attribute-review .attributes-table {
+  th {
+    &:nth-child(2) {
+      width: 50%;
+      text-align: left;
+    }
+    &:last-child,
+    &:nth-child(3) {
+      text-align: left;
+    }
+  }
+}
+.ui-dialog {
+  form {
+    .form-submit.is-disabled {
+      font-family: "Poppins", sans-serif;
+      font-weight: 500;
+      text-transform: capitalize;
+      font-size: 16px;
+      min-width: fit-content;
+      background-color: rgba(118, 118, 118, 0.3);
+      border: 2px solid rgba(118, 118, 118, 0.3);
+      color: rgba(118, 118, 118, 0.3);
+      border-radius: 10px;
+      padding: 10px 15px;
+      display: flex;
+      margin: 20px auto;
+    }
+  }
+}
+.password-reset-wrapper {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  align-items: center;
+  height: 100vh;
+  .right-side-logo {
+    position: absolute;
+    right: 130px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
   }
 }

@@ -410,6 +410,11 @@ form .js-form-item input[aria-invalid="true"]:focus {
 .user-logged-in .region-primary-menu ul li.menu-item--expanded.menu-item--active-trail ul {
   display: block;
 }
+.user-logged-in .region-primary-menu ul li.menu-item--expanded.menu-item--active-trail ul li.menu-item--active-trail a {
+  color: #191a5b;
+  font-weight: 700;
+  opacity: 1;
+}
 
 .layout-container.password-change-page {
   margin: 0;
@@ -805,6 +810,12 @@ form .js-form-item textarea:focus-visible {
   outline: 1px solid #0f8df0;
   box-shadow: 0 0 5px #0f8df0;
 }
+form .js-form-item input[readonly="readonly"],
+form .js-form-item .form-file[readonly="readonly"],
+form .js-form-item select[readonly="readonly"],
+form .js-form-item textarea[readonly="readonly"] {
+  background: #eee;
+}
 form .js-form-item textarea {
   min-height: 140px;
 }
@@ -978,11 +989,13 @@ table tr td:first-child {
   font-weight: 700;
   color: #2b3674;
 }
-table tr td .user-active {
+table tr td .user-active,
+table tr td .key-active {
   position: relative;
   padding-left: 20px;
 }
-table tr td .user-active::before {
+table tr td .user-active::before,
+table tr td .key-active::before {
   content: "";
   height: 16px;
   width: 16px;
@@ -994,11 +1007,13 @@ table tr td .user-active::before {
   background-size: cover;
   margin-top: -8px;
 }
-table tr td .user-inactive {
+table tr td .user-inactive,
+table tr td .key-inactive {
   position: relative;
   padding-left: 20px;
 }
-table tr td .user-inactive::before {
+table tr td .user-inactive::before,
+table tr td .key-inactive::before {
   content: "";
   height: 16px;
   width: 16px;
@@ -1192,6 +1207,13 @@ table tr td .edit-operation:hover .edit-operation-wrap {
 .zcs-kong-app-list table tr td.password-show .secret-key,
 .zcs-aws-app-list table tr td.password-show .secret-key {
   width: 180px;
+}
+.zcs-kong-app-list table tr td.password-show .kong-key,
+.zcs-aws-app-list table tr td.password-show .kong-key {
+  width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .zcs-kong-app-list table tr td.app-operations,
 .zcs-aws-app-list table tr td.app-operations {
@@ -1503,7 +1525,6 @@ table tr td .edit-operation:hover .edit-operation-wrap {
 .user-management-header h3 {
   font-size: 34px;
   line-height: 42px;
-  margin: 0.75em 0 0.5em;
   font-weight: 700;
   color: #2b3674;
   letter-spacing: 0.2px;
@@ -1536,9 +1557,14 @@ body.password-change-page {
 
 .password-background {
   background: url("../images/password-bg.png") no-repeat;
-  height: 100vh;
   background-size: contain;
   background-position: center right;
+  height: 100vh;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
 }
 .password-background .layout-content {
   padding-top: 8rem;
@@ -1684,6 +1710,7 @@ table tbody td .text-bold {
 
 .select2-container .select2-dropdown {
   border: 1px solid #ddd;
+  width: 300px !important;
 }
 .select2-container .select2-dropdown .select2-search--dropdown .select2-search__field {
   border: 1px solid #ddd;
@@ -1698,6 +1725,44 @@ table tbody td .text-bold {
 .select2-container .select2-results .select2-results__option:hover {
   background: transparent;
   color: #118df0;
+}
+
+.attribute-review .attributes-table th:nth-child(2) {
+  width: 50%;
+  text-align: left;
+}
+.attribute-review .attributes-table th:last-child, .attribute-review .attributes-table th:nth-child(3) {
+  text-align: left;
+}
+
+.ui-dialog form .form-submit.is-disabled {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  text-transform: capitalize;
+  font-size: 16px;
+  min-width: fit-content;
+  background-color: rgba(118, 118, 118, 0.3);
+  border: 2px solid rgba(118, 118, 118, 0.3);
+  color: rgba(118, 118, 118, 0.3);
+  border-radius: 10px;
+  padding: 10px 15px;
+  display: flex;
+  margin: 20px auto;
+}
+
+.password-reset-wrapper {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  align-items: center;
+  height: 100vh;
+}
+.password-reset-wrapper .right-side-logo {
+  position: absolute;
+  right: 130px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
 }
 
 form.user-logout-confirm {
@@ -2010,6 +2075,9 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   border-bottom: 2px solid #2e3b8f;
   border-radius: 6px 6px 0 0;
 }
+.client-Layout-column-wrapper .js-form-item .country {
+  width: 100%;
+}
 .client-Layout-column-wrapper .js-form-item .form-textarea {
   min-height: 384px !important;
 }
@@ -2173,10 +2241,10 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
 #edit-api-agreement-covers .fieldset-wrapper .js-form-item,
 [id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item {
   display: flex;
-  flex: 0 0 25%;
+  flex: 0 0 50%;
   align-items: center;
   align-self: baseline;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
   position: relative;
   padding-right: 12px;
 }
@@ -2200,18 +2268,18 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
 #edit-api-agreement-covers .fieldset-wrapper .js-form-item label::before,
 [id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item label::before {
   content: "";
-  transform: translateX(-10px);
+  transform: translateX(0px);
   transition: all 0.3s ease-in-out;
   border-radius: 50%;
   position: absolute;
   top: 4px;
-  left: 0;
+  left: 5px;
   width: 12px;
   height: 12px;
   background-color: white;
   transition: all 0.3s ease-in-out;
   z-index: 10;
-  opacity: 0;
+  opacity: 1;
 }
 #edit-api-agreement-covers .fieldset-wrapper .js-form-item input[type="checkbox"],
 [id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item input[type="checkbox"] {
