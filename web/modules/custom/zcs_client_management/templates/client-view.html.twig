@@ -107,8 +107,10 @@
 	<div class="api-aggreement-covers">
 		<span class="title">API Agreement Covers</span>
 		<span>
+			{% set counter = 1 %}
 			{% for title, status in agreement_covers %}
-				<p class="{{ status == 0 ? 'disabled' : 'enabled' }}">{{ title }}</p>
+				<p class="{{ status == 0 ? 'disabled' : 'enabled' }}">{{ counter }}{{ ". " }}{{ title }}</p>
+			{% set counter = counter + 1 %}
 			{% endfor %}
 		</span>
 	</div>

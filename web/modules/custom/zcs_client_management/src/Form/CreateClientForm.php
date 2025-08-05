@@ -17,7 +17,7 @@ use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Site\Settings;
 use GuzzleHttp\Exception\RequestException;
 use Drupal\Component\Serialization\Json;
-
+use Drupal\Core\Render\Markup;
 
 /**
  * Provides a zcs Client Management form.
@@ -268,17 +268,19 @@ class CreateClientForm extends FormBase {
     $contents = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
 
     if (!empty($contents)) {
+      $attribute_no = 1;
       foreach ($contents as $content) {
         $nids[] = $content->id();
         // Checkbox to enable/select this attribute
         $form['api_agreement_covers']['attribute_' . $content->id()]= [
           '#type' => 'checkbox',
-          '#title' => $content->label(),
+          '#title' => Markup::create("<span class='attribute-no'>$attribute_no. </span>") .$content->label(),
           '#default_value' => FALSE,
           '#attributes' => [
             'class' => ['toggle-checkbox'],
           ],
         ];
+        $attribute_no = $attribute_no + 1;
       }
     }
 

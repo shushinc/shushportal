@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\group\Entity\Group;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Datetime\DrupalDateTime;
-
+use Drupal\Core\Render\Markup;
 
 
 
@@ -322,17 +322,19 @@ final class EditClientForm extends FormBase {
       ->execute();
       $contents = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
     if (!empty($contents)) {
+      $attribute_no = 1;
       foreach ($contents as $content) {
         $nids[] = $content->id();
         // Checkbox to enable/select this attribute
         $form['api_agreement_covers']['attribute_' . $content->id()]= [
           '#type' => 'checkbox',
-          '#title' => $content->label(),
+          '#title' => Markup::create("<span class='attribute-no'>$attribute_no. </span>") .$content->label(),
           '#default_value' => isset($api_aggreement_covers_array[$content->id()]) ? $api_aggreement_covers_array[$content->id()] : 0,
           '#attributes' => [
             'class' => ['toggle-checkbox'],
           ],
         ];
+        $attribute_no = $attribute_no + 1;
       }
     }
 
