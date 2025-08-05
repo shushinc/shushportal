@@ -28,7 +28,6 @@
       });
 
       $(".zcs-kong-app-list table tr td.api-keys .pwd-toggle").unbind().on("click", function(event) {
-        console.log('asd');
         $(this).parent().toggleClass('password-show');
         $('.zcs-kong-app-list table tr td').not(this).parent().removeClass('password-show');
       });
@@ -154,11 +153,10 @@
         autoplay: true,
         autoplaySpeed: 5000,
       });
-      $('.client-Layout-column-wrapper select.country').select2({
-        dropdownParent: $('body'),
-        dropdownAutoWidth: true,
-        minimumResultsForSearch: 0,
-      });
+      // $('.client-Layout-column-wrapper select.country').select2({
+      //   dropdownParent: $('.client-Layout-column-wrapper'),
+      //   minimumResultsForSearch: 0,
+      // });
       
     }
   };

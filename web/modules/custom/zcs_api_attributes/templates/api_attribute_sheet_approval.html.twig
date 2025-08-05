@@ -14,11 +14,14 @@
 				<tr>
 					<td>{{ data.submitted }}</td>
 					<td>{{ data.requested_time }}</td>
-					<td>{{ data.approver1 }}
-						<span class="{{ data.approver1_status|lower }}">{{ data.approver1_status }}</span>
+					<td>
+					    {{ data.approver1 }}
+					    	<span class="{{ data.approver1_status|lower }}">{{ data.approver1_status }}</span>
 						<br>
-						{{ data.approver2 }}
-						<span class="{{ data.approver2_status|lower }}">{{ data.approver2_status }}</span>
+						{% if data.approver1_status != 'Rejected' %}
+							{{ data.approver2 }}
+							<span class="{{ data.approver2_status|lower }}">{{ data.approver2_status }}</span>
+						{% endif %}
 					</td>
 					<td class="{{ data.status|lower }}">{{ data.status }}</td>
 					<td>

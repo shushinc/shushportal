@@ -19,8 +19,10 @@
 					<td>{{ data.approver1 }}
 						<span class="{{ data.approver1_status|lower }}">{{ data.approver1_status }}</span>
 						<br>
+						{% if data.approver1_status != 'Rejected' %}
 						{{ data.approver2 }}
-						<span class="{{ data.approver2_status|lower }}">{{ data.approver2_status }}</span>
+						   <span class="{{ data.approver2_status|lower }}">{{ data.approver2_status }}</span>
+				    	{% endif %}
 					</td>
 					<td class="{{ data.status|lower }}">{{ data.status }}</td>
 					<td>

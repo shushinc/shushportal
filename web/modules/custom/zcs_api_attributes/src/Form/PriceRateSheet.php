@@ -167,6 +167,11 @@ class PriceRateSheet extends FormBase {
       if($values['price' . $nid]== 0) {
        $price =  number_format(isset($values['price' . $nid]) ? $values['price' . $nid] : 0.000, 3);
       }
+      else {
+        if (!preg_match('/^\d+\.\d{3}$/', $values['price' . $nid])) {
+          $price = number_format((float)$values['price' . $nid], 3, '.', '');
+         }
+      }
       $json[$nid] =  $price;
     }
     $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'financial_rate_sheet_approval_level_1', 'status' => 1]);

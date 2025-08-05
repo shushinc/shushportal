@@ -52,6 +52,9 @@ body {
     .country {
       width: 100%;
     }
+    .select2-container {
+      width: 100% !important;
+    }
     .form-textarea {
       min-height: 384px !important;
     }
@@ -164,6 +167,7 @@ body {
         font-size: 34px;
         line-height: normal;
         text-align: center;
+        height: auto;
         &:focus,
         &:hover,
         &:focus-visible {

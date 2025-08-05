@@ -814,7 +814,7 @@ form .js-form-item input[readonly="readonly"],
 form .js-form-item .form-file[readonly="readonly"],
 form .js-form-item select[readonly="readonly"],
 form .js-form-item textarea[readonly="readonly"] {
-  background: #eee;
+  background: #ccc;
 }
 form .js-form-item textarea {
   min-height: 140px;
@@ -1844,7 +1844,6 @@ form.user-logout-confirm #edit-submit {
   max-width: 540px;
   margin: 0 auto;
   background: #fff;
-  padding: 30px;
   border-radius: 10px;
 }
 
@@ -2078,6 +2077,9 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
 .client-Layout-column-wrapper .js-form-item .country {
   width: 100%;
 }
+.client-Layout-column-wrapper .js-form-item .select2-container {
+  width: 100% !important;
+}
 .client-Layout-column-wrapper .js-form-item .form-textarea {
   min-height: 384px !important;
 }
@@ -2178,6 +2180,7 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   font-size: 34px;
   line-height: normal;
   text-align: center;
+  height: auto;
 }
 .client-Layout-column-wrapper .client-Layout-column-second > .js-form-item select:focus, .client-Layout-column-wrapper .client-Layout-column-second > .js-form-item select:hover, .client-Layout-column-wrapper .client-Layout-column-second > .js-form-item select:focus-visible,
 .client-Layout-column-wrapper .client-Layout-column-second > .js-form-item input:focus,

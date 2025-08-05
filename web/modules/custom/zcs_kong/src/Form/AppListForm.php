@@ -63,7 +63,6 @@ final class AppListForm extends FormBase {
 
     $header = [
       'api_name' => $this->t('Client Name'),
-      'description' => $this->t('Description'),
       'tag' => $this->t('Tag'),
       'created' => $this->t('Created'),
       'renewal' => $this->t('Renewal'),
@@ -137,7 +136,6 @@ final class AppListForm extends FormBase {
             $key = $app->get('field_app_key')->value ?? '';
             $apps[] = [
               'api_name' => $app->getTitle(),
-              'description' => $description,
               'tag' => $app->get('field_tag')->value ?? '',
               'created' => date('d M Y' , (int)$created_time),
               'renewal' => $renewal_date ?? '-',
