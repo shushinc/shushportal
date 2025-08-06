@@ -69,7 +69,7 @@ a {
   width: auto !important;
   position: relative !important;
   transform: none !important;
-  padding: 80px 0 !important;
+  padding: 0 !important;
 }
 
 #iframe-elango div.react-grid-layout>.react-grid-item.container-small {
@@ -87,11 +87,15 @@ a {
   background-color: #e0e5f2 !important;
   border: 1px solid #7f85ae !important;
   color: #2b3674;
-  padding: 30px 0;
+  padding: 0;
 }
 
 div.dashcard>div>div>div {
   align-items: flex-start !important;
+}
+
+div[data-testid="dashcard"] {
+  border-radius: 9.44px !important;
 }
 
 div.dashcard>div>div>div>div[data-testid="scalar-title"] {
@@ -104,9 +108,9 @@ div.dashcard>div>div>div>div[data-testid="scalar-title"] {
 .increase h3,
 .equals h1,
 .equals h3 {
-  font-size: 20px !important;
+  font-size: 16px !important;
   font-weight: 400 !important;
-  line-height: 20px !important;
+  line-height: 18px !important;
 }
 
 .decrease h1,
@@ -178,24 +182,32 @@ div.dashcard>div>div>div>div:nth-child(3) {
 }
 
 div.dashcard h1 {
-  font-size: 64px !important;
+  font-size: 28px !important;
   line-height: normal !important;
 }
 
 div.dashcard h1 span {
-  font-size: 40px !important;
+  font-size: 18px !important;
 }
 
 div.dashcard h3 {
-  font-size: 20px !important;
-  line-height: 24px !important;
-  max-height: 24px !important;
+  font-size: 12px !important;
+  line-height: 14px !important;
+  max-height: 14px !important;
 }
 
-div[data-testid="dashcard-container"].container-small,
-div.DashCard.container-small {
-  height: 56px !important;
+#iframe-elango div[data-testid="dashcard-container"] {
+  height: 97px !important;
+}
+
+#iframe-elango div[data-testid="dashcard-container"].container-small,
+#iframe-elango div.DashCard.container-small {
+  height: 47px !important;
   margin-bottom: 24px !important;
+}
+
+#iframe-elango button.mantine-active {
+  display: none !important;
 }
 
 .increase h1:before, .decrease h1:before {

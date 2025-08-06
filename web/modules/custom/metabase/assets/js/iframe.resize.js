@@ -33,7 +33,7 @@
         }
         let height = boddy.querySelectorAll('div#root > div > div')[0].clientHeight;
         if (height < 600) {
-          height = 515;
+          height = 335;
         }
         iframe.style.height = (height) + 'px';
       }
