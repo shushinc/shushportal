@@ -105,10 +105,10 @@ final class AwsAppListForm extends FormBase {
               ]);
               $update_link = Link::fromTextAndUrl('Edit', $url);
               $delete_link = Link::createFromRoute('Delete', 'zcs_aws.delete_key', ['id' => $app->id()]);
-              $operation_link = Markup::create($update_link->toString() . ' | ' . $delete_link->toString());
+              $operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$update_link->toString() . '' . $delete_link->toString()."</div></div>");
             }
             else {
-              $operation_link = '';
+              $operation_link = Markup::create('<div class="edit-operation disabled">');
             }
 
             $created_time = $app->get('created')->value;
@@ -136,7 +136,7 @@ final class AwsAppListForm extends FormBase {
               'status' => $app_status,
               'update_key' => [
                 'data' => $operation_link ?? '',
-                'class' => 'app-operations',
+                'class' => 'app-operation',
               ],
             ];
           }
@@ -170,10 +170,10 @@ final class AwsAppListForm extends FormBase {
             if ($app_status == 'active') {
               $update_link = Link::createFromRoute('Edit', 'zcs_aws.edit_key', ['id' => $app->id()]);
               $delete_link = Link::createFromRoute('Delete', 'zcs_aws.delete_key', ['id' => $app->id()]);
-              $operation_link = Markup::create($update_link->toString() . ' | ' . $delete_link->toString());
+              $operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$update_link->toString() . '' . $delete_link->toString()."</div></div>");
             }
             else {
-              $operation_link = '';
+              $operation_link = Markup::create('<div class="edit-operation disabled">');
             }
             $created_time = $app->get('created')->value;
             $client_id = $app->get('field_client_id')->value ?? '';
@@ -206,7 +206,7 @@ final class AwsAppListForm extends FormBase {
             if ($response !== "error") {
                $apps[count($apps) - 1]['update_key'] = [
                 'data' => $operation_link ?? '',
-                'class' => 'app-operations',
+                'class' => 'app-operation',
                ];
             }
           }

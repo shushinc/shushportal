@@ -191,7 +191,8 @@ table.attributes-table tr td:first-child {
   height: 100%;
   width: 100%;
   background: url("/themes/custom/shush/images/error-bg.svg") no-repeat;
-  background-position: left 35px center;
+  background-position: left 40px center;
+  background-size: 16px;
   left: 0;
   bottom: 0;
   right: 0;
@@ -201,7 +202,8 @@ table.attributes-table tr td:first-child {
 
 .api-attribute-status table tr td .attrib_yes::before {
   background: url("/themes/custom/shush/images/active-bg.svg") no-repeat;
-  background-position: left 35px center;
+  background-position: left 40px center;
+  background-size: 16px;
 }
 .api-attribute-status table tbody tr td:nth-child(2) {
   padding: 0 20px;

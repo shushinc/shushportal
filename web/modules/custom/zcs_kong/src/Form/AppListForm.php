@@ -110,7 +110,7 @@ final class AppListForm extends FormBase {
 
               $update_link = Link::fromTextAndUrl('Edit', $url);
               $delete_link = Link::createFromRoute('Delete', 'zcs_kong.delete_key', ['id' => $app->id()]);
-              $operation_link = Markup::create($update_link->toString() . ' | ' . $delete_link->toString());
+              $operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$update_link->toString() . ' ' . $delete_link->toString()."</div></div>");
             }
 
 
@@ -146,7 +146,7 @@ final class AppListForm extends FormBase {
               ],
               'update_key' => [
                 'data' => $operation_link ?? '',
-                'class' => 'app-operations',
+                'class' => 'app-operation',
               ],
             ];
           }
@@ -185,7 +185,7 @@ final class AppListForm extends FormBase {
             if ($app_status == 'active') {
               $update_link = Link::createFromRoute('Edit', 'zcs_kong.edit_key', ['id' => $app->id()]);
               $delete_link = Link::createFromRoute('Delete', 'zcs_kong.delete_key', ['id' => $app->id()]);
-              $operation_link = Markup::create($update_link->toString() . ' | ' . $delete_link->toString());
+              $operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$update_link->toString() . '' . $delete_link->toString()."</div></div>");
             }
             $created_time = $app->get('created')->value;
             $updated_time = $app->get('changed')->value;
@@ -223,7 +223,7 @@ final class AppListForm extends FormBase {
             if ($response != "error") {
                $apps[count($apps) - 1]['update_key'] = [
                 'data' => $operation_link ?? '',
-                'class' => 'app-operations',
+                'class' => 'app-operation',
                ];
             }
           }

@@ -814,7 +814,13 @@ form .js-form-item input[readonly="readonly"],
 form .js-form-item .form-file[readonly="readonly"],
 form .js-form-item select[readonly="readonly"],
 form .js-form-item textarea[readonly="readonly"] {
-  background: #ccc;
+  background: rgba(118, 118, 118, 0.3);
+}
+form .js-form-item input[readonly="readonly"]:hover,
+form .js-form-item .form-file[readonly="readonly"]:hover,
+form .js-form-item select[readonly="readonly"]:hover,
+form .js-form-item textarea[readonly="readonly"]:hover {
+  background-color: rgba(118, 118, 118, 0.3);
 }
 form .js-form-item textarea {
   min-height: 140px;
@@ -1049,6 +1055,7 @@ table tr td .edit-operation .edit-operation-wrap {
   border-radius: 5px;
   border: 1px solid #dce3ed;
   min-width: 100px;
+  z-index: 10;
 }
 table tr td .edit-operation .edit-operation-wrap a {
   display: block;
@@ -1069,6 +1076,10 @@ table tr td .edit-operation .edit-operation-wrap .ajax-progress-throbber {
 }
 table tr td .edit-operation:hover .edit-operation-wrap {
   display: block;
+}
+table tr:last-child td:last-child .edit-operation-wrap {
+  top: auto;
+  bottom: 10px;
 }
 
 .user-management-view header {
@@ -1253,6 +1264,24 @@ table tr td .edit-operation:hover .edit-operation-wrap {
 .zcs-kong-app-list table tr td.app-operations.active-dropdown .kong-app-list-edit,
 .zcs-aws-app-list table tr td.app-operations.active-dropdown .kong-app-list-edit {
   display: block;
+}
+.zcs-kong-app-list table tr td.app-operation,
+.zcs-aws-app-list table tr td.app-operation {
+  text-align: center;
+}
+.zcs-kong-app-list table tr td.app-operation .edit-operation .edit-operation-wrap,
+.zcs-aws-app-list table tr td.app-operation .edit-operation .edit-operation-wrap {
+  right: 42px;
+}
+@media only screen and (min-width: 1470px) {
+  .zcs-kong-app-list table tr td.app-operation .edit-operation .edit-operation-wrap,
+  .zcs-aws-app-list table tr td.app-operation .edit-operation .edit-operation-wrap {
+    right: 50px;
+  }
+}
+.zcs-kong-app-list table tr td.app-operation .edit-operation.disabled,
+.zcs-aws-app-list table tr td.app-operation .edit-operation.disabled {
+  filter: brightness(0) saturate(100%) invert(51%) sepia(14%) saturate(11%) hue-rotate(11deg) brightness(88%) contrast(87%);
 }
 
 .zcs-aws-app-list .responsive-enabled tr th:last-child {
@@ -1732,7 +1761,10 @@ table tbody td .text-bold {
   text-align: left;
 }
 .attribute-review .attributes-table th:last-child, .attribute-review .attributes-table th:nth-child(3) {
-  text-align: left;
+  text-align: center;
+}
+.attribute-review .attributes-table tr td:nth-child(3) {
+  text-align: center;
 }
 
 .ui-dialog form .form-submit.is-disabled {

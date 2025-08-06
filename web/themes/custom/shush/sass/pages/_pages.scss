@@ -303,7 +303,10 @@ form {
         box-shadow: 0 0 5px #0f8df0;
       }
       &[readonly="readonly"] {
-        background: #ccc;
+        background: rgba(118, 118, 118, 0.3);
+        &:hover {
+          background-color: rgba(118, 118, 118, 0.3);
+        }
       }
     }
     textarea {
@@ -543,6 +546,7 @@ table {
           border-radius: 5px;
           border: 1px solid #dce3ed;
           min-width: 100px;
+          z-index: 10;
 
           a {
             display: block;
@@ -565,6 +569,16 @@ table {
         &:hover {
           .edit-operation-wrap {
             display: block;
+          }
+        }
+      }
+    }
+    &:last-child {
+      td {
+        &:last-child {
+          .edit-operation-wrap {
+            top: auto;
+            bottom: 10px;
           }
         }
       }
@@ -737,6 +751,21 @@ table {
         &.active-dropdown {
           .kong-app-list-edit {
             display: block;
+          }
+        }
+      }
+      &.app-operation {
+        text-align: center;
+        .edit-operation {
+          .edit-operation-wrap {
+            right: 42px;
+            @media only screen and (min-width: 1470px) {
+              right: 50px;
+            }
+          }
+          &.disabled {
+            filter: brightness(0) saturate(100%) invert(51%) sepia(14%)
+              saturate(11%) hue-rotate(11deg) brightness(88%) contrast(87%);
           }
         }
       }
@@ -1297,7 +1326,14 @@ table {
     }
     &:last-child,
     &:nth-child(3) {
-      text-align: left;
+      text-align: center;
+    }
+  }
+  tr {
+    td {
+      &:nth-child(3) {
+        text-align: center;
+      }
     }
   }
 }

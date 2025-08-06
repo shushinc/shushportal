@@ -72,3 +72,11 @@
   line-height: normal;
   font-weight: 700;
 }
+
+.ui-dialog .api-attribute-review .attributes-table th:nth-child(2) {
+  width: 50%;
+}
+.ui-dialog .api-attribute-review .attributes-table th:nth-child(3),
+.ui-dialog .api-attribute-review .attributes-table th:nth-child(4) {
+  text-align: center;
+}
