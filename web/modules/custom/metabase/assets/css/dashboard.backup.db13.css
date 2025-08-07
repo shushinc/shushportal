@@ -165,6 +165,14 @@ div[data-testid="dashboard-parameters-widget-container"] {
   padding: 0 !important;
 }
 
+div[data-testid="parameter-value-widget-target"]>div>div {
+  min-width: 109px !important;
+}
+
+div[data-testid="parameter-value-widget-target"]>div>div>div {
+  max-width: 10.7vw !important;
+}
+
 .increase h1:before {
   content: "\25B2";
 }
@@ -217,11 +225,9 @@ div.dashcard h3 {
 
 /* Dashboard - Charts */
 
-@media (min-width: 1190px) {
-  div[data-testid="fixed-width-filters"]>div {
-    flex-wrap: nowrap;
-    width: 100%;
-  }
+div[data-testid="fixed-width-filters"]>div {
+  flex-wrap: nowrap;
+  width: 100%;
 }
 
 div[data-testid="fixed-width-filters"]>div>div {
