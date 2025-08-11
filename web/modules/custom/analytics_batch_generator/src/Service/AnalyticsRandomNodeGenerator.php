@@ -11,7 +11,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 /**
  * Service for generating analytics nodes in batch.
  */
-class AnalyticsNodeGenerator {
+class AnalyticsRandomNodeGenerator {
 
   use DependencySerializationTrait;
   use StringTranslationTrait;
@@ -31,7 +31,7 @@ class AnalyticsNodeGenerator {
   protected $time;
 
   /**
-   * Constructs a new AnalyticsNodeGenerator object.
+   * Constructs a new AnalyticsRandomNodeGenerator object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
@@ -81,7 +81,7 @@ class AnalyticsNodeGenerator {
 
     // Create batch operations for chunks of days.
     // Process 10 days per batch operation.
-    $chunks = array_chunk($days, 50);
+    $chunks = array_chunk($days, 10);
 
     foreach ($chunks as $chunk) {
       $batch_builder->addOperation(
@@ -178,66 +178,6 @@ class AnalyticsNodeGenerator {
     else {
       $message = $this->t('Finished with an error.');
       \Drupal::messenger()->addError($message);
-    }
-  }
-
-  /**
-   * Gets all taxonomy terms.
-   *
-   * @param string $vocabulary
-   *   The vocabulary machine name.
-   *
-   * @return array
-   *   Array of term objects.
-   */
-  public function getAllTerms($vocabulary) {
-    try {
-      $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
-      $query = $term_storage->getQuery()
-        ->condition('vid', $vocabulary)
-        ->accessCheck(FALSE);
-      $tids = $query->execute();
-
-      if (empty($tids)) {
-        return [];
-      }
-
-      return $term_storage->loadMultiple($tids);
-    } catch (\Exception $e) {
-      \Drupal::logger('analytics_batch_generator')->error('Error getting random terms: @message', [
-        '@message' => $e->getMessage(),
-      ]);
-      return [];
-    }
-  }
-
-  /**
-   * Gets all groups.
-   *
-   * @param string $group_type
-   *   The group type.
-   *
-   * @return array
-   *   Array of group objects.
-   */
-  public function getAllGroups($group_type) {
-    try {
-      $group_storage = $this->entityTypeManager->getStorage('group');
-      $query = $group_storage->getQuery()
-        ->condition('type', $group_type)
-        ->accessCheck(FALSE);
-      $gids = $query->execute();
-
-      if (empty($gids)) {
-        return [];
-      }
-
-      return $group_storage->loadMultiple($gids);
-    } catch (\Exception $e) {
-      \Drupal::logger('analytics_batch_generator')->error('Error getting random groups: @message', [
-        '@message' => $e->getMessage(),
-      ]);
-      return [];
     }
   }
 

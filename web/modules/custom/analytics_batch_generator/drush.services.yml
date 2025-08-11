@@ -1,6 +1,6 @@
 services:
   analytics_batch_generator.commands:
     class: Drupal\analytics_batch_generator\Commands\AnalyticsBatchCommands
-    arguments: ['@analytics_batch_generator.generator']
+    arguments: ['@analytics_batch_generator.generator', '@analytics_random_batch_generator.generator']
     tags:
       - { name: drush.command }

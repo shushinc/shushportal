@@ -1,4 +1,7 @@
 services:
+  analytics_random_batch_generator.generator:
+    class: Drupal\analytics_batch_generator\Service\AnalyticsRandomNodeGenerator
+    arguments: ['@entity_type.manager', '@datetime.time']
   analytics_batch_generator.generator:
     class: Drupal\analytics_batch_generator\Service\AnalyticsNodeGenerator
     arguments: ['@entity_type.manager', '@datetime.time']
