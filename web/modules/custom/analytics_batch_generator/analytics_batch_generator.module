@@ -12,14 +12,14 @@ use Drupal\Core\Routing\RouteMatchInterface;
  */
 function analytics_batch_generator_theme() {
   return [
-    'analytics_batch_generator_form' => [
-      'variables' => [
-        'title' => NULL,
-        'description' => NULL,
-        'button_url' => NULL,
-        'button_text' => NULL,
-      ],
-    ],
+    // 'analytics_batch_generator_form' => [
+    //   'variables' => [
+    //     'title' => NULL,
+    //     'description' => NULL,
+    //     'button_url' => NULL,
+    //     'button_text' => NULL,
+    //   ],
+    // ],
   ];
 }
 

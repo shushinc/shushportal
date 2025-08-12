@@ -2,16 +2,16 @@
 
 namespace Drupal\analytics_batch_generator\Service;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Batch\BatchBuilder;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Service for generating analytics nodes in batch.
  */
-class AnalyticsNodeGenerator {
+class AnalyticsRandomNodeGenerator {
 
   use DependencySerializationTrait;
   use StringTranslationTrait;
@@ -31,7 +31,7 @@ class AnalyticsNodeGenerator {
   protected $time;
 
   /**
-   * Constructs a new AnalyticsNodeGenerator object.
+   * Constructs a new AnalyticsRandomNodeGenerator object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
@@ -80,8 +80,8 @@ class AnalyticsNodeGenerator {
       ->setErrorMessage($this->t('An error occurred during processing'));
 
     // Create batch operations for chunks of days.
-    // Process 2 days per batch operation.
-    $chunks = array_chunk($days, 2);
+    // Process 10 days per batch operation.
+    $chunks = array_chunk($days, 10);
 
     foreach ($chunks as $chunk) {
       $batch_builder->addOperation(
@@ -94,10 +94,10 @@ class AnalyticsNodeGenerator {
 
     batch_set($batch_builder->toArray());
 
-    // If (PHP_SAPI !== 'cli') {
-    // // If not in drush, process the batch immediately.
-    // batch_process();
-    // }
+    if (PHP_SAPI !== 'cli') {
+      // If not in drush, process the batch immediately.
+      batch_process();
+    }
   }
 
   /**
@@ -113,91 +113,44 @@ class AnalyticsNodeGenerator {
 
     foreach ($days as $timestamp) {
       try {
+        // Load related taxonomy terms and entities for reference fields.
+        $attributes = $this->getRandomTerms('analytics_attributes', 1);
+        $carriers = $this->getRandomTerms('analytics_carrier', 1);
+        $customers = $this->getRandomTerms('analytics_customer', 1);
+        $partners = $this->getRandomGroups('partner', 1);
 
-        $partners = $this->getAllGroups('partner');
-        $attibutes = $this->getAllTerms('analytics_attributes');
-        $carriers = $this->getAllTerms('analytics_carrier');
-        $customers = $this->getAllTerms('analytics_customer');
+        $status_counts = [
+          '200' => $this->getRandomInteger(100, 1000),
+          '404' => $this->getRandomInteger(10, 200),
+          'other_non_200' => $this->getRandomInteger(0, 5),
+        ];
 
-        $data = array_map(function ($partner) {
-          return [
-            'partner' => $partner->id->value,
-          ];
-        }, $partners);
+        // Create node with random data for each field.
+        $node = $node_storage->create([
+          'type' => 'analytics',
+          'title' => 'Test',
+          'field_api_volume_in_mil' => array_sum($status_counts),
+        // status_counts.200.
+          'field_success_api_volume_in_mil' => $status_counts['200'],
+        // status_counts.404.
+          'field_404_api_volume_in_mil' => $status_counts['404'],
+        // status_counts.other_non_200.
+          'field_error_api_volume_in_mil' => $status_counts['other_non_200'],
+          'field_attribute' => empty($attributes) ? NULL : $attributes[0],
+          'field_average_api_latency_in_mil' => $this->getRandomInteger(10, 30),
+          'field_carrier' => empty($carriers) ? NULL : $carriers[0],
+          'field_date' => date('Y-m-d\TH:i:s', $timestamp),
+          'field_end_customer' => empty($customers) ? NULL : $customers[0],
+          'field_est_revenue' => $status_counts['200'] * 0.0026,
+          'field_partner' => empty($partners) ? NULL : $partners[0],
+          'field_transaction_type' => $this->getRandomTransactionType(),
+          'field_transaction_type_count' => '10',
+          // 'field_kong_analytical_id' =>
+          // "2025-06-12 06:00:00|Uber|InfoBip|X Telecom|Account Status"
+        ]);
 
-        $data = array_map(function ($item) use ($attibutes) {
-          $iteration = [];
-          foreach ($attibutes as $attribute) {
-            $iteration[] = [
-              'partner' => $item['partner'],
-              'attribute' => $attribute->tid->value,
-            ];
-          }
-          return $iteration;
-        }, $data);
-        $data = $this->flatten($data);
-
-        $data = array_map(function ($item) use ($carriers) {
-          $iteration = [];
-          foreach ($carriers as $carrier) {
-            $iteration[] = [
-              'partner' => $item['partner'],
-              'attribute' => $item['attribute'],
-              'carrier' => $carrier->tid->value,
-            ];
-          }
-          return $iteration;
-        }, $data);
-        $data = $this->flatten($data);
-
-        $data = array_map(function ($item) use ($customers) {
-          $iteration = [];
-          foreach ($customers as $customer) {
-            $iteration[] = [
-              'partner' => $item['partner'],
-              'attribute' => $item['attribute'],
-              'carrier' => $item['carrier'],
-              'customer' => $customer->tid->value,
-            ];
-          }
-          return $iteration;
-        }, $data);
-        $data = $this->flatten($data);
-
-        foreach ($data as $item) {
-          $status_counts = [
-            '200' => $this->getRandomInteger(100, 1000),
-            '404' => $this->getRandomInteger(10, 200),
-            'other_non_200' => $this->getRandomInteger(0, 5),
-          ];
-
-          // Create node with random data for each field.
-          $node = $node_storage->create([
-            'type' => 'analytics',
-            'title' => 'Test',
-            'field_api_volume_in_mil' => array_sum($status_counts),
-          // status_counts.200.
-            'field_success_api_volume_in_mil' => $status_counts['200'],
-          // status_counts.404.
-            'field_404_api_volume_in_mil' => $status_counts['404'],
-          // status_counts.other_non_200.
-            'field_error_api_volume_in_mil' => $status_counts['other_non_200'],
-            'field_attribute' => $item['attribute'],
-            'field_carrier' => $item['carrier'],
-            'field_end_customer' => $item['customer'],
-            'field_partner' => $item['partner'],
-            'field_average_api_latency_in_mil' => $this->getRandomInteger(10, 30),
-            'field_date' => date('Y-m-d\TH:i:s', $timestamp),
-            'field_est_revenue' => $this->getRandomInteger(1000, 10000),
-            'field_transaction_type' => $this->getRandomTransactionType(),
-            'field_transaction_type_count' => '10',
-            // 'field_kong_analytical_id' =>
-            // "2025-06-12 06:00:00|Uber|InfoBip|X Telecom|Account Status"
-          ]);
-
-          $node->save();
-          $context['results']['created']++;
-        }
+        $node->save();
+        $context['results']['created']++;
       }
       catch (\Exception $e) {
         \Drupal::logger('analytics_batch_generator')->error('Error creating node for timestamp @timestamp: @message', [
@@ -229,68 +182,6 @@ class AnalyticsNodeGenerator {
     else {
       $message = $this->t('Finished with an error.');
       \Drupal::messenger()->addError($message);
-    }
-  }
-
-  /**
-   * Gets all taxonomy terms.
-   *
-   * @param string $vocabulary
-   *   The vocabulary machine name.
-   *
-   * @return array
-   *   Array of term objects.
-   */
-  public function getAllTerms($vocabulary) {
-    try {
-      $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
-      $query = $term_storage->getQuery()
-        ->condition('vid', $vocabulary)
-        ->accessCheck(FALSE);
-      $tids = $query->execute();
-
-      if (empty($tids)) {
-        return [];
-      }
-
-      return $term_storage->loadMultiple($tids);
-    }
-    catch (\Exception $e) {
-      \Drupal::logger('analytics_batch_generator')->error('Error getting random terms: @message', [
-        '@message' => $e->getMessage(),
-      ]);
-      return [];
-    }
-  }
-
-  /**
-   * Gets all groups.
-   *
-   * @param string $group_type
-   *   The group type.
-   *
-   * @return array
-   *   Array of group objects.
-   */
-  public function getAllGroups($group_type) {
-    try {
-      $group_storage = $this->entityTypeManager->getStorage('group');
-      $query = $group_storage->getQuery()
-        ->condition('type', $group_type)
-        ->accessCheck(FALSE);
-      $gids = $query->execute();
-
-      if (empty($gids)) {
-        return [];
-      }
-
-      return $group_storage->loadMultiple($gids);
-    }
-    catch (\Exception $e) {
-      \Drupal::logger('analytics_batch_generator')->error('Error getting random groups: @message', [
-        '@message' => $e->getMessage(),
-      ]);
-      return [];
     }
   }
 
@@ -426,25 +317,6 @@ class AnalyticsNodeGenerator {
     ];
 
     return $types[array_rand($types)];
-  }
-
-  /**
-   * Flatten array.
-   *
-   * @param array $data
-   *   Array to flatten.
-   *
-   * @return array
-   *   Flattened array.
-   */
-  protected function flatten($data) {
-    $clean_data = [];
-    foreach ($data as $item) {
-      foreach ($item as $value) {
-        $clean_data[] = $value;
-      }
-    }
-    return $clean_data;
   }
 
 }
