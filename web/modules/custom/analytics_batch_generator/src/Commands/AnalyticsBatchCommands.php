@@ -38,7 +38,7 @@ class AnalyticsBatchCommands extends DrushCommands {
   public function __construct(
     AnalyticsNodeGenerator $node_generator,
     AnalyticsRandomNodeGenerator $random_node_generator,
-    ) {
+  ) {
     parent::__construct();
     $this->nodeGenerator = $node_generator;
     $this->randomNodeGenerator = $random_node_generator;
@@ -51,7 +51,7 @@ class AnalyticsBatchCommands extends DrushCommands {
    *   Metabase model id.
    *
    * @command analytics:generate-nodes
-   * @aliases ang
+   * @aliases agn
    * @usage analytics:generate-nodes [--ago=3] [--mode=day]
    *   Generates analytics nodes for the past 3 days.
    */
@@ -82,7 +82,7 @@ class AnalyticsBatchCommands extends DrushCommands {
    *   Metabase model id.
    *
    * @command analytics:generate-random-nodes
-   * @aliases arng
+   * @aliases argn
    * @usage analytics:generate-random-nodes [--ago=3] [--mode=day]
    *   Generates analytics nodes for the past 3 days.
    */
@@ -117,10 +117,12 @@ class AnalyticsBatchCommands extends DrushCommands {
   #[CLI\Option(name: 'format', description: 'Output format: table, json, csv', suggestedValues: ['table', 'json', 'csv'])]
   #[CLI\Usage(name: 'drush analytics:get-all-terms --vocabulary="topics" --format=json', description: 'Execute query with JSON output')]
   #[CLI\Usage(name: 'drush agat --vocabulary="topics" --format=json', description: 'Execute query with JSON output')]
-  public function getAllTerms(array $options = [
-    'vocabulary' => NULL,
-    'format' => 'table',
-  ]) {
+  public function getAllTerms(
+    array $options = [
+      'vocabulary' => NULL,
+      'format' => 'table',
+    ],
+  ) {
     $vocabulary = $options['vocabulary'];
     $format = $options['format'] ?? 'table';
 
@@ -134,7 +136,7 @@ class AnalyticsBatchCommands extends DrushCommands {
       ];
     }
 
-    // Output results based on format
+    // Output results based on format.
     switch ($format) {
 
       case 'csv':
@@ -159,11 +161,12 @@ class AnalyticsBatchCommands extends DrushCommands {
   #[CLI\Option(name: 'format', description: 'Output format: table, json, csv', suggestedValues: ['table', 'json', 'csv'])]
   #[CLI\Usage(name: 'drush analytics:get-all-groups --group="partner" --format=table', description: 'Execute query with JSON output')]
   #[CLI\Usage(name: 'drush agag --group="partner" --format=table', description: 'Execute query with JSON output')]
-  public function getAllGroups(array $options = [
-    'group' => NULL,
-    'format' => 'table',
-  ])
-  {
+  public function getAllGroups(
+    array $options = [
+      'group' => NULL,
+      'format' => 'table',
+    ],
+  ) {
     $group = $options['group'];
     $format = $options['format'] ?? 'table';
 
@@ -171,14 +174,13 @@ class AnalyticsBatchCommands extends DrushCommands {
 
     $group_array = [];
     foreach ($groups as $group) {
-      print_r($group);
       $group_array[] = [
         'tid' => $group->id->value,
         'label' => $group->label->value,
       ];
     }
 
-    // Output results based on format
+    // Output results based on format.
     switch ($format) {
 
       case 'csv':
@@ -205,14 +207,14 @@ class AnalyticsBatchCommands extends DrushCommands {
 
     $table = new Table($this->output());
 
-    // Set headers from first row keys
+    // Set headers from first row keys.
     $headers = array_keys($rows[0]);
     $table->setHeaders($headers);
 
-    // Add rows
+    // Add rows.
     foreach ($rows as $row) {
-      // Convert all values to strings and handle NULLs
-      $tableRow = array_map(function($value) {
+      // Convert all values to strings and handle NULLs.
+      $tableRow = array_map(function ($value) {
         return $value === NULL ? 'NULL' : (string) $value;
       }, array_values($row));
 
@@ -233,15 +235,15 @@ class AnalyticsBatchCommands extends DrushCommands {
       return;
     }
 
-    // Output headers
+    // Output headers.
     $headers = array_keys($rows[0]);
-    $this->output()->writeln(implode(',', array_map(function($header) {
+    $this->output()->writeln(implode(',', array_map(function ($header) {
       return '"' . str_replace('"', '""', $header) . '"';
     }, $headers)));
 
-    // Output data rows
+    // Output data rows.
     foreach ($rows as $row) {
-      $csvRow = array_map(function($value) {
+      $csvRow = array_map(function ($value) {
         $value = $value === NULL ? '' : (string) $value;
         return '"' . str_replace('"', '""', $value) . '"';
       }, array_values($row));

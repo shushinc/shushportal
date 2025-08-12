@@ -130,19 +130,23 @@ class AnalyticsRandomNodeGenerator {
           'type' => 'analytics',
           'title' => 'Test',
           'field_api_volume_in_mil' => array_sum($status_counts),
-          'field_success_api_volume_in_mil' => $status_counts['200'], // status_counts.200
-          'field_404_api_volume_in_mil' => $status_counts['404'], // status_counts.404
-          'field_error_api_volume_in_mil' => $status_counts['other_non_200'], // status_counts.other_non_200
+        // status_counts.200.
+          'field_success_api_volume_in_mil' => $status_counts['200'],
+        // status_counts.404.
+          'field_404_api_volume_in_mil' => $status_counts['404'],
+        // status_counts.other_non_200.
+          'field_error_api_volume_in_mil' => $status_counts['other_non_200'],
           'field_attribute' => empty($attributes) ? NULL : $attributes[0],
           'field_average_api_latency_in_mil' => $this->getRandomInteger(10, 30),
           'field_carrier' => empty($carriers) ? NULL : $carriers[0],
           'field_date' => date('Y-m-d\TH:i:s', $timestamp),
           'field_end_customer' => empty($customers) ? NULL : $customers[0],
-          'field_est_revenue' => $this->getRandomInteger(1000, 10000),
+          'field_est_revenue' => $status_counts['200'] * 0.0026,
           'field_partner' => empty($partners) ? NULL : $partners[0],
           'field_transaction_type' => $this->getRandomTransactionType(),
           'field_transaction_type_count' => '10',
-          // 'field_kong_analytical_id' => "2025-06-12 06:00:00|Uber|InfoBip|X Telecom|Account Status"
+          // 'field_kong_analytical_id' =>
+          // "2025-06-12 06:00:00|Uber|InfoBip|X Telecom|Account Status"
         ]);
 
         $node->save();
