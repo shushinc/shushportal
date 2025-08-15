@@ -104,6 +104,10 @@ class AnonymousRedirectSubscriber implements EventSubscriberInterface {
         $response = new RedirectResponse(Url::fromRoute('<front>')->toString());
         $event->setResponse($response);
       }
+      if (preg_match('/^\/user\/\d+$/', $path)) {
+        $response = new RedirectResponse(Url::fromRoute('<front>')->toString());
+        $event->setResponse($response);
+      }
     }
   }
 

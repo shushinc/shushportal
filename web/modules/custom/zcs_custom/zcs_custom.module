@@ -25,7 +25,7 @@ function zcs_custom_theme($existing, $type, $theme, $path) {
 function zcs_custom_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
   // Target the user login form.
   if ($form_id == 'user_login_form') {
-    // Add a "Forgot Password?" link at the end of the form.
+    // Add  "Forgot Password?" link at the end of the form.
     $form['forgot_password'] = [
       '#markup' => '<p><a href="' . \Drupal\Core\Url::fromRoute('user.pass')->toString() . '">' . t('Forgot password?') . '</a></p>',
       '#weight' => 10,
@@ -53,4 +53,28 @@ function zcs_custom_menu_local_tasks_alter(array &$local_tasks) {
     unset($local_tasks['tabs'][0]['user.pass']);
     unset($local_tasks['tabs'][0]['user.login']);
   }
+}
+
+
+function zcs_custom_preprocess_page(array &$variables) {
+
+  $route_name = \DRUPAL::routeMatch()->getRouteName();
+  if ($route_name == 'change_pwd_page.change_password_form') {
+    $theme = \Drupal::theme()->getActiveTheme();
+    $logo_path = $theme->getLogo();
+  
+     // Get the file_url_generator service.
+    $file_url_generator = \Drupal::service('file_url_generator');
+  
+     // Convert logo path to a full URL.
+    $logo_url = $file_url_generator->generateAbsoluteString($logo_path);
+    // Make it available to your Twig template:
+    $variables['site_logo_url'] = $logo_url;
+  }
+ 
+}
+
+
+function _password_policy_user_profile_form_submit() {
+// do nothing:
 }

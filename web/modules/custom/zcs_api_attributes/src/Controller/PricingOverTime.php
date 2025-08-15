@@ -48,7 +48,7 @@ class PricingOverTime extends ControllerBase {
 
 
   public function pricingPage() {
-
+    $final = [];
     $url = Url::fromRoute('zcs_api_attributes.rate_sheet')->toString();
 
     $nids = \Drupal::entityQuery('node')
@@ -70,7 +70,7 @@ class PricingOverTime extends ControllerBase {
  
     foreach ($resultSet as $result) {
       $prices[] = Json::decode($result->page_data);
-      $headerDate[] = $result->effective_date;
+      $headerDate[] = date("M d, Y", strtotime($result->effective_date));
       $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
       $number = new NumberFormatter($currency, NumberFormatter::CURRENCY);
       $symbols[] = $number->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
@@ -185,8 +185,8 @@ class PricingOverTime extends ControllerBase {
           'approver1_status' => $statuses[$result->approver1_status],
           'approver2_status' => $statuses[$result->approver2_status],
           'status' => $statuses[$result->attribute_status],
-          'requested_time' => date('Y-m-d', $result->created),
-          'effective_date' => $result->effective_date,
+          'requested_time' => date('M d, Y', $result->created),
+          'effective_date' => date("M d, Y", strtotime($result->effective_date)),
           'url' => Url::fromRoute('zcs_api_attributes.rate_sheet.review', ['id' => $result->id])
         ];
       }

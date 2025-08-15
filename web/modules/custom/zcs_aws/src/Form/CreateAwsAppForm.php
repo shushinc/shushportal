@@ -52,7 +52,7 @@ class CreateAwsAppForm extends FormBase {
       '#type' => 'actions',
       'submit' => [
         '#type' => 'submit',
-        '#value' => $this->t('Generate Key'),
+        '#value' => $this->t('Create Client Credentials'),
       ],
     ];
     return $form;

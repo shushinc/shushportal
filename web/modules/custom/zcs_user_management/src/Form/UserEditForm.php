@@ -73,26 +73,28 @@ final class UserEditForm extends FormBase {
           $role_options[$role->id()] = $role->label();
       }
     }
-    $form['user_mail'] = [
-      '#type' => 'email',
-      '#title' => t('Email'),
-      '#default_value' => $user->getEmail(),
-      '#attributes' => [
-        'readonly' => 'readonly',
-      ],
-    ];
+
     $form['user_name'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('User Name'),
-      '#required' => TRUE,
+      '#title' => $this->t('User Full Name'),
       '#default_value' => $user->get('name')->value,
       '#attributes' => [
         'readonly' => 'readonly',
       ],
     ]; 
+    
+    $form['user_mail'] = [
+      '#type' => 'email',
+      '#title' => t('User Email'),
+      '#default_value' => $user->getEmail(),
+      '#attributes' => [
+        'readonly' => 'readonly',
+      ],
+    ];
+
     $form['user_role'] = [
       '#type' => 'select',
-      '#title' => $this->t('User Role'),
+      '#title' => $this->t('Role'),
       '#options' => $role_options,
       '#empty_option' => $this->t('- Select a role -'),
       '#default_value' => $user_roles,
@@ -105,13 +107,13 @@ final class UserEditForm extends FormBase {
        // Define the status options.
        $status_options = [
         1 => $this->t('Active'),
-        0 => $this->t('Inactive'),
+        0 => $this->t('InActive'),
       ];
   
       // Define the form fields.
       $form['status'] = [
         '#type' => 'select',
-        '#title' => $this->t('User Status'),
+        '#title' => $this->t('Status'),
         '#options' => $status_options,
         '#default_value' => $user->isActive() ? 1 : 0, // Set default value based on current user status.
       ];

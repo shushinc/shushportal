@@ -27,88 +27,26 @@ mode: default
 content:
   field_able_to_be_used:
     type: options_select
-    weight: 27
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
   field_api_attributes_status:
     type: options_select
-    weight: 26
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }
   field_attribute_weight:
     type: number
-    weight: 40
+    weight: 5
     region: content
     settings:
-      placeholder: ''
-    third_party_settings: {  }
-  field_carrier_enabled_3rd_party:
-    type: options_select
-    weight: 28
-    region: content
-    settings: {  }
-    third_party_settings: {  }
-  field_current_standard_pricing:
-    type: string_textfield
-    weight: 30
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_disc_pricing:
-    type: string_textfield
-    weight: 36
-    region: content
-    settings:
-      size: 60
       placeholder: ''
     third_party_settings: {  }
   field_effective_date1_price_call:
     type: string_textfield
-    weight: 32
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_effective_date2_price_call:
-    type: string_textfield
-    weight: 33
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_effective_date3_price_call:
-    type: string_textfield
-    weight: 34
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_infobip_discount:
-    type: string_textfield
-    weight: 38
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_price_per_call:
-    type: string_textfield
-    weight: 31
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_sinch_discount:
-    type: string_textfield
-    weight: 37
+    weight: 6
     region: content
     settings:
       size: 60
@@ -116,28 +54,14 @@ content:
     third_party_settings: {  }
   field_standard_price:
     type: number
-    weight: 39
+    weight: 4
     region: content
     settings:
-      placeholder: ''
-    third_party_settings: {  }
-  field_successfully_integrated_cn:
-    type: options_select
-    weight: 29
-    region: content
-    settings: {  }
-    third_party_settings: {  }
-  field_twilio_discount:
-    type: string_textfield
-    weight: 35
-    region: content
-    settings:
-      size: 60
       placeholder: ''
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    weight: 5
+    weight: 1
     region: content
     settings:
       display_label: true
@@ -153,6 +77,16 @@ content:
 hidden:
   body: true
   created: true
+  field_carrier_enabled_3rd_party: true
+  field_current_standard_pricing: true
+  field_disc_pricing: true
+  field_effective_date2_price_call: true
+  field_effective_date3_price_call: true
+  field_infobip_discount: true
+  field_price_per_call: true
+  field_sinch_discount: true
+  field_successfully_integrated_cn: true
+  field_twilio_discount: true
   path: true
   promote: true
   sticky: true

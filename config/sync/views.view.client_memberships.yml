@@ -432,7 +432,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "{% if status == 'Active' %}\r\n  <div class=\"user-active\">\r\n    <p>Active</p>\r\n  </div>\r\n{% else %}\r\n  <div class=\"user-inactive\">\r\n    <p>Inactive</p>\r\n  </div>\r\n{% endif %}"
+            text: "{% if status == 'Active' %}\r\n  <div class=\"user-active\">\r\n    <p>Active</p>\r\n  </div>\r\n{% else %}\r\n  <div class=\"user-inactive\">\r\n    <p>InActive</p>\r\n  </div>\r\n{% endif %}"
             make_link: false
             path: ''
             absolute: false
@@ -542,7 +542,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: custom
-          label: Edit
+          label: Operations
           exclude: false
           alter:
             alter_text: true

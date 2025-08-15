@@ -63,10 +63,10 @@ final class AwsAppListForm extends FormBase {
   
     $header = [
       'api_name' => $this->t('Client Name'),
-      'app' => $this->t('App name'),
-      'created' => $this->t('Created'),
+      'app' => $this->t('App Name'),
       'client_id' => $this->t('Client ID'),
       'client_secret' => $this->t('Client Secret'),
+      'created' => $this->t('Created Date'),
       'status' => $this->t('Status'),
     ];
 
@@ -119,12 +119,11 @@ final class AwsAppListForm extends FormBase {
               $app_status = Markup::create("<div class='key-active'>Active</div>");
             }
             else {
-              $app_status = Markup::create("<div class='key-inactive'>Inactive</div>");
+              $app_status = Markup::create("<div class='key-inactive'>InActive</div>");
             }
             $apps[] = [
               'api_name' => $app->getTitle(),
               'app' => $app->get('field_tag')->value ?? '',
-              'created' => date('d M Y' , (int)$created_time),
               'client_id' => [
                 'data' =>  Markup::create("<div class='client-key'>$client_id</div><div class='pwd-toggle'></div><div class='client-password'></div>"),
                 'class' => 'api-keys',
@@ -133,6 +132,7 @@ final class AwsAppListForm extends FormBase {
                 'data' =>  Markup::create("<div class='secret-key'>$secret_key</div><div class='pwd-toggle'></div><div class='secret-password'></div>"),
                 'class' => 'api-keys',
               ],
+              'created' => date('M d, Y' , (int)$created_time),
               'status' => $app_status,
               'update_key' => [
                 'data' => $operation_link ?? '',
@@ -184,13 +184,12 @@ final class AwsAppListForm extends FormBase {
               $app_status = Markup::create("<div class='key-active'>Active</div>");
             }
             else {
-              $app_status = Markup::create("<div class='key-inactive'>Inactive</div>");
+              $app_status = Markup::create("<div class='key-inactive'>InActive</div>");
             }
             $apps[] = [
               'api_name' => $app->getTitle(),
               'description' => $description,
               'tag' => $app->get('field_tag')->value ?? '',
-              'created' => date('d M Y' , (int)$created_time),
               'client_id' => [
                 'data' =>  Markup::create("<div class='client-key''>$client_id</div><div class='pwd-toggle'></div><div class='client-password'></div>"),
                 'class' => 'api-keys',
@@ -199,6 +198,7 @@ final class AwsAppListForm extends FormBase {
                 'data' =>  Markup::create("<div class='secret-key'>$secret_key</div><div class='pwd-toggle'></div><div class='secret-password'></div>"),
                 'class' => 'api-keys',
               ],
+              'created' => date('M d, Y' , (int)$created_time),
               'status' => $app_status,
             ];
 

@@ -43,7 +43,8 @@ class AttributesPageController extends ControllerBase {
   }
 
 
-  public function attributesPage() {;
+  public function attributesPage() {
+    $final = [];
     $nids = \Drupal::entityQuery('node')
       ->condition('type', 'api_attributes')
       ->sort('field_attribute_weight', 'ASC')
@@ -155,7 +156,7 @@ class AttributesPageController extends ControllerBase {
           'approver1_status' => $statuses[$result->approver1_status],
           'approver2_status' => $statuses[$result->approver2_status],
           'status' => $statuses[$result->attribute_status],
-          'requested_time' => date('Y-m-d', $result->created),
+          'requested_time' => date('M d, Y', $result->created),
           'url' => Url::fromRoute('zcs_api_attributes.api_attribute_sheet.review', ['id' => $result->id])
         ];
       }

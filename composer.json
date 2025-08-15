@@ -22,6 +22,7 @@
         "aws/aws-sdk-php": "^3.336",
         "bower-asset/swagger-ui": "^5.17",
         "composer/installers": "^2.0",
+        "cweagans/composer-patches": "^1.7",
         "drupal/address": "^2.0",
         "drupal/apigee_edge": "^3.0",
         "drupal/change_pwd_page": "^2.0",
@@ -36,18 +37,16 @@
         "drupal/email_registration": "^1.4",
         "drupal/ginvite": "^4.0@RC",
         "drupal/group": "^3.2",
+        "drupal/login_onlyemail": "^2.0",
         "drupal/mailsystem": "^4.4",
         "drupal/menu_link_attributes": "^1.3",
         "drupal/menu_per_role": "^1.7",
         "drupal/mimemail": "^1.0@alpha",
+        "drupal/password_policy": "^4.0",
         "drupal/smtp": "^1.3",
         "drupal/swagger_ui_formatter": "^4.1",
         "drush/drush": "^12.5",
         "oomphinc/composer-installers-extender": "^2.0"
-    },
-    "require-dev": {
-        "drupal/coder": "^8.3",
-        "phpunit/phpunit": "^9.6"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -63,7 +62,8 @@
             "phpstan/extension-installer": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "php-http/discovery": true,
-            "oomphinc/composer-installers-extender": true
+            "oomphinc/composer-installers-extender": true,
+            "cweagans/composer-patches": true
         },
         "sort-packages": true
     },
@@ -73,6 +73,12 @@
                 "web-root": "web/"
             }
         },
+        "patches" : {
+            "drupal/password_policy": {
+              "password_policy": "https://www.drupal.org/files/issues/2023-01-12/3332884-integrity-constraint-violation.patch",
+              "password_policy_argument": "https://www.drupal.org/files/issues/2023-03-01/integrity_constraint_violation_2.patch"
+            }
+          },
         "installer-paths": {
             "web/core": [
                 "type:drupal-core"
