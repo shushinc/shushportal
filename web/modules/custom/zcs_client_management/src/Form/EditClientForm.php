@@ -188,7 +188,9 @@ final class EditClientForm extends FormBase {
       '#title' => $this->t('Agreement Effective Date'),
       '#default_value' => $group->get('field_agreement_effective_date')->value ?? '',
       '#date_date_format' => 'Y-m-d',
-      '#disabled' => TRUE,
+      '#attributes' => [
+        'readonly' => 'readonly',
+      ],
       '#suffix' => '</div>',
     ];
    
@@ -230,7 +232,7 @@ final class EditClientForm extends FormBase {
       '#title' => $this->t('Status'),
       '#options' => [
          'active' => 'Active',
-         'inactive' => 'Inactive',
+         'inactive' => 'InActive',
         ],
       '#default_value' => 'active',  
       '#required' => TRUE,
@@ -291,12 +293,18 @@ final class EditClientForm extends FormBase {
       '#min' => 0,
       '#default_value' =>  $group->get('field_prepayment_balance_left')->value ?? '',
     //  '#step' => 0.001,
+      '#attributes' => [
+        'readonly' => 'readonly',
+      ],
     ];
 
     $form['prepayment_balance_used'] = [
       '#type' => 'number',
-      '#title' => 'Prepayment Balance left',
+      '#title' => 'Prepayment Balance Used',
       '#min' => 0,
+      '#attributes' => [
+        'readonly' => 'readonly',
+      ],
       '#default_value' =>  $group->get('field_prepayment_balance_used')->value ?? '',
       //'#step' => 0.001,
       '#suffix' => '</div></div>',

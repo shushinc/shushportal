@@ -101,7 +101,7 @@ class PriceRateSheet extends FormBase {
        '#weight' => 1,
      ];
 
-
+    $nids =[];
     $contents = $this->entityTypeManager->getStorage('node')->loadByProperties(['type' => 'api_attributes']);
     if (!empty($contents)) {
       foreach ($contents as $content) {
@@ -140,7 +140,7 @@ class PriceRateSheet extends FormBase {
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => 'Create Rate Sheet',
+      '#value' => 'Proposed API Pricing',
       '#disabled' => $hide,
     ];
 

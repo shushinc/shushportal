@@ -180,7 +180,7 @@ class CreateClientForm extends FormBase {
       '#title' => $this->t('Status'),
       '#options' => [
          'active' => 'Active',
-         'inactive' => 'Inactive',
+         'inactive' => 'InActive',
         ],
       '#default_value' => 'active',  
       '#required' => TRUE,
@@ -231,7 +231,7 @@ class CreateClientForm extends FormBase {
 
     $form['prepayment_balance_left'] = [
       '#type' => 'number',
-      '#title' => 'Prepayment Balance left',
+      '#title' => 'Prepayment Balance Left',
       '#min' => 0,
       '#default_value' => 0.00,
      // '#step' => 0.001,
@@ -295,7 +295,7 @@ class CreateClientForm extends FormBase {
       '#type' => 'actions',
       'submit' => [
         '#type' => 'submit',
-        '#value' => $this->t('Submit'),
+        '#value' => $this->t('Invite Client'),
       ],
     ];
 

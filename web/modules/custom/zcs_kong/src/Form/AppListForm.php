@@ -64,9 +64,9 @@ final class AppListForm extends FormBase {
     $header = [
       'api_name' => $this->t('Client Name'),
       'tag' => $this->t('Tag'),
-      'created' => $this->t('Created'),
-      'renewal' => $this->t('Renewal'),
-      'expiry' => $this->t('Expiry'),
+      'created' => $this->t('Created Date'),
+      'renewal' => $this->t('Renewal Date'),
+      'expiry' => $this->t('Expiry Date'),
       'api_key' => $this->t('API Key'),
     ];
 
@@ -118,7 +118,7 @@ final class AppListForm extends FormBase {
             $updated_time = $app->get('changed')->value;
             $expiry_time = $app->get('field_expiry_date')->value;
             if ($updated_time > $created_time) {
-               $renewal_date =  date('d M Y' , (int)$app->get('changed')->value);
+               $renewal_date =  date('M d, Y' , (int)$app->get('changed')->value);
             }
 
 
@@ -130,14 +130,14 @@ final class AppListForm extends FormBase {
             else {
               $ttl = $app->get('field_ttl')->value;
               if($expiry_time > $created_time) {
-                $expiry_time = date('d M Y' , (int)$app->get('field_expiry_date')->value);
+                $expiry_time = date('M d, Y' , (int)$app->get('field_expiry_date')->value);
               }
             }
             $key = $app->get('field_app_key')->value ?? '';
             $apps[] = [
               'api_name' => $app->getTitle(),
               'tag' => $app->get('field_tag')->value ?? '',
-              'created' => date('d M Y' , (int)$created_time),
+              'created' => date('M d, Y' , (int)$created_time),
               'renewal' => $renewal_date ?? '-',
               'expiry' => $expiry_time ?? '-',
               'api_key' => [
@@ -191,7 +191,7 @@ final class AppListForm extends FormBase {
             $updated_time = $app->get('changed')->value;
             $expiry_time = $app->get('field_expiry_date')->value;
             if ($updated_time > $created_time) {
-               $renewal_date =  date('d M Y' , (int)$app->get('changed')->value);
+               $renewal_date =  date('M d, Y' , (int)$app->get('changed')->value);
             }
             if ($app->get('field_ttl')->value == 'never_expires') {
               $ttl = 'Never Expires';
@@ -200,7 +200,7 @@ final class AppListForm extends FormBase {
             else {
               $ttl = $app->get('field_ttl')->value;
               if($expiry_time > $created_time) {
-                $expiry_time = date('d M Y' , (int)$app->get('field_expiry_date')->value);
+                $expiry_time = date('M d, Y' , (int)$app->get('field_expiry_date')->value);
               }
             }
             $key = $app->get('field_app_key')->value ?? '';
@@ -210,7 +210,7 @@ final class AppListForm extends FormBase {
               'description' => $description,
               'tag' => $app->get('field_tag')->value ?? '',
               // 'ttl' => $app->get('field_ttl')->value ?? '',
-              'created' => date('d M Y' , (int)$created_time),
+              'created' => date('M d, Y' , (int)$created_time),
               'renewal' => $renewal_date ?? '-',
               'expiry' => $expiry_time ?? '-',
               'api_key' => [

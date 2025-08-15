@@ -52,7 +52,7 @@ final class UserInviteForm extends FormBase {
     }
     $form['user_name'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('User Name'),
+      '#title' => $this->t('User Full Name'),
       '#required' => TRUE,
       '#maxlength' => 18,
       '#attributes' => [
@@ -62,12 +62,12 @@ final class UserInviteForm extends FormBase {
     ];
     $form['user_mail'] = array(
       '#type' => 'email',
-      '#title' => t('Email'),
+      '#title' => t('User Email'),
       '#required' => TRUE,
     );
     $form['user_role'] = [
       '#type' => 'select',
-      '#title' => $this->t('User Role'),
+      '#title' => $this->t('Role'),
       '#options' => $role_options,
       '#empty_option' => $this->t('- Select a role -'),
       '#multiple' => true,

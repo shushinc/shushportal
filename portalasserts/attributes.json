@@ -1,0 +1,63 @@
+[
+    {
+      "title": "Silent Authentication",
+      "able_to_used": "yes",
+      "weight": "1",
+      "standard_price": "10.000"
+    },
+    {
+      "title": "Zero Trust Silent Authentication",
+      "weight": "2",
+      "able_to_used": "no",
+      "standard_price": "20.000"
+    },
+    {
+      "title": "CAMARA Number Verification / Number Share",
+      "weight": "3",
+      "able_to_used": "yes",
+      "standard_price": "21.000"
+    },
+    {
+      "title": "TS.43 Silent Authentication",
+      "weight": "4",
+      "able_to_used": "yes",
+      "standard_price": "22.000"
+    },
+    {
+      "title": "Number Verify",
+      "weight": "5",
+      "able_to_used": "no",
+      "standard_price": "23.000"
+    },
+    {
+      "title": "Billing Address Verify",
+      "weight": "6",
+      "able_to_used": "no",
+      "standard_price": "24.000"
+    },
+    {
+      "title": "Email Address Verify",
+      "weight": "7",
+      "able_to_used": "yes",
+      "standard_price": "24.060"
+    },
+    {
+      "title": "Age Verify",
+      "weight": "8",
+      "able_to_used": "yes",
+      "standard_price": "24.007"
+    },
+    {
+      "title": "Account Type",
+      "weight": "9",
+      "able_to_used": "no",
+      "standard_price": "24.010"
+    },
+    {
+      "title": "Last Mobile Number Change Date",
+      "weight": "10",
+      "able_to_used": "no",
+      "standard_price": "24.010"
+    }
+]
+  

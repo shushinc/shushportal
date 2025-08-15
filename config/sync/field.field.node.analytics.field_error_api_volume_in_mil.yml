@@ -11,7 +11,7 @@ id: node.analytics.field_error_api_volume_in_mil
 field_name: field_error_api_volume_in_mil
 entity_type: node
 bundle: analytics
-label: 'Error API Volume in Mil'
+label: 'Error API Volume'
 description: ''
 required: false
 translatable: false

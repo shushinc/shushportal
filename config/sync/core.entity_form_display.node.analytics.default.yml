@@ -30,7 +30,7 @@ mode: default
 content:
   field_404_api_volume_in_mil:
     type: number
-    weight: 28
+    weight: 12
     region: content
     settings:
       placeholder: ''
@@ -101,7 +101,7 @@ content:
     third_party_settings: {  }
   field_kong_analytical_id:
     type: string_textfield
-    weight: 29
+    weight: 13
     region: content
     settings:
       size: 60
@@ -124,20 +124,6 @@ content:
     settings:
       placeholder: ''
     third_party_settings: {  }
-  field_transaction_type:
-    type: options_select
-    weight: 26
-    region: content
-    settings: {  }
-    third_party_settings: {  }
-  field_transaction_type_count:
-    type: string_textfield
-    weight: 27
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   status:
     type: boolean_checkbox
     weight: 1
@@ -156,6 +142,8 @@ content:
 hidden:
   body: true
   created: true
+  field_transaction_type: true
+  field_transaction_type_count: true
   path: true
   promote: true
   sticky: true

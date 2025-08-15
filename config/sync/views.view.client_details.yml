@@ -108,7 +108,7 @@ display:
           entity_type: null
           entity_field: label
           plugin_id: field
-          label: Client
+          label: 'Client Name'
           exclude: false
           alter:
             alter_text: false
@@ -234,7 +234,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: field
-          label: Email
+          label: 'Contact Email'
           exclude: false
           alter:
             alter_text: false
@@ -288,19 +288,19 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        field_partner_status:
-          id: field_partner_status
-          table: group__field_partner_status
-          field: field_partner_status
+        field_partner_type:
+          id: field_partner_type
+          table: group__field_partner_type
+          field: field_partner_type
           relationship: none
           group_type: group
           admin_label: ''
           plugin_id: field
-          label: Status
+          label: 'Partner Type'
           exclude: false
           alter:
             alter_text: true
-            text: "<div class=\"user__mangement-status {% if field_partner_status == \"Inactive\" %} user-inactive {% else %} user-active  {% endif %}\">\r\n     {% if field_partner_status == \"Inactive\" %} \r\n        {{ \"InActive\" }} \r\n    {% else %}\r\n      {{ field_partner_status }}\r\n   {% endif %}\r\n</div>"
+            text: "{% if field_partner_type|lower == 'demandpartner' %}\r\n  Demand Partner\r\n{% else %}\r\n {{ field_partner_type }}\r\n{% endif %}"
             make_link: false
             path: ''
             absolute: false
@@ -350,19 +350,19 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        field_partner_type:
-          id: field_partner_type
-          table: group__field_partner_type
-          field: field_partner_type
+        field_partner_status:
+          id: field_partner_status
+          table: group__field_partner_status
+          field: field_partner_status
           relationship: none
           group_type: group
           admin_label: ''
           plugin_id: field
-          label: 'Partner Type'
+          label: Status
           exclude: false
           alter:
             alter_text: true
-            text: "{% if field_partner_type|lower == 'demandpartner' %}\r\n  Demand Partner\r\n{% else %}\r\n {{ field_partner_type }}\r\n{% endif %}"
+            text: "<div class=\"user__mangement-status {% if field_partner_status == \"Inactive\" %} user-inactive {% else %} user-active  {% endif %}\">\r\n     {% if field_partner_status == \"Inactive\" %} \r\n        {{ \"InActive\" }} \r\n    {% else %}\r\n      {{ field_partner_status }}\r\n   {% endif %}\r\n</div>"
             make_link: false
             path: ''
             absolute: false
@@ -469,7 +469,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: custom
-          label: Edit
+          label: Operations
           exclude: false
           alter:
             alter_text: true
