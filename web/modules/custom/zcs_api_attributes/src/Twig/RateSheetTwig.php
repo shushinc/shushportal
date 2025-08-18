@@ -55,7 +55,7 @@ class RateSheetTwig extends AbstractExtension implements ExtensionInterface {
       foreach ($contents as $content) {
         //$final[$content->id()] = $content->title->value;
         $titles[$content->id()] = $content->title->value;
-        $prices[$content->id()] = $symbol.''.$content->field_standard_price->value;
+        $prices[$content->id()] = $symbol . (($content->field_standard_price->value ?? "0.000"));
       }
     }
     //return $final;
