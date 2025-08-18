@@ -1,9 +1,0 @@
-name: Analytics Batch Generator
-type: module
-description: 'Generates analytics nodes in batch for each day over the past 3 years.'
-package: Custom
-core_version_requirement: ^10
-dependencies:
-  - drupal:node
-  - drupal:taxonomy
-  - group:group
