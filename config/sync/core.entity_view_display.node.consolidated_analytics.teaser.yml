@@ -1,0 +1,28 @@
+uuid: b48e83c2-14ae-43ef-b7ca-e736a9c69856
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.consolidated_analytics.field_data_group
+    - field.field.node.consolidated_analytics.field_range
+    - field.field.node.consolidated_analytics.field_reference_date
+    - field.field.node.consolidated_analytics.field_value
+    - node.type.consolidated_analytics
+  module:
+    - user
+id: node.consolidated_analytics.teaser
+targetEntityType: node
+bundle: consolidated_analytics
+mode: teaser
+content:
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  field_data_group: true
+  field_range: true
+  field_reference_date: true
+  field_value: true

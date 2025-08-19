@@ -1,0 +1,57 @@
+uuid: 3a12718a-c287-404e-9d3b-d8c228e52aef
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.consolidated_analytics.field_data_group
+    - field.field.node.consolidated_analytics.field_range
+    - field.field.node.consolidated_analytics.field_reference_date
+    - field.field.node.consolidated_analytics.field_value
+    - node.type.consolidated_analytics
+  module:
+    - datetime
+    - options
+    - user
+id: node.consolidated_analytics.default
+targetEntityType: node
+bundle: consolidated_analytics
+mode: default
+content:
+  field_data_group:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 105
+    region: content
+  field_range:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 102
+    region: content
+  field_reference_date:
+    type: datetime_default
+    label: above
+    settings:
+      timezone_override: ''
+      format_type: medium
+    third_party_settings: {  }
+    weight: 104
+    region: content
+  field_value:
+    type: number_integer
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 103
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden: {  }

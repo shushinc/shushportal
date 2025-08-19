@@ -1,0 +1,21 @@
+uuid: 92eb78ef-c22e-432a-8060-9c6e1c4c33c3
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_reference_date
+    - node.type.consolidated_analytics
+  module:
+    - datetime
+id: node.consolidated_analytics.field_reference_date
+field_name: field_reference_date
+entity_type: node
+bundle: consolidated_analytics
+label: 'Reference Date'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: datetime
