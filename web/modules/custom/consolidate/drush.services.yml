@@ -1,0 +1,7 @@
+services:
+  consolidate.commands:
+    class: Drupal\consolidate\Commands\ConsolidateCommands
+    arguments: ['@consolidate.analytics_consolidate_service']
+    tags:
+      - { name: drush.command }
+

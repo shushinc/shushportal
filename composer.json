@@ -135,5 +135,9 @@
                 "      composer remove drupal/core-project-message"
             ]
         }
+    },
+    "require-dev": {
+        "drupal/coder": "^8.3",
+        "slevomat/coding-standard": "^8.15"
     }
 }
