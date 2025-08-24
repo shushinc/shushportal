@@ -158,7 +158,7 @@ class AnalyticsConsolidationService {
       'field_range' => 'day',
       'field_reference_date' => $date,
       'field_data_group' => $group,
-      'field_value' => $result['total'],
+      'field_value' => $result['total'] ?? 0,
     ]);
     $node->save();
     return $node;
