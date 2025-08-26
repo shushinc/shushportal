@@ -1,0 +1,7 @@
+services:
+  consolidate.analytics_consolidate_service:
+    class: Drupal\consolidate\Services\AnalyticsConsolidationService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.factory'
+      - '@module_handler'
