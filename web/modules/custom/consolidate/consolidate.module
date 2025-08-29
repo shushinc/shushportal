@@ -33,6 +33,21 @@ function consolidate_cron() {
       $analytics_service->consolidateMonth('revenue', $yesterday);
       $analytics_service->consolidateMonth('revenue', $oneYearAgo);
 
+      $analytics_service->consolidateYear('revenue', $yesterday);
+      $analytics_service->consolidateYear('revenue', $oneYearAgo);
+
+      $analytics_service->consolidateMonth('volume', $yesterday);
+      $analytics_service->consolidateMonth('volume', $oneYearAgo);
+
+      $analytics_service->consolidateMonth('successful_api_calls', $yesterday);
+      $analytics_service->consolidateMonth('successful_api_calls', $oneYearAgo);
+
+      $analytics_service->consolidateMonth('avg_api_latency', $yesterday);
+      $analytics_service->consolidateMonth('avg_api_latency', $oneYearAgo);
+
+      $analytics_service->consolidateMonth('vol_from_silent_auth', $yesterday);
+      $analytics_service->consolidateMonth('vol_from_silent_auth', $oneYearAgo);
+
       // Update the last run time
       \Drupal::state()->set('consolidate.analytics_consolidate.last_run', $current_time);
 

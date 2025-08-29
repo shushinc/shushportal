@@ -215,4 +215,38 @@ final class ConsolidateCommands extends DrushCommands {
     }
   }
 
+  #[CLI\Command(name: 'consolidate:consolidate-year', aliases: ['con:year'])]
+  #[CLI\Argument(name: 'group', description: 'Group (lowercase string format)')]
+  #[CLI\Argument(name: 'date', description: 'Date (Y-m-d format)')]
+  #[CLI\Usage(name: 'consolidate:consolidate-year 2024-01-01 revenue', description: 'Consolidate revenue for January 1st 2024 year')]
+  public function consolidateYear(string $group, string $date, array $options = []) {
+    try {
+      // Validate date format.
+      if (!$this->validateDateFormat($date)) {
+        $this->logger()->error('Invalid date format. Please use Y-m-d format (e.g., 2024-01-01)');
+        return DrushCommands::EXIT_FAILURE;
+      }
+
+      $this->logger()->notice('Starting revenue consolidation...');
+      $this->logger()->info('Date month: @date', [
+        '@date' => $date,
+      ]);
+
+      // Call the consolidation service.
+      /** @var \Drupal\node\Entity\NodeInterface $node */
+      $node = $this->consolidationService->consolidateYear($group, $date);
+
+      // Display results.
+      $this->output()->writeln(sprintf('<info>Node ID:</info> %s', $node->id()));
+
+      return DrushCommands::EXIT_SUCCESS;
+    } catch (\InvalidArgumentException $e) {
+      $this->logger()->error('Invalid argument: ' . $e->getMessage());
+      return DrushCommands::EXIT_FAILURE;
+    } catch (\Exception $e) {
+      $this->logger()->error('An error occurred during consolidation: ' . $e->getMessage());
+      return DrushCommands::EXIT_FAILURE;
+    }
+  }
+
 }
