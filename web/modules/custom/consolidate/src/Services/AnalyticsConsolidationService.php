@@ -2,6 +2,7 @@
 
 namespace Drupal\consolidate\Services;
 
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -157,6 +158,64 @@ class AnalyticsConsolidationService {
       'type' => 'consolidated_analytics',
       'field_range' => 'day',
       'field_reference_date' => $date,
+      'field_data_group' => $group,
+      'field_value' => $result['total'] ?? 0,
+    ]);
+    $node->save();
+    return $node;
+  }
+
+  public function consolidateWeek(string $group, string $date) {
+    $referenceDateTime = new DrupalDateTime($date);
+    $week = $referenceDateTime->format('W');
+    $year = $referenceDateTime->format('Y');
+
+    $firstDayOfTheWeek = new DrupalDateTime();
+    $firstDayOfTheWeek->setISODate($year, $week, 0);
+    $startDate = $firstDayOfTheWeek->format('Y-m-d');
+
+    // Add one week
+    $nextWeekFirstDate = clone $firstDayOfTheWeek;
+    $nextWeekFirstDate->modify('+6 days');
+    $nextWeek = $nextWeekFirstDate->format('Y-m-d');
+
+    $groups = ['revenue', 'volume', 'successful_api_calls', 'avg_api_latency', 'vol_from_silent_auth', 'top_10_customers', 'top_client'];
+
+    if (in_array($group, $groups) === FALSE) {
+      throw new \InvalidArgumentException('Invalid group: ' . $group);
+    }
+
+    $node_storage = $this->entityTypeManager->getStorage('node');
+    $result = $node_storage->getQuery()
+      ->condition('type', 'consolidated_analytics')
+      ->condition('field_range', 'week')
+      ->condition('field_reference_date', $startDate)
+      ->condition('field_data_group', $group)
+      ->accessCheck(FALSE)
+      ->execute();
+
+    $title = 'Consolidated Analytics - ' . $group . ' - week from ' . $startDate . ' to ' . $nextWeek;
+
+    if (!empty($result)) {
+      $value = $this->getAnalyticsInDateRange($group, $startDate, $nextWeek);
+      $value = reset($value['rows']);
+
+      /** @var \Drupal\node\NodeInterface */
+      $node = $node_storage->load(reset($result));
+      $node->set('field_value', $value['total'] ?? 0);
+      $node->set('title', $title);
+      $node->save();
+      return $node;
+    }
+
+    $result = $this->getAnalyticsInDateRange($group, $startDate, $nextWeek);
+    $result = reset($result['rows']);
+
+    $node = $node_storage->create([
+      'title' => $title,
+      'type' => 'consolidated_analytics',
+      'field_range' => 'week',
+      'field_reference_date' => $startDate,
       'field_data_group' => $group,
       'field_value' => $result['total'] ?? 0,
     ]);
