@@ -30,6 +30,9 @@ function consolidate_cron() {
       $analytics_service->consolidateWeek('revenue', $yesterday);
       $analytics_service->consolidateWeek('revenue', $oneYearAgo);
 
+      $analytics_service->consolidateMonth('revenue', $yesterday);
+      $analytics_service->consolidateMonth('revenue', $oneYearAgo);
+
       // Update the last run time
       \Drupal::state()->set('consolidate.analytics_consolidate.last_run', $current_time);
 

@@ -223,4 +223,59 @@ class AnalyticsConsolidationService {
     return $node;
   }
 
+  public function consolidateMonth(string $group, string $date) {
+    $referenceDateTime = new DrupalDateTime($date);
+
+    $firstDayOfTheMonth = clone $referenceDateTime;
+    $firstDayOfTheMonth->modify('first day of this month');
+    $startDate = $firstDayOfTheMonth->format('Y-m-d');
+
+    $lastDayOfTheMonth = clone $referenceDateTime;
+    $lastDayOfTheMonth->modify('last day of this month');
+    $endDate = $lastDayOfTheMonth->format('Y-m-d');
+
+    $groups = ['revenue', 'volume', 'successful_api_calls', 'avg_api_latency', 'vol_from_silent_auth', 'top_10_customers', 'top_client'];
+
+    if (in_array($group, $groups) === FALSE) {
+      throw new \InvalidArgumentException('Invalid group: ' . $group);
+    }
+
+    $node_storage = $this->entityTypeManager->getStorage('node');
+    $result = $node_storage->getQuery()
+      ->condition('type', 'consolidated_analytics')
+      ->condition('field_range', 'month')
+      ->condition('field_reference_date', $startDate)
+      ->condition('field_data_group', $group)
+      ->accessCheck(FALSE)
+      ->execute();
+
+    $title = 'Consolidated Analytics - ' . $group . ' - month from ' . $startDate . ' to ' . $endDate;
+
+    if (!empty($result)) {
+      $value = $this->getAnalyticsInDateRange($group, $startDate, $endDate);
+      $value = reset($value['rows']);
+
+      /** @var \Drupal\node\NodeInterface */
+      $node = $node_storage->load(reset($result));
+      $node->set('field_value', $value['total'] ?? 0);
+      $node->set('title', $title);
+      $node->save();
+      return $node;
+    }
+
+    $result = $this->getAnalyticsInDateRange($group, $startDate, $endDate);
+    $result = reset($result['rows']);
+
+    $node = $node_storage->create([
+      'title' => $title,
+      'type' => 'consolidated_analytics',
+      'field_range' => 'month',
+      'field_reference_date' => $startDate,
+      'field_data_group' => $group,
+      'field_value' => $result['total'] ?? 0,
+    ]);
+    $node->save();
+    return $node;
+  }
+
 }
