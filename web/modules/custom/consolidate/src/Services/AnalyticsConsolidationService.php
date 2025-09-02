@@ -227,11 +227,15 @@ class AnalyticsConsolidationService {
     $referenceDateTime = new DrupalDateTime($date);
 
     $firstDayOfTheMonth = clone $referenceDateTime;
-    $firstDayOfTheMonth->modify('first day of this month');
+    $firstDayOfTheMonth->setDate($referenceDateTime->format('Y'), $referenceDateTime->format('n'), '1');
     $startDate = $firstDayOfTheMonth->format('Y-m-d');
 
-    $lastDayOfTheMonth = clone $referenceDateTime;
-    $lastDayOfTheMonth->modify('last day of this month');
+    $lastDayOfTheMonth = new DrupalDateTime();
+    $lastDayOfTheMonth->setDate(
+      $firstDayOfTheMonth->format('Y'),
+      $firstDayOfTheMonth->format('n'),
+      $lastDayOfTheMonth->format('j')
+    );
     $endDate = $lastDayOfTheMonth->format('Y-m-d');
 
     $groups = ['revenue', 'volume', 'successful_api_calls', 'avg_api_latency', 'vol_from_silent_auth', 'top_10_customers', 'top_client'];
@@ -281,13 +285,17 @@ class AnalyticsConsolidationService {
   public function consolidateYear(string $group, string $date) {
     $referenceDateTime = new DrupalDateTime($date);
 
-    $firstDayOfTheMonth = clone $referenceDateTime;
-    $firstDayOfTheMonth->modify('first day of this year');
-    $startDate = $firstDayOfTheMonth->format('Y-m-d');
+    $firstDayOfTheYear = clone $referenceDateTime;
+    $firstDayOfTheYear->setDate($referenceDateTime->format('Y'), '1', '1');
+    $startDate = $firstDayOfTheYear->format('Y-m-d');
 
-    $lastDayOfTheMonth = clone $referenceDateTime;
-    $lastDayOfTheMonth->modify('last day of this year');
-    $endDate = $lastDayOfTheMonth->format('Y-m-d');
+    $lastActiveDayOfTheYear = new DrupalDateTime();
+    $lastActiveDayOfTheYear->setDate(
+      $firstDayOfTheYear->format('Y'),
+      $lastActiveDayOfTheYear->format('n'),
+      $lastActiveDayOfTheYear->format('j')
+    );
+    $endDate = $lastActiveDayOfTheYear->format('Y-m-d');
 
     $groups = ['revenue', 'volume', 'successful_api_calls', 'avg_api_latency', 'vol_from_silent_auth', 'top_10_customers', 'top_client'];
 
