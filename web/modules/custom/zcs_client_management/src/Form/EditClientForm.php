@@ -106,28 +106,10 @@ final class EditClientForm extends FormBase {
       'custom_toggle_css',
     ];
 
-
-
-    $lists = require __DIR__ . '/../../resources/currencies.php';
-    $defaultCurrency = 'en_US';
-    if (!empty($this->getRequest()->get('cur'))) {
-      $defaultCurrency = $this->getRequest()->get('cur');
-    }
-
-    // to fetch currencies.
-    $currencies = [];
-    foreach ($lists as $list) {
-      if (!empty($list['locale'])) {
-        $currencies[$list['locale']] = $list['currency'] .' ('. $list['alphabeticCode'] .')';
-      }
-    }
-
+    $lists_currencies = require __DIR__ . '/../../resources/currencies.php';
     $gid = $this->request->get('id');
     $group = Group::load($gid);
     
-
-
-
     $form['partner_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Name'),
@@ -269,10 +251,18 @@ final class EditClientForm extends FormBase {
       '#suffix' => '</div></div>',
     ];
 
+    $code = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
+    foreach($lists_currencies as $currency_data) {
+      if ($currency_data['locale'] === $code) {
+        $currency_code = $currency_data['alphabeticCode'];
+      }
+    }
+
+
     $form['currencies'] = [
-      '#type' => 'select',
-      '#options' => $currencies,
-      '#default_value' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
+      '#type' => 'textfield',
+     // '#options' => $currency_code,
+      '#default_value' => $currency_code,
       '#prefix' => '<div class="payment-details client-Layout-column-second">',
       '#attributes' => [
         'readonly' => 'readonly',

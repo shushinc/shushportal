@@ -80,14 +80,7 @@ class CreateClientForm extends FormBase {
     ];
 
     
-    $lists = require __DIR__ . '/../../resources/currencies.php';
-    // to fetch currencies.
-    $currencies = [];
-    foreach ($lists as $list) {
-      if (!empty($list['locale'])) {
-        $currencies[$list['locale']] = $list['currency'] .' ('. $list['alphabeticCode'] .')';
-      }
-    }
+    $lists_currencies = require __DIR__ . '/../../resources/currencies.php';
     $form['partner_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Name'),
@@ -213,11 +206,20 @@ class CreateClientForm extends FormBase {
       '#suffix' => '</div></div>',
     ];
 
+    $code = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
+    foreach($lists_currencies as $currency_data) {
+      if ($currency_data['locale'] === $code) {
+        $currency_code = $currency_data['alphabeticCode'];
+      }
+    }
+
     $form['currencies'] = [
-      '#type' => 'select',
-      '#options' => $currencies,
-      '#default_value' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
-      '#disabled' => TRUE, // disables the field
+      '#type' => 'textfield',
+      '#default_value' => $currency_code,
+      // '#disabled' => TRUE, // disables the field
+      '#attributes' => [
+        'readonly' => 'readonly',
+      ],
       '#prefix' => '<div class="payment-details client-Layout-column-second">',
     ];
 
@@ -349,7 +351,7 @@ class CreateClientForm extends FormBase {
     $prepayment_amount = $form_state->getValue('prepayment_amount');
     $prepayment_balance_left = $form_state->getValue('prepayment_balance_left');
     $prepayment_balance_used= $form_state->getValue('prepayment_balance_used');
-    $currency = $form_state->getValue('currencies');
+
 
     // Address details
     $country_code =  $form_state->getValue('address')['country_code'];
@@ -383,7 +385,7 @@ class CreateClientForm extends FormBase {
         'field_prepayment_amount' => $prepayment_amount,
         'field_prepayment_balance_left' => $prepayment_balance_left,
         'field_prepayment_balance_used' => $prepayment_balance_used,
-        'field_currency' => $currency,
+        'field_currency' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
         'field_industry' => $industry,
         'field_apis_agreement_covers' => $encoded_data,
         'user_id' => \Drupal::currentUser()->id(),

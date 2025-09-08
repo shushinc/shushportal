@@ -27,7 +27,7 @@ display:
     display_plugin: default
     position: 0
     display_options:
-      title: 'User Management'
+      title: 'Client User Management'
       fields:
         id:
           id: id
