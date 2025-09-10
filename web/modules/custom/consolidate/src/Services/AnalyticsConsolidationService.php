@@ -154,7 +154,7 @@ class AnalyticsConsolidationService {
     $result = reset($result['rows']);
 
     $node = $node_storage->create([
-      'title' => 'Consolidated Analytics - ' . $group . ' - ' . $date,
+      'title' => 'Consolidated Analytics - ' . $group . ' - yesterday ' . $date,
       'type' => 'consolidated_analytics',
       'field_range' => 'day',
       'field_reference_date' => $date,
