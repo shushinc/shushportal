@@ -15,9 +15,9 @@
 		<tr>
 			<th>#</th>
 			<th>API Attributes</th>
-			{# <th>
-				Network Connected
-			</th> #}
+			<th>
+				Current Status
+			</th>
 			<th>
 				Able to be used
 			</th>
@@ -30,7 +30,7 @@
 			<tr>
 				<td>{{ counter }}</td>
 				<td>{{ title }}</td>
-				{# <td>{{ form['network_connected' ~ id] }}</td> #}
+				<td>{{ form['current_status' ~ id] }}</td>
 				<td>{{ form['able_to_be_used' ~ id] }}</td>
 			</tr>
 			{% set counter = counter + 1 %}

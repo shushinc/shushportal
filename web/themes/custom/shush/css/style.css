@@ -1692,8 +1692,11 @@ nav ul.js-pager__items li a span + span {
   margin: 20px auto;
 }
 
+.ui-dialog .api-attribute-sheet .attributes-table tr th:nth-child(1) {
+  width: 3%;
+}
 .ui-dialog .api-attribute-sheet .attributes-table tr th:nth-child(3), .ui-dialog .api-attribute-sheet .attributes-table tr th:nth-child(4) {
-  width: 10%;
+  width: 18%;
 }
 
 .top-actions .client-credentials-header {

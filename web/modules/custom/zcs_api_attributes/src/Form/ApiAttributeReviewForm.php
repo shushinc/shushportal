@@ -73,7 +73,13 @@ class ApiAttributeReviewForm extends FormBase {
         $nids[] = $key;
         $form['network_connected' . $key] = [
           '#type' => 'checkbox',
-          '#default_value' => $value['network_connected'],
+          '#default_value' => $value['network_connected'] ?? '',
+          '#disabled' => TRUE,
+        ];
+        $node = Node::load($key);
+        $form['current_status' . $key] = [
+          '#type' => 'checkbox',
+          '#default_value' => (strtolower($node->get('field_able_to_be_used')->value) === 'yes') ? 1 : 0,
           '#disabled' => TRUE,
         ];
         $form['able_to_be_used' . $key] = [

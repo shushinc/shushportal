@@ -1222,9 +1222,12 @@ nav {
   .attributes-table {
     tr {
       th {
+        &:nth-child(1) {
+          width: 3%;
+        }
         &:nth-child(3),
         &:nth-child(4) {
-          width: 10%;
+          width: 18%;
         }
       }
     }

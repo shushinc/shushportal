@@ -335,15 +335,12 @@ class CreateClientForm extends FormBase {
       $json[$nid] = $values['attribute_' . $nid];
     }
     $encoded_data = Json::encode($json);
-
-
     $partner_name = $form_state->getValue('partner_name'); 
     $contact_name = $form_state->getValue('contact_name'); 
     $contact_email = $form_state->getValue('contact_email'); 
     $partner_description = $form_state->getValue('partner_description'); 
     $partner_status = $form_state->getValue('partner_status'); 
     $partner_type = $form_state->getValue('partner_type'); 
-
     $client_legal_contact = $form_state->getValue('client_legal_contact'); 
     $client_point_of_contact = $form_state->getValue('client_point_of_contact'); 
     $agreement_effective_date = $form_state->getValue('agreement_effective_date'); 
@@ -351,7 +348,6 @@ class CreateClientForm extends FormBase {
     $prepayment_amount = $form_state->getValue('prepayment_amount');
     $prepayment_balance_left = $form_state->getValue('prepayment_balance_left');
     $prepayment_balance_used= $form_state->getValue('prepayment_balance_used');
-
 
     // Address details
     $country_code =  $form_state->getValue('address')['country_code'];
@@ -368,9 +364,92 @@ class CreateClientForm extends FormBase {
     $additional_name = $form_state->getValue('address')['additional_name'];
     $family_name =  $form_state->getValue('address')['family_name'];
 
+    if (\Drupal::moduleHandler()->moduleExists('zcs_kong')) {
+      // create consumer in kong: 
+      try {
+        $response = \Drupal::service('zcs_kong.kong_gateway')->createConsumer($contact_name, $contact_email);
+        if($response != 'error'){
+          $status_code = $response->getStatusCode();
+          if ($status_code == '201') {  
+            $group = Group::create([
+              'type' => 'partner',
+              'label' => $partner_name,
+              'field_contact_name' => $contact_name,
+              'field_contact_email' => $contact_email,
+              'field_description' => $partner_description,
+              'field_partner_status' => $partner_status,
+              'field_partner_type' => $partner_type,
+              'field_client_legal_contact' => $client_legal_contact,
+              'field_client_point_of_contact' => $client_point_of_contact,
+              'field_agreement_effective_date' => $agreement_effective_date,
+              'field_prepayment_amount' => $prepayment_amount,
+              'field_prepayment_balance_left' => $prepayment_balance_left,
+              'field_prepayment_balance_used' => $prepayment_balance_used,
+              'field_currency' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
+              'field_industry' => $industry,
+              'field_apis_agreement_covers' => $encoded_data,
+              'user_id' => \Drupal::currentUser()->id(),
+              'created' => \Drupal::time()->getRequestTime(),
+            ]);
+            $group->save(); 
+            $uid = \Drupal::currentUser()->id();
+            $user = User::load($uid);
+            $group->addMember($user, ['group_roles' => ['partner-admin']]);
+            $group->save();
 
-
-     if (\Drupal::moduleHandler()->moduleExists('zcs_aws')) {
+            $group->set('field_address', [
+              "langcode" => null,
+              "country_code" => $country_code ?? '',
+              "administrative_area" => $administrative_area ?? '',
+              "locality" => $locality ?? '',
+              "dependent_locality" => $dependent_locality ?? '',
+              "postal_code" => $postal_code ?? '',
+              "sorting_code" => $sorting_code ?? '',
+              "address_line1" => $address_line1 ?? '',
+              "address_line2" => $address_line2 ?? '',
+              "address_line3" => $address_line3 ?? '',
+              "organization" => $organization ?? '',
+              "given_name" => $form_state->getValue('contact_name') ?? '',
+              "additional_name" => $additional_name ?? '',
+              "family_name" => $form_state->getValue('contact_name') ?? '',
+            ]);
+            $group->save();
+            $user = User::create([
+              'name' => $contact_name,
+              'mail' => $contact_email,
+              'status' => 0, // 
+              'roles' => 'authenticated', 
+            ]);  
+            $user->save();
+      
+            $token = $this->generateToken();
+            $save_invitation = $this->saveInvitation($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
+            $send_email = $this->sendInvitationMail($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
+          
+            $kong_response = $response->getBody()->getContents();
+            $response = Json::decode($kong_response);
+            $group->set('field_consumer_id', $response['id']);
+            $group->save();   
+            $this->messenger()->addMessage($this->t('Client is invited successfully.'));
+            $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
+          }
+          else {
+            // logger
+          }
+        }
+     
+      } catch (RequestException $e) {
+        if ($e->hasResponse()) {
+          $error_response = $e->getResponse();
+          if ($error_response->getStatusCode() == '409') {
+            $this->messenger()->addError($this->t('Unique constraint violation detected on Partner Name  or Contact Email.'));
+          } 
+        } else {
+          $this->messenger()->addError($this->t('Request Error: ' . $e->getMessage()));
+        }
+      }
+    }
+    else {
       $group = Group::create([
         'type' => 'partner',
         'label' => $partner_name,
@@ -410,9 +489,6 @@ class CreateClientForm extends FormBase {
         "family_name" => $form_state->getValue('contact_name') ?? '',
       ]);
       $group->save();
-     
-
-
       $uid = \Drupal::currentUser()->id();
       $user = User::load($uid);
       $group->addMember($user, ['group_roles' => ['partner-admin']]);
@@ -429,64 +505,6 @@ class CreateClientForm extends FormBase {
       $send_email = $this->sendInvitationMail($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
       $this->messenger()->addMessage($this->t('Client is invited successfully.'));
       $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
-    }
-    else {
-      // create consumer in kong: 
-      try {
-        $response = \Drupal::service('zcs_kong.kong_gateway')->createConsumer($contact_name, $contact_email);
-        if($response != 'error'){
-          $status_code = $response->getStatusCode();
-          if ($status_code == '201') {  
-            $group = Group::create([
-              'type' => 'partner',
-              'label' => $partner_name,
-              'field_contact_name' => $contact_name,
-              'field_contact_email' => $contact_email,
-              'field_description' => $partner_description,
-              'field_partner_status' => $partner_status,
-              'field_partner_type' => $partner_type,
-              'user_id' => \Drupal::currentUser()->id(),
-              'created' => \Drupal::time()->getRequestTime(),
-            ]);
-            $group->save(); 
-            $uid = \Drupal::currentUser()->id();
-            $user = User::load($uid);
-            $group->addMember($user, ['group_roles' => ['partner-admin']]);
-            $group->save();
-            $user = User::create([
-              'name' => $contact_name,
-              'mail' => $contact_email,
-              'status' => 0, // 
-              'roles' => 'authenticated', 
-            ]);  
-            $user->save();
-      
-            $token = $this->generateToken();
-            $save_invitation = $this->saveInvitation($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
-            $send_email = $this->sendInvitationMail($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
-          
-            $kong_response = $response->getBody()->getContents();
-            $response = Json::decode($kong_response);
-            $group->set('field_consumer_id', $response['id']);
-            $group->save();   
-            $this->messenger()->addMessage($this->t('Client is invited successfully.'));
-            $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
-          }
-          else {
-            // logger
-          }
-        }
-     
-      } catch (RequestException $e) {
-        if ($e->hasResponse()) {
-          $error_response = $e->getResponse();
-          if ($error_response->getStatusCode() == '409') {
-            $this->messenger()->addError($this->t('Unique constraint violation detected on Partner Name  or Contact Email.'));
-          } 
-        } else {
-          $this->messenger()->addError($this->t('Request Error: ' . $e->getMessage()));
-        }
-      }
     }
   }
 

@@ -95,6 +95,11 @@ class ApiAttributeSheet extends FormBase {
           '#type' => 'checkbox',
           '#default_value' => $network_connected,
         ];
+        $form['current_status' . $content->id()] = [
+          '#type' => 'checkbox',
+          '#default_value' => (strtolower($content->get('field_able_to_be_used')->value) === 'yes') ? 1 : 0,
+          '#disabled' => TRUE,
+        ];
         $form['able_to_be_used' . $content->id()] = [
           '#type' => 'checkbox',
           '#default_value' => $field_able_to_be_used,
