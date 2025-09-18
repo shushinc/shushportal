@@ -22,8 +22,6 @@ function consolidate_cron() {
       $yesterday = date('Y-m-d', strtotime($today . ' -1 day'));
       $oneYearAgo = date('Y-m-d', strtotime($yesterday . ' -1 year'));
 
-      // Assuming your service has a method to run the consolidation
-      // Adjust the method name based on your actual service implementation
       $analytics_service->consolidateDay('revenue', $yesterday);
       $analytics_service->consolidateDay('revenue', $oneYearAgo);
 
@@ -47,6 +45,12 @@ function consolidate_cron() {
 
       $analytics_service->consolidateMonth('vol_from_silent_auth', $yesterday);
       $analytics_service->consolidateMonth('vol_from_silent_auth', $oneYearAgo);
+
+      $analytics_service->consolidateMonth('top_10_customers', $yesterday);
+      $analytics_service->consolidateMonth('top_10_customers', $oneYearAgo);
+
+      $analytics_service->consolidateMonth('top_client', $yesterday);
+      $analytics_service->consolidateMonth('top_client', $oneYearAgo);
 
       // Update the last run time
       \Drupal::state()->set('consolidate.analytics_consolidate.last_run', $current_time);

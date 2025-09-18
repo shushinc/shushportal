@@ -53,7 +53,7 @@ class DashboardQueryService {
     try {
       // Basic security check - only allow SELECT statements
       $trimmed_query = trim(strtoupper($query));
-      if (!str_starts_with($trimmed_query, 'SELECT')) {
+      if (!str_starts_with($trimmed_query, 'SELECT') && !str_starts_with($trimmed_query, 'WITH')) {
         throw new \InvalidArgumentException('Only SELECT queries are allowed for security reasons.');
       }
 
