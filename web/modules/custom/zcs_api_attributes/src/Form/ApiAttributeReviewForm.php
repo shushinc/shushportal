@@ -66,9 +66,11 @@ class ApiAttributeReviewForm extends FormBase {
       ->fields('apd', ['approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'page_data'])
       ->condition('id', $id)
       ->execute()->fetchObject();
- 
 
+      //dump($data->approver1_status);
+ 
     if (!empty($data)) {
+    //  dump(Json::decode($data->page_data));
       foreach (Json::decode($data->page_data) as $key => $value) {
         $nids[] = $key;
         $form['network_connected' . $key] = [
@@ -102,12 +104,19 @@ class ApiAttributeReviewForm extends FormBase {
 
     $by = '';
     $approvers = ['approver1', 'approver2'];
-    if (in_array('api_attribute_approval_level_1', $this->currentUser()->getRoles())) {
-      $by = 'approver1';
+    if($data->approver1_status == 1) {
+      if (in_array('api_attribute_approval_level_1', $this->currentUser()->getRoles())) {
+        $by = 'approver1';
+      }
     }
-    if (in_array('api_attribute_approval_level_2', $this->currentUser()->getRoles())) {
-      $by = 'approver2';
+    else {
+      if($data->approver2_status == 1) {
+        if (in_array('api_attribute_approval_level_2', $this->currentUser()->getRoles())) {
+          $by = 'approver2';
+        }
+      }
     }
+
     $form['approved_by'] = [
       '#type' => 'hidden',
       '#value' => $by
@@ -121,8 +130,13 @@ class ApiAttributeReviewForm extends FormBase {
 
     $form['#theme'] = 'api_attribute_status_review';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-review';
+    if (((in_array('api_attribute_approval_level_1', $this->currentUser()->getRoles()) && !$data->approver1_uid) || 
+         (in_array('api_attribute_approval_level_2', $this->currentUser()->getRoles()) && !$data->approver2_uid && $data->approver1_uid)) 
+         && $data->attribute_status == 1 && $data->{$by . '_status'} == 1) {
 
-    if (((in_array('api_attribute_approval_level_1', $this->currentUser()->getRoles()) && !$data->approver1_uid) || (in_array('api_attribute_approval_level_2', $this->currentUser()->getRoles()) && !$data->approver2_uid && $data->approver1_uid)) && $data->attribute_status == 1 && $data->{$by . '_status'} == 1) {
+    // if (((in_array('api_attribute_approval_level_1', $this->currentUser()->getRoles()) && !$data->approver1_uid) || 
+    //      (in_array('api_attribute_approval_level_2', $this->currentUser()->getRoles()) && !$data->approver2_uid && $data->approver1_uid)) 
+    //      && $data->attribute_status == 1 && $data->{$by . '_status'} == 1) {
       $form['status'] = [
         '#type' => 'select',
         '#options' => [2 => 'Approve', 3 => 'Reject'],
