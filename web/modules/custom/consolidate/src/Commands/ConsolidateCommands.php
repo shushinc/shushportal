@@ -69,7 +69,7 @@ final class ConsolidateCommands extends DrushCommands {
         return DrushCommands::EXIT_FAILURE;
       }
 
-      $this->logger()->notice('Starting revenue consolidation...');
+      $this->logger()->notice('Starting consolidation...');
       $this->logger()->info('Date range: @start to @end', [
         '@start' => $start_date,
         '@end' => $end_date,
@@ -125,7 +125,7 @@ final class ConsolidateCommands extends DrushCommands {
         return DrushCommands::EXIT_FAILURE;
       }
 
-      $this->logger()->notice('Starting revenue consolidation...');
+      $this->logger()->notice('Starting consolidation...');
       $this->logger()->info('Date day: @date', [
         '@date' => $date,
       ]);
@@ -159,7 +159,7 @@ final class ConsolidateCommands extends DrushCommands {
         return DrushCommands::EXIT_FAILURE;
       }
 
-      $this->logger()->notice('Starting revenue consolidation...');
+      $this->logger()->notice('Starting consolidation...');
       $this->logger()->info('Date day: @date', [
         '@date' => $date,
       ]);
@@ -193,7 +193,7 @@ final class ConsolidateCommands extends DrushCommands {
         return DrushCommands::EXIT_FAILURE;
       }
 
-      $this->logger()->notice('Starting revenue consolidation...');
+      $this->logger()->notice('Starting consolidation...');
       $this->logger()->info('Date month: @date', [
         '@date' => $date,
       ]);
@@ -227,7 +227,7 @@ final class ConsolidateCommands extends DrushCommands {
         return DrushCommands::EXIT_FAILURE;
       }
 
-      $this->logger()->notice('Starting revenue consolidation...');
+      $this->logger()->notice('Starting consolidation...');
       $this->logger()->info('Date month: @date', [
         '@date' => $date,
       ]);

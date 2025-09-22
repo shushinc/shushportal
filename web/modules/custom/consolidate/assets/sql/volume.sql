@@ -1,4 +1,4 @@
-SELECT CAST(SUM(node__field_api_volume_in_mil.field_api_volume_in_mil_value) AS SIGNED) AS `total` from node
+SELECT COALESCE(CAST(SUM(node__field_api_volume_in_mil.field_api_volume_in_mil_value) AS SIGNED), 0) AS `total` from node
 LEFT JOIN node__field_date ON node.nid = node__field_date.entity_id
 LEFT JOIN node__field_api_volume_in_mil on node.nid = node__field_api_volume_in_mil.entity_id
 WHERE `type` = 'analytics'
