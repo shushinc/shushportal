@@ -74,9 +74,17 @@
 }
 
 .ui-dialog .api-attribute-review .attributes-table th:nth-child(2) {
-  width: 50%;
+  width: 47%;
 }
 .ui-dialog .api-attribute-review .attributes-table th:nth-child(3),
 .ui-dialog .api-attribute-review .attributes-table th:nth-child(4) {
   text-align: center;
+}
+
+.ui-dialog .api-attribute-review .attributes-table tbody tr td {
+  line-height: 22px;
+}
+
+.ui-dialog .api-attribute-review .attributes-table th:first-child {
+  width: 5%;
 }
