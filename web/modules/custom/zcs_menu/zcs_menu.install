@@ -28,7 +28,11 @@ function zcs_menu_install() {
     'expanded' => TRUE,
     'weight' => 1,
     'menu_per_role__show_role' => [
-        'authenticated',
+        'administrator',
+        'carrier_admin',
+        'api_attribute_admin',
+        'api_attribute_approval_level_1',
+        'api_attribute_approval_level_2',
       ],
   ]);
   $carrier_parent_menu_link->save();
@@ -147,8 +151,13 @@ function zcs_menu_install() {
     'expanded' => TRUE,
     'weight' => 9,
     'menu_per_role__show_role' => [
-        'authenticated',
-      ],
+      'administrator',
+      'carrier_admin',
+      'finance_admin',
+      'financial_rate_sheet_approval_level_1',
+      'financial_rate_sheet_approval_level_2',
+
+     ],
   ]);
   $price_parent_menu_link->save(); 
 
@@ -163,8 +172,11 @@ function zcs_menu_install() {
             'parent' => $pricing_parent_id, // Set the parent ID.
             'weight' => 10,
             'menu_per_role__show_role' => [
-                'administrator',
-                'authenticated',
+              'administrator',
+              'carrier_admin',
+              'finance_admin',
+              'financial_rate_sheet_approval_level_1',
+              'financial_rate_sheet_approval_level_2',
             ],
             ]);
             $pricing_menu_child_link1->save();
@@ -180,8 +192,8 @@ function zcs_menu_install() {
                 'administrator',
                 'carrier_admin',
                 'finance_admin',
-                'api_attribute_approval_level_1',
-                'api_attribute_approval_level_2',
+                'financial_rate_sheet_approval_level_1',
+                'financial_rate_sheet_approval_level_2',
             ],
             ]);
             $pricing_menu_child_link2->save();

@@ -12,6 +12,8 @@ use Drupal\Component\Serialization\Json;
 use NumberFormatter;
 use Drupal\Core\Pager\PagerManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResult;
 
 class PricingOverTime extends ControllerBase {
 
@@ -210,5 +212,21 @@ class PricingOverTime extends ControllerBase {
     ];
     $output[] = ['#type' => 'pager'];
     return $output;
+  }
+
+  public function access(AccountInterface $account) {
+    $allowed_roles = ['administrator', 'carrier_admin', 'finance_admin', 'financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
+    $user_roles = \Drupal::currentUser()->getRoles();
+
+    if (array_intersect($allowed_roles, $user_roles)) {
+      return AccessResult::allowed();
+    }
+    else {
+      $memberships = \Drupal::service('group.membership_loader')->loadByUser(\Drupal::currentUser());
+      if (isset($memberships)) {
+        return AccessResult::forbidden();
+      }
+    }
+    return AccessResult::forbidden();
   }
 }

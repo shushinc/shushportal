@@ -4,7 +4,7 @@ zcs_api_attributes.attribute.page:
     _controller: '\Drupal\zcs_api_attributes\Controller\AttributesPageController::attributesPage'
     _title: "API Attribute Status"
   requirements:
-    _permission: "access content"
+    _custom_access: '\Drupal\zcs_api_attributes\Controller\AttributesPageController::access'
   options:
     no_cache: true
 
@@ -40,7 +40,7 @@ zcs_api_attributes.pricing_history:
     _controller: '\Drupal\zcs_api_attributes\Controller\PricingOverTime::pricingPage'
     _title: "Pricing History"
   requirements:
-    _permission: "access content"
+    _custom_access: '\Drupal\zcs_api_attributes\Controller\PricingOverTime::access'
   options:
     no_cache: true
 zcs_api_attributes.demand_partner_discountes_or_different_pricing:

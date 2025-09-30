@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Database\Connection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Pager\PagerManagerInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResult;
 
 class AttributesPageController extends ControllerBase {
 
@@ -180,5 +182,29 @@ class AttributesPageController extends ControllerBase {
     ];
     $output[] = ['#type' => 'pager'];
     return $output;
+  }
+
+
+  public function access(AccountInterface $account) {
+
+    $allowed_roles =  [
+      'administrator',
+      'carrier_admin',
+      'api_attribute_admin',
+      'api_attribute_approval_level_1',
+      'api_attribute_approval_level_2',
+    ];
+    $user_roles = \Drupal::currentUser()->getRoles();
+
+    if (array_intersect($allowed_roles, $user_roles)) {
+      return AccessResult::allowed();
+    }
+    else {
+      $memberships = \Drupal::service('group.membership_loader')->loadByUser(\Drupal::currentUser());
+      if (isset($memberships)) {
+        return AccessResult::forbidden();
+      }
+    }
+    return AccessResult::forbidden();
   }
 }
