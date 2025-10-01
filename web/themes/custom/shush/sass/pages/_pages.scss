@@ -507,6 +507,9 @@ table {
           background-size: cover;
           margin-top: -8px;
         }
+        p {
+          margin: 0;
+        }
       }
       .user-inactive,
       .key-inactive {
@@ -523,6 +526,9 @@ table {
           top: 50%;
           background-size: cover;
           margin-top: -8px;
+        }
+        p {
+          margin: 0;
         }
       }
       .edit-operation {
@@ -1378,7 +1384,7 @@ table {
 
 .api-popup-width-resize {
   #drupal-modal {
-    padding: 0;
+    padding: 0.5em 0;
   }
   &.api-table-fixed {
     table.attributes-table {

@@ -1281,6 +1281,10 @@ table tr td .key-active::before {
   background-size: cover;
   margin-top: -8px;
 }
+table tr td .user-active p,
+table tr td .key-active p {
+  margin: 0;
+}
 table tr td .user-inactive,
 table tr td .key-inactive {
   position: relative;
@@ -1298,6 +1302,10 @@ table tr td .key-inactive::before {
   top: 50%;
   background-size: cover;
   margin-top: -8px;
+}
+table tr td .user-inactive p,
+table tr td .key-inactive p {
+  margin: 0;
 }
 table tr td .edit-operation {
   position: relative;
@@ -2069,7 +2077,7 @@ table tbody td .text-bold {
 }
 
 .api-popup-width-resize #drupal-modal {
-  padding: 0;
+  padding: 0.5em 0;
 }
 .api-popup-width-resize.api-table-fixed table.attributes-table {
   table-layout: fixed;
