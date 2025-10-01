@@ -515,7 +515,7 @@ display:
         options:
           offset: 0
           pagination_heading_level: h4
-          items_per_page: 50
+          items_per_page: 10
           total_pages: null
           id: 0
           tags:
@@ -563,7 +563,23 @@ display:
           empty: true
           content: 'There is no clients invited....!'
           tokenize: false
-      sorts: {  }
+      sorts:
+        changed:
+          id: changed
+          table: groups_field_data
+          field: changed
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: group
+          entity_field: changed
+          plugin_id: date
+          order: DESC
+          expose:
+            label: ''
+            field_identifier: ''
+          exposed: false
+          granularity: second
       arguments: {  }
       filters:
         status:

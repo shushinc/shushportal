@@ -39,9 +39,28 @@ final class AwsAppListForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state): array {
 
     $url = Url::fromRoute('zcs_aws.create_key');
+
+    $route_name = $url->getRouteName();
+    $route_parameters = $url->getRouteParameters();
+    
+    // Use access manager to check access
+    $access = \Drupal::service('access_manager')->checkNamedRoute(
+      $route_name,
+      $route_parameters,
+      \Drupal::currentUser(),
+      TRUE // return AccessResult object
+    );
+
+    // Build class list dynamically
+    $classes =  ['button', 'btn-primary', 'button--primary', 'use-ajax'];
+    if (!$access->isAllowed()) {
+      $classes[] = 'disable-link';
+    }
+
+
     $url->setOptions([
       'attributes' => [
-        'class' => ['button', 'btn-primary', 'button--primary', 'use-ajax'],
+        'class' => $classes,
         'data-dialog-type' => 'modal',
         'data-dialog-options' => json_encode(['width' => 400]),
       ],
@@ -133,6 +152,7 @@ final class AwsAppListForm extends FormBase {
                 'class' => 'api-keys',
               ],
               'created' => date('M d, Y' , (int)$created_time),
+              'created_timestamp' => (int) $created_time, // Add this line
               'status' => $app_status,
               'update_key' => [
                 'data' => $operation_link ?? '',
@@ -140,6 +160,13 @@ final class AwsAppListForm extends FormBase {
               ],
             ];
           }
+                // After building the full $apps array, sort it
+              
+      usort($apps, function ($a, $b) {
+          return $b['created_timestamp'] <=> $a['created_timestamp']; // Sort newest first
+      });
+
+
       }
     }
     else {
@@ -188,7 +215,6 @@ final class AwsAppListForm extends FormBase {
             }
             $apps[] = [
               'api_name' => $app->getTitle(),
-              'description' => $description,
               'tag' => $app->get('field_tag')->value ?? '',
               'client_id' => [
                 'data' =>  Markup::create("<div class='client-key''>$client_id</div><div class='pwd-toggle'></div><div class='client-password'></div>"),
@@ -199,6 +225,7 @@ final class AwsAppListForm extends FormBase {
                 'class' => 'api-keys',
               ],
               'created' => date('M d, Y' , (int)$created_time),
+              'created_timestamp' => (int) $created_time, // Add this line
               'status' => $app_status,
             ];
 
@@ -210,10 +237,14 @@ final class AwsAppListForm extends FormBase {
                ];
             }
           }
+        
+        // After building the full $apps array, sort it        
+        usort($apps, function ($a, $b) {
+          return $b['created_timestamp'] <=> $a['created_timestamp']; // Sort newest first
+        });
+
       }
     }
-
-
     if (empty($apps)){
       $form['table'] = [
         '#type' => 'table',
@@ -222,6 +253,10 @@ final class AwsAppListForm extends FormBase {
         '#empty' => $this->t('No Data Found'),
       ];
       return $form;
+    }
+    // Optionally remove 'created_timestamp' if not needed
+    foreach ($apps as &$app_value) {
+      unset($app_value['created_timestamp']);
     }
     $form['table'] = [
       '#type' => 'table',

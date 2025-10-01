@@ -1,0 +1,12 @@
+zcs_api_attributes.manage_api_attributes:
+  title: Manage API Attributes
+  description: Manage API Attributes
+  parent: system.admin_structure
+  route_name: zcs_api_attributes.manage_api_attributes
+  weight: 10
+zcs_api_attributes.manage_pricing_history:
+  title: Manage Pricing History
+  description: Manage Pricing History
+  parent: system.admin_structure
+  route_name: zcs_api_attributes.manage_pricing_history
+  weight: 10

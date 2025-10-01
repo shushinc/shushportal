@@ -38,9 +38,28 @@ final class AppListForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $url = Url::fromRoute('zcs_kong.create_key');
+    
+    $route_name = $url->getRouteName();
+    $route_parameters = $url->getRouteParameters();
+    
+    // Use access manager to check access
+    $access = \Drupal::service('access_manager')->checkNamedRoute(
+      $route_name,
+      $route_parameters,
+      \Drupal::currentUser(),
+      TRUE // return AccessResult object
+    );
+
+    // Build class list dynamically
+    $classes =  ['button', 'btn-primary', 'button--primary', 'use-ajax'];
+    if (!$access->isAllowed()) {
+      $classes[] = 'disable-link';
+    }
+    
+    
     $url->setOptions([
       'attributes' => [
-        'class' => ['button', 'btn-primary', 'button--primary', 'use-ajax'],
+        'class' => $classes,
         'data-dialog-type' => 'modal',
         'data-dialog-options' => json_encode(['width' => 400]),
       ],
