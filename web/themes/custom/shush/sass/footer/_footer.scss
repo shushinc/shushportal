@@ -1,3 +1,5 @@
+@use "../base/variables" as *;
+
 footer.footer {
   background: $black;
   padding: 50px 0;
@@ -35,6 +37,5 @@ footer.footer {
         }
       }
     }
-
   }
 }

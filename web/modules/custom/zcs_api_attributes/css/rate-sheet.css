@@ -40,6 +40,9 @@
   border-radius: 15px;
   margin-bottom: 1.5rem;
 }
+.ui-dialog .rate-sheet-filter {
+  margin: 0;
+}
 
 .rate-sheet-filter .rate-sheet-filter-currencies,
 .rate-sheet-filter .rate-sheet-filter-effective {
@@ -146,7 +149,7 @@
   width: 100%;
 }
 .ui-dialog .rate-sheet table th:first-child {
-  width: 3%;
+  width: 4%;
 }
 
 .ui-dialog .rate-sheet table.attributes-table thead th:nth-child(2) {

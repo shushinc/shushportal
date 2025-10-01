@@ -24,11 +24,11 @@ global-styling:
     theme:
       //cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css:
         { type: external }
-      css/style.css: {}
+      dist/css/main.css: {}
   js:
     //cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js:
       { type: external }
-    js/script.js: {}
+    dist/js/main.js: {}
   dependencies:
     - core/drupal.ajax
     - core/drupal

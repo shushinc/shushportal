@@ -111,7 +111,10 @@ class PricingOverTime extends ControllerBase {
       'attributes' => [
         'class' => $classes,
         'data-dialog-type' => 'modal',
-        'data-dialog-options' => json_encode(['width' => 800]),
+        'data-dialog-options' => json_encode([
+          'width' => 800,
+          'dialogClass' => 'api-popup-width-resize',
+        ]),
       ],
     ]);
     $pricing_api_link = Link::fromTextAndUrl($this->t('Proposed API Pricing'), $url)->toRenderable();

@@ -1,7 +1,13 @@
-@import "compass/reset";
-@import "base/base";
-@import "header/header";
-@import "footer/footer";
-@import "pages/pages";
-@import "form/form";
-@import "pages/client-management";
+/* Normalize CSS as plain CSS */
+@use "../node_modules/normalize.css/normalize.css";
+
+/* Variables */
+@use "base/variables" as *;
+
+/* Base, Header, Footer, Pages, Forms */
+@use "base/base";
+@use "header/header";
+@use "footer/footer";
+@use "pages/pages";
+@use "form/form";
+@use "pages/client-management";

@@ -49,6 +49,7 @@ table.attributes-table tr td {
 .network_authentication_pricing_over_time table.attributes-table thead th {
   line-height: 20px;
   text-align: center;
+  vertical-align: top;
 }
 .network_authentication_pricing_over_time
   table.attributes-table

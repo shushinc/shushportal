@@ -2,6 +2,8 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  margin: 0;
+  padding: 10px 10px 0;
 }
 .ui-dialog .rate-sheet-filter .rate-sheet-filter-currencies,
 .ui-dialog .rate-sheet-filter .rate-sheet-filter-effective {
@@ -86,5 +88,11 @@
 }
 
 .ui-dialog .api-attribute-review .attributes-table th:first-child {
-  width: 5%;
+  width: 4%;
+}
+.ui-dialog .attribute-review .attributes-table thead th {
+  vertical-align: top;
+}
+.ui-dialog .attribute-review .attributes-table thead th:first-child {
+  width: 4%;
 }

@@ -1,67 +1,331 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font: inherit;
-  font-size: 100%;
-  vertical-align: baseline;
-}
-
+/*!****************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[0].use[3]!./sass/style.scss ***!
+  \****************************************************************************************************************************************************************************************************************************************/
+@import url(https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap);
+/*!********************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[0].use[3]!./sass/style.scss (1) ***!
+  \********************************************************************************************************************************************************************************************************************************************/
+/* Normalize CSS as plain CSS */
+/*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
+/* Document
+   ========================================================================== */
+/**
+ * 1. Correct the line height in all browsers.
+ * 2. Prevent adjustments of font size after orientation changes in iOS.
+ */
 html {
-  line-height: 1;
+  line-height: 1.15; /* 1 */
+  -webkit-text-size-adjust: 100%; /* 2 */
 }
 
-ol, ul {
-  list-style: none;
+/* Sections
+   ========================================================================== */
+/**
+ * Remove the margin in all browsers.
+ */
+body {
+  margin: 0;
 }
 
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
-caption, th, td {
-  text-align: left;
-  font-weight: normal;
-  vertical-align: middle;
-}
-
-q, blockquote {
-  quotes: none;
-}
-q:before, q:after, blockquote:before, blockquote:after {
-  content: "";
-  content: none;
-}
-
-a img {
-  border: none;
-}
-
-article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {
+/**
+ * Render the `main` element consistently in IE.
+ */
+main {
   display: block;
 }
 
+/**
+ * Correct the font size and margin on `h1` elements within `section` and
+ * `article` contexts in Chrome, Firefox, and Safari.
+ */
+h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+
+/* Grouping content
+   ========================================================================== */
+/**
+ * 1. Add the correct box sizing in Firefox.
+ * 2. Show the overflow in Edge and IE.
+ */
+hr {
+  box-sizing: content-box; /* 1 */
+  height: 0; /* 1 */
+  overflow: visible; /* 2 */
+}
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+pre {
+  font-family: monospace, monospace; /* 1 */
+  font-size: 1em; /* 2 */
+}
+
+/* Text-level semantics
+   ========================================================================== */
+/**
+ * Remove the gray background on active links in IE 10.
+ */
+a {
+  background-color: transparent;
+}
+
+/**
+ * 1. Remove the bottom border in Chrome 57-
+ * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.
+ */
+abbr[title] {
+  border-bottom: none; /* 1 */
+  text-decoration: underline; /* 2 */
+  -webkit-text-decoration: underline dotted;
+          text-decoration: underline dotted; /* 2 */
+}
+
+/**
+ * Add the correct font weight in Chrome, Edge, and Safari.
+ */
+b,
+strong {
+  font-weight: bolder;
+}
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+code,
+kbd,
+samp {
+  font-family: monospace, monospace; /* 1 */
+  font-size: 1em; /* 2 */
+}
+
+/**
+ * Add the correct font size in all browsers.
+ */
+small {
+  font-size: 80%;
+}
+
+/**
+ * Prevent `sub` and `sup` elements from affecting the line height in
+ * all browsers.
+ */
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+
+/* Embedded content
+   ========================================================================== */
+/**
+ * Remove the border on images inside links in IE 10.
+ */
+img {
+  border-style: none;
+}
+
+/* Forms
+   ========================================================================== */
+/**
+ * 1. Change the font styles in all browsers.
+ * 2. Remove the margin in Firefox and Safari.
+ */
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+  line-height: 1.15; /* 1 */
+  margin: 0; /* 2 */
+}
+
+/**
+ * Show the overflow in IE.
+ * 1. Show the overflow in Edge.
+ */
+button,
+input { /* 1 */
+  overflow: visible;
+}
+
+/**
+ * Remove the inheritance of text transform in Edge, Firefox, and IE.
+ * 1. Remove the inheritance of text transform in Firefox.
+ */
+button,
+select { /* 1 */
+  text-transform: none;
+}
+
+/**
+ * Correct the inability to style clickable types in iOS and Safari.
+ */
+button,
+[type=button],
+[type=reset],
+[type=submit] {
+  -webkit-appearance: button;
+}
+
+/**
+ * Remove the inner border and padding in Firefox.
+ */
+button::-moz-focus-inner,
+[type=button]::-moz-focus-inner,
+[type=reset]::-moz-focus-inner,
+[type=submit]::-moz-focus-inner {
+  border-style: none;
+  padding: 0;
+}
+
+/**
+ * Restore the focus styles unset by the previous rule.
+ */
+button:-moz-focusring,
+[type=button]:-moz-focusring,
+[type=reset]:-moz-focusring,
+[type=submit]:-moz-focusring {
+  outline: 1px dotted ButtonText;
+}
+
+/**
+ * Correct the padding in Firefox.
+ */
+fieldset {
+  padding: 0.35em 0.75em 0.625em;
+}
+
+/**
+ * 1. Correct the text wrapping in Edge and IE.
+ * 2. Correct the color inheritance from `fieldset` elements in IE.
+ * 3. Remove the padding so developers are not caught out when they zero out
+ *    `fieldset` elements in all browsers.
+ */
+legend {
+  box-sizing: border-box; /* 1 */
+  color: inherit; /* 2 */
+  display: table; /* 1 */
+  max-width: 100%; /* 1 */
+  padding: 0; /* 3 */
+  white-space: normal; /* 1 */
+}
+
+/**
+ * Add the correct vertical alignment in Chrome, Firefox, and Opera.
+ */
+progress {
+  vertical-align: baseline;
+}
+
+/**
+ * Remove the default vertical scrollbar in IE 10+.
+ */
+textarea {
+  overflow: auto;
+}
+
+/**
+ * 1. Add the correct box sizing in IE 10.
+ * 2. Remove the padding in IE 10.
+ */
+[type=checkbox],
+[type=radio] {
+  box-sizing: border-box; /* 1 */
+  padding: 0; /* 2 */
+}
+
+/**
+ * Correct the cursor style of increment and decrement buttons in Chrome.
+ */
+[type=number]::-webkit-inner-spin-button,
+[type=number]::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/**
+ * 1. Correct the odd appearance in Chrome and Safari.
+ * 2. Correct the outline style in Safari.
+ */
+[type=search] {
+  -webkit-appearance: textfield; /* 1 */
+  outline-offset: -2px; /* 2 */
+}
+
+/**
+ * Remove the inner padding in Chrome and Safari on macOS.
+ */
+[type=search]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/**
+ * 1. Correct the inability to style clickable types in iOS and Safari.
+ * 2. Change font properties to `inherit` in Safari.
+ */
+::-webkit-file-upload-button {
+  -webkit-appearance: button; /* 1 */
+  font: inherit; /* 2 */
+}
+
+/* Interactive
+   ========================================================================== */
+/*
+ * Add the correct display in Edge, IE 10+, and Firefox.
+ */
+details {
+  display: block;
+}
+
+/*
+ * Add the correct display in all browsers.
+ */
+summary {
+  display: list-item;
+}
+
+/* Misc
+   ========================================================================== */
+/**
+ * Add the correct display in IE 10+.
+ */
+template {
+  display: none;
+}
+
+/**
+ * Add the correct display in IE 10.
+ */
+[hidden] {
+  display: none;
+}
+
+/* Variables */
+/* Base, Header, Footer, Pages, Forms */
+/* Variables */
 body {
   font-family: "Roboto", sans-serif;
   font-weight: 400;
   font-style: normal;
   font-size: 1rem;
   line-height: 28px;
-  background: #F0F3FF;
+  background: #f0f3ff;
 }
 
 .btn-primary {
@@ -73,13 +337,14 @@ body {
   color: #ffffff;
   text-transform: capitalize;
   font-size: 16px;
-  transition: all .3s;
+  transition: all 0.3s;
   position: relative;
   overflow: hidden;
   z-index: 1;
   text-decoration: none;
   background-color: #4f9bf5;
   border: none;
+  min-width: -moz-fit-content;
   min-width: fit-content;
 }
 .btn-primary:hover {
@@ -94,7 +359,7 @@ body {
 
 .messages--error,
 [aria-label="Error message"] {
-  background: #cc1b0b;
+  background: rgb(204, 27, 11);
   padding: 10px 30px;
   margin-bottom: 20px;
   font-family: "DM Sans", sans-serif;
@@ -107,10 +372,10 @@ body {
 [aria-label="Error message"] a {
   color: #ffffff;
 }
-.messages--error [role="alert"]::before,
-[aria-label="Error message"] [role="alert"]::before {
-  content: '';
-  background: url("../images/error.svg") no-repeat;
+.messages--error [role=alert]::before,
+[aria-label="Error message"] [role=alert]::before {
+  content: "";
+  background: url(../images/error.svg) no-repeat;
   height: 26px;
   width: 26px;
   display: inline-block;
@@ -121,22 +386,22 @@ body {
   filter: brightness(0) invert(1);
 }
 
-form .js-form-item input[aria-invalid="true"] {
-  border: 2px solid red;
-  /* Highlight invalid fields */
+form .js-form-item input[aria-invalid=true] {
+  border: 2px solid red; /* Highlight invalid fields */
   box-shadow: none;
   outline: none;
 }
-form .js-form-item input[aria-invalid="true"]:focus {
+form .js-form-item input[aria-invalid=true]:focus {
   border: 2px solid red;
   box-shadow: none;
   outline: none;
 }
 
+/* Variables */
 .header {
   padding: 10px 0;
   box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.15);
-  background-color: #f7f9fb;
+  background-color: rgb(247, 249, 251);
 }
 .header .site__logo img {
   width: 180px;
@@ -163,7 +428,7 @@ form .js-form-item input[aria-invalid="true"]:focus {
 .region-primary-menu ul li span {
   font-family: "DM Sans", sans-serif;
   font-weight: 500;
-  color: #666666;
+  color: rgb(102, 102, 102);
   text-decoration: none;
   font-size: 16px;
   line-height: 20px;
@@ -212,7 +477,7 @@ form .js-form-item input[aria-invalid="true"]:focus {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #0f8df0;
+  background-color: rgb(15, 141, 240);
   border-radius: 10rem;
   z-index: -2;
 }
@@ -223,7 +488,7 @@ form .js-form-item input[aria-invalid="true"]:focus {
   left: 0;
   width: 0%;
   height: 100%;
-  background-color: #3c12f5;
+  background-color: rgb(79.8552631579, 42.2315789474, 245.9184210526);
   transition: all 0.3s;
   border-radius: 10rem;
   z-index: -1;
@@ -307,7 +572,7 @@ form .js-form-item input[aria-invalid="true"]:focus {
   content: "";
   height: 24px;
   width: 24px;
-  background: url("../images/logout.png") no-repeat;
+  background: url(../images/logout.png) no-repeat;
   display: block;
   position: absolute;
   left: 0;
@@ -387,7 +652,7 @@ form .js-form-item input[aria-invalid="true"]:focus {
 }
 .user-logged-in .region-primary-menu ul li.menu-item--expanded::after {
   content: "";
-  background: url("../images/arrow-down.svg") no-repeat;
+  background: url(../images/arrow-down.svg) no-repeat;
   height: 16px;
   width: 16px;
   position: absolute;
@@ -447,6 +712,7 @@ form .js-form-item input[aria-invalid="true"]:focus {
   padding: 10px 15px;
 }
 
+/* Variables */
 footer.footer {
   background: #000000;
   padding: 50px 0;
@@ -460,7 +726,7 @@ footer.footer p {
   transition: all 0.3s ease-in-out;
 }
 footer.footer p:hover {
-  color: #0f8df0;
+  color: rgb(15, 141, 240);
 }
 footer.footer .region-footer ul {
   margin: 0;
@@ -480,14 +746,15 @@ footer.footer .region-footer ul li a {
   transition: all 0.3s ease-in-out;
 }
 footer.footer .region-footer ul li a:hover {
-  color: #0f8df0;
+  color: rgb(15, 141, 240);
 }
 
+/* Variables */
 .highlighted .messages__wrapper {
   margin-top: 20px;
 }
 .highlighted .messages--status {
-  background-color: #badbcc;
+  background-color: rgb(186, 219, 204);
   padding: 20px 20px;
   font-family: "DM Sans", sans-serif;
   font-size: 14px;
@@ -495,13 +762,13 @@ footer.footer .region-footer ul li a:hover {
   letter-spacing: 0.3px;
 }
 .highlighted .messages--status .placeholder {
-  color: #0f8df0;
+  color: rgb(15, 141, 240);
   background: transparent;
   opacity: 1;
 }
 .highlighted .messages--status::before {
   content: "";
-  background: url("../images/sucess.svg") no-repeat;
+  background: url(../images/sucess.svg) no-repeat;
   height: 26px;
   width: 26px;
   display: inline-block;
@@ -551,7 +818,7 @@ main {
   font-size: 34px;
   line-height: 42px;
   font-weight: 700;
-  color: #2b3674;
+  color: rgb(43, 54, 116);
   text-transform: capitalize;
   letter-spacing: 0.2px;
   text-align: left;
@@ -573,18 +840,18 @@ main {
 .user-login,
 .user-register,
 .user-password,
-[class^="user-management-"],
+[class^=user-management-],
 [class^="user-*-apps-android-edit"],
 .add-team,
 .teams-t-add-members,
 .add-client-member {
-  background: #c8e7ff;
+  background: rgb(200, 231, 255);
 }
 .user-invite main,
 .user-login main,
 .user-register main,
 .user-password main,
-[class^="user-management-"] main,
+[class^=user-management-] main,
 [class^="user-*-apps-android-edit"] main,
 .add-team main,
 .teams-t-add-members main,
@@ -595,7 +862,7 @@ main {
 .user-login main .layout-content,
 .user-register main .layout-content,
 .user-password main .layout-content,
-[class^="user-management-"] main .layout-content,
+[class^=user-management-] main .layout-content,
 [class^="user-*-apps-android-edit"] main .layout-content,
 .add-team main .layout-content,
 .teams-t-add-members main .layout-content,
@@ -667,7 +934,7 @@ main {
 .user-password main #block-shush-page-title::before,
 .login main #block-shush-page-title::before {
   content: "";
-  background: url("../images/login-icon.svg") no-repeat;
+  background: url(../images/login-icon.svg) no-repeat;
   height: 32px;
   width: 32px;
   margin: 0 auto;
@@ -691,7 +958,7 @@ main {
 .user-register main #block-shush-content form.user-pass p,
 .user-password main #block-shush-content form.user-pass p,
 .login main #block-shush-content form.user-pass p {
-  color: #a3aed0;
+  color: rgb(163, 174, 208);
   letter-spacing: -0.2px;
 }
 .user-login main #block-shush-content form #edit-actions .form-submit,
@@ -699,7 +966,7 @@ main {
 .user-password main #block-shush-content form #edit-actions .form-submit,
 .login main #block-shush-content form #edit-actions .form-submit {
   max-width: 400px;
-  background: #118df0;
+  background: rgb(17, 141, 240);
   border-radius: 10px;
   color: #ffffff;
 }
@@ -737,7 +1004,7 @@ main {
   padding-top: 5rem;
 }
 .login main .custom-content h1 {
-  color: #2b3674;
+  color: rgb(43, 54, 116);
   font-size: 64px;
   font-weight: 700;
   line-height: 56px;
@@ -746,7 +1013,7 @@ main {
 }
 .login main .custom-content .btn-primary {
   max-width: 400px;
-  background: #118df0;
+  background: rgb(17, 141, 240);
   border-radius: 10px;
   padding: 10px 120px;
 }
@@ -770,7 +1037,7 @@ main {
   font-size: 12px;
   font-weight: 300;
   letter-spacing: 0.5px;
-  color: #666666;
+  color: rgb(102, 102, 102);
   display: block;
   line-height: 19px;
   margin: 0 0 1rem;
@@ -784,7 +1051,7 @@ form .js-form-item label {
   font-size: 12px;
   font-weight: 300;
   letter-spacing: 0.5px;
-  color: #666666;
+  color: rgb(102, 102, 102);
   display: block;
   line-height: 19px;
 }
@@ -806,20 +1073,20 @@ form .js-form-item input:focus-visible,
 form .js-form-item .form-file:focus-visible,
 form .js-form-item select:focus-visible,
 form .js-form-item textarea:focus-visible {
-  border: 1px solid #0f8df0;
-  outline: 1px solid #0f8df0;
+  border: 1px solid rgb(15, 141, 240);
+  outline: 1px solid rgb(15, 141, 240);
   box-shadow: 0 0 5px #0f8df0;
 }
-form .js-form-item input[readonly="readonly"],
-form .js-form-item .form-file[readonly="readonly"],
-form .js-form-item select[readonly="readonly"],
-form .js-form-item textarea[readonly="readonly"] {
+form .js-form-item input[readonly=readonly],
+form .js-form-item .form-file[readonly=readonly],
+form .js-form-item select[readonly=readonly],
+form .js-form-item textarea[readonly=readonly] {
   background: rgba(118, 118, 118, 0.3);
 }
-form .js-form-item input[readonly="readonly"]:hover,
-form .js-form-item .form-file[readonly="readonly"]:hover,
-form .js-form-item select[readonly="readonly"]:hover,
-form .js-form-item textarea[readonly="readonly"]:hover {
+form .js-form-item input[readonly=readonly]:hover,
+form .js-form-item .form-file[readonly=readonly]:hover,
+form .js-form-item select[readonly=readonly]:hover,
+form .js-form-item textarea[readonly=readonly]:hover {
   background-color: rgba(118, 118, 118, 0.3);
 }
 form .js-form-item textarea {
@@ -902,7 +1169,7 @@ form #edit-actions #edit-actions-delete {
 .home-slider .slider-item .slider-items .more-explore > a {
   font-size: 1rem;
   text-decoration: none;
-  color: #0f8df0;
+  color: rgb(15, 141, 240);
   letter-spacing: 0.5px;
   transition: all 0.3s ease-in-out;
 }
@@ -927,7 +1194,7 @@ form #edit-actions #edit-actions-delete {
   border: none;
 }
 .home-slider .slick-dots li.slick-active button {
-  background: #0f8df0;
+  background: rgb(15, 141, 240);
 }
 
 table {
@@ -947,8 +1214,9 @@ table th {
   padding-bottom: 12px;
   text-align: left;
   border-bottom: 1px solid #ddd;
-  color: #a3aed0;
+  color: rgb(163, 174, 208);
   line-height: normal;
+  font-weight: normal;
 }
 table th a {
   text-decoration: none;
@@ -971,7 +1239,7 @@ table tr td {
   font-size: 14px;
   font-weight: 400;
   text-decoration: none;
-  color: #2b3674;
+  color: rgb(43, 54, 116);
 }
 table tr td a {
   text-decoration: none;
@@ -979,7 +1247,7 @@ table tr td a {
 table tr td .status-value-approved,
 table tr td .status-value-active {
   background-color: transparent !important;
-  color: #039855;
+  color: rgb(3, 152, 85);
 }
 table tr td:last-child {
   text-align: right;
@@ -993,7 +1261,7 @@ table tr td .dropbutton-multiple .dropbutton .secondary-action {
 }
 table tr td:first-child {
   font-weight: 700;
-  color: #2b3674;
+  color: rgb(43, 54, 116);
 }
 table tr td .user-active,
 table tr td .key-active {
@@ -1005,7 +1273,7 @@ table tr td .key-active::before {
   content: "";
   height: 16px;
   width: 16px;
-  background: url("../images/active-bg.svg") no-repeat;
+  background: url(../images/active-bg.svg) no-repeat;
   display: block;
   position: absolute;
   left: 0;
@@ -1023,7 +1291,7 @@ table tr td .key-inactive::before {
   content: "";
   height: 16px;
   width: 16px;
-  background: url("../images/error-bg.svg") no-repeat;
+  background: url(../images/error-bg.svg) no-repeat;
   display: block;
   position: absolute;
   left: 0;
@@ -1036,7 +1304,7 @@ table tr td .edit-operation {
 }
 table tr td .edit-operation::before {
   content: "";
-  background: url("../images/dropdown.svg") no-repeat;
+  background: url(../images/dropdown.svg) no-repeat;
   height: 12px;
   width: 12px;
   display: inline-block;
@@ -1108,11 +1376,10 @@ table tr:last-child td:last-child .edit-operation-wrap {
   text-align: center;
 }
 
-#block-shush-primary-admin-actions
-[data-drupal-link-system-path="create-aws-key"].button-action {
+#block-shush-primary-admin-actions [data-drupal-link-system-path=create-aws-key].button-action {
   background: #fff;
-  border: 2px solid #118df0;
-  color: #118df0;
+  border: 2px solid rgb(17, 141, 240);
+  color: rgb(17, 141, 240);
   border-radius: 50px;
   padding: 10px 15px;
 }
@@ -1141,7 +1408,7 @@ table tr:last-child td:last-child .edit-operation-wrap {
 .zcs-aws-app-list table tr td .secret-password::after,
 .zcs-aws-app-list table tr td .client-password::after {
   content: "";
-  background: url("../images/copy-files.svg") no-repeat;
+  background: url(../images/copy-files.svg) no-repeat;
   height: 12px;
   width: 12px;
   display: inline-block;
@@ -1152,8 +1419,7 @@ table tr:last-child td:last-child .edit-operation-wrap {
 }
 .zcs-kong-app-list table tr td.api-keys,
 .zcs-aws-app-list table tr td.api-keys {
-  -webkit-text-security: disc;
-  /* For WebKit browsers */
+  -webkit-text-security: disc; /* For WebKit browsers */
   text-security: disc;
   position: relative;
 }
@@ -1167,7 +1433,7 @@ table tr:last-child td:last-child .edit-operation-wrap {
 .zcs-kong-app-list table tr td.api-keys .pwd-toggle::after,
 .zcs-aws-app-list table tr td.api-keys .pwd-toggle::after {
   content: "";
-  background: url("../images/eye-hidden.png") no-repeat;
+  background: url(../images/eye-hidden.png) no-repeat;
   height: 12px;
   width: 12px;
   display: inline-block;
@@ -1185,7 +1451,7 @@ table tr:last-child td:last-child .edit-operation-wrap {
 .zcs-kong-app-list table tr td.password-show .pwd-toggle::after,
 .zcs-aws-app-list table tr td.password-show .pwd-toggle::after {
   content: "";
-  background: url("../images/eye-visible.png") no-repeat;
+  background: url(../images/eye-visible.png) no-repeat;
   height: 12px;
   width: 12px;
   display: inline-block;
@@ -1234,7 +1500,7 @@ table tr:last-child td:last-child .edit-operation-wrap {
 .zcs-kong-app-list table tr td.app-operations::before,
 .zcs-aws-app-list table tr td.app-operations::before {
   content: "";
-  background: url("../images/dropdown.svg") no-repeat;
+  background: url(../images/dropdown.svg) no-repeat;
   height: 12px;
   width: 12px;
   display: inline-block;
@@ -1310,11 +1576,11 @@ table tr:last-child td:last-child .edit-operation-wrap {
 .user-grid-block .views-row .user__management-info {
   padding: 20px;
   border-radius: 32px;
-  background: #f7f9fb;
+  background: rgb(247, 249, 251);
 }
 .user-grid-block .views-row .user__management-info.active, .user-grid-block .views-row .user__management-info.Active {
   box-shadow: 4px 4px 7.6px -2px rgba(0, 0, 0, 0.1);
-  border: 2px solid #d5f6e0;
+  border: 2px solid rgb(213, 246, 224);
 }
 .user-grid-block .views-row .user__management-info.active .user__mangement-status, .user-grid-block .views-row .user__management-info.Active .user__mangement-status {
   margin-bottom: 10px;
@@ -1323,12 +1589,12 @@ table tr:last-child td:last-child .edit-operation-wrap {
   font-size: 11px;
   font-family: "DM Sans", sans-serif;
   font-weight: 400;
-  background: #ecfdf3;
-  border: 1px solid #d5f6e0;
+  background: rgb(236, 253, 243);
+  border: 1px solid rgb(213, 246, 224);
   line-height: 15px;
   display: inline-block;
   padding: 7px 40px;
-  color: #039855;
+  color: rgb(3, 152, 85);
   border-radius: 5px;
   position: relative;
 }
@@ -1336,7 +1602,7 @@ table tr:last-child td:last-child .edit-operation-wrap {
   content: "";
   height: 24px;
   width: 24px;
-  background: url("../images/active.svg") no-repeat;
+  background: url(../images/active.svg) no-repeat;
   display: block;
   position: absolute;
   left: 25px;
@@ -1345,7 +1611,7 @@ table tr:last-child td:last-child .edit-operation-wrap {
 }
 .user-grid-block .views-row .user__management-info.inactive, .user-grid-block .views-row .user__management-info.in_active {
   box-shadow: 4px 4px 7.6px -2px rgba(0, 0, 0, 0.1);
-  border: 2px solid #fee4e2;
+  border: 2px solid rgb(254, 228, 226);
 }
 .user-grid-block .views-row .user__management-info.inactive .user__mangement-status, .user-grid-block .views-row .user__management-info.in_active .user__mangement-status {
   margin-bottom: 10px;
@@ -1356,12 +1622,12 @@ table tr:last-child td:last-child .edit-operation-wrap {
   font-size: 11px;
   font-family: "DM Sans", sans-serif;
   font-weight: 400;
-  background: #fef3f2;
-  border: 1px solid #fee4e2;
+  background: rgb(254, 243, 242);
+  border: 1px solid rgb(254, 228, 226);
   line-height: 15px;
   display: inline-block;
   padding: 7px 40px;
-  color: #d92d20;
+  color: rgb(217, 45, 32);
   border-radius: 5px;
   position: relative;
 }
@@ -1371,7 +1637,7 @@ table tr:last-child td:last-child .edit-operation-wrap {
   content: "";
   height: 24px;
   width: 24px;
-  background: url("../images/inactive.svg") no-repeat;
+  background: url(../images/inactive.svg) no-repeat;
   display: block;
   position: absolute;
   left: 25px;
@@ -1383,7 +1649,7 @@ table tr:last-child td:last-child .edit-operation-wrap {
   font-size: 18px;
   font-weight: 500;
   line-height: 20px;
-  color: #0f8df0;
+  color: rgb(15, 141, 240);
   margin-bottom: 10px;
 }
 .user-grid-block .views-row .user__management-info .user__mangement-name a {
@@ -1395,21 +1661,21 @@ table tr:last-child td:last-child .edit-operation-wrap {
   font-size: 13px;
   font-weight: 300;
   line-height: 16px;
-  color: #475467;
+  color: rgb(71, 84, 103);
   margin-bottom: 10px;
 }
 .user-grid-block .views-row .user__management-info .user__mangement-email {
   font-weight: 500;
 }
 .user-grid-block .views-row .user__management-info .user__mangement-edit a {
-  background: #0f8df0;
+  background: rgb(15, 141, 240);
   padding: 7px 45px;
   border-radius: 30px;
   font-size: 12px;
   font-weight: 400;
   font-family: "DM Sans", sans-serif;
   text-decoration: none;
-  color: white;
+  color: rgb(255, 255, 255);
 }
 
 .apigee-entity--view-mode-full .field--label-inline {
@@ -1420,7 +1686,7 @@ table tr:last-child td:last-child .edit-operation-wrap {
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.5px;
-  color: #666666;
+  color: rgb(102, 102, 102);
   display: block;
   line-height: 19px;
 }
@@ -1439,7 +1705,7 @@ table tr:last-child td:last-child .edit-operation-wrap {
   padding: 5px 20px;
   height: auto;
   line-height: 18px;
-  background-color: #039855;
+  background-color: rgb(3, 152, 85);
 }
 .apigee-entity--view-mode-full .app-credential legend {
   font-family: "Poppins", sans-serif;
@@ -1451,8 +1717,8 @@ table tr:last-child td:last-child .edit-operation-wrap {
   line-height: 19px;
 }
 .apigee-entity--view-mode-full .app-credential .app-details-wrapper {
-  border-top: 1px solid #c8e7ff;
-  border-bottom: 1px solid #c8e7ff;
+  border-top: 1px solid rgb(200, 231, 255);
+  border-bottom: 1px solid rgb(200, 231, 255);
   padding: 1.5rem 0;
 }
 .apigee-entity--view-mode-full .app-credential .wrapper--secondary {
@@ -1464,7 +1730,7 @@ table tr:last-child td:last-child .edit-operation-wrap {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.5px;
-  color: #666666;
+  color: rgb(102, 102, 102);
   display: block;
   line-height: 19px;
 }
@@ -1481,7 +1747,7 @@ table tr:last-child td:last-child .edit-operation-wrap {
   padding: 5px 20px;
   height: auto;
   line-height: 18px;
-  background-color: #039855;
+  background-color: rgb(3, 152, 85);
 }
 .apigee-entity--view-mode-full .app-details-wrapper {
   display: flex;
@@ -1500,29 +1766,30 @@ table tr:last-child td:last-child .edit-operation-wrap {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.5px;
-  color: #666666;
+  color: rgb(102, 102, 102);
   display: block;
   line-height: 19px;
 }
 .apigee-entity--view-mode-full .app-details-wrapper .item-property .status-value-approved {
   background-color: transparent !important;
-  color: #039855;
+  color: rgb(3, 152, 85);
 }
 .apigee-entity--view-mode-full .app-details-wrapper .item-property .secret .secret__value {
   width: 100%;
+  max-width: -moz-max-content;
   max-width: max-content;
   padding-right: 10px;
   font-weight: 400;
 }
 .apigee-entity--view-mode-full .app-details-wrapper .item-property .secret__toggle .secret__toggle__show {
-  background: url("../images/eye-hidden.png") no-repeat;
+  background: url(../images/eye-hidden.png) no-repeat;
   background-size: 16px;
   height: 16px;
   width: 16px;
   font-size: 0;
 }
 .apigee-entity--view-mode-full .app-details-wrapper .item-property .secret__toggle .secret__toggle__hide {
-  background: url("../images/eye-visible.png") no-repeat;
+  background: url(../images/eye-visible.png) no-repeat;
   background-size: 16px;
   height: 16px;
   width: 16px;
@@ -1544,7 +1811,7 @@ table tr:last-child td:last-child .edit-operation-wrap {
 }
 .user-management-header h5 {
   font-family: "Montserrat", sans-serif;
-  color: #b0bbd5;
+  color: rgb(176, 187, 213);
   font-size: 24px;
   font-weight: 500;
   line-height: normal;
@@ -1555,7 +1822,7 @@ table tr:last-child td:last-child .edit-operation-wrap {
   font-size: 34px;
   line-height: 42px;
   font-weight: 700;
-  color: #2b3674;
+  color: rgb(43, 54, 116);
   letter-spacing: 0.2px;
 }
 .user-management-header .user-roles {
@@ -1564,7 +1831,7 @@ table tr:last-child td:last-child .edit-operation-wrap {
   display: inline-block;
   border-radius: 20px;
   margin-top: 10px;
-  color: #2b3674;
+  color: rgb(43, 54, 116);
   font-size: 14px;
   font-weight: 700;
   text-transform: capitalize;
@@ -1585,7 +1852,7 @@ body.password-change-page {
 }
 
 .password-background {
-  background: url("../images/password-bg.png") no-repeat;
+  background: url(../images/password-bg.png) no-repeat;
   background-size: contain;
   background-position: center right;
   height: 100vh;
@@ -1626,7 +1893,7 @@ body.password-change-page {
 }
 .password-change-header h1 {
   font-family: "Montserrat", sans-serif;
-  color: #2b3674;
+  color: rgb(43, 54, 116);
   font-size: 46px;
   line-height: 56px;
   font-weight: 700;
@@ -1634,7 +1901,7 @@ body.password-change-page {
 }
 .password-change-header p {
   font-family: "Montserrat", sans-serif;
-  color: #a3aed0;
+  color: rgb(163, 174, 208);
   font-size: 1rem;
   line-height: 16px;
 }
@@ -1643,10 +1910,11 @@ nav ul.js-pager__items {
   display: flex;
   justify-content: center;
   margin: 20px 0;
+  list-style-type: none;
 }
 nav ul.js-pager__items li {
   padding: 5px 16px;
-  background: #ffff;
+  background: white;
   margin: 2px;
   border-radius: 5px;
   border: 1px solid #eee;
@@ -1713,8 +1981,7 @@ table tbody td .text-bold {
 
 .ui-widget.ui-widget-content {
   top: 50% !important;
-  left: 50% !important;
-  /* Start 50% into remaining space */
+  left: 50% !important; /* Start 50% into remaining space */
   transform: translate(-50%, -50%);
   z-index: 1000;
 }
@@ -1775,6 +2042,7 @@ table tbody td .text-bold {
   font-weight: 500;
   text-transform: capitalize;
   font-size: 16px;
+  min-width: -moz-fit-content;
   min-width: fit-content;
   background-color: rgba(118, 118, 118, 0.3);
   border: 2px solid rgba(118, 118, 118, 0.3);
@@ -1800,6 +2068,14 @@ table tbody td .text-bold {
   z-index: 2;
 }
 
+.api-popup-width-resize #drupal-modal {
+  padding: 0;
+}
+.api-popup-width-resize.api-table-fixed table.attributes-table {
+  table-layout: fixed;
+}
+
+/* Variables */
 form.user-logout-confirm {
   text-align: center;
 }
@@ -1827,6 +2103,7 @@ form.user-logout-confirm #edit-submit {
   overflow: hidden;
   z-index: 1;
   text-decoration: none;
+  min-width: -moz-fit-content;
   min-width: fit-content;
   background: #fff;
   border: 2px solid #118df0;
@@ -1843,10 +2120,10 @@ form.user-logout-confirm #edit-submit {
 .apigee-edge-teams-add-team-member-form .field--type-app-callback-url {
   display: none;
 }
-.developer-app-form [id^="edit-credential-"] .fieldset-legend,
+.developer-app-form [id^=edit-credential-] .fieldset-legend,
 .developer-app-form #edit-api-products--wrapper .fieldset-legend,
 .developer-app-form .edit-team-roles--wrapper .fieldset-legend,
-.apigee-edge-teams-add-team-member-form [id^="edit-credential-"] .fieldset-legend,
+.apigee-edge-teams-add-team-member-form [id^=edit-credential-] .fieldset-legend,
 .apigee-edge-teams-add-team-member-form #edit-api-products--wrapper .fieldset-legend,
 .apigee-edge-teams-add-team-member-form .edit-team-roles--wrapper .fieldset-legend {
   font-family: "DM Sans", sans-serif;
@@ -1854,20 +2131,20 @@ form.user-logout-confirm #edit-submit {
   font-weight: 500;
   line-height: 16px;
 }
-.developer-app-form [id^="edit-credential-"] .fieldset-wrapper .form-type-checkbox .form-checkbox,
+.developer-app-form [id^=edit-credential-] .fieldset-wrapper .form-type-checkbox .form-checkbox,
 .developer-app-form #edit-api-products--wrapper .fieldset-wrapper .form-type-checkbox .form-checkbox,
 .developer-app-form .edit-team-roles--wrapper .fieldset-wrapper .form-type-checkbox .form-checkbox,
-.apigee-edge-teams-add-team-member-form [id^="edit-credential-"] .fieldset-wrapper .form-type-checkbox .form-checkbox,
+.apigee-edge-teams-add-team-member-form [id^=edit-credential-] .fieldset-wrapper .form-type-checkbox .form-checkbox,
 .apigee-edge-teams-add-team-member-form #edit-api-products--wrapper .fieldset-wrapper .form-type-checkbox .form-checkbox,
 .apigee-edge-teams-add-team-member-form .edit-team-roles--wrapper .fieldset-wrapper .form-type-checkbox .form-checkbox {
   display: inline-block;
   width: auto;
   height: auto;
 }
-.developer-app-form [id^="edit-credential-"] .fieldset-wrapper .form-type-checkbox label,
+.developer-app-form [id^=edit-credential-] .fieldset-wrapper .form-type-checkbox label,
 .developer-app-form #edit-api-products--wrapper .fieldset-wrapper .form-type-checkbox label,
 .developer-app-form .edit-team-roles--wrapper .fieldset-wrapper .form-type-checkbox label,
-.apigee-edge-teams-add-team-member-form [id^="edit-credential-"] .fieldset-wrapper .form-type-checkbox label,
+.apigee-edge-teams-add-team-member-form [id^=edit-credential-] .fieldset-wrapper .form-type-checkbox label,
 .apigee-edge-teams-add-team-member-form #edit-api-products--wrapper .fieldset-wrapper .form-type-checkbox label,
 .apigee-edge-teams-add-team-member-form .edit-team-roles--wrapper .fieldset-wrapper .form-type-checkbox label {
   display: inline-block;
@@ -1894,14 +2171,14 @@ form.user-logout-confirm #edit-submit {
   background: transparent;
   border: none;
   border-bottom: 1px solid #ddd;
-  color: #118df0;
+  color: rgb(17, 141, 240);
   font-size: 18px;
   font-weight: 700;
   padding-left: 50px !important;
 }
 .ui-dialog .ui-dialog-titlebar::before {
   content: "";
-  background: url("/themes/custom/shush/images/login-icon.svg") no-repeat;
+  background: url(../images/login-icon.svg) no-repeat;
   height: 18px;
   width: 18px;
   background-size: cover;
@@ -1915,7 +2192,7 @@ form.user-logout-confirm #edit-submit {
   border: none;
 }
 .ui-dialog .ui-dialog-titlebar .ui-button .ui-button-icon {
-  background: url("/themes/custom/shush/images/close.png") no-repeat;
+  background: url(../images/close.png) no-repeat;
   background-position: center center;
   background-size: contain;
 }
@@ -1928,7 +2205,7 @@ form.user-logout-confirm #edit-submit {
 .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset.form-actions button {
   width: 100%;
   padding: 15px;
-  background: #118df0;
+  background: rgb(17, 141, 240);
   border: none;
   border-radius: 10px;
   font-size: 14px;
@@ -1939,7 +2216,7 @@ form.user-logout-confirm #edit-submit {
   margin-bottom: 0;
 }
 .ui-dialog form .form-item label {
-  color: #2b3674;
+  color: rgb(43, 54, 116);
   font-weight: 500;
   font-size: 14px;
   letter-spacing: -0.2px;
@@ -1948,15 +2225,15 @@ form.user-logout-confirm #edit-submit {
   display: block;
   margin-right: 0;
 }
-.ui-dialog form [data-drupal-selector="edit-user-type"] legend {
+.ui-dialog form [data-drupal-selector=edit-user-type] legend {
   margin-bottom: 1rem;
 }
-.ui-dialog form [data-drupal-selector="edit-user-type"] .form-item-user-type {
+.ui-dialog form [data-drupal-selector=edit-user-type] .form-item-user-type {
   margin-bottom: 1rem;
   display: flex;
   align-items: baseline;
 }
-.ui-dialog form [data-drupal-selector="edit-user-type"] .form-item-user-type input {
+.ui-dialog form [data-drupal-selector=edit-user-type] .form-item-user-type input {
   width: auto;
   height: auto;
   margin-bottom: 0;
@@ -1991,7 +2268,7 @@ form.user-logout-confirm #edit-submit {
 .edit-client-member-form .form-submit {
   width: 100%;
   padding: 15px;
-  background: #118df0;
+  background: rgb(17, 141, 240);
   border: none;
   border-radius: 10px;
   font-size: 14px;
@@ -2057,6 +2334,7 @@ form.user-logout-confirm #edit-submit {
   width: 8px;
 }
 
+/* Variables */
 body.create-client, body.apps-create-from {
   background: #fff;
 }
@@ -2250,7 +2528,7 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   padding: 0;
 }
 .select2-container--default .select2-selection--single .select2-selection__arrow b {
-  background: url("../images/arrow-down.svg") no-repeat;
+  background: url(../images/arrow-down.svg) no-repeat;
   border: none;
   height: 14px;
   width: 14px;
@@ -2262,7 +2540,7 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
 }
 
 #edit-api-agreement-covers legend,
-[id^="edit-api-agreement-covers--"] legend {
+[id^=edit-api-agreement-covers--] legend {
   font-family: "DM Sans", sans-serif;
   font-size: 16px;
   font-weight: 700;
@@ -2271,13 +2549,13 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   border-bottom: 1px solid #000;
 }
 #edit-api-agreement-covers .fieldset-wrapper,
-[id^="edit-api-agreement-covers--"] .fieldset-wrapper {
+[id^=edit-api-agreement-covers--] .fieldset-wrapper {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
 }
 #edit-api-agreement-covers .fieldset-wrapper .js-form-item,
-[id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item {
+[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item {
   display: flex;
   flex: 0 0 50%;
   align-items: center;
@@ -2287,12 +2565,12 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   padding-right: 12px;
 }
 #edit-api-agreement-covers .fieldset-wrapper .js-form-item label,
-[id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item label {
+[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item label {
   position: relative;
   padding-left: 40px;
 }
 #edit-api-agreement-covers .fieldset-wrapper .js-form-item label::after,
-[id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item label::after {
+[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item label::after {
   content: "";
   width: 32px;
   height: 20px;
@@ -2304,7 +2582,7 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   left: 0;
 }
 #edit-api-agreement-covers .fieldset-wrapper .js-form-item label::before,
-[id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item label::before {
+[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item label::before {
   content: "";
   transform: translateX(0px);
   transition: all 0.3s ease-in-out;
@@ -2319,15 +2597,15 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   z-index: 10;
   opacity: 1;
 }
-#edit-api-agreement-covers .fieldset-wrapper .js-form-item input[type="checkbox"],
-[id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item input[type="checkbox"] {
+#edit-api-agreement-covers .fieldset-wrapper .js-form-item input[type=checkbox],
+[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item input[type=checkbox] {
   opacity: 0;
   width: 0;
   height: 0;
   position: absolute;
 }
-#edit-api-agreement-covers .fieldset-wrapper .js-form-item input[type="checkbox"]:checked + label::before,
-[id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item input[type="checkbox"]:checked + label::before {
+#edit-api-agreement-covers .fieldset-wrapper .js-form-item input[type=checkbox]:checked + label::before,
+[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item input[type=checkbox]:checked + label::before {
   transform: translateX(15px);
   border-radius: 50%;
   content: "";
@@ -2341,13 +2619,13 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   z-index: 10;
   opacity: 1;
 }
-#edit-api-agreement-covers .fieldset-wrapper .js-form-item input[type="checkbox"]:checked + label::after,
-[id^="edit-api-agreement-covers--"] .fieldset-wrapper .js-form-item input[type="checkbox"]:checked + label::after {
+#edit-api-agreement-covers .fieldset-wrapper .js-form-item input[type=checkbox]:checked + label::after,
+[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item input[type=checkbox]:checked + label::after {
   content: "";
   background-color: #06b487;
 }
 #edit-api-agreement-covers .fieldset-wrapper label,
-[id^="edit-api-agreement-covers--"] .fieldset-wrapper label {
+[id^=edit-api-agreement-covers--] .fieldset-wrapper label {
   font-family: "DM Sans", sans-serif;
   font-size: 13px;
   font-weight: 500;
@@ -2371,22 +2649,19 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   width: 100%;
   max-height: 120px !important;
   overflow-y: scroll !important;
-  appearance: none;
-  scrollbar-width: auto;
-  /* Firefox */
-  -ms-overflow-style: auto;
-  /* IE 10+ */
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  scrollbar-width: auto; /* Firefox */
+  -ms-overflow-style: auto; /* IE 10+ */
 }
 .multiselect-native-select .multiselect-container::-webkit-scrollbar {
-  width: 8px;
-  /* or any size */
+  width: 8px; /* or any size */
   height: 8px;
-  background: #f0f0f0;
-  /* track color */
+  background: #f0f0f0; /* track color */
 }
 .multiselect-native-select .multiselect-container::-webkit-scrollbar-thumb {
-  background: #888;
-  /* thumb color */
+  background: #888; /* thumb color */
   border-radius: 4px;
 }
 .multiselect-native-select .multiselect-container .multiselect-option .form-check {
@@ -2409,3 +2684,5 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
 .multiselect-native-select .multiselect-container .multiselect-option:hover .form-check-label {
   color: #118df0;
 }
+
+/*# sourceMappingURL=main.css.map*/

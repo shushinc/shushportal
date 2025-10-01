@@ -1,3 +1,4 @@
+@use "../base/variables" as *;
 form.user-logout-confirm {
   text-align: center;
   #edit-submit {
@@ -96,7 +97,7 @@ form.user-logout-confirm {
     padding-left: 50px !important;
     &::before {
       content: "";
-      background: url("/themes/custom/shush/images/login-icon.svg") no-repeat;
+      background: url("../images/login-icon.svg") no-repeat;
       height: 18px;
       width: 18px;
       background-size: cover;
@@ -109,7 +110,7 @@ form.user-logout-confirm {
       background: transparent;
       border: none;
       .ui-button-icon {
-        background: url("/themes/custom/shush/images/close.png") no-repeat;
+        background: url("../images/close.png") no-repeat;
         background-position: center center;
         background-size: contain;
       }

@@ -1,3 +1,4 @@
+@use "../base/variables" as *;
 .highlighted {
   .messages__wrapper {
     margin-top: 20px;
@@ -443,6 +444,7 @@ table {
     border-bottom: 1px solid #ddd;
     color: rgba(163, 174, 208, 1);
     line-height: normal;
+    font-weight: normal;
     a {
       text-decoration: none;
       color: $white;
@@ -1148,6 +1150,7 @@ nav {
     display: flex;
     justify-content: center;
     margin: 20px 0;
+    list-style-type: none;
     li {
       padding: 5px 16px;
       background: #ffff;
@@ -1370,5 +1373,16 @@ table {
     top: 50%;
     transform: translateY(-50%);
     z-index: 2;
+  }
+}
+
+.api-popup-width-resize {
+  #drupal-modal {
+    padding: 0;
+  }
+  &.api-table-fixed {
+    table.attributes-table {
+      table-layout: fixed;
+    }
   }
 }
