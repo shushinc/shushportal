@@ -121,7 +121,7 @@ class kongService  {
    /**
    * {@inheritdoc}
    */
-  public function checkUserAccessGeneratekey() {
+  public function getConnsumerId() {
     if (!\Drupal::currentUser()->hasRole('client_admin')) {
       //\Drupal::messenger()->addError('The user has no access to create APP');
       return FALSE;
@@ -139,6 +139,7 @@ class kongService  {
           $group = Group::load($group_id);
           if ($group) {
              return $group->get('field_consumer_id')->getValue()[0]['value'];
+             //return $group->get('field_contact_name')->getValue()[0]['value'];
           }
           else {
            // \Drupal::messenger()->addError('Problem in fetching the client details');
@@ -157,6 +158,78 @@ class kongService  {
     }
   }
 
+
+
+  public function checkUserAccessGeneratekey(){
+      $memberships = \Drupal::service('group.membership_loader')->loadByUser(\Drupal::currentUser());
+      if (isset($memberships)) {
+        $roles = $memberships[0]->getRoles();
+        $group_roles = [];
+        foreach($roles as $role) {
+          $group_roles[] = $role->id();
+        }
+        if (in_array('partner-admin', $group_roles)) {
+          $group_id = $memberships[0]->getGroup()->id();
+          $group = Group::load($group_id);
+          if ($group) {
+            return TRUE;
+          }
+          else {
+           // \Drupal::messenger()->addError('Problem in fetching the client details');
+            return "error";
+          }
+        }
+        else {
+         // \Drupal::messenger()->addError('You dont have admin access to create App');
+          return "error";
+        }
+      }
+      else {
+       // \Drupal::messenger()->addError('Your are not part of client');
+        return "error";
+      }
+    
+  }
+     /**
+   * {@inheritdoc}
+   */
+  public function getClientContactUsername() {
+
+    if (!\Drupal::currentUser()->hasRole('client_admin')) {
+      //\Drupal::messenger()->addError('The user has no access to create APP');
+      return FALSE;
+    }
+    else {
+      $memberships = \Drupal::service('group.membership_loader')->loadByUser(\Drupal::currentUser());
+      if (isset($memberships)) {
+        $roles = $memberships[0]->getRoles();
+        $group_roles = [];
+        foreach($roles as $role) {
+          $group_roles[] = $role->id();
+        }
+        if (in_array('partner-admin', $group_roles)) {
+          $group_id = $memberships[0]->getGroup()->id();
+          $group = Group::load($group_id);
+          if ($group) {
+             return $group->get('field_contact_name')->getValue()[0]['value'];
+          }
+          else {
+           // \Drupal::messenger()->addError('Problem in fetching the client details');
+            return "error";
+          }
+        }
+        else {
+         // \Drupal::messenger()->addError('You dont have admin access to create App');
+          return "error";
+        }
+      }
+      else {
+       // \Drupal::messenger()->addError('Your are not part of client');
+        return "error";
+      }
+    }
+
+  }
    /**
    * {@inheritdoc}
    */
@@ -192,6 +265,72 @@ class kongService  {
       \Drupal::logger('kong')->info('Error in Generating the kong app key : @message', ['@message' => $e->getMessage()]);
       return "error";
     }
+  }
+
+
+
+    /**
+   * {@inheritdoc}
+   */
+  public function generateKeyV1($user_name, $tags, $app_name, $redirect_uris) {
+
+    $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
+    //$endpoint = $endpoint_url .'/consumers/'. $consumer_id .'/key-auth';
+    $endpoint = $endpoint_url .'/consumers/'. $user_name .'/oauth2';
+    try {
+      $body = [
+        'name' => $app_name,
+        "created_at" => time(),
+        "tags" => [$tags],
+        "redirect_uris" => [$redirect_uris],
+      ];
+      $request_body = json::encode($body);
+      $response = $this->httpClient->request('POST', $endpoint, [
+        'headers' => [
+        'content-type' => 'application/json',
+        ],
+        'verify' => FALSE,
+        'timeout' => 400,
+        'body' => $request_body,
+      ]);
+      return $response;
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('kong')->info('Error in Generating the kong app key : @message', ['@message' => $e->getMessage()]);
+      return "error";
+    }
+  }
+
+ /**
+  * {@inheritdoc}
+  */
+  public function createJwtToken($user_name, $response){
+    $app_details = Json::decode($response);
+    $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
+    $endpoint = $endpoint_url .'/consumers/'. $user_name .'/jwt';
+    try {
+      $body = [
+        //'name' => $app_details['name'],
+        'algorithm' => 'HS256',
+        "secret" => 'strongpassword',
+        "tags" => $app_details['tags'],
+      ];
+      $request_body = json::encode($body);
+      $response = $this->httpClient->request('POST', $endpoint, [
+        'headers' => [
+        'content-type' => 'application/json',
+        ],
+        'verify' => FALSE,
+        'timeout' => 400, 
+        'body' => $request_body,
+      ]);
+      return $response;
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('kong')->info('Error in Generating the kong JWT : @message', ['@message' => $e->getMessage()]);
+      return "error";
+    }
+
   }
 
   /**
@@ -270,7 +409,26 @@ class kongService  {
     }
   }
 
+ /**
+  * {@inheritdoc}
+  */
+  public function getContactNameUsingConsumerId($client_id) {
+  $contact_name = ''; 
+    $groups = \Drupal::entityTypeManager()
+    ->getStorage('group')
+    ->loadByProperties([
+      'type' => 'partner',
+      'field_consumer_id' => $client_id,
+    ]);
 
+    foreach ($groups as $group) {
+      if ($group->hasField('field_contact_name') && !$group->get('field_contact_name')->isEmpty()) {
+        $contact_name = $group->get('field_contact_name')->value;
+      }
+    }
+    return  $contact_name;
+
+  }
 
 
   /**
@@ -305,10 +463,10 @@ class kongService  {
 
 
 
-  public function deleteApp($consumer_id, $app_id) {
+  public function deleteAppCredentials($user_name, $client_id) {
 
     $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
-    $endpoint = $endpoint_url .'/consumers/'.$consumer_id .'/key-auth/'.$app_id;
+    $endpoint = $endpoint_url .'/consumers/'.$user_name .'/oauth2/'.$client_id;
     try {
       $response = $this->httpClient->request('DELETE', $endpoint, [
         'headers' => [
@@ -322,35 +480,64 @@ class kongService  {
       //\Drupal::messenger()->addError(('Request Error: ' . $e->getMessage()));
       \Drupal::logger('kong')->info('Error in deleting the kong app key : @message', ['@message' => $e->getMessage()]);
 
-      return 0;
+      return "error";
     }
   }
-
 
      /**
    * {@inheritdoc}
    */
-  public function saveApp($client_id, $ttl, $response) {
+
+  public function deleteJwt($user_name, $jwt_id) {
+
+    $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
+    $endpoint = $endpoint_url .'/consumers/'.$user_name .'/jwt/'.$jwt_id;
+    try {
+      $response = $this->httpClient->request('DELETE', $endpoint, [
+        'headers' => [
+        'content-type' => 'application/json',
+        ],
+        'verify' => FALSE,
+      ]);
+      return $response;
+    }
+    catch (\Exception $e) {
+      //\Drupal::messenger()->addError(('Request Error: ' . $e->getMessage()));
+      \Drupal::logger('kong')->info('Error in deleting the kong app key : @message', ['@message' => $e->getMessage()]);
+
+      return "error";
+    }
+  }
+
+     /**
+   * {@inheritdoc}
+   */
+  public function saveApp($client_id, $response, $jwt_response_body) {
     $group = $this->getGroupDetails($client_id);
     $app = Json::decode($response);
-    if ($ttl!= 'never_expires') {
-      $expiry_time = $ttl + time();
-    }
+    $jwt_response = Json::decode($jwt_response_body);
+
+    // if ($ttl!= 'never_expires') {
+    //   $expiry_time = $ttl + time();
+    // }
 
 
     // Create a new node object.
     $node = Node::create([
       'type' => 'app', // Replace with your content type machine name.
-      'title' => $group->label(),
+      'title' => $app['name'],
       'status' => 1, // 1 = Published, 0 = Unpublished.
       'field_app_id' => $app['id'],
-      'field_app_key' => $app['key'],
+     // 'field_app_key' => $app['key'],
       'field_tag' => $app['tags'],
       'field_consumer_id' => $client_id,
-      'field_ttl' => $ttl,
+      'field_client_id' => $app['client_id'],
+      'field_client_secret' =>$app['client_secret'],
+      //'field_ttl' => $ttl,
       'field_app_status' => 'active',
-      'field_expiry_date' => $expiry_time ?? '',
-      'field_renewal_date' => '',
+      'field_jwt' => $jwt_response['id'],
+     // 'field_expiry_date' => $expiry_time ?? '',
+      //'field_renewal_date' => '',
       'uid' => \Drupal::currentUser()->id(),
       'created' => time(), // Node creation timestamp.
     ]);

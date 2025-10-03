@@ -89,7 +89,7 @@ final class AwsAppListForm extends FormBase {
       'status' => $this->t('Status'),
     ];
 
-
+    $class = ['operations-enabled'];
     if (\Drupal::currentUser()->hasRole('carrier_admin') || \Drupal::currentUser()->hasRole('administrator')) {
       $header['operation'] = $this->t('Operations');
       $group_type = 'partner';
@@ -161,18 +161,20 @@ final class AwsAppListForm extends FormBase {
             ];
           }
                 // After building the full $apps array, sort it
-              
-      usort($apps, function ($a, $b) {
-          return $b['created_timestamp'] <=> $a['created_timestamp']; // Sort newest first
-      });
-
-
+          if (is_array($apps)) {        
+            usort($apps, function ($a, $b) {
+              return $b['created_timestamp'] <=> $a['created_timestamp']; // Sort newest first
+            });
+          }
       }
     }
     else {
       $response =  \Drupal::service('zcs_aws.aws_gateway')->checkUserAccessGeneratekey();
       if ($response !== "error") {
         $header['operation'] = $this->t('Operations');
+      }
+      else {
+        $class = ['operations-disabled'];
       }
 
       $group_type = 'partner';
@@ -238,10 +240,12 @@ final class AwsAppListForm extends FormBase {
             }
           }
         
-        // After building the full $apps array, sort it        
-        usort($apps, function ($a, $b) {
-          return $b['created_timestamp'] <=> $a['created_timestamp']; // Sort newest first
-        });
+        // After building the full $apps array, sort it  
+        if (is_array($apps)) {      
+          usort($apps, function ($a, $b) {
+            return $b['created_timestamp'] <=> $a['created_timestamp']; // Sort newest first
+          });
+        }
 
       }
     }
@@ -254,15 +258,20 @@ final class AwsAppListForm extends FormBase {
       ];
       return $form;
     }
-    // Optionally remove 'created_timestamp' if not needed
-    foreach ($apps as &$app_value) {
-      unset($app_value['created_timestamp']);
+    if (is_array($apps)) { 
+      // Optionally remove 'created_timestamp' if not needed
+      foreach ($apps as &$app_value) {
+        unset($app_value['created_timestamp']);
+      }
     }
     $form['table'] = [
       '#type' => 'table',
       '#header' => $header,
       '#rows' => $apps,
       '#empty' => $this->t('No data available.'),
+      '#attributes' => [
+        'class' => $class,
+      ],
     ];
     $form['pager'] = [
       '#type' => 'pager',

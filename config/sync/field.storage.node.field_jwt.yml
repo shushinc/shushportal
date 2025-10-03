@@ -1,0 +1,19 @@
+uuid: 9c4e464e-12f1-4601-8d5f-2a2e100766ec
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_jwt
+field_name: field_jwt
+entity_type: node
+type: string_long
+settings:
+  case_sensitive: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

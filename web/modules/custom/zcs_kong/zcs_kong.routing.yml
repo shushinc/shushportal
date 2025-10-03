@@ -14,14 +14,6 @@ zcs_kong.app_list:
   requirements:
     _permission: 'access content' 
 
-zcs_kong.edit_key:
-  path: '/key/{id}/edit'
-  defaults:
-    _title: 'Update APP'
-    _form: 'Drupal\zcs_kong\Form\UpdateKeyForm'
-  requirements:
-    _custom_access: '\Drupal\zcs_kong\Form\UpdateKeyForm::access'
-
 zcs_kong.delete_key:
   path: '/key/{id}/delete'
   defaults:

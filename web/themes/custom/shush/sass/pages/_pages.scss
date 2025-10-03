@@ -639,42 +639,22 @@ table {
 
 .zcs-kong-app-list,
 .zcs-aws-app-list {
-  table tr {
-    td {
-      position: relative;
-      .pwd-copy,
-      .secret-password,
-      .client-password {
-        position: absolute;
-        top: 50%;
-        right: 30px;
-        margin-top: -15px;
-        opacity: 0;
-        visibility: hidden;
-        &::after {
-          content: "";
-          background: url("../images/copy-files.svg") no-repeat;
-          height: 12px;
-          width: 12px;
-          display: inline-block;
-          background-size: contain;
-          vertical-align: middle;
-          margin-left: 5px;
-          cursor: pointer;
-        }
-      }
-      &.api-keys {
-        -webkit-text-security: disc; /* For WebKit browsers */
-        text-security: disc;
+  table {
+    tr {
+      td {
         position: relative;
-        .pwd-toggle {
+        .pwd-copy,
+        .secret-password,
+        .client-password {
           position: absolute;
           top: 50%;
-          right: 10px;
-          margin-top: -14px;
+          right: 30px;
+          margin-top: -15px;
+          opacity: 0;
+          visibility: hidden;
           &::after {
             content: "";
-            background: url("../images/eye-hidden.png") no-repeat;
+            background: url("../images/copy-files.svg") no-repeat;
             height: 12px;
             width: 12px;
             display: inline-block;
@@ -684,97 +664,132 @@ table {
             cursor: pointer;
           }
         }
-      }
-      &.password-show {
-        -webkit-text-security: none;
-        text-security: none;
-        padding-right: 50px;
-        .pwd-toggle::after {
-          content: "";
-          background: url("../images/eye-visible.png") no-repeat;
-          height: 12px;
-          width: 12px;
-          display: inline-block;
-          background-size: contain;
-          vertical-align: middle;
-          margin-left: 5px;
-          cursor: pointer;
-        }
-        .pwd-copy,
-        .client-password,
-        .secret-password {
-          visibility: visible;
-          opacity: 1;
-        }
-        .client-key,
-        .secret-key {
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          overflow: hidden;
+        &.api-keys {
+          -webkit-text-security: disc; /* For WebKit browsers */
+          text-security: disc;
           position: relative;
-          display: inline-block;
-          width: 70px;
-          vertical-align: middle;
-        }
-        .secret-key {
-          width: 180px;
-        }
-        .kong-key {
-          width: 140px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-      }
-      &.app-operations {
-        font-size: 0;
-        text-align: center;
-        &::before {
-          content: "";
-          background: url("../images/dropdown.svg") no-repeat;
-          height: 12px;
-          width: 12px;
-          display: inline-block;
-          background-size: contain;
-          vertical-align: middle;
-          transform: rotate(90deg);
-          cursor: pointer;
-        }
-        .kong-app-list-edit {
-          display: none;
-          font-size: 14px;
-          position: absolute;
-          top: 4px;
-          right: 20px;
-          background: #ffffff;
-          border-radius: 5px;
-          padding: 5px 10px;
-          a {
-            display: block;
-            text-align: left;
-            line-height: normal;
-            margin: 5px 0;
-          }
-        }
-        &.active-dropdown {
-          .kong-app-list-edit {
-            display: block;
-          }
-        }
-      }
-      &.app-operation {
-        text-align: center;
-        .edit-operation {
-          .edit-operation-wrap {
-            right: 42px;
-            @media only screen and (min-width: 1470px) {
-              right: 50px;
+          .pwd-toggle {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            margin-top: -14px;
+            &::after {
+              content: "";
+              background: url("../images/eye-hidden.png") no-repeat;
+              height: 12px;
+              width: 12px;
+              display: inline-block;
+              background-size: contain;
+              vertical-align: middle;
+              margin-left: 5px;
+              cursor: pointer;
             }
           }
-          &.disabled {
-            filter: brightness(0) saturate(100%) invert(51%) sepia(14%)
-              saturate(11%) hue-rotate(11deg) brightness(88%) contrast(87%);
+        }
+        &.password-show {
+          -webkit-text-security: none;
+          text-security: none;
+          padding-right: 50px;
+          .pwd-toggle::after {
+            content: "";
+            background: url("../images/eye-visible.png") no-repeat;
+            height: 12px;
+            width: 12px;
+            display: inline-block;
+            background-size: contain;
+            vertical-align: middle;
+            margin-left: 5px;
+            cursor: pointer;
           }
+          .pwd-copy,
+          .client-password,
+          .secret-password {
+            visibility: visible;
+            opacity: 1;
+          }
+          .client-key,
+          .secret-key {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            position: relative;
+            display: inline-block;
+            width: 70px;
+            vertical-align: middle;
+          }
+          .secret-key {
+            width: 180px;
+          }
+          .kong-key {
+            width: 140px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+        &.app-operations {
+          font-size: 0;
+          text-align: center;
+          &::before {
+            content: "";
+            background: url("../images/dropdown.svg") no-repeat;
+            height: 12px;
+            width: 12px;
+            display: inline-block;
+            background-size: contain;
+            vertical-align: middle;
+            transform: rotate(90deg);
+            cursor: pointer;
+          }
+          .kong-app-list-edit {
+            display: none;
+            font-size: 14px;
+            position: absolute;
+            top: 4px;
+            right: 20px;
+            background: #ffffff;
+            border-radius: 5px;
+            padding: 5px 10px;
+            a {
+              display: block;
+              text-align: left;
+              line-height: normal;
+              margin: 5px 0;
+            }
+          }
+          &.active-dropdown {
+            .kong-app-list-edit {
+              display: block;
+            }
+          }
+        }
+        &.app-operation {
+          text-align: center;
+          .edit-operation {
+            .edit-operation-wrap {
+              right: 42px;
+              @media only screen and (min-width: 1470px) {
+                right: 50px;
+              }
+            }
+            &.disabled {
+              filter: brightness(0) saturate(100%) invert(51%) sepia(14%)
+                saturate(11%) hue-rotate(11deg) brightness(88%) contrast(87%);
+            }
+          }
+        }
+      }
+    }
+    &.operations-disabled {
+      td {
+        &:nth-child(3) {
+          width: 14%;
+        }
+        &:nth-child(4) {
+          width: 23%;
+        }
+        &:last-child {
+          text-align: left;
         }
       }
     }

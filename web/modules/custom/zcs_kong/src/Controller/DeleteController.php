@@ -26,17 +26,24 @@ class DeleteController extends ControllerBase {
     $app = Node::load($id);
 
     $consumer_id = $app->get('field_consumer_id')->getValue()[0]['value'];
-    $app_key_id = $app->get('field_app_id')->getValue()[0]['value'];
-
-
-    $delete_response = \Drupal::service('zcs_kong.kong_gateway')->deleteApp($consumer_id, $app_key_id);
-    if (!empty($delete_response)) {
-      $status_code = $delete_response->getStatusCode();
+    $user_name = \Drupal::service('zcs_kong.kong_gateway')->getContactNameUsingConsumerId($consumer_id);
+    $client_id = $app->get('field_client_id')->getValue()[0]['value'];
+    $jwt_id = $app->get('field_jwt')->getValue()[0]['value'];
+    
+    $delete_credentials_response = \Drupal::service('zcs_kong.kong_gateway')->deleteAppCredentials($user_name, $client_id);
+    if (!empty($delete_credentials_response)) {
+      $status_code = $delete_credentials_response->getStatusCode();
       if ($status_code == '204') {
         $app->set('field_app_status', 'deleted');
-        $app->set('field_expiry_date', time());
         $app->save();
-        \Drupal::messenger()->addMessage('App Deleted Successfully');
+        $delete_jwt_response = \Drupal::service('zcs_kong.kong_gateway')->deleteJwt($user_name, $jwt_id);
+        $jwt_status_code = $delete_jwt_response->getStatusCode();
+        if ($jwt_status_code == '204') {
+          \Drupal::messenger()->addMessage('App Deleted Successfully');
+        }
+        else {
+          \Drupal::messenger()->addMessage('App Deleted Successfully and Error in JWT deletion');
+        }     
       }
     }
     else {
