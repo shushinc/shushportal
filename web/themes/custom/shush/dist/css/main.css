@@ -1557,15 +1557,23 @@ table tr:last-child td:last-child .edit-operation-wrap {
 .zcs-aws-app-list table tr td.app-operation .edit-operation.disabled {
   filter: brightness(0) saturate(100%) invert(51%) sepia(14%) saturate(11%) hue-rotate(11deg) brightness(88%) contrast(87%);
 }
-.zcs-kong-app-list table.operations-disabled td:nth-child(3),
+
+.zcs-kong-app-list table.operations-disabled td:nth-child(5) {
+  width: 14%;
+}
+.zcs-kong-app-list table.operations-disabled td:nth-child(6) {
+  width: 23%;
+}
+.zcs-kong-app-list table.operations-disabled td:last-child {
+  text-align: left;
+}
+
 .zcs-aws-app-list table.operations-disabled td:nth-child(3) {
   width: 14%;
 }
-.zcs-kong-app-list table.operations-disabled td:nth-child(4),
 .zcs-aws-app-list table.operations-disabled td:nth-child(4) {
   width: 23%;
 }
-.zcs-kong-app-list table.operations-disabled td:last-child,
 .zcs-aws-app-list table.operations-disabled td:last-child {
   text-align: left;
 }

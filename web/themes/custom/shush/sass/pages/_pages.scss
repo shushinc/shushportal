@@ -780,6 +780,29 @@ table {
         }
       }
     }
+  }
+}
+
+.zcs-kong-app-list {
+  table {
+    &.operations-disabled {
+      td {
+        &:nth-child(5) {
+          width: 14%;
+        }
+        &:nth-child(6) {
+          width: 23%;
+        }
+        &:last-child {
+          text-align: left;
+        }
+      }
+    }
+  }
+}
+
+.zcs-aws-app-list {
+  table {
     &.operations-disabled {
       td {
         &:nth-child(3) {
@@ -795,6 +818,7 @@ table {
     }
   }
 }
+
 .zcs-aws-app-list .responsive-enabled tr th:last-child {
   text-align: left;
 }
