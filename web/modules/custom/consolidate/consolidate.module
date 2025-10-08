@@ -15,42 +15,15 @@ function consolidate_cron() {
   // Only run if we haven't run today and it's past midnight
   if ($last_run < $today_midnight && $current_time >= $today_midnight) {
     try {
-      // Get the service and run it
-      $analytics_service = \Drupal::service('consolidate.analytics_consolidate_service');
+      $service = \Drupal::service('consolidate.new_analytics_consolidate_service');
 
-      $today = date('Y-m-d');
-      $yesterday = date('Y-m-d', strtotime($today . ' -1 day'));
-      $oneYearAgo = date('Y-m-d', strtotime($yesterday . ' -1 year'));
+      $connection = \Drupal::database();
 
-      $analytics_service->consolidateDay('revenue', $yesterday);
-      $analytics_service->consolidateDay('revenue', $oneYearAgo);
+      $data = $service->consolidateAll();
 
-      $analytics_service->consolidateWeek('revenue', $yesterday);
-      $analytics_service->consolidateWeek('revenue', $oneYearAgo);
-
-      $analytics_service->consolidateMonth('revenue', $yesterday);
-      $analytics_service->consolidateMonth('revenue', $oneYearAgo);
-
-      $analytics_service->consolidateYear('revenue', $yesterday);
-      $analytics_service->consolidateYear('revenue', $oneYearAgo);
-
-      $analytics_service->consolidateMonth('volume', $yesterday);
-      $analytics_service->consolidateMonth('volume', $oneYearAgo);
-
-      $analytics_service->consolidateMonth('successful_api_calls', $yesterday);
-      $analytics_service->consolidateMonth('successful_api_calls', $oneYearAgo);
-
-      $analytics_service->consolidateMonth('avg_api_latency', $yesterday);
-      $analytics_service->consolidateMonth('avg_api_latency', $oneYearAgo);
-
-      $analytics_service->consolidateMonth('vol_from_silent_auth', $yesterday);
-      $analytics_service->consolidateMonth('vol_from_silent_auth', $oneYearAgo);
-
-      $analytics_service->consolidateMonth('top_10_customers', $yesterday);
-      $analytics_service->consolidateMonth('top_10_customers', $oneYearAgo);
-
-      $analytics_service->consolidateMonth('top_client', $yesterday);
-      $analytics_service->consolidateMonth('top_client', $oneYearAgo);
+      $id = $connection->insert('consolidate_data')
+        ->fields($data)
+        ->execute();
 
       // Update the last run time
       \Drupal::state()->set('consolidate.analytics_consolidate.last_run', $current_time);
