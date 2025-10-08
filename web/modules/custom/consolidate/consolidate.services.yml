@@ -5,3 +5,9 @@ services:
       - '@entity_type.manager'
       - '@logger.factory'
       - '@module_handler'
+  consolidate.new_analytics_consolidate_service:
+    class: Drupal\consolidate\Services\NewAnalyticsConsolidationService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.factory'
+      - '@module_handler'

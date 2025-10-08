@@ -249,4 +249,21 @@ final class ConsolidateCommands extends DrushCommands {
     }
   }
 
+  #[CLI\Command(name: 'consolidate:consolidate-all', aliases: ['con:all'])]
+  #[CLI\Usage(name: 'consolidate:consolidate-all', description: 'Consolidate revenue for January 1st 2024 year')]
+  public function consolidateAll(array $options = []) {
+
+    $service = \Drupal::service('consolidate.new_analytics_consolidate_service');
+
+    $connection = \Drupal::database();
+
+    $data = $service->consolidateAll();
+
+    $id = $connection->insert('consolidate_data')
+      ->fields($data)
+      ->execute();
+
+    $this->output()->writeln(sprintf('<info>Node ID:</info> %s', $id));
+  }
+
 }

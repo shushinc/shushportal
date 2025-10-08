@@ -1,0 +1,170 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Consolidate module.
+ */
+
+use Drupal\Core\Database\Database;
+
+/**
+ * Implements hook_schema().
+ */
+function consolidate_schema() {
+  $schema['consolidate_data'] = [
+    'description' => 'Stores consolidate data with float columns.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique ID.',
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Timestamp when the record was created.',
+      ],
+      'value_a1' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 1.',
+      ],
+      'value_a2' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 2.',
+      ],
+      'value_a3' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 3.',
+      ],
+      'value_a4' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 4.',
+      ],
+      'value_a5' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 5.',
+      ],
+      'value_b1' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 6.',
+      ],
+      'value_b2' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 7.',
+      ],
+      'value_b3' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 8.',
+      ],
+      'value_b4' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 9.',
+      ],
+      'value_b5' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 10.',
+      ],
+      'value_c1' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 11.',
+      ],
+      'value_c2' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 12.',
+      ],
+      'value_c3' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 13.',
+      ],
+      'value_c4' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 14.',
+      ],
+      'value_c5' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 15.',
+      ],
+      'value_d1' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 16.',
+      ],
+      'value_d2' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 17.',
+      ],
+      'value_d3' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 18.',
+      ],
+      'value_d4' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 19.',
+      ],
+      'value_d5' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 20.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'created' => ['created'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Create the consolidate_data table.
+ */
+function consolidate_update_10001() {
+  $schema = consolidate_schema();
+
+  if (!Database::getConnection()->schema()->tableExists('consolidate_data')) {
+    Database::getConnection()->schema()->createTable('consolidate_data', $schema['consolidate_data']);
+    return t('The consolidate_data table has been created successfully.');
+  }
+
+  return t('The consolidate_data table already exists.');
+}
