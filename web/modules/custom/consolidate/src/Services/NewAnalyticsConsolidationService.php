@@ -230,17 +230,17 @@ class NewAnalyticsConsolidationService {
     $yesterday = date('Y-m-d', strtotime($today . ' -1 day'));
     $oneYearAgo = date('Y-m-d', strtotime($yesterday . ' -1 year'));
 
-    $a1 = $this->consolidateDay('revenue', $yesterday);
-    $b1 = $this->consolidateDay('revenue', $oneYearAgo);
+    $a1 = $this->consolidateYear('revenue', $yesterday);
+    $b1 = $this->consolidateYear('revenue', $oneYearAgo);
 
-    $a2 = $this->consolidateWeek('revenue', $yesterday);
-    $b2 = $this->consolidateWeek('revenue', $oneYearAgo);
+    $a2 = $this->consolidateMonth('revenue', $yesterday);
+    $b2 = $this->consolidateMonth('revenue', $oneYearAgo);
 
-    $a3 = $this->consolidateMonth('revenue', $yesterday);
-    $b3 = $this->consolidateMonth('revenue', $oneYearAgo);
+    $a3 = $this->consolidateWeek('revenue', $yesterday);
+    $b3 = $this->consolidateWeek('revenue', $oneYearAgo);
 
-    $a4 = $this->consolidateYear('revenue', $yesterday);
-    $b4 = $this->consolidateYear('revenue', $oneYearAgo);
+    $a4 = $this->consolidateDay('revenue', $yesterday);
+    $b4 = $this->consolidateDay('revenue', $oneYearAgo);
 
     $a5 = $this->consolidateMonth('volume', $yesterday);
     $b5 = $this->consolidateMonth('volume', $oneYearAgo);
