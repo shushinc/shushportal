@@ -1,0 +1,18 @@
+uuid: daba682e-c480-4ed8-87d0-643c9d2c67e5
+langcode: en
+status: true
+dependencies:
+  module:
+    - group
+id: group.field_is_domestic_pricing
+field_name: field_is_domestic_pricing
+entity_type: group
+type: boolean
+settings: {  }
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

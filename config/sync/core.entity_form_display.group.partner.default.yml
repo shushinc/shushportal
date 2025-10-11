@@ -14,6 +14,7 @@ dependencies:
     - field.field.group.partner.field_currency
     - field.field.group.partner.field_description
     - field.field.group.partner.field_industry
+    - field.field.group.partner.field_is_domestic_pricing
     - field.field.group.partner.field_partner_status
     - field.field.group.partner.field_partner_type
     - field.field.group.partner.field_prepayment_amount
@@ -115,6 +116,13 @@ content:
     weight: 32
     region: content
     settings: {  }
+    third_party_settings: {  }
+  field_is_domestic_pricing:
+    type: boolean_checkbox
+    weight: 41
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   field_partner_status:
     type: options_select
