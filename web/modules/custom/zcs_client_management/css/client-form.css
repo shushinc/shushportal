@@ -1,13 +1,35 @@
-
-
-
 .zcs-client-management-create-client-partner .tiles-wrapper.client-Layout-column-first input[type="text"],
-.zcs-client-management-create-client-partner .tiles-wrapper.client-Layout-column-first input[type="email"], 
+.zcs-client-management-create-client-partner .tiles-wrapper.client-Layout-column-first input[type="email"],
 .zcs-client-management-create-client-partner .tiles-wrapper.client-Layout-column-first textarea,
 .zcs-client-management-user-edit-form .tiles-wrapper.client-Layout-column-first input[type="text"],
-.zcs-client-management-user-edit-form .tiles-wrapper.client-Layout-column-first input[type="email"], 
+.zcs-client-management-user-edit-form .tiles-wrapper.client-Layout-column-first input[type="email"],
 .zcs-client-management-user-edit-form .tiles-wrapper.client-Layout-column-first textarea {
     border-bottom: 0.5px solid #70717c;
     border-radius: 0px;
 }
 
+.zcs-client-management-create-client-partner div.form-type-checkbox,
+.zcs-client-management-user-edit-form div.form-type-checkbox
+ {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    padding: 10px;
+    background: #f5f8fc;
+    border: 1px solid transparent;
+}
+
+.zcs-client-management-create-client-partner div.form-type-checkbox:hover,
+.zcs-client-management-user-edit-form div.form-type-checkbox:hover {
+    background: #e1e5f3;
+    border: 1px solid #2e3b8f;
+    transition: all 0.3s ease-in-out;
+}
+
+.zcs-client-management-create-client-partner div.form-type-checkbox input,
+.zcs-client-management-user-edit-form div.form-type-checkbox input {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.5rem;
+}

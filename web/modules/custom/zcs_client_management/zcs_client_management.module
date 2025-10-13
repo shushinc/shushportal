@@ -13,7 +13,7 @@ function zcs_client_management_theme($existing, $type, $theme, $path) {
     return [
       'client_view' => [
         'variables' => [
-          'image_url' => '',  
+          'image_url' => '',
           'client_name' => '',
           'contact_name' => '',
           'contact_email' => '',
@@ -24,6 +24,7 @@ function zcs_client_management_theme($existing, $type, $theme, $path) {
           'address' => '',
           'type' => '',
           'industry' => '',
+          'is_domestic_pricing' => '',
           'agreement_effective_date' => '',
           'currency' => '',
           'prepayment_amount' => '',
@@ -31,7 +32,7 @@ function zcs_client_management_theme($existing, $type, $theme, $path) {
           'prepayment_balance_used' => '',
           'address_line_1' => '',
           'address_line_2' => '',
-          'address_line_3' => '', 
+          'address_line_3' => '',
           'country_code' => '',
           'postal_code' => '',
           'agreement_covers' => '',
@@ -123,9 +124,9 @@ function zcs_client_management_preprocess_views_view_field(&$variables) {
       // Final output
       $output = '<span>' . $trimmed . '</span>';
 
-     
+
       $output .= $tooltip_icon;
-   
+
 
       $variables['output'] = Markup::create($output);
     }

@@ -31,6 +31,7 @@ class ViewClientController extends ControllerBase {
     $contact_name = $group->get('field_contact_name')->value ?? '';
     $contact_email = $group->get('field_contact_email')->value ?? '';
     $status = $group->get('field_partner_status')->value ?? '';
+    $is_domestic_pricing = $group->get('field_is_domestic_pricing')->value ?? FALSE;
 
     $field_config_partner_type = FieldConfig::load('group.partner.field_partner_type');
     if ($field_config_partner_type) {
@@ -61,7 +62,7 @@ class ViewClientController extends ControllerBase {
       $postal_code = $address_value['postal_code'];
       $country_code = $address_value['country_code'];
     }
-      
+
     $description = strip_tags($group->get('field_description')->value) ?? '';
     $client_legal_contact = $group->get('field_client_legal_contact')->value ?? '';
     $legal_email = $group->get('field_client_point_of_contact')->value ?? '';
@@ -69,7 +70,7 @@ class ViewClientController extends ControllerBase {
     $type = $group->get('field_partner_type')->value ?? '';
     $industry =  $group->get('field_industry')->value ?? '';
     $aggreement_effective_date = $group->get('field_agreement_effective_date')->value ?? '';
-    
+
     $prepayment_amount = $group->get('field_prepayment_amount')->value ?? '';
     $prepayment_balance_left = $group->get('field_prepayment_balance_left')->value ?? '';
     $prepayment_balance_used =  $group->get('field_prepayment_balance_used')->value ?? '';
@@ -89,7 +90,7 @@ class ViewClientController extends ControllerBase {
     $contents = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
     if (!empty($contents)) {
       foreach ($contents as $content) {
-         $api_covers[$content->getTitle()] = isset($api_aggreement_covers_array[$content->id()]) ? $api_aggreement_covers_array[$content->id()] : 0;   
+         $api_covers[$content->getTitle()] = isset($api_aggreement_covers_array[$content->id()]) ? $api_aggreement_covers_array[$content->id()] : 0;
       }
     }
 
@@ -107,13 +108,14 @@ class ViewClientController extends ControllerBase {
       '#type' => isset($partner_type_values[$type]) ? $partner_type_values[$type] : '',
       '#industry' => isset($partner_industries_values[$industry]) ? $partner_industries_values[$industry] : '',
       '#agreement_effective_date' => $aggreement_effective_date,
+      '#is_domestic_pricing' => $is_domestic_pricing,
       '#currency' => $symbol,
       '#prepayment_amount' => $prepayment_amount,
       '#prepayment_balance_left' => $prepayment_balance_left,
       '#prepayment_balance_used' => $prepayment_balance_used,
       '#address_line_1' => $address_line1,
-      '#address_line_2' => $address_line2, 
-      '#address_line_3' => $address_line3, 
+      '#address_line_2' => $address_line2,
+      '#address_line_3' => $address_line3,
       '#country_code' => $country_code,
       '#postal_code' => $postal_code,
       '#agreement_covers' => $api_covers,
