@@ -170,9 +170,22 @@ class CreateClientForm extends FormBase {
       '#suffix' => '</div>',
     ];
 
-    $form['is_domestic_pricing'] = [
+    $form['client_pricing_column_wrapper_text'] = [
+      '#type' => 'fieldset',
+      '#attributes' => [
+        'class' => ['client-contact-details-col-4'],
+      ],
+    ];
+
+    $form['client_pricing_column_wrapper_text']['domestic_pricing'] = [
       '#type' => 'checkbox',
-      '#title' => 'Is domestic pricing?',
+      '#title' => 'Domestic pricing',
+      '#default_value' => FALSE,
+    ];
+
+    $form['client_pricing_column_wrapper_text']['international_pricing'] = [
+      '#type' => 'checkbox',
+      '#title' => 'International pricing',
       '#default_value' => FALSE,
     ];
 
@@ -338,7 +351,8 @@ class CreateClientForm extends FormBase {
     $prepayment_amount = $form_state->getValue('prepayment_amount');
     $prepayment_balance_left = $form_state->getValue('prepayment_balance_left');
     $prepayment_balance_used = $form_state->getValue('prepayment_balance_used');
-    $is_domestic_pricing = $form_state->getValue('is_domestic_pricing');
+    $domestic_pricing = $form_state->getValue('domestic_pricing');
+    $international_pricing = $form_state->getValue('international_pricing');
 
     // Address details.
     $country_code = $form_state->getValue('address')['country_code'];
@@ -379,7 +393,8 @@ class CreateClientForm extends FormBase {
               'field_currency' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
               'field_industry' => $industry,
               'field_apis_agreement_covers' => $encoded_data,
-              'field_is_domestic_pricing' => $is_domestic_pricing,
+              'field_domestic_pricing' => $domestic_pricing,
+              'field_international_pricing' => $international_pricing,
               'user_id' => \Drupal::currentUser()->id(),
               'created' => \Drupal::time()->getRequestTime(),
             ]);

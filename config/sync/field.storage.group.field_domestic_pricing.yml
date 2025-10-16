@@ -1,11 +1,11 @@
-uuid: daba682e-c480-4ed8-87d0-643c9d2c67e5
+uuid: 0eee0f33-8874-4e7c-9ba0-1074dcb971d0
 langcode: en
 status: true
 dependencies:
   module:
     - group
-id: group.field_is_domestic_pricing
-field_name: field_is_domestic_pricing
+id: group.field_domestic_pricing
+field_name: field_domestic_pricing
 entity_type: group
 type: boolean
 settings: {  }

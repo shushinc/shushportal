@@ -31,7 +31,8 @@ class ViewClientController extends ControllerBase {
     $contact_name = $group->get('field_contact_name')->value ?? '';
     $contact_email = $group->get('field_contact_email')->value ?? '';
     $status = $group->get('field_partner_status')->value ?? '';
-    $is_domestic_pricing = $group->get('field_is_domestic_pricing')->value ?? FALSE;
+    $domestic_pricing = $group->get('field_domestic_pricing')->value ?? FALSE;
+    $international_pricing = $group->get('field_international_pricing')->value ?? FALSE;
 
     $field_config_partner_type = FieldConfig::load('group.partner.field_partner_type');
     if ($field_config_partner_type) {
@@ -108,7 +109,8 @@ class ViewClientController extends ControllerBase {
       '#type' => isset($partner_type_values[$type]) ? $partner_type_values[$type] : '',
       '#industry' => isset($partner_industries_values[$industry]) ? $partner_industries_values[$industry] : '',
       '#agreement_effective_date' => $aggreement_effective_date,
-      '#is_domestic_pricing' => $is_domestic_pricing,
+      '#domestic_pricing' => $domestic_pricing,
+      '#international_pricing' => $international_pricing,
       '#currency' => $symbol,
       '#prepayment_amount' => $prepayment_amount,
       '#prepayment_balance_left' => $prepayment_balance_left,

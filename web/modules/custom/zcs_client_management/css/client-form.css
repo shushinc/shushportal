@@ -9,9 +9,8 @@
 }
 
 .zcs-client-management-create-client-partner div.form-type-checkbox,
-.zcs-client-management-user-edit-form div.form-type-checkbox
- {
-    display: flex;
+.zcs-client-management-user-edit-form div.form-type-checkbox {
+    display: flex !important;
     align-items: center;
     margin-bottom: 10px;
     border-radius: 8px;

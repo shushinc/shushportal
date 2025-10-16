@@ -13,8 +13,9 @@ dependencies:
     - field.field.group.partner.field_contact_name
     - field.field.group.partner.field_currency
     - field.field.group.partner.field_description
+    - field.field.group.partner.field_domestic_pricing
     - field.field.group.partner.field_industry
-    - field.field.group.partner.field_is_domestic_pricing
+    - field.field.group.partner.field_international_pricing
     - field.field.group.partner.field_partner_status
     - field.field.group.partner.field_partner_type
     - field.field.group.partner.field_prepayment_amount
@@ -110,14 +111,7 @@ content:
     third_party_settings: {  }
     weight: -2
     region: content
-  field_industry:
-    type: list_default
-    label: above
-    settings: {  }
-    third_party_settings: {  }
-    weight: 7
-    region: content
-  field_is_domestic_pricing:
+  field_domestic_pricing:
     type: boolean
     label: above
     settings:
@@ -125,7 +119,24 @@ content:
       format_custom_false: ''
       format_custom_true: ''
     third_party_settings: {  }
-    weight: 16
+    weight: 17
+    region: content
+  field_industry:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 7
+    region: content
+  field_international_pricing:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 18
     region: content
   field_partner_status:
     type: list_default
