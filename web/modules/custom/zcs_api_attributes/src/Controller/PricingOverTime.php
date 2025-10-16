@@ -2,19 +2,21 @@
 
 namespace Drupal\zcs_api_attributes\Controller;
 
-use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Url;
-use Drupal\Core\Render\Markup;
-use Drupal\Core\Link;
-use Drupal\Core\Database\Connection;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Serialization\Json;
-use NumberFormatter;
-use Drupal\Core\Pager\PagerManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Database\Connection;
+use Drupal\Core\Link;
+use Drupal\Core\Pager\PagerManagerInterface;
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
+/**
+ *
+ */
 class PricingOverTime extends ControllerBase {
 
 
@@ -27,7 +29,6 @@ class PricingOverTime extends ControllerBase {
    * Pager Variable.
    */
   protected $pagerManager;
-
 
   /**
    * {@inheritdoc}
@@ -45,10 +46,11 @@ class PricingOverTime extends ControllerBase {
       $container->get('database'),
       $container->get('pager.manager')
     );
-  } 
+  }
 
-
-
+  /**
+   *
+   */
   public function pricingPage() {
     $final = [];
     $url = Url::fromRoute('zcs_api_attributes.rate_sheet')->toString();
@@ -60,30 +62,29 @@ class PricingOverTime extends ControllerBase {
       ->execute();
     $contents = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
 
-
     $resultSet = $this->database->select('attributes_page_data', 'apd')
-      ->fields('apd', ['id','page_data', 'effective_date', 'effective_date_integer', 'currency_locale'])
+      ->fields('apd', ['id', 'page_data', 'effective_date', 'effective_date_integer', 'currency_locale'])
       ->condition('attribute_status', 2)
       ->condition('effective_date_integer', strtotime('now'), '<')
       ->range(0, 3)
       ->orderBy('effective_date', 'DESC')
       ->execute()->fetchAll();
     $prices = $headerDate = $symbols = [];
- 
+
     foreach ($resultSet as $result) {
       $prices[] = Json::decode($result->page_data);
       $headerDate[] = date("M d, Y", strtotime($result->effective_date));
       $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
-      $number = new NumberFormatter($currency, NumberFormatter::CURRENCY);
-      $symbols[] = $number->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
+      $number = new \NumberFormatter($currency, \NumberFormatter::CURRENCY);
+      $symbols[] = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
     }
     if (!empty($contents)) {
       foreach ($contents as $content) {
         $final[] = [
           'title' => $content->title->value,
-          'price0' => number_format(isset($prices[0][$content->id()]) ? $prices[0][$content->id()] : 0.000, 3),
-          'price1' => number_format(isset($prices[1][$content->id()]) ? $prices[1][$content->id()] : 0.000, 3),
-          'price2' => number_format(isset($prices[2][$content->id()]) ? $prices[2][$content->id()] : 0.000, 3),
+          'price0' => number_format($prices[0][$content->id()] ?? 0.000, 3),
+          'price1' => number_format($prices[1][$content->id()] ?? 0.000, 3),
+          'price2' => number_format($prices[2][$content->id()] ?? 0.000, 3),
         ];
       }
     }
@@ -91,34 +92,34 @@ class PricingOverTime extends ControllerBase {
     $url = Url::fromRoute('zcs_api_attributes.rate_sheet');
     $route_name = $url->getRouteName();
     $route_parameters = $url->getRouteParameters();
-    
-    // Use access manager to check access
+
+    // Use access manager to check access.
     $access = \Drupal::service('access_manager')->checkNamedRoute(
       $route_name,
       $route_parameters,
       \Drupal::currentUser(),
-      TRUE // return AccessResult object
+    // Return AccessResult object.
+      TRUE
     );
 
-    // Build class list dynamically
+    // Build class list dynamically.
     $classes = ['button', 'button--primary', 'use-ajax'];
     if (!$access->isAllowed()) {
       $classes[] = 'disable-link';
     }
-
 
     $url->setOptions([
       'attributes' => [
         'class' => $classes,
         'data-dialog-type' => 'modal',
         'data-dialog-options' => json_encode([
-          'width' => 800,
+          'width' => 1000,
           'dialogClass' => 'api-popup-width-resize',
         ]),
       ],
     ]);
     $pricing_api_link = Link::fromTextAndUrl($this->t('Proposed API Pricing'), $url)->toRenderable();
-    $data['link'] = $pricing_api_link ;
+    $data['link'] = $pricing_api_link;
     $data['symbols'] = $symbols;
     $data['create_rate_sheet_url'] = $url;
     $data['final'] = $final;
@@ -128,16 +129,19 @@ class PricingOverTime extends ControllerBase {
       '#theme' => 'network_authentication_pricing_over_time',
       '#content' => $data,
       '#attached' => [
-        'library' => ['zcs_api_attributes/attributes-page']
-      ]
+        'library' => ['zcs_api_attributes/attributes-page'],
+      ],
     ];
   }
 
+  /**
+   *
+   */
   private function getAttributeValue($attributeValue) {
-    if($attributeValue == 'yes') {
-       return Markup::create("<span class='attrib_yes'>Yes</span>");
+    if ($attributeValue == 'yes') {
+      return Markup::create("<span class='attrib_yes'>Yes</span>");
     }
-    elseif($attributeValue == 'no') {
+    elseif ($attributeValue == 'no') {
       return Markup::create("<span class='attrib_no'>No</span>");
     }
     else {
@@ -151,7 +155,7 @@ class PricingOverTime extends ControllerBase {
    */
   public function attributeApprovals(Request $request) {
 
-    // add pager to table
+    // Add pager to table.
     $limit = 10;
     $queryTotal = $this->database->select('attributes_page_data', 'apd');
     if (!empty($request->get('status'))) {
@@ -160,7 +164,7 @@ class PricingOverTime extends ControllerBase {
     $resultTotal = $queryTotal->countQuery()->execute()->fetchField();
     $pager = $this->pagerManager->createPager($resultTotal, $limit);
 
-      // fetch results
+    // Fetch results.
     $query = $this->database->select('attributes_page_data', 'apd')
       ->fields('apd', ['id', 'submit_by', 'approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'created', 'effective_date']);
     if (!empty($request->get('status'))) {
@@ -171,9 +175,9 @@ class PricingOverTime extends ControllerBase {
     $resultSet = $query->execute()->fetchAll();
 
     $statusSet = $this->database->select('attribute_status', 'as')
-    ->fields('as', ['id', 'status'])
-    ->execute()
-    ->fetchAll();
+      ->fields('as', ['id', 'status'])
+      ->execute()
+      ->fetchAll();
     foreach ($statusSet as $status) {
       $statuses[$status->id] = $status->status;
     }
@@ -192,7 +196,7 @@ class PricingOverTime extends ControllerBase {
           'status' => $statuses[$result->attribute_status],
           'requested_time' => date('M d, Y', $result->created),
           'effective_date' => date("M d, Y", strtotime($result->effective_date)),
-          'url' => Url::fromRoute('zcs_api_attributes.rate_sheet.review', ['id' => $result->id])
+          'url' => Url::fromRoute('zcs_api_attributes.rate_sheet.review', ['id' => $result->id]),
         ];
       }
     }
@@ -201,22 +205,25 @@ class PricingOverTime extends ControllerBase {
       '#type' => 'select',
       '#options' => ['- All Status'] + $statuses,
       '#attributes' => [
-        'class' => ['select-status']
+        'class' => ['select-status'],
       ],
-      '#value' => $request->get('status') ?? 0
+      '#value' => $request->get('status') ?? 0,
     ];
 
-    $output[] =  [
+    $output[] = [
       '#theme' => 'rate_sheet_approval',
       '#content' => $data,
       '#attached' => [
-        'library' => ['zcs_api_attributes/rate-sheet-approval']
+        'library' => ['zcs_api_attributes/rate-sheet-approval'],
       ],
     ];
     $output[] = ['#type' => 'pager'];
     return $output;
   }
 
+  /**
+   *
+   */
   public function access(AccountInterface $account) {
     $allowed_roles = ['administrator', 'carrier_admin', 'finance_admin', 'financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
     $user_roles = \Drupal::currentUser()->getRoles();
@@ -232,4 +239,5 @@ class PricingOverTime extends ControllerBase {
     }
     return AccessResult::forbidden();
   }
+
 }

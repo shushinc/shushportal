@@ -1,0 +1,21 @@
+uuid: 358c4348-16d3-4716-bc85-0dd9c4a98661
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.group.field_domestic_pricing
+    - group.type.partner
+id: group.partner.field_domestic_pricing
+field_name: field_domestic_pricing
+entity_type: group
+bundle: partner
+label: 'Domestic pricing'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

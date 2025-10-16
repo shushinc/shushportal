@@ -17,8 +17,10 @@
 		<tr>
 			<th>#</th>
 			<th>API Attributes</th>
-			<th>Current API Pricing</th>
-			<th>Proposed API Pricing</th>
+			<th>Current <strong>international</strong> API Pricing</th>
+			<th>Current <strong>domestic</strong> API Pricing</th>
+			<th>Proposed <strong>international</strong> API Pricing</th>
+			<th>Proposed <strong>domestic</strong> API Pricing</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -28,13 +30,20 @@
 			<tr>
 				<td>{{ counter }}</td>
 				<td>{{ title }}</td>
-				<td>{{ attributes.prices[id] }}
-					{% if form['price' ~ id]|field_value != attributes.prices[id] %}
-					{% endif %}
+				<td>
+					{{ attributes.prices[id] }}
+					{# {% if form['price' ~ id]|field_value != attributes.prices[id] %}
+					{% endif %} #}
+				</td>
+				<td>
+					{{ attributes.domestic_prices[id] }}
+					{# {% if form['price' ~ id]|field_value != attributes.domestic_prices[id] %}
+					{% endif %} #}
 				</td>
 				<td>{{ form['price' ~ id] }}</td>
+				<td>{{ form['domestic_price' ~ id] }}</td>
 			</tr>
-						{% set counter = counter + 1 %}
+			{% set counter = counter + 1 %}
 		{% endfor %}
 	</tbody>
 </table>
