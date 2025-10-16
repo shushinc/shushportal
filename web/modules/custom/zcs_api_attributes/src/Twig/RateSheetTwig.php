@@ -71,7 +71,7 @@ class RateSheetTwig extends AbstractExtension implements ExtensionInterface {
       }
     }
     // Return $final;.
-    return compact('titles', 'prices');
+    return compact('titles', 'prices', 'domestic_prices');
   }
 
 }
