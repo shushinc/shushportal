@@ -7,14 +7,15 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use NumberFormatter;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\node\Entity\Node;
-use Drupal\node\NodeInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Markup;
+use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
+/**
+ *
+ */
 class RateSheetReviewForm extends FormBase {
 
   /**
@@ -61,17 +62,17 @@ class RateSheetReviewForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $id=0) {
+  public function buildForm(array $form, FormStateInterface $form_state, $id = 0) {
 
     $data = $this->database->select('attributes_page_data', 'apd')
-      ->fields('apd', ['approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status','currency_locale', 'effective_date', 'attribute_status', 'page_data'])
+      ->fields('apd', ['approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'currency_locale', 'effective_date', 'attribute_status', 'page_data'])
       ->condition('id', $id)
       ->execute()->fetchObject();
-      
+
     $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
-    // show the right currency symbol based on the chosen one.
-    $number = new NumberFormatter($currency, NumberFormatter::CURRENCY);
-    $symbol = $number->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
+    // Show the right currency symbol based on the chosen one.
+    $number = new \NumberFormatter($currency, \NumberFormatter::CURRENCY);
+    $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
 
     if (!empty($data)) {
       foreach (Json::decode($data->page_data) as $key => $value) {
@@ -84,13 +85,21 @@ class RateSheetReviewForm extends FormBase {
           '#field_prefix' => $symbol,
           '#disabled' => TRUE,
         ];
+        $form['domestic_price' . $key] = [
+          '#type' => 'number',
+          '#min' => 0,
+          '#default_value' => $value ?? 0.000,
+          '#step' => 0.001,
+          '#field_prefix' => $symbol,
+          '#disabled' => TRUE,
+        ];
       }
     }
-    // to fetch currencies.
+    // To fetch currencies.
     $currencies = [];
     foreach ($this->list as $list) {
       if (!empty($list['locale'])) {
-        $currencies[$list['locale']] = $list['currency'] .' ('. $list['alphabeticCode'] .')';
+        $currencies[$list['locale']] = $list['currency'] . ' (' . $list['alphabeticCode'] . ')';
       }
     }
     $form['currencies'] = [
@@ -111,8 +120,6 @@ class RateSheetReviewForm extends FormBase {
       '#value' => $id,
     ];
 
-
-
     $form['attribute_date'] = [
       '#type' => 'date',
       '#default_value' => $data->effective_date,
@@ -121,35 +128,35 @@ class RateSheetReviewForm extends FormBase {
 
     $by = '';
     $approvers = ['approver1', 'approver2'];
-    if($data->approver1_status == 1) {
+    if ($data->approver1_status == 1) {
       if (in_array('financial_rate_sheet_approval_level_1', $this->currentUser()->getRoles())) {
         $by = 'approver1';
       }
-    } 
+    }
     else {
-      if($data->approver2_status == 1) {
+      if ($data->approver2_status == 1) {
         if (in_array('financial_rate_sheet_approval_level_2', $this->currentUser()->getRoles())) {
           $by = 'approver2';
         }
       }
     }
- 
+
     $form['approved_by'] = [
       '#type' => 'hidden',
-      '#value' => $by
+      '#value' => $by,
     ];
     $otherApprover = array_diff($approvers, [$by]);
 
     $form['another_approver_status'] = [
       '#type' => 'hidden',
-      '#value' => $data->{end($otherApprover).'_status'}
+      '#value' => $data->{end($otherApprover) . '_status'},
     ];
 
     $form['#theme'] = 'rate_sheet_review';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-review';
 
     if (((in_array('financial_rate_sheet_approval_level_1', $this->currentUser()->getRoles()) && !$data->approver1_uid) ||
-         (in_array('financial_rate_sheet_approval_level_2', $this->currentUser()->getRoles()) && !$data->approver2_uid && $data->approver1_uid)) && 
+         (in_array('financial_rate_sheet_approval_level_2', $this->currentUser()->getRoles()) && !$data->approver2_uid && $data->approver1_uid)) &&
          $data->attribute_status == 1 && $data->{$by . '_status'} == 1) {
       $form['status'] = [
         '#type' => 'select',
@@ -171,14 +178,12 @@ class RateSheetReviewForm extends FormBase {
 
   }
 
-
-
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-    $updatedFields['updated'] =  \Drupal::time()->getRequestTime();
+    $updatedFields['updated'] = \Drupal::time()->getRequestTime();
     $updatedFields[$values['approved_by'] . '_status'] = (int) $values['status'];
     $updatedFields[$values['approved_by'] . '_uid'] = (int) $this->currentUser()->id();
     if ($values['another_approver_status'] == 2 && $values['status'] == 2) {
@@ -187,10 +192,12 @@ class RateSheetReviewForm extends FormBase {
         $node = Node::load($id);
         if ($node instanceof NodeInterface) {
           $node->set('field_standard_price', $values['price' . $id]);
+          $node->set('field_domestic_standard_price', $values['domestic_price' . $id]);
           $node->save();
         }
       }
-    } elseif ($values['another_approver_status'] == 3 || $values['status'] == 3) {
+    }
+    elseif ($values['another_approver_status'] == 3 || $values['status'] == 3) {
       $updatedFields['attribute_status'] = 3;
     }
     $this->database->update('attributes_page_data')
@@ -199,7 +206,7 @@ class RateSheetReviewForm extends FormBase {
       ->execute();
     $this->messenger()->addStatus('Status submitted successfully');
 
-    // Sending the email for approver2
+    // Sending the email for approver2.
     if ($values['approved_by'] == 'approver1' && $values['status'] == 2) {
       $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'financial_rate_sheet_approval_level_2', 'status' => 1]);
       foreach ($users as $user) {
@@ -215,23 +222,25 @@ class RateSheetReviewForm extends FormBase {
         'user' => $this->entityTypeManager->getStorage('user')->load($this->currentUser()->id())->mail->value,
         'effective_date' => $values['attribute_date'],
         'approval' => Link::createFromRoute('Approval', 'zcs_api_attributes.rate_sheet')->toString(),
-        'site_name' => $this->config('system.site')->get('name')
+        'site_name' => $this->config('system.site')->get('name'),
       ]);
       $params['message'] = Markup::create(nl2br($rendered));
       $langcode = \Drupal::currentUser()->getPreferredLangcode();
-      $send = true;
+      $send = TRUE;
 
       foreach ($userMails as $mail) {
         $emails[] = $mailManager->mail('zcs_api_attributes', 'rate_sheet', $mail, $langcode, $params, NULL, $send);
       }
 
-      if (reset($emails)['result'] != true && end($emails)['result'] != true) {
-        $this->messenger()->addError(t('There was a problem sending your email notification.'));
-      } else {
-        $this->messenger()->addStatus(t('An email notification has been sent.'));
+      if (reset($emails)['result'] != TRUE && end($emails)['result'] != TRUE) {
+        $this->messenger()->addError($this->t('There was a problem sending your email notification.'));
+      }
+      else {
+        $this->messenger()->addStatus($this->t('An email notification has been sent.'));
       }
     }
 
     $form_state->setRedirect('zcs_api_attributes.rate_sheet.approval');
   }
+
 }
