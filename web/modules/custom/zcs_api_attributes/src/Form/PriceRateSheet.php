@@ -225,7 +225,7 @@ class PriceRateSheet extends FormBase {
       $emails[] = $mailManager->mail('zcs_api_attributes', 'rate_sheet', $mail, $langcode, $params, NULL, $send);
     }
 
-    if (reset($emails)['result'] != TRUE && end($emails)['result'] != TRUE) {
+    if (is_array($emails) && reset($emails)['result'] != TRUE && end($emails)['result'] != TRUE) {
       $this->messenger()->addError($this->t('There was a problem sending your email notification.'));
     }
     else {
