@@ -3,11 +3,18 @@
 namespace Drupal\zcs_api_attributes\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Url;
-use Drupal\Core\Render\Markup;
 use Drupal\Core\Link;
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Url;
 
+/**
+ *
+ */
 class ChangeNetworkAuthenticationPricing extends ControllerBase {
+
+  /**
+   *
+   */
   public function pricingPage() {
 
     $effective_date = \Drupal::config('zcs_custom.api_attribute_settings')->get('effective_date');
@@ -21,8 +28,10 @@ class ChangeNetworkAuthenticationPricing extends ControllerBase {
           $url = Url::fromRoute('zcs_api_attributes.change_network_authentication_pricing_update', ['id' => $content->id()]);
           $url->setOptions([
             'attributes' => [
-              'class' => ['use-ajax'], // Enables AJAX
-              'data-dialog-type' => 'modal', // Opens in a modal
+          // Enables AJAX.
+              'class' => ['use-ajax'],
+          // Opens in a modal.
+              'data-dialog-type' => 'modal',
               'data-dialog-options' => json_encode([
                 'width' => 400,
               ]),
@@ -50,16 +59,19 @@ class ChangeNetworkAuthenticationPricing extends ControllerBase {
       '#theme' => 'change_network_authentication_pricing',
       '#content' => $data,
       '#attached' => [
-        'library' => ['zcs_api_attributes/attributes-page']
-      ]
+        'library' => ['zcs_api_attributes/attributes-page'],
+      ],
     ];
   }
 
-  private function getAttributeValue($attributeValue){
-    if($attributeValue == 'yes') {
-       return Markup::create("<span class='attrib_yes'>Yes</span>");
+  /**
+   *
+   */
+  private function getAttributeValue($attributeValue) {
+    if ($attributeValue == 'yes') {
+      return Markup::create("<span class='attrib_yes'>Yes</span>");
     }
-    elseif($attributeValue == 'no') {
+    elseif ($attributeValue == 'no') {
       return Markup::create("<span class='attrib_no'>No</span>");
     }
     else {
@@ -67,4 +79,5 @@ class ChangeNetworkAuthenticationPricing extends ControllerBase {
     }
 
   }
+
 }

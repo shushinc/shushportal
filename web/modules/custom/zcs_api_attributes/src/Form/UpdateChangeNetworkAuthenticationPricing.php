@@ -4,24 +4,14 @@ declare(strict_types=1);
 
 namespace Drupal\zcs_api_attributes\Form;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\user\Entity\Role;
-use Drupal\Component\Utility\Crypt;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
-use Drupal\Core\Link;
-use Drupal\Core\Site\Settings;
-use Drupal\user\Entity\User;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Drupal\node\Entity\Node;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Access\AccessResult;
-
-
 
 /**
  * Provides a zcs API Attribute status.
@@ -36,13 +26,14 @@ final class UpdateChangeNetworkAuthenticationPricing extends FormBase {
     $this->request = $request_stack->getCurrentRequest();
   }
 
+  /**
+   *
+   */
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('request_stack')
     );
   }
-
-
 
   /**
    * {@inheritdoc}
@@ -100,12 +91,11 @@ final class UpdateChangeNetworkAuthenticationPricing extends FormBase {
     $node = Node::load($api_attribute_id);
     $node->set('field_price_per_call', $price_per_call);
     $node->save();
-    $this->messenger()->addMessage('Change Network Authentication pricing updated Successfully'); 
+    $this->messenger()->addMessage('Change Network Authentication pricing updated Successfully');
     $form_state->setRedirectUrl(Url::fromRoute('zcs_api_attributes.change_network_authentication_pricing'));
   }
 
-
-   /**
+  /**
    *
    */
   public function access(AccountInterface $account) {
@@ -117,17 +107,18 @@ final class UpdateChangeNetworkAuthenticationPricing extends FormBase {
       if (isset($memberships)) {
         $roles = $memberships[0]->getRoles();
         $group_roles = [];
-        foreach($roles as $role) {
+        foreach ($roles as $role) {
           $group_roles[] = $role->id();
         }
         if (in_array('partner-admin', $group_roles)) {
           return AccessResult::allowed();
         }
-        else{
+        else {
           return AccessResult::forbidden();
         }
       }
     }
     return AccessResult::forbidden();
   }
+
 }

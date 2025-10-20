@@ -1,77 +1,83 @@
 <?php
 
+/**
+ * @file
+ */
+
 use Drupal\Core\Render\Markup;
+
 /**
  * @file
  * Primary module hooks for zcs_api_attributes module.
  */
 
+/**
+ *
+ */
 function zcs_api_attributes_theme() {
   return [
     'attributes_page' => [
       'variables' => [
-        'content' => null,
+        'content' => NULL,
       ],
-      'template' => 'attributes_page'
+      'template' => 'attributes_page',
     ],
     'change_network_authentication_pricing' => [
       'variables' => [
-        'content' => null,
+        'content' => NULL,
       ],
-      'template' => 'change_network_authentication_pricing'
+      'template' => 'change_network_authentication_pricing',
     ],
     'network_authentication_pricing_over_time' => [
       'variables' => [
-        'content' => null,
+        'content' => NULL,
       ],
-      'template' => 'network_authentication_pricing_over_time'
+      'template' => 'network_authentication_pricing_over_time',
     ],
     'demand_partner_discounts_or_different_pricing' => [
       'variables' => [
-        'content' => null,
+        'content' => NULL,
       ],
-      'template' => 'demand_partner_discounts_or_different_pricing'
+      'template' => 'demand_partner_discounts_or_different_pricing',
     ],
     'rate_sheet' => [
       'render element' => 'form',
-      'template' => 'rate_sheet'
+      'template' => 'rate_sheet',
     ],
     'rate_sheet_approval' => [
       'variables' => [
-        'content' => null,
+        'content' => NULL,
       ],
-      'template' => 'rate_sheet_approval'
+      'template' => 'rate_sheet_approval',
     ],
     'api_attribute_sheet_approval' => [
       'variables' => [
-        'content' => null,
+        'content' => NULL,
       ],
-      'template' => 'api_attribute_sheet_approval'
+      'template' => 'api_attribute_sheet_approval',
     ],
     'rate_sheet_review' => [
       'render element' => 'form',
-      'template' => 'rate_sheet_review'
+      'template' => 'rate_sheet_review',
     ],
     'api_attribute_status_review' => [
       'render element' => 'form',
-      'template' =>  'api_attribute_status_review'
+      'template' => 'api_attribute_status_review',
     ],
     'api_attribute_sheet' => [
       'render element' => 'form',
-      'template' => 'api_attribute_sheet'
+      'template' => 'api_attribute_sheet',
     ],
   ];
 }
-
-
 
 /**
  * Implements hook_mail().
  */
 function zcs_api_attributes_mail($key, &$message, $params) {
-  $options = array(
+  $options = [
     'langcode' => $message['langcode'],
-  );
+  ];
   switch ($key) {
     case 'rate_sheet':
       $message['from'] = \Drupal::config('system.site')->get('mail');
@@ -79,15 +85,19 @@ function zcs_api_attributes_mail($key, &$message, $params) {
       $message['body'][] = Markup::create($params['message']);
       $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed; delsp=yes';
       break;
+
     case 'api_attribute_sheet':
       $message['from'] = \Drupal::config('system.site')->get('mail');
       $message['subject'] = t('API Attribute Status sheet Requested for Approval', $options);
       $message['body'][] = Markup::create($params['message']);
       $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed; delsp=yes';
-      break;  
+      break;
   }
 }
 
+/**
+ *
+ */
 function zcs_api_attributes_preprocess_html(&$variables) {
   if (\Drupal::routeMatch()->getRouteName() == 'zcs_api_attributes.attribute.page') {
     $variables['attributes']['class'][] = 'api-attribute-status';
@@ -95,5 +105,5 @@ function zcs_api_attributes_preprocess_html(&$variables) {
   if (\Drupal::routeMatch()->getRouteName() == 'zcs_api_attributes.pricing_history') {
     $variables['attributes']['class'][] = 'network_authentication_pricing_over_time';
   }
-  
+
 }
