@@ -2,20 +2,23 @@
 
 namespace Drupal\zcs_api_attributes\Controller;
 
-use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Url;
-use Drupal\Core\Render\Markup;
-use Drupal\Core\Link;
-use Symfony\Component\HttpFoundation\Request;
-use Drupal\Core\Database\Connection;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Pager\PagerManagerInterface;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Database\Connection;
+use Drupal\Core\Link;
+use Drupal\Core\Pager\PagerManagerInterface;
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
+/**
+ *
+ */
 class AttributesPageController extends ControllerBase {
 
-   /**
+  /**
    * Connection $database.
    */
   protected $database;
@@ -24,7 +27,6 @@ class AttributesPageController extends ControllerBase {
    * Pager Variable.
    */
   protected $pagerManager;
-
 
   /**
    * {@inheritdoc}
@@ -44,7 +46,9 @@ class AttributesPageController extends ControllerBase {
     );
   }
 
-
+  /**
+   *
+   */
   public function attributesPage() {
     $final = [];
     $nids = \Drupal::entityQuery('node')
@@ -62,20 +66,21 @@ class AttributesPageController extends ControllerBase {
         ];
       }
     }
-    
+
     $url = Url::fromRoute('zcs_api_attributes.api_attribute_sheet');
     $route_name = $url->getRouteName();
     $route_parameters = $url->getRouteParameters();
-    
-    // Use access manager to check access
+
+    // Use access manager to check access.
     $access = \Drupal::service('access_manager')->checkNamedRoute(
       $route_name,
       $route_parameters,
       \Drupal::currentUser(),
-      TRUE // return AccessResult object
+    // Return AccessResult object.
+      TRUE
     );
 
-    // Build class list dynamically
+    // Build class list dynamically.
     $classes = ['button', 'button--primary', 'use-ajax'];
     if (!$access->isAllowed()) {
       $classes[] = 'disable-link';
@@ -86,7 +91,7 @@ class AttributesPageController extends ControllerBase {
         'class' => $classes,
         'data-dialog-type' => 'modal',
         'data-dialog-options' => json_encode([
-          'width' => 800,
+          'width' => 1000,
           'dialogClass' => 'api-popup-width-resize',
         ]),
       ],
@@ -100,16 +105,19 @@ class AttributesPageController extends ControllerBase {
       '#theme' => 'attributes_page',
       '#content' => $data,
       '#attached' => [
-        'library' => ['zcs_api_attributes/attributes-page']
-      ]
+        'library' => ['zcs_api_attributes/attributes-page'],
+      ],
     ];
   }
 
-  private function getAttributeValue($attributeValue){
-    if($attributeValue == 'yes') {
-       return Markup::create("<span class='attrib_yes'>Yes</span>");
+  /**
+   *
+   */
+  private function getAttributeValue($attributeValue) {
+    if ($attributeValue == 'yes') {
+      return Markup::create("<span class='attrib_yes'>Yes</span>");
     }
-    elseif($attributeValue == 'no') {
+    elseif ($attributeValue == 'no') {
       return Markup::create("<span class='attrib_no'>No</span>");
     }
     else {
@@ -118,12 +126,11 @@ class AttributesPageController extends ControllerBase {
 
   }
 
-
   /**
    * Display the Attributes Approval Page.
    */
   public function apiAttributeApprovals(Request $request) {
-    // add pager to table
+    // Add pager to table.
     $limit = 10;
     $queryTotal = $this->database->select('api_attributes_page_data', 'apd');
     if (!empty($request->get('status'))) {
@@ -132,7 +139,7 @@ class AttributesPageController extends ControllerBase {
     $resultTotal = $queryTotal->countQuery()->execute()->fetchField();
     $pager = $this->pagerManager->createPager($resultTotal, $limit);
 
-      // fetch results
+    // Fetch results.
     $query = $this->database->select('api_attributes_page_data', 'apd')
       ->fields('apd', ['id', 'submit_by', 'approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'created']);
     if (!empty($request->get('status'))) {
@@ -142,9 +149,9 @@ class AttributesPageController extends ControllerBase {
     $query->range($pager->getCurrentPage() * $limit, $limit);
     $resultSet = $query->execute()->fetchAll();
     $statusSet = $this->database->select('attribute_status', 'as')
-    ->fields('as', ['id', 'status'])
-    ->execute()
-    ->fetchAll();
+      ->fields('as', ['id', 'status'])
+      ->execute()
+      ->fetchAll();
     foreach ($statusSet as $status) {
       $statuses[$status->id] = $status->status;
     }
@@ -162,7 +169,7 @@ class AttributesPageController extends ControllerBase {
           'approver2_status' => $statuses[$result->approver2_status],
           'status' => $statuses[$result->attribute_status],
           'requested_time' => date('M d, Y', $result->created),
-          'url' => Url::fromRoute('zcs_api_attributes.api_attribute_sheet.review', ['id' => $result->id])
+          'url' => Url::fromRoute('zcs_api_attributes.api_attribute_sheet.review', ['id' => $result->id]),
         ];
       }
     }
@@ -171,26 +178,28 @@ class AttributesPageController extends ControllerBase {
       '#type' => 'select',
       '#options' => ['- All Status'] + $statuses,
       '#attributes' => [
-        'class' => ['select-status']
+        'class' => ['select-status'],
       ],
-      '#value' => $request->get('status') ?? 0
+      '#value' => $request->get('status') ?? 0,
     ];
 
-    $output[] =  [
+    $output[] = [
       '#theme' => 'api_attribute_sheet_approval',
       '#content' => $data,
       '#attached' => [
-      'library' => ['zcs_api_attributes/rate-sheet-approval']
+        'library' => ['zcs_api_attributes/rate-sheet-approval'],
       ],
     ];
     $output[] = ['#type' => 'pager'];
     return $output;
   }
 
-
+  /**
+   *
+   */
   public function access(AccountInterface $account) {
 
-    $allowed_roles =  [
+    $allowed_roles = [
       'administrator',
       'carrier_admin',
       'api_attribute_admin',
@@ -210,4 +219,5 @@ class AttributesPageController extends ControllerBase {
     }
     return AccessResult::forbidden();
   }
+
 }

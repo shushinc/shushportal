@@ -3,11 +3,16 @@
 namespace Drupal\zcs_api_attributes\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Url;
 use Drupal\Core\Render\Markup;
-use Drupal\Core\Link;
 
+/**
+ *
+ */
 class DemandPartnerDiscountsOrDifferentPricing extends ControllerBase {
+
+  /**
+   *
+   */
   public function pricingPage() {
 
     $contents = $this->entityTypeManager()->getStorage('node')->loadByProperties(['type' => 'api_attributes']);
@@ -36,16 +41,19 @@ class DemandPartnerDiscountsOrDifferentPricing extends ControllerBase {
       '#theme' => 'demand_partner_discounts_or_different_pricing',
       '#content' => $data,
       '#attached' => [
-        'library' => ['zcs_api_attributes/attributes-page']
-      ]
+        'library' => ['zcs_api_attributes/attributes-page'],
+      ],
     ];
   }
 
-  private function getAttributeValue($attributeValue){
-    if($attributeValue == 'yes') {
-       return Markup::create("<span class='attrib_yes'>Yes</span>");
+  /**
+   *
+   */
+  private function getAttributeValue($attributeValue) {
+    if ($attributeValue == 'yes') {
+      return Markup::create("<span class='attrib_yes'>Yes</span>");
     }
-    elseif($attributeValue == 'no') {
+    elseif ($attributeValue == 'no') {
       return Markup::create("<span class='attrib_no'>No</span>");
     }
     else {
@@ -53,4 +61,5 @@ class DemandPartnerDiscountsOrDifferentPricing extends ControllerBase {
     }
 
   }
+
 }

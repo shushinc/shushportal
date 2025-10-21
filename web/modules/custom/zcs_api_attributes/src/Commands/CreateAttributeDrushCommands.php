@@ -2,12 +2,16 @@
 
 namespace Drupal\zcs_api_attributes\Commands;
 
-use Drush\Commands\DrushCommands;
-use Drupal\node\Entity\Node;
-use Drupal\Core\Database\Database;
 use Drupal\Component\Serialization\Json;
+use Drupal\Core\Database\Database;
+use Drupal\node\Entity\Node;
+use Drush\Commands\DrushCommands;
 
+/**
+ *
+ */
 class CreateAttributeDrushCommands extends DrushCommands {
+
   /**
    * Generates attributes nodes.
    *
@@ -16,57 +20,58 @@ class CreateAttributeDrushCommands extends DrushCommands {
    *
    * @command attributes:generate-nodes
    * @aliases agn
-   * @usage attributes:generate-nodes 
+   * @usage attributes:generate-nodes
    *   Generates attributes nodes for default data.
    */
   public function generateNodes(string $name = 'World'): void {
-     // Path to your JSON file
-     $json_path = dirname(DRUPAL_ROOT) . '/portalasserts/attributes.json';
-     $this->output()->writeln($json_path);
+    // Path to your JSON file.
+    $json_path = dirname(DRUPAL_ROOT) . '/portalasserts/attributes.json';
+    $this->output()->writeln($json_path);
 
-     if (!file_exists($json_path)) {
-       $this->output()->writeln("JSON file not found at: $json_path");
-       return;
-     }
+    if (!file_exists($json_path)) {
+      $this->output()->writeln("JSON file not found at: $json_path");
+      return;
+    }
 
-     $json_content = file_get_contents($json_path);
-     $data = json_decode($json_content, true);
- 
-     if (!$data || !is_array($data)) {
-       $this->output()->writeln("Invalid or empty JSON data.");
-       return;
-     }
-     $json_ratesheet = [];
-     $json_api_attribute = [];
+    $json_content = file_get_contents($json_path);
+    $data = json_decode($json_content, TRUE);
 
-     foreach ($data as $item) {
-        if (empty($item['title']) || empty($item['weight'])) {
-          $this->output()->writeln("Skipping entry with missing title or weight.");
-          continue;
-        }
-        $node = Node::create([
-          'type' => 'api_attributes', // Change this to your content type machine name
-          'title' => $item['title'],
-          'field_able_to_be_used' => $item['able_to_used'],
-          'field_attribute_weight' => $item['weight'],
-        ]);
-        $node->save();
-        $json_ratesheet[$node->id()] =  $item['standard_price'];
-        $json_api_attribute[$node->id()]['able_to_be_used'] = ($item['able_to_used'] === 'yes') ? 1 : 0;
-        $this->output()->writeln("Attribute created: " . $node->label());
-     }
+    if (!$data || !is_array($data)) {
+      $this->output()->writeln("Invalid or empty JSON data.");
+      return;
+    }
+    $json_ratesheet = [];
+    $json_api_attribute = [];
 
-     // For Rate sheet display approve the content on installtion setup.
-     $current_date = date('Y-m-d', \Drupal::time()->getCurrentTime());
-     $defaultCurrency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
-     Database::getConnection()->insert('attributes_page_data')
-     ->fields(['submit_by', 'currency_locale', 'effective_date', 'effective_date_integer', 'page_data', 'approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'created', 'updated'])
-     ->values([1, $defaultCurrency, $current_date, strtotime($current_date), Json::encode($json_ratesheet), 1, 2, 1, 2, 2, \Drupal::time()->getRequestTime(), \Drupal::time()->getRequestTime()])
-     ->execute();
+    foreach ($data as $item) {
+      if (empty($item['title']) || empty($item['weight'])) {
+        $this->output()->writeln("Skipping entry with missing title or weight.");
+        continue;
+      }
+      $node = Node::create([
+      // Change this to your content type machine name.
+        'type' => 'api_attributes',
+        'title' => $item['title'],
+        'field_able_to_be_used' => $item['able_to_used'],
+        'field_attribute_weight' => $item['weight'],
+      ]);
+      $node->save();
+      $json_ratesheet[$node->id()] = $item['standard_price'];
+      $json_api_attribute[$node->id()]['able_to_be_used'] = ($item['able_to_used'] === 'yes') ? 1 : 0;
+      $this->output()->writeln("Attribute created: " . $node->label());
+    }
 
-     // For api_attribute_sheet approve the content on installtion setup.
-     Database::getConnection()->insert('api_attributes_page_data')
-     ->fields([
+    // For Rate sheet display approve the content on installtion setup.
+    $current_date = date('Y-m-d', \Drupal::time()->getCurrentTime());
+    $defaultCurrency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
+    Database::getConnection()->insert('attributes_page_data')
+      ->fields(['submit_by', 'currency_locale', 'effective_date', 'effective_date_integer', 'page_data', 'approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'created', 'updated'])
+      ->values([1, $defaultCurrency, $current_date, strtotime($current_date), Json::encode($json_ratesheet), 1, 2, 1, 2, 2, \Drupal::time()->getRequestTime(), \Drupal::time()->getRequestTime()])
+      ->execute();
+
+    // For api_attribute_sheet approve the content on installtion setup.
+    Database::getConnection()->insert('api_attributes_page_data')
+      ->fields([
         'submit_by',
         'page_data',
         'approver1_uid',
@@ -75,10 +80,12 @@ class CreateAttributeDrushCommands extends DrushCommands {
         'approver2_status',
         'attribute_status',
         'created',
-        'updated'])
-     ->values([1,Json::encode($json_api_attribute),1,2,1,2,2,\Drupal::time()->getRequestTime(), \Drupal::time()->getRequestTime()])
-     ->execute();
+        'updated',
+      ])
+      ->values([1, Json::encode($json_api_attribute), 1, 2, 1, 2, 2, \Drupal::time()->getRequestTime(), \Drupal::time()->getRequestTime()])
+      ->execute();
 
     $this->output()->writeln("Attibutes Data created successfully");
   }
+
 }

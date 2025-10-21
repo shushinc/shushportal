@@ -2,13 +2,12 @@
 
 namespace Drupal\zcs_api_attributes\Form;
 
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Database\Connection;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\user\Entity\User;
-use Drupal\Core\Url;
 use Drupal\Core\Link;
+use Drupal\user\Entity\User;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a basic custom form.
@@ -58,7 +57,8 @@ class ManageApiAttributes extends FormBase {
       ->fields('at', ['id', 'submit_by', 'approver1_uid', 'approver2_uid', 'approver1_status', 'approver2_status', 'attribute_status', 'created'])
       ->orderBy('at.created', 'DESC')
       ->extend('Drupal\Core\Database\Query\PagerSelectExtender')
-      ->limit(10); // 10 items per page
+    // 10 items per page
+      ->limit(10);
 
     $results = $query->execute();
 
@@ -92,7 +92,7 @@ class ManageApiAttributes extends FormBase {
       '#empty' => $this->t('No API Attributes Found'),
     ];
 
-    // Add pager
+    // Add pager.
     $form['pager'] = ['#type' => 'pager'];
 
     return $form;
@@ -102,13 +102,13 @@ class ManageApiAttributes extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
- 
+
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getUserMail($uid){
+  public function getUserMail($uid) {
     // Load the user entity.
     $email = '';
     $user = User::load($uid);

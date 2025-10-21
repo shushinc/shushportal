@@ -4,24 +4,14 @@ declare(strict_types=1);
 
 namespace Drupal\zcs_api_attributes\Form;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\user\Entity\Role;
-use Drupal\Component\Utility\Crypt;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
-use Drupal\Core\Link;
-use Drupal\Core\Site\Settings;
-use Drupal\user\Entity\User;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Drupal\node\Entity\Node;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Access\AccessResult;
-
-
 
 /**
  * Provides a zcs API Attribute status.
@@ -36,13 +26,14 @@ final class UpdateApiAttributeForm extends FormBase {
     $this->request = $request_stack->getCurrentRequest();
   }
 
+  /**
+   *
+   */
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('request_stack')
     );
   }
-
-
 
   /**
    * {@inheritdoc}
@@ -73,8 +64,8 @@ final class UpdateApiAttributeForm extends FormBase {
       '#type' => 'select',
       '#title' => $this->t('Integrated with Carrier Network'),
       '#options' => [
-       'yes' => 'Yes',
-       'no' => 'No',
+        'yes' => 'Yes',
+        'no' => 'No',
       ],
       '#default_value' => $node->field_successfully_integrated_cn->value,
       '#attributes' => ['disabled' => 'disabled'],
@@ -83,8 +74,8 @@ final class UpdateApiAttributeForm extends FormBase {
       '#type' => 'select',
       '#title' => $this->t('Able to be used'),
       '#options' => [
-       'yes' => 'Yes',
-       'no' => 'No',
+        'yes' => 'Yes',
+        'no' => 'No',
       ],
       '#default_value' => $node->field_able_to_be_used->value,
       '#attributes' => ['disabled' => 'disabled'],
@@ -100,8 +91,8 @@ final class UpdateApiAttributeForm extends FormBase {
       '#type' => 'select',
       '#title' => $this->t('Carrier Enabled for 3rd Party Use'),
       '#options' => [
-       'yes' => 'Yes',
-       'no' => 'No',
+        'yes' => 'Yes',
+        'no' => 'No',
       ],
       '#default_value' => $node->field_carrier_enabled_3rd_party->value,
     ];
@@ -130,12 +121,11 @@ final class UpdateApiAttributeForm extends FormBase {
     $node = Node::load($api_attribute_id);
     $node->set('field_carrier_enabled_3rd_party', $third_party_use);
     $node->save();
-    $this->messenger()->addMessage('API Attribute updated Successfully'); 
+    $this->messenger()->addMessage('API Attribute updated Successfully');
     $form_state->setRedirectUrl(Url::fromRoute('zcs_api_attributes.attribute.page'));
   }
 
-
-   /**
+  /**
    *
    */
   public function access(AccountInterface $account) {
@@ -147,17 +137,18 @@ final class UpdateApiAttributeForm extends FormBase {
       if (isset($memberships)) {
         $roles = $memberships[0]->getRoles();
         $group_roles = [];
-        foreach($roles as $role) {
+        foreach ($roles as $role) {
           $group_roles[] = $role->id();
         }
         if (in_array('partner-admin', $group_roles)) {
           return AccessResult::allowed();
         }
-        else{
+        else {
           return AccessResult::forbidden();
         }
       }
     }
     return AccessResult::forbidden();
   }
+
 }

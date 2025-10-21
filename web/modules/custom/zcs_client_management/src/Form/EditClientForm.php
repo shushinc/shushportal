@@ -4,46 +4,39 @@ declare(strict_types=1);
 
 namespace Drupal\zcs_client_management\Form;
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\user\Entity\Role;
-use Drupal\Component\Utility\Crypt;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
-use Drupal\Core\Link;
-use Drupal\Core\Site\Settings;
-use Drupal\user\Entity\User;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\group\Entity\Group;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Drupal\group\Entity\Group;
-use Drupal\Component\Serialization\Json;
-use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\Core\Render\Markup;
-
-
 
 /**
  * Provides a zcs_client_management edit form.
  */
 final class EditClientForm extends FormBase {
 
-
-
+  /**
+   * The current request.
+   *
+   * @var \Symfony\Component\HttpFoundation\Request
+   */
   protected $request;
 
   public function __construct(RequestStack $request_stack) {
     $this->request = $request_stack->getCurrentRequest();
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('request_stack')
     );
   }
-
-
 
   /**
    * {@inheritdoc}
@@ -109,17 +102,17 @@ final class EditClientForm extends FormBase {
     $lists_currencies = require __DIR__ . '/../../resources/currencies.php';
     $gid = $this->request->get('id');
     $group = Group::load($gid);
-    
+
     $form['partner_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Name'),
       '#required' => TRUE,
       '#attributes' => [
-        'autocomplete' => 'off'
+        'autocomplete' => 'off',
       ],
-      '#maxlength' => 20,      
-      '#default_value' =>  $group->get('label')->value ?? '',  
-      '#prefix' => '<div class="client-Layout-column-wrapper"><div class="tiles-wrapper client-Layout-column-first"><div class="partner-info grid-layout-column">',        
+      '#maxlength' => 20,
+      '#default_value' => $group->get('label')->value ?? '',
+      '#prefix' => '<div class="client-Layout-column-wrapper"><div class="tiles-wrapper client-Layout-column-first"><div class="partner-info grid-layout-column">',
     ];
 
     $form['contact_name'] = [
@@ -127,9 +120,9 @@ final class EditClientForm extends FormBase {
       '#title' => $this->t('Contact Name'),
       '#required' => TRUE,
       '#attributes' => [
-        'autocomplete' => 'off'
-      ],  
-      '#default_value' =>  $group->get('field_contact_name')->value ?? '',      
+        'autocomplete' => 'off',
+      ],
+      '#default_value' => $group->get('field_contact_name')->value ?? '',
     ];
 
     $form['contact_email'] = [
@@ -140,8 +133,8 @@ final class EditClientForm extends FormBase {
         'autocomplete' => 'off',
         'readonly' => 'readonly',
       ],
-      '#default_value' =>  $group->get('field_contact_email')->value ?? '',
-      '#suffix' => '</div>', 
+      '#default_value' => $group->get('field_contact_email')->value ?? '',
+      '#suffix' => '</div>',
     ];
 
     $form['client_legal_contact'] = [
@@ -149,10 +142,10 @@ final class EditClientForm extends FormBase {
       '#title' => $this->t('Client Legal Contact'),
       '#required' => TRUE,
       '#attributes' => [
-        'autocomplete' => 'off'
+        'autocomplete' => 'off',
       ],
-      '#default_value' =>  $group->get('field_client_legal_contact')->value ?? '',   
-      '#prefix' => '<div class="partner-contact-info grid-layout-column">',     
+      '#default_value' => $group->get('field_client_legal_contact')->value ?? '',
+      '#prefix' => '<div class="partner-contact-info grid-layout-column">',
     ];
 
     $form['client_point_of_contact'] = [
@@ -160,9 +153,9 @@ final class EditClientForm extends FormBase {
       '#title' => $this->t('Client Point of Contact'),
       '#required' => TRUE,
       '#attributes' => [
-        'autocomplete' => 'off'
+        'autocomplete' => 'off',
       ],
-      '#default_value' =>  $group->get('field_client_point_of_contact')->value ?? '',        
+      '#default_value' => $group->get('field_client_point_of_contact')->value ?? '',
     ];
 
     $form['agreement_effective_date'] = [
@@ -175,53 +168,66 @@ final class EditClientForm extends FormBase {
       ],
       '#suffix' => '</div>',
     ];
-   
-
-
 
     $form['partner_type'] = [
       '#type' => 'select',
       '#title' => $this->t('Type'),
       '#options' => [
-         'demand_partner' => 'Demand Partner',
-         'enterprise' => 'Enterprise',
-        ],
+        'demand_partner' => $this->t('Demand Partner'),
+        'enterprise' => $this->t('Enterprise'),
+      ],
       '#required' => TRUE,
       '#default_value' => $group->get('field_partner_type')->value ?? '',
       '#prefix' => '<div class="partner-details grid-layout-column">',
     ];
 
-
     $form['industry'] = [
       '#type' => 'select',
       '#title' => $this->t('Industry'),
       '#options' => [
-         'aggregator' => 'Aggregator',
-         'fintech' => 'Fintech',
-         'bank' => 'Bank',
-         'social_media' => 'Social Media',
-         'crypto' => 'Crypto',
-         'ride_share' => 'Ride Share',
-         'other_app' => 'Other App',
-        ],
+        'aggregator' => $this->t('Aggregator'),
+        'fintech' => $this->t('Fintech'),
+        'bank' => $this->t('Bank'),
+        'social_media' => $this->t('Social Media'),
+        'crypto' => $this->t('Crypto'),
+        'ride_share' => $this->t('Ride Share'),
+        'other_app' => $this->t('Other App'),
+      ],
       '#required' => TRUE,
-      '#default_value' =>  $group->get('field_industry')->value ?? '',
+      '#default_value' => $group->get('field_industry')->value ?? '',
     ];
 
-   
     $form['partner_status'] = [
       '#type' => 'select',
       '#title' => $this->t('Status'),
       '#options' => [
-         'active' => 'Active',
-         'inactive' => 'InActive',
-        ],
-      '#default_value' => 'active',  
+        'active' => $this->t('Active'),
+        'inactive' => $this->t('InActive'),
+      ],
+      '#default_value' => 'active',
       '#required' => TRUE,
       '#default_value' => $group->get('field_partner_status')->value ?? '',
       '#suffix' => '</div>',
     ];
 
+    $form['client_pricing_column_wrapper_text'] = [
+      '#type' => 'fieldset',
+      '#attributes' => [
+        'class' => ['client-contact-details-col-4'],
+      ],
+    ];
+
+    $form['client_pricing_column_wrapper_text']['domestic_pricing'] = [
+      '#type' => 'checkbox',
+      '#title' => 'Is domestic pricing',
+      '#default_value' => $group->get('field_domestic_pricing')->value ?? FALSE,
+    ];
+
+    $form['client_pricing_column_wrapper_text']['international_pricing'] = [
+      '#type' => 'checkbox',
+      '#title' => 'International pricing',
+      '#default_value' => $group->get('field_international_pricing')->value ?? FALSE,
+    ];
 
     $form['client_Layout_column_wrapper_text'] = [
       '#type' => 'fieldset',
@@ -231,33 +237,31 @@ final class EditClientForm extends FormBase {
     ];
 
     $address = $group->get('field_address')->getValue();
-    $address_value = isset($address[0]) ? $address[0]: '';
+    $address_value = $address[0] ?? '';
     $form['client_Layout_column_wrapper_text']['address'] = [
       '#type' => 'address',
       '#title' => $this->t('Address'),
-      '#required' => TRUE,  
-      '#default_value' => $address_value ?? '', 
-      '#suffix' => '</div>',   
+      '#required' => TRUE,
+      '#default_value' => $address_value ?? '',
+      '#suffix' => '</div>',
       '#after_build' => [[$this, 'customAddressAlter']],
     ];
-
 
     $form['client_Layout_column_wrapper_text']['partner_description'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Description'),
       '#required' => TRUE,
-      '#default_value' =>  strip_tags($group->get('field_description')->value) ?? '',
+      '#default_value' => strip_tags($group->get('field_description')->value ?? '') ?? '',
       '#prefix' => '<div class="partner-desc">',
       '#suffix' => '</div></div>',
     ];
 
     $code = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
-    foreach($lists_currencies as $currency_data) {
+    foreach ($lists_currencies as $currency_data) {
       if ($currency_data['locale'] === $code) {
         $currency_code = $currency_data['alphabeticCode'];
       }
     }
-
 
     $form['currencies'] = [
       '#type' => 'textfield',
@@ -273,7 +277,7 @@ final class EditClientForm extends FormBase {
       '#type' => 'number',
       '#title' => 'Prepayment Amount',
       '#min' => 0,
-      '#default_value' =>  $group->get('field_prepayment_amount')->value ?? '',
+      '#default_value' => $group->get('field_prepayment_amount')->value ?? '',
      // '#step' => 0.001,
     ];
 
@@ -281,8 +285,8 @@ final class EditClientForm extends FormBase {
       '#type' => 'number',
       '#title' => 'Prepayment Balance left',
       '#min' => 0,
-      '#default_value' =>  $group->get('field_prepayment_balance_left')->value ?? '',
-    //  '#step' => 0.001,
+      '#default_value' => $group->get('field_prepayment_balance_left')->value ?? '',
+    // '#step' => 0.001,
       '#attributes' => [
         'readonly' => 'readonly',
       ],
@@ -295,13 +299,11 @@ final class EditClientForm extends FormBase {
       '#attributes' => [
         'readonly' => 'readonly',
       ],
-      '#default_value' =>  $group->get('field_prepayment_balance_used')->value ?? '',
-      //'#step' => 0.001,
+      '#default_value' => $group->get('field_prepayment_balance_used')->value ?? '',
+      // '#step' => 0.001,
       '#suffix' => '</div></div>',
     ];
 
-
-   
     $form['api_agreement_covers'] = [
       '#type' => 'fieldset',
       '#title' => 'APIs Agreement Covers',
@@ -312,24 +314,24 @@ final class EditClientForm extends FormBase {
     ];
 
     $api_aggreement_covers_array = [];
-    if(!empty($group->get('field_apis_agreement_covers')->value)) {
+    if (!empty($group->get('field_apis_agreement_covers')->value)) {
       $api_aggreement_covers_array = json::decode($group->get('field_apis_agreement_covers')->value);
-    }   
+    }
     $nids = \Drupal::entityQuery('node')
       ->condition('type', 'api_attributes')
       ->sort('field_attribute_weight', 'ASC')
       ->accessCheck()
       ->execute();
-      $contents = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
+    $contents = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
     if (!empty($contents)) {
       $attribute_no = 1;
       foreach ($contents as $content) {
         $nids[] = $content->id();
-        // Checkbox to enable/select this attribute
-        $form['api_agreement_covers']['attribute_' . $content->id()]= [
+        // Checkbox to enable/select this attribute.
+        $form['api_agreement_covers']['attribute_' . $content->id()] = [
           '#type' => 'checkbox',
-          '#title' => Markup::create("<span class='attribute-no'>$attribute_no. </span>") .$content->label(),
-          '#default_value' => isset($api_aggreement_covers_array[$content->id()]) ? $api_aggreement_covers_array[$content->id()] : 0,
+          '#title' => Markup::create("<span class='attribute-no'>$attribute_no. </span>") . $content->label(),
+          '#default_value' => $api_aggreement_covers_array[$content->id()] ?? 0,
           '#attributes' => [
             'class' => ['toggle-checkbox'],
           ],
@@ -343,8 +345,6 @@ final class EditClientForm extends FormBase {
       '#value' => implode(",", $nids),
       '#suffix' => '</div>',
     ];
-
-
 
     $form['actions'] = [
       '#type' => 'actions',
@@ -382,31 +382,26 @@ final class EditClientForm extends FormBase {
     foreach ($nids as $nid) {
       $json[$nid] = $values['attribute_' . $nid];
     }
-   
 
-    
     $encoded_data = Json::encode($json);
 
+    $partner_name = $form_state->getValue('partner_name');
+    $contact_name = $form_state->getValue('contact_name');
+    $contact_email = $form_state->getValue('contact_email');
+    $partner_description = $form_state->getValue('partner_description');
+    $partner_status = $form_state->getValue('partner_status');
+    $partner_type = $form_state->getValue('partner_type');
 
-    $partner_name = $form_state->getValue('partner_name'); 
-    $contact_name = $form_state->getValue('contact_name'); 
-    $contact_email = $form_state->getValue('contact_email'); 
-    $partner_description = $form_state->getValue('partner_description'); 
-    $partner_status = $form_state->getValue('partner_status'); 
-    $partner_type = $form_state->getValue('partner_type'); 
-
-
-    
-    $client_legal_contact = $form_state->getValue('client_legal_contact'); 
-    $client_point_of_contact = $form_state->getValue('client_point_of_contact'); 
-    $agreement_effective_date = $form_state->getValue('agreement_effective_date'); 
-    $industry = $form_state->getValue('industry'); 
+    $client_legal_contact = $form_state->getValue('client_legal_contact');
+    $client_point_of_contact = $form_state->getValue('client_point_of_contact');
+    $agreement_effective_date = $form_state->getValue('agreement_effective_date');
+    $industry = $form_state->getValue('industry');
     $prepayment_amount = $form_state->getValue('prepayment_amount');
     $prepayment_balance_left = $form_state->getValue('prepayment_balance_left');
-    $prepayment_balance_used= $form_state->getValue('prepayment_balance_used');
+    $prepayment_balance_used = $form_state->getValue('prepayment_balance_used');
+    $domestic_pricing = $form_state->getValue('domestic_pricing');
+    $international_pricing = $form_state->getValue('international_pricing');
     $currency = $form_state->getValue('currencies');
-
-
 
     $gid = $this->request->get('id');
     $group = Group::load($gid);
@@ -418,6 +413,8 @@ final class EditClientForm extends FormBase {
     $group->set('field_partner_status', $partner_status);
     $group->set('field_partner_type', $partner_type);
     $group->set('field_agreement_effective_date', $agreement_effective_date);
+    $group->set('field_domestic_pricing', $domestic_pricing);
+    $group->set('field_international_pricing', $international_pricing);
 
     $group->set('field_client_legal_contact', $client_legal_contact);
     $group->set('field_client_point_of_contact', $client_point_of_contact);
@@ -429,50 +426,48 @@ final class EditClientForm extends FormBase {
     $group->set('field_industry', $industry);
     $group->set('field_apis_agreement_covers', $encoded_data);
 
+    // Address details.
+    $country_code = $form_state->getValue('address')['country_code'];
+    $administrative_area = $form_state->getValue('address')['administrative_area'];
+    $locality = $form_state->getValue('address')['locality'];
+    $dependent_locality = $form_state->getValue('address')['dependent_locality'];
+    $postal_code = $form_state->getValue('address')['postal_code'];
+    $sorting_code = $form_state->getValue('address')['sorting_code'];
+    $address_line1 = $form_state->getValue('address')['address_line1'];
+    $address_line2 = $form_state->getValue('address')['address_line2'];
+    $address_line3 = $form_state->getValue('address')['address_line3'];
+    $organization = $form_state->getValue('address')['organization'];
+    $given_name = $form_state->getValue('address')['given_name'];
+    $additional_name = $form_state->getValue('address')['additional_name'];
+    $family_name = $form_state->getValue('address')['family_name'];
 
+    $group->set('field_address', [
+      "langcode" => NULL,
+      "country_code" => $country_code ?? '',
+      "administrative_area" => $administrative_area ?? '',
+      "locality" => $locality ?? '',
+      "dependent_locality" => $dependent_locality ?? '',
+      "postal_code" => $postal_code ?? '',
+      "sorting_code" => $sorting_code ?? '',
+      "address_line1" => $address_line1 ?? '',
+      "address_line2" => $address_line2 ?? '',
+      "address_line3" => $address_line3 ?? '',
+      "organization" => $organization ?? '',
+      "given_name" => $given_name ?? '',
+      "additional_name" => $additional_name ?? '',
+      "family_name" => $family_name ?? '',
+    ]);
 
-
-       // Address details
-       $country_code =  $form_state->getValue('address')['country_code'];
-       $administrative_area = $form_state->getValue('address')['administrative_area'];
-       $locality = $form_state->getValue('address')['locality'];
-       $dependent_locality = $form_state->getValue('address')['dependent_locality'];
-       $postal_code = $form_state->getValue('address')['postal_code'];
-       $sorting_code = $form_state->getValue('address')['sorting_code'];
-       $address_line1 = $form_state->getValue('address')['address_line1'];
-       $address_line2 = $form_state->getValue('address')['address_line2'];
-       $address_line3 = $form_state->getValue('address')['address_line3'];
-       $organization = $form_state->getValue('address')['organization'];
-       $given_name = $form_state->getValue('address')['given_name'];
-       $additional_name = $form_state->getValue('address')['additional_name'];
-       $family_name =  $form_state->getValue('address')['family_name'];
-
-       $group->set('field_address', [
-        "langcode" => null,
-        "country_code" => $country_code ?? '',
-        "administrative_area" => $administrative_area ?? '',
-        "locality" => $locality ?? '',
-        "dependent_locality" => $dependent_locality ?? '',
-        "postal_code" => $postal_code ?? '',
-        "sorting_code" => $sorting_code ?? '',
-        "address_line1" => $address_line1 ?? '',
-        "address_line2" => $address_line2 ?? '',
-        "address_line3" => $address_line3 ?? '',
-        "organization" => $organization ?? '',
-        "given_name" => $given_name ?? '',
-        "additional_name" => $additional_name ?? '',
-        "family_name" => $family_name ?? '',
-      ]);
-    
-    $group->save();    
+    $group->save();
     $this->messenger()->addMessage($this->t('Client is updated successfully.'));
     $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
   }
 
-
-
-  function customAddressAlter(array $element, \Drupal\Core\Form\FormStateInterface $form_state) {
-    // Remove specific subfields
+  /**
+   * Alter the address form.
+   */
+  public function customAddressAlter(array $element, FormStateInterface $form_state) {
+    // Remove specific subfields.
     unset($element['address_line2']);
     unset($element['address_line2']);
     unset($element['address_line3']);
@@ -481,8 +476,5 @@ final class EditClientForm extends FormBase {
     unset($element['family_name']);
     return $element;
   }
+
 }
-
-
-
-

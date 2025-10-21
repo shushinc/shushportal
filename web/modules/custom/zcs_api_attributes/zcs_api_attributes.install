@@ -1,49 +1,52 @@
 <?php
 
+/**
+ * @file
+ */
 
-use \Drupal\menu_link_content\Entity\MenuLinkContent;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\user\Entity\Role;
+use Drupal\menu_link_content\Entity\MenuLinkContent;
 
-
+/**
+ *
+ */
 function zcs_api_attributes_install() {
 
-    $menu_name = 'main';
-    $title = 'API Attribute Status';
-    $link_uri = 'internal:/api-attribute-status';
+  $menu_name = 'main';
+  $title = 'API Attribute Status';
+  $link_uri = 'internal:/api-attribute-status';
 
-    // Check if a menu link with the same properties already exists.
-    $existing_menu_links = \Drupal::entityTypeManager()->getStorage('menu_link_content')->loadByProperties([
+  // Check if a menu link with the same properties already exists.
+  $existing_menu_links = \Drupal::entityTypeManager()->getStorage('menu_link_content')->loadByProperties([
+    'menu_name' => $menu_name,
+    'title' => $title,
+    'link__uri' => $link_uri,
+  ]);
+
+  if (empty($existing_menu_links)) {
+
+    // Add a sample link to the main menu.
+    $menu_link = MenuLinkContent::create([
       'menu_name' => $menu_name,
       'title' => $title,
-      'link__uri' => $link_uri,
+      'link' => [
+           ['uri' => $link_uri],
+      ],
+      'weight' => 7   ,
+      'menu_per_role__show_role' => [
+        'authenticated',
+      ],
     ]);
+    $menu_link->save();
+  }
 
-    if (empty($existing_menu_links)) {
-
-     // Add a sample link to the main menu.
-        $menu_link = MenuLinkContent::create([
-          'menu_name' => $menu_name,
-          'title' =>  $title,
-          'link' => [
-             ['uri' => $link_uri]
-          ],
-          'weight' => 7   ,
-          'menu_per_role__show_role' => [
-            'authenticated',
-          ],
-        ]);
-        $menu_link->save();
-    }
-
-
-
-   // Create the parent menu link.
+  // Create the parent menu link.
   $parent_menu_link = MenuLinkContent::create([
     'title' => 'Price',
-    'link' => ['uri' => 'route:<nolink>'],  // Adjust path as needed.
+  // Adjust path as needed.
+    'link' => ['uri' => 'route:<nolink>'],
     'menu_name' => $menu_name,
-    'expanded' => TRUE, // Keep it expanded to show child links.
+  // Keep it expanded to show child links.
+    'expanded' => TRUE,
     'weight' => 8,
   ]);
   $parent_menu_link->save();
@@ -54,9 +57,11 @@ function zcs_api_attributes_install() {
   // Create the child menu link.
   $child_menu_link1 = MenuLinkContent::create([
     'title' => 'Change Pricing',
-    'link' => ['uri' => 'internal:/change-network-authentication-pricing'], // Adjust path as needed.
+  // Adjust path as needed.
+    'link' => ['uri' => 'internal:/change-network-authentication-pricing'],
     'menu_name' => $menu_name,
-    'parent' => $parent_id, // Set the parent ID.
+  // Set the parent ID.
+    'parent' => $parent_id,
     'weight' => 1,
   ]);
   $child_menu_link1->save();
@@ -64,9 +69,11 @@ function zcs_api_attributes_install() {
   // Create the child menu link.
   $child_menu_link2 = MenuLinkContent::create([
     'title' => 'Pricing Over Time',
-    'link' => ['uri' => 'internal:/network_authentication_pricing_over_time'], // Adjust path as needed.
+  // Adjust path as needed.
+    'link' => ['uri' => 'internal:/network_authentication_pricing_over_time'],
     'menu_name' => $menu_name,
-    'parent' => $parent_id, // Set the parent ID.
+  // Set the parent ID.
+    'parent' => $parent_id,
     'weight' => 2,
   ]);
   $child_menu_link2->save();
@@ -74,24 +81,26 @@ function zcs_api_attributes_install() {
   // Create the child menu link.
   $child_menu_link3 = MenuLinkContent::create([
     'title' => 'Client Discounts',
-    'link' => ['uri' => 'internal:/demand_partner_discounts_or_different_pricing'], // Adjust path as needed.
+  // Adjust path as needed.
+    'link' => ['uri' => 'internal:/demand_partner_discounts_or_different_pricing'],
     'menu_name' => $menu_name,
-    'parent' => $parent_id, // Set the parent ID.
+  // Set the parent ID.
+    'parent' => $parent_id,
     'weight' => 3,
   ]);
   $child_menu_link3->save();
 
 }
 
-
-
+/**
+ *
+ */
 function zcs_api_attributes_uninstall() {
   $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
   $menu_items = $storage->loadByProperties(['link__uri' => 'internal:/api-attribute-status']);
   foreach ($menu_items as $menu_item) {
     $menu_item->delete();
   }
-
 
   $query = \Drupal::entityQuery('menu_link_content')
     ->condition('title', 'Price')
@@ -125,7 +134,6 @@ function zcs_api_attributes_uninstall() {
     }
   }
 }
-
 
 /**
  * Adding new tables to add the audit record of attribute pages.
@@ -200,14 +208,14 @@ function zcs_api_attributes_update_9002() {
         'type' => 'varchar',
         'length' => 15,
         'not null' => TRUE,
-        'default' => ''
+        'default' => '',
       ],
       'updated' => [
         'description' => 'Attribute Page Updated date.',
         'type' => 'varchar',
         'length' => 15,
         'not null' => TRUE,
-        'default' => ''
+        'default' => '',
       ],
     ],
     'primary key' => ['id'],
@@ -226,12 +234,11 @@ function zcs_api_attributes_update_9002() {
         'type' => 'varchar',
         'length' => 15,
         'not null' => TRUE,
-        'default' => ''
-      ]
+        'default' => '',
+      ],
     ],
     'primary key' => ['id'],
   ];
-
 
   $database = \Drupal::database()->schema();
   foreach ($tables as $table_name => $table) {
@@ -249,22 +256,20 @@ function zcs_api_attributes_update_9002() {
     ->execute();
 }
 
-
-
-
-function zcs_api_attributes_update_9003(){
+/**
+ *
+ */
+function zcs_api_attributes_update_9003() {
   $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
 
   $menu_item_object1 = current($storage->loadByProperties(['title' => 'Finance Approval']));
-  if($menu_item_object1) {
+  if ($menu_item_object1) {
     $menu_item_object1->delete();
   }
   $menu_item_object2 = current($storage->loadByProperties(['title' => 'Change Pricing']));
-  if($menu_item_object2) {
+  if ($menu_item_object2) {
     $menu_item_object2->delete();
   }
-
-
 
   $parent_menu = current($storage->loadByProperties(['title' => 'Price']));
   $parent_id = 'menu_link_content:' . $parent_menu->uuid();
@@ -272,17 +277,18 @@ function zcs_api_attributes_update_9003(){
   // Create the child menu link.
   $finance_approval_menu_child_link3 = MenuLinkContent::create([
     'title' => 'Finance Approval',
-    'link' => ['uri' => 'internal:/finance-approval'], // Adjust path as needed.
+  // Adjust path as needed.
+    'link' => ['uri' => 'internal:/finance-approval'],
     'menu_name' => 'main',
-    'parent' => $parent_id, // Set the parent ID.
+  // Set the parent ID.
+    'parent' => $parent_id,
     'weight' => 4,
   ]);
   $finance_approval_menu_child_link3->save();
-  
 
 }
 
-/*
+/**
  * Adding new fields to add the integer format record of attribute pages.
  */
 function zcs_api_attributes_update_9004() {
@@ -291,7 +297,7 @@ function zcs_api_attributes_update_9004() {
     'description' => "Effective Date Integer Format",
     'length' => 20,
     'not null' => FALSE,
-  ]; 
+  ];
   $schema = \Drupal::database()->schema();
   $schema->addField('attributes_page_data', 'effective_date_integer', $spec);
 
@@ -305,14 +311,11 @@ function zcs_api_attributes_update_9004() {
       ->execute();
   }
 
-
   $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
   $menu_item_object1 = current($storage->loadByProperties(['title' => 'Pricing Over Time']));
   $menu_item_object1->set('title', 'Pricing History');
   $menu_item_object1->save();
 }
-
-
 
 /**
  * Adding new tables to add the audit record of API attribute pages.
@@ -373,14 +376,14 @@ function zcs_api_attributes_update_9006() {
         'type' => 'varchar',
         'length' => 15,
         'not null' => TRUE,
-        'default' => ''
+        'default' => '',
       ],
       'updated' => [
         'description' => 'Attribute Page Updated date.',
         'type' => 'varchar',
         'length' => 15,
         'not null' => TRUE,
-        'default' => ''
+        'default' => '',
       ],
     ],
     'primary key' => ['id'],
@@ -400,9 +403,11 @@ function zcs_api_attributes_update_9006() {
   // Create the child menu link.
   $api_attribute_status_approval_menu_child_link2 = MenuLinkContent::create([
     'title' => 'API Attribute Approval',
-    'link' => ['uri' => 'internal:/api-attribute-approval'], // Adjust path as needed.
+  // Adjust path as needed.
+    'link' => ['uri' => 'internal:/api-attribute-approval'],
     'menu_name' => 'main',
-    'parent' => $parent_id, // Set the parent ID.
+  // Set the parent ID.
+    'parent' => $parent_id,
     'weight' => 3,
     'menu_per_role__show_role' => [
       'administrator',
