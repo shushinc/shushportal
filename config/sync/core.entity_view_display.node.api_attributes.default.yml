@@ -10,7 +10,6 @@ dependencies:
     - field.field.node.api_attributes.field_carrier_enabled_3rd_party
     - field.field.node.api_attributes.field_current_standard_pricing
     - field.field.node.api_attributes.field_disc_pricing
-    - field.field.node.api_attributes.field_domestic_standard_price
     - field.field.node.api_attributes.field_effective_date1_price_call
     - field.field.node.api_attributes.field_effective_date2_price_call
     - field.field.node.api_attributes.field_effective_date3_price_call
@@ -83,17 +82,6 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     weight: 119
-    region: content
-  field_domestic_standard_price:
-    type: number_decimal
-    label: above
-    settings:
-      thousand_separator: ''
-      decimal_separator: .
-      scale: 2
-      prefix_suffix: true
-    third_party_settings: {  }
-    weight: 124
     region: content
   field_effective_date1_price_call:
     type: string

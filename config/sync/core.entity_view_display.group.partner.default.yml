@@ -13,7 +13,6 @@ dependencies:
     - field.field.group.partner.field_contact_name
     - field.field.group.partner.field_currency
     - field.field.group.partner.field_description
-    - field.field.group.partner.field_domestic_pricing
     - field.field.group.partner.field_industry
     - field.field.group.partner.field_international_pricing
     - field.field.group.partner.field_partner_status
@@ -21,6 +20,7 @@ dependencies:
     - field.field.group.partner.field_prepayment_amount
     - field.field.group.partner.field_prepayment_balance_left
     - field.field.group.partner.field_prepayment_balance_used
+    - field.field.group.partner.field_pricing_type
     - group.type.partner
   module:
     - address
@@ -111,16 +111,6 @@ content:
     third_party_settings: {  }
     weight: -2
     region: content
-  field_domestic_pricing:
-    type: boolean
-    label: above
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
-    weight: 17
-    region: content
   field_industry:
     type: list_default
     label: above
@@ -178,6 +168,13 @@ content:
       prefix_suffix: true
     third_party_settings: {  }
     weight: 15
+    region: content
+  field_pricing_type:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 20
     region: content
   label:
     type: string

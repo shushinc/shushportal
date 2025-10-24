@@ -31,8 +31,7 @@ class ViewClientController extends ControllerBase {
     $contact_name = $group->get('field_contact_name')->value ?? '';
     $contact_email = $group->get('field_contact_email')->value ?? '';
     $status = $group->get('field_partner_status')->value ?? '';
-    $domestic_pricing = $group->get('field_domestic_pricing')->value ?? FALSE;
-    $international_pricing = $group->get('field_international_pricing')->value ?? FALSE;
+    $pricing_type = $group->get('field_pricing_type')->value ?? '';
 
     $field_config_partner_type = FieldConfig::load('group.partner.field_partner_type');
     if ($field_config_partner_type) {
@@ -47,6 +46,11 @@ class ViewClientController extends ControllerBase {
     $field_config_partner_industries = FieldConfig::load('group.partner.field_industry');
     if ($field_config_partner_industries) {
       $partner_industries_values = $field_config_partner_industries->getSetting('allowed_values');
+    }
+
+    $field_config_pricing_type = FieldConfig::load('group.partner.field_pricing_type');
+    if ($field_config_pricing_type) {
+      $pricing_type_values = $field_config_pricing_type->getSetting('allowed_values');
     }
 
     $currency =  $group->get('field_currency')->value ?? '';
@@ -88,6 +92,7 @@ class ViewClientController extends ControllerBase {
     ->sort('field_attribute_weight', 'ASC')
     ->accessCheck()
     ->execute();
+    /** @var \Drupal\node\NodeInterface[] */
     $contents = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
     if (!empty($contents)) {
       foreach ($contents as $content) {
@@ -109,8 +114,7 @@ class ViewClientController extends ControllerBase {
       '#type' => isset($partner_type_values[$type]) ? $partner_type_values[$type] : '',
       '#industry' => isset($partner_industries_values[$industry]) ? $partner_industries_values[$industry] : '',
       '#agreement_effective_date' => $aggreement_effective_date,
-      '#domestic_pricing' => $domestic_pricing,
-      '#international_pricing' => $international_pricing,
+      '#pricing_type' => $pricing_type_values[$pricing_type] ?? '',
       '#currency' => $symbol,
       '#prepayment_amount' => $prepayment_amount,
       '#prepayment_balance_left' => $prepayment_balance_left,

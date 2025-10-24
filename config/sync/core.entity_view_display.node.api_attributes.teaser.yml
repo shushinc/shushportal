@@ -11,7 +11,6 @@ dependencies:
     - field.field.node.api_attributes.field_carrier_enabled_3rd_party
     - field.field.node.api_attributes.field_current_standard_pricing
     - field.field.node.api_attributes.field_disc_pricing
-    - field.field.node.api_attributes.field_domestic_standard_price
     - field.field.node.api_attributes.field_effective_date1_price_call
     - field.field.node.api_attributes.field_effective_date2_price_call
     - field.field.node.api_attributes.field_effective_date3_price_call
@@ -50,7 +49,6 @@ hidden:
   field_carrier_enabled_3rd_party: true
   field_current_standard_pricing: true
   field_disc_pricing: true
-  field_domestic_standard_price: true
   field_effective_date1_price_call: true
   field_effective_date2_price_call: true
   field_effective_date3_price_call: true

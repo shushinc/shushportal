@@ -67,11 +67,10 @@ class RateSheetTwig extends AbstractExtension implements ExtensionInterface {
         // $final[$content->id()] = $content->title->value;
         $titles[$content->id()] = $content->title->value;
         $prices[$content->id()] = $symbol . (($content->field_standard_price->value ?? "0.000"));
-        $domestic_prices[$content->id()] = $symbol . (($content->field_domestic_standard_price->value ?? "0.000"));
       }
     }
     // Return $final;.
-    return compact('titles', 'prices', 'domestic_prices');
+    return compact('titles', 'prices');
   }
 
 }

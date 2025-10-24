@@ -10,10 +10,7 @@
 				<th>#</th>
 				<th>API Attributes</th>
 				{% for date , atts in content.header_date %}
-					<th><strong>International</strong> Price Effective<br>{{ atts }}</th>
-				{% endfor %}
-				{% for date , atts in content.header_date %}
-					<th><strong>Domestic</strong> Price Effective<br>{{ atts }}</th>
+					<th>Price Effective<br>{{ atts }}</th>
 				{% endfor %}
 			</tr>
 		</thead>
@@ -27,12 +24,6 @@
 						<td>
 							{{ content.symbols[key] }}
 							{{ att['price' ~ key] }}
-						</td>
-					{% endfor %}
-					{% for key, date in content.header_date %}
-						<td>
-							{{ content.symbols[key] }}
-							{{ att['domestic_price' ~ key] }}
 						</td>
 					{% endfor %}
 				</tr>

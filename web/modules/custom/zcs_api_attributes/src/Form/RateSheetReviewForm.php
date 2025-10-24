@@ -85,14 +85,6 @@ class RateSheetReviewForm extends FormBase {
           '#field_prefix' => $symbol,
           '#disabled' => TRUE,
         ];
-        $form['domestic_price' . $key] = [
-          '#type' => 'number',
-          '#min' => 0,
-          '#default_value' => $value['domestic_price'] ?? 0.000,
-          '#step' => 0.001,
-          '#field_prefix' => $symbol,
-          '#disabled' => TRUE,
-        ];
       }
     }
     // To fetch currencies.
@@ -192,7 +184,7 @@ class RateSheetReviewForm extends FormBase {
         $node = Node::load($id);
         if ($node instanceof NodeInterface) {
           $node->set('field_standard_price', $values['price' . $id]);
-          $node->set('field_domestic_standard_price', $values['domestic_price' . $id]);
+          // $node->set('field_domestic_standard_price', $values['domestic_price' . $id]);
           $node->save();
         }
       }
