@@ -113,13 +113,6 @@ class PriceRateSheet extends FormBase {
           '#step' => 0.001,
           '#field_prefix' => $symbol,
         ];
-        $form['domestic_price' . $content->id()] = [
-          '#type' => 'number',
-          '#min' => 0,
-          '#default_value' => $content->field_standard_price->value ?? 0.000,
-          '#step' => 0.001,
-          '#field_prefix' => $symbol,
-        ];
       }
     }
 
@@ -179,21 +172,7 @@ class PriceRateSheet extends FormBase {
         }
       }
 
-      // Domestic pricing.
-      $domestic_price = $values['domestic_price' . $nid];
-      if ($values['domestic_price' . $nid] == 0) {
-        $domestic_price = number_format($values['domestic_price' . $nid] ?? 0.000, 3);
-      }
-      else {
-        if (!preg_match('/^\d+\.\d{3}$/', $values['domestic_price' . $nid])) {
-          $domestic_price = number_format((float) $values['domestic_price' . $nid], 3, '.', '');
-        }
-      }
-
-      $json[$nid] = [
-        'price' => $price,
-        'domestic_price' => $domestic_price,
-      ];
+      $json[$nid] = $price;
     }
     $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'financial_rate_sheet_approval_level_1', 'status' => 1]);
     foreach ($users as $user) {

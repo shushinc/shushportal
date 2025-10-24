@@ -1,0 +1,27 @@
+uuid: 38ff477c-dbf2-42b5-864d-372e33730595
+langcode: en
+status: true
+dependencies:
+  module:
+    - group
+    - options
+id: group.field_pricing_type
+field_name: field_pricing_type
+entity_type: group
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: domestic_pricing
+      label: 'Domestic Pricing'
+    -
+      value: international_pricing
+      label: 'International Pricing'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -217,16 +217,15 @@ final class EditClientForm extends FormBase {
       ],
     ];
 
-    $form['client_pricing_column_wrapper_text']['domestic_pricing'] = [
-      '#type' => 'checkbox',
-      '#title' => 'Is domestic pricing',
-      '#default_value' => $group->get('field_domestic_pricing')->value ?? FALSE,
-    ];
-
-    $form['client_pricing_column_wrapper_text']['international_pricing'] = [
-      '#type' => 'checkbox',
-      '#title' => 'International pricing',
-      '#default_value' => $group->get('field_international_pricing')->value ?? FALSE,
+    $form['client_pricing_column_wrapper_text']['pricing_type'] = [
+      '#type' => 'select',
+      '#title' => 'Pricing Type',
+      '#required' => TRUE,
+      '#default_value' => $group->get('field_pricing_type')->value ?? FALSE,
+      '#options' => [
+        'domestic_pricing' => $this->t('Domestic Pricing'),
+        'international_pricing' => $this->t('International Pricing'),
+      ],
     ];
 
     $form['client_Layout_column_wrapper_text'] = [
@@ -399,8 +398,7 @@ final class EditClientForm extends FormBase {
     $prepayment_amount = $form_state->getValue('prepayment_amount');
     $prepayment_balance_left = $form_state->getValue('prepayment_balance_left');
     $prepayment_balance_used = $form_state->getValue('prepayment_balance_used');
-    $domestic_pricing = $form_state->getValue('domestic_pricing');
-    $international_pricing = $form_state->getValue('international_pricing');
+    $pricing_type = $form_state->getValue('pricing_type');
     $currency = $form_state->getValue('currencies');
 
     $gid = $this->request->get('id');
@@ -413,8 +411,7 @@ final class EditClientForm extends FormBase {
     $group->set('field_partner_status', $partner_status);
     $group->set('field_partner_type', $partner_type);
     $group->set('field_agreement_effective_date', $agreement_effective_date);
-    $group->set('field_domestic_pricing', $domestic_pricing);
-    $group->set('field_international_pricing', $international_pricing);
+    $group->set('field_pricing_type', $pricing_type);
 
     $group->set('field_client_legal_contact', $client_legal_contact);
     $group->set('field_client_point_of_contact', $client_point_of_contact);
