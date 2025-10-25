@@ -1,0 +1,20 @@
+uuid: 354520ee-8a9a-428f-bc7a-7370d9638407
+langcode: en
+status: true
+dependencies:
+  module:
+    - user
+id: theme_switcher
+label: 'Theme Switcher'
+weight: 0
+theme: violet
+admin_theme: ''
+conjunction: and
+visibility:
+  user_role:
+    id: user_role
+    negate: false
+    context_mapping:
+      user: '@user.current_user_context:current_user'
+    roles:
+      theme_tester: theme_tester

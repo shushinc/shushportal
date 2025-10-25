@@ -1,0 +1,20 @@
+uuid: 57f4bf2e-4837-4073-a601-7dd8a45e9b70
+langcode: en
+status: true
+dependencies:
+  theme:
+    - violet
+_core:
+  default_config_hash: OBS0tqibdJNwqCKFcjnLLY9S_YR-SoO1hhiJ9TR04IA
+id: violet_page_title
+theme: violet
+region: header
+weight: -2
+provider: null
+plugin: page_title_block
+settings:
+  id: page_title_block
+  label: 'Page title'
+  label_display: '0'
+  provider: core
+visibility: {  }

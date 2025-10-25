@@ -1,0 +1,83 @@
+@import "../../src/scss/init";
+
+div.page {
+  overflow-x: hidden;
+}
+
+#sidebar {
+  min-height: 100vh;
+  background-color: #052A48;
+  transition: margin-left 0.3s ease-in-out;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 501;
+  width: 250px;
+
+  &> sidebar {
+    position: relative;
+    &>nav>.container {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
+
+#sidebar.hidden {
+  margin-left: -250px;
+}
+
+#sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.8);
+  padding: 12px 20px;
+  transition: all 0.3s;
+}
+
+#sidebar .nav-link:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+#sidebar .nav-link i {
+  margin-right: 10px;
+  width: 20px;
+}
+
+#content {
+  background-color: #F4F7FE;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease-in-out;
+  margin-left: 250px;
+}
+
+#content.expanded {
+  margin-left: 0;
+}
+
+.toggle-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1001;
+  background-color: white;
+  color: #052A48;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: left 0.3s ease-in-out;
+}
+
+.toggle-btn:hover {
+  background-color: #073d66;
+}
+
+.toggle-btn.shifted {
+  left: 270px;
+}
+
+.sidebar-header {
+  padding: 20px;
+  color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
