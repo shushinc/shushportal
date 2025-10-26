@@ -4,6 +4,18 @@ div.page {
   overflow-x: hidden;
 }
 
+body.toolbar-horizontal.toolbar-fixed {
+
+  #sidebar {
+    padding-top: 39px;
+  }
+  &.toolbar-tray-open {
+    #sidebar {
+      padding-top: 80px;
+    }
+  }
+}
+
 #sidebar {
   min-height: 100vh;
   background-color: #052A48;
@@ -14,7 +26,7 @@ div.page {
   z-index: 501;
   width: 250px;
 
-  &> sidebar {
+  &> aside {
     position: relative;
     &>nav>.container {
       display: flex;
@@ -80,4 +92,10 @@ div.page {
   padding: 20px;
   color: white;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+
+// MAIN MENU FIXES
+div#sidebar .block--violet-main-menu > .block__content > ul > li {
+  width: 100%;
 }
