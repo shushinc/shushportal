@@ -1,6 +1,7 @@
 <?php
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\BubbleableMetadata;
 
 /**
  * Implements hook_theme().
@@ -77,4 +78,68 @@ function zcs_custom_preprocess_page(array &$variables) {
 
 function _password_policy_user_profile_form_submit() {
 // do nothing:
+}
+
+
+
+/*
+* hook_token_info()
+*/
+
+function zcs_custom_token_info() {
+  $info = [];
+  $info['types']['zcs_tokens'] = [
+    'name' => t('ZCS Tokens'), 
+    'description' => t('ZCS Tokens')
+  ];
+  $info['tokens']['zcs_tokens']['user_name'] = [
+    'name' => t('Username'),
+    'description' => t('Current Username'),
+  ];
+  $info['tokens']['zcs_tokens']['site_name'] = [
+    'name' => t('Site Name'),
+    'description' => t('Site Name'),
+  ];
+  $info['tokens']['zcs_tokens']['user_invite_activation_url'] = [
+    'name' => t('carrier user activation url'),
+    'description' => t('Carrier User Activation url'),
+  ];
+  $info['tokens']['zcs_tokens']['roles'] = [
+    'name' => t('User roles'),
+    'description' => t('User Roles'),
+  ];
+  $info['tokens']['zcs_tokens']['partner_name'] = [
+    'name' => t('Partner Name'),
+    'description' => t('Partner Name'),
+  ];
+  return $info;
+}
+
+/**
+ * Implements hook_token_token().
+ */
+function zcs_custom_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  $replacements = [];
+  if ($type == 'zcs_tokens') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'user_name':
+          $replacements[$original] = $data['user_name'];
+          break;
+        case 'user_invite_activation_url':
+          $replacements[$original] = $data['user_invite_activation_url'];
+          break;  
+        case 'site_name':
+          $replacements[$original] = $data['site_name'];
+          break;   
+        case 'roles':
+          $replacements[$original] = $data['roles'];
+          break;
+        case 'partner_name':
+          $replacements[$original] = $data['partner_name'];
+          break;  
+      }
+    }
+  }
+  return $replacements;
 }

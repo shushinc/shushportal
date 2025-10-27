@@ -14,7 +14,6 @@ module:
   comment: 0
   config: 0
   config_ignore: 0
-  consolidate: 0
   contact: 0
   contextual: 0
   dashboard: 0
@@ -60,6 +59,7 @@ module:
   system: 0
   taxonomy: 0
   text: 0
+  token: 0
   toolbar: 0
   update: 0
   user: 0
@@ -67,9 +67,9 @@ module:
   views_ui: 0
   zcs_api_attributes: 0
   zcs_apis: 0
-  zcs_aws: 0
   zcs_client_management: 0
   zcs_custom: 0
+  zcs_kong: 0
   zcs_menu: 0
   zcs_user_management: 0
   password_policy: 10

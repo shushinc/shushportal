@@ -8,7 +8,7 @@ function zcs_user_management_mail($key, &$message, $params) {
     switch ($key) {
         case 'user_invite':
           $message['from'] = \Drupal::config('system.site')->get('mail');
-          $message['subject'] = t('Activate your account');
+          $message['subject'] = $params['subject'];
           $message['body'][] = $params['message'];
           break;
     }
