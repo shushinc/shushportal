@@ -2,6 +2,8 @@ uuid: 57f4bf2e-4837-4073-a601-7dd8a45e9b70
 langcode: en
 status: true
 dependencies:
+  module:
+    - system
   theme:
     - violet
 _core:
@@ -9,7 +11,7 @@ _core:
 id: violet_page_title
 theme: violet
 region: header
-weight: -2
+weight: -3
 provider: null
 plugin: page_title_block
 settings:
@@ -17,4 +19,8 @@ settings:
   label: 'Page title'
   label_display: '0'
   provider: core
-visibility: {  }
+visibility:
+  request_path:
+    id: request_path
+    negate: true
+    pages: /dashboard

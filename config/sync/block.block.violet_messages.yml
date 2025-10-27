@@ -11,7 +11,7 @@ _core:
 id: violet_messages
 theme: violet
 region: header
-weight: -3
+weight: 0
 provider: null
 plugin: system_messages_block
 settings:

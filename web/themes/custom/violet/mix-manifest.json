@@ -3,6 +3,8 @@
     "/build/js/main.script.js.map": "/build/js/main.script.js.map",
     "/components/page/page.css": "/components/page/page.css",
     "/components/page/page.css.map": "/components/page/page.css.map",
+    "/components/page-content/page-content.css": "/components/page-content/page-content.css",
+    "/components/page-content/page-content.css.map": "/components/page-content/page-content.css.map",
     "/build/css/main.style.css": "/build/css/main.style.css",
     "/build/css/main.style.css.map": "/build/css/main.style.css.map"
 }

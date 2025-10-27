@@ -9,7 +9,7 @@ _core:
 id: violet_local_actions
 theme: violet
 region: header
-weight: -4
+weight: -2
 provider: null
 plugin: local_actions_block
 settings:

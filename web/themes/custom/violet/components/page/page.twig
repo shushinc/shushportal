@@ -30,9 +30,11 @@
   </div>
   <div id="content">
     {% block page_content %}
-      {% include 'radix:page-content' with {
-        page_main_utility_classes: ['py-5'],
+      {% include 'violet:page-content' with {
+        page_header_container_type: 'fluid',
         page_header_container_utility_classes: ['mb-3'],
+        page_content_container_type: 'fluid',
+        page_main_utility_classes: ['py-5'],
       }%}
     {% endblock %}
   </div>
