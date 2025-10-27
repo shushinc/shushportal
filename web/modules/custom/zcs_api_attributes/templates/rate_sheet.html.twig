@@ -3,47 +3,47 @@
 {{ form.form_id }}
 
 {% if form.message %}
-	<p class="message">{{ form.message }}</p>
+  <p class="message">{{ form.message }}</p>
 {% endif %}
 <div class="rate-sheet-filter">
-	<div class="rate-sheet-filter-currencies">
-		<span class="attributes-label">Select Currency</span>
-		<span class="attribute-inputs">{{ form.currencies }}</span>
-	</div>
-	<div class="rate-sheet-filter-effective">
-		<span class="attributes-label">Effective Date of Proposed API Pricing</span>
-		<span class="attribute-inputs">{{ form.attribute_date }}</span>
-	</div>
+  <div class="rate-sheet-filter-currencies">
+    <span class="attributes-label">Select Currency</span>
+    <span class="attribute-inputs">{{ form.currencies }}</span>
+  </div>
+  <div class="rate-sheet-filter-effective">
+    <span class="attributes-label">Effective Date of Proposed API Pricing</span>
+    <span class="attribute-inputs">{{ form.attribute_date }}</span>
+  </div>
 </div>
 <div>
-	<span class="attribute-inputs">
-		<table class="attributes-table">
-			<thead>
-				<tr>
-					<th>#</th>
-					<th>API Attributes</th>
-					<th>Current API Pricing</th>
-					<th>Proposed API Pricing</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% set counter = 1 %}
-				{% set attributes = fetch_attributes() %}
-					{% for id, title in attributes.titles %}
-						<tr>
-							<td>{{ counter }}</td>
-							<td>{{ title }}</td>
-							<td>{{ attributes.prices[id] }}
-								{# {% if form['price' ~ id]|field_value != attributes.prices[id] %}
-									<span class="price-variation" style="color: red; font-size: 20px;">*</span>
-								{% endif %} #}
-							<td>{{ form['price' ~ id] }}</td>
-						</tr>
-					{% set counter = counter + 1 %}
-				{% endfor %}
-			</tbody>
-		</table>
-	</span>
+  <span class="attribute-inputs">
+    <table class="attributes-table {% if active_theme() == 'violet' %}table table-bordered{% endif %}">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>API Attributes</th>
+          <th>Current API Pricing</th>
+          <th>Proposed API Pricing</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% set counter = 1 %}
+        {% set attributes = fetch_attributes() %}
+          {% for id, title in attributes.titles %}
+            <tr>
+              <td>{{ counter }}</td>
+              <td>{{ title }}</td>
+              <td>{{ attributes.prices[id] }}
+                {# {% if form['price' ~ id]|field_value != attributes.prices[id] %}
+                  <span class="price-variation" style="color: red; font-size: 20px;">*</span>
+                {% endif %} #}
+              <td>{{ form['price' ~ id] }}</td>
+            </tr>
+          {% set counter = counter + 1 %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </span>
 </div>
 
 

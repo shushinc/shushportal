@@ -1,39 +1,39 @@
-<table class="rate-sheet-approval">
-	<thead>
-		<tr>
-			<th>Submitted By</th>
-			<th>Requested Date</th>
-			<th>Effective Date</th>
-			<th>Approvers</th>
-			<th>Status</th>
-			<th>Action</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% if content|length > 0 %}
-			{% for data in content %}
-				<tr>
-					<td>{{ data.submitted }}</td>
-					<td>{{ data.requested_time }}</td>
-					<td>{{ data.effective_date }}</td>
-					<td>{{ data.approver1 }}
-						<span class="{{ data.approver1_status|lower }}">{{ data.approver1_status }}</span>
-						<br>
-						{% if data.approver1_status != 'Rejected' %}
-							{{ data.approver2 }}
-							<span class="{{ data.approver2_status|lower }}">{{ data.approver2_status }}</span>
-						{% endif %}
-					</td>
-					<td class="{{ data.status|lower }}">{{ data.status }}</td>
-					<td>
-						<a href="{{ data.url }}" class="btn-primary use-ajax anchor-dropdown-btn" data-toggle='modal' data-dialog-type='modal' data-dialog-options='{"width": 1000, "title": "Pricing Review", "dialogClass":"api-popup-width-resize api-table-fixed"}'>Review</a>
-					</td>
-				</tr>
-			{% endfor %}
-		{% else %}
-			<tr>
-				<td colspan="6">There are no approvals</td>
-			</tr>
-		{% endif %}
-	</tbody>
+<table class="rate-sheet-approval {% if active_theme() == 'violet' %}table table-bordered{% endif %}">
+  <thead>
+    <tr>
+      <th>Submitted By</th>
+      <th>Requested Date</th>
+      <th>Effective Date</th>
+      <th>Approvers</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if content|length > 0 %}
+      {% for data in content %}
+        <tr>
+          <td>{{ data.submitted }}</td>
+          <td>{{ data.requested_time }}</td>
+          <td>{{ data.effective_date }}</td>
+          <td>{{ data.approver1 }}
+            <span class="{{ data.approver1_status|lower }}">{{ data.approver1_status }}</span>
+            <br>
+            {% if data.approver1_status != 'Rejected' %}
+              {{ data.approver2 }}
+              <span class="{{ data.approver2_status|lower }}">{{ data.approver2_status }}</span>
+            {% endif %}
+          </td>
+          <td class="{{ data.status|lower }}">{{ data.status }}</td>
+          <td>
+            <a href="{{ data.url }}" class="btn-primary use-ajax anchor-dropdown-btn" data-toggle='modal' data-dialog-type='modal' data-dialog-options='{"width": 1000, "title": "Pricing Review", "dialogClass":"api-popup-width-resize api-table-fixed"}'>Review</a>
+          </td>
+        </tr>
+      {% endfor %}
+    {% else %}
+      <tr>
+        <td colspan="6">There are no approvals</td>
+      </tr>
+    {% endif %}
+  </tbody>
 </table>

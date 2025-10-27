@@ -1,0 +1,22 @@
+uuid: 9f07245c-2c63-4289-9589-503dd16e6c16
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - radix
+_core:
+  default_config_hash: 5jvo5BWlJLWHILimKoQTDMHA8D-tCYJVbK8TRuLlVaU
+id: radix_messages
+theme: radix
+region: navbar_branding
+weight: -7
+provider: null
+plugin: system_messages_block
+settings:
+  id: system_messages_block
+  label: 'Status messages'
+  label_display: '0'
+  provider: system
+visibility: {  }
