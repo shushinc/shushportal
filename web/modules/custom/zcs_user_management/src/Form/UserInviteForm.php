@@ -17,7 +17,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 
-
 /**
  * Provides a zcs_user_management form.
  */
@@ -126,9 +125,8 @@ final class UserInviteForm extends FormBase {
       'roles' => array_keys($roles)
     ]);  
     $user->save();
-    $user_roles_list = $this->getUserRolelableUsingRoleId($roles);
-    $save_invitation = $this->saveInvitation($user_email, $user_roles_list, $token, $passkey, $user_name);
-    $send_emai = $this->sendInvitationMail($user_email,  $user_roles_list, $token, $passkey, $user_name);
+    $save_invitation = $this->saveInvitation($user_email, 'carrier_admin', $token, $passkey, $user_name);
+    $send_emai = $this->sendInvitationMail($user_email, 'carrier_admin', $token, $passkey, $user_name);
     $form_state->setRedirectUrl(Url::fromRoute('view.user_management.page_1'));
   }
 
@@ -148,37 +146,23 @@ final class UserInviteForm extends FormBase {
    /**
    *
    */
-  public function sendInvitationMail(string $email, $roles, $token, $passkey, $user_name) {
+  public function sendInvitationMail(string $email, $role, $token, $passkey, $user_name) {
 
     $pass = $this->randomPassword();
     $invitation_url = Url::fromRoute('zcs_user_management.verify_invitation', [
       'token' => $token,
     ], ['absolute' => TRUE]);
-    $attributes = [
-      'target' => '_blank',
-      'style' => 'display: inline-block; padding: 12px 24px; font-size: 16px; color: #ffffff; text-decoration: none; font-weight: bold; background:#007bff; border-radius: 5px;',
-    ];
-    
-    $invitation_link = Link::fromTextAndUrl(t('Activate'), $invitation_url)
-      ->toRenderable();
-    $invitation_link['#attributes'] = $attributes;
+    $invitation_link = Link::fromTextAndUrl(t('here'), $invitation_url)->toString();
 
-    $rendered_link = \Drupal::service('renderer')->render($invitation_link);
-   
-    $site_name = \Drupal::config('system.site')->get('name');
-  
-    $email_subject = \Drupal::config('zcs_custom.portal_email_settings')->get('email_subject');
-    $email_body = \Drupal::config('zcs_custom.portal_email_settings')->get('email_body');
+    $email_body = 'Click below link to activate your account.<br>After activation you will be receiving further emails for onboarding process.';
+    $email_body .= '<br>link:' .  $invitation_link;
 
- 
 
-    $user_name = $this->getUserNameUsingEmail($email);
-    $email_body = \Drupal::token()->replace($email_body, ['user_name' => $user_name, 'user_invite_activation_url' => $rendered_link, 'site_name' => $site_name, 'roles' => $roles]); 
     $mailManager = \Drupal::service('plugin.manager.mail');
     $module = 'zcs_user_management';
     $key = 'user_invite';
     $to = $email;
-    $params['subject'] = $email_subject;
+    $params['subject'] = 'Activate your account';
     $params['message'] = $email_body;
     $langcode = \Drupal::currentUser()->getPreferredLangcode();
     $send = TRUE;
@@ -189,37 +173,11 @@ final class UserInviteForm extends FormBase {
       ]), 'error');
     }
     else {
-      \Drupal::messenger()->addMessage(t('An initation mail has been sent to %email for %role  role', [
+      \Drupal::messenger()->addMessage(t('An invitation mail has been sent to %email for %role  role', [
         '%email' => $email,
-        '%role ' => $roles,
+        '%role ' => $role,
       ]));
     }
-  }
-
-  public function getUserNameUsingEmail($email) {
-    $username = '';
-    $users = \Drupal::entityTypeManager()
-      ->getStorage('user')
-      ->loadByProperties(['mail' => $email]);
-    if (!empty($users)) {
-      $user = reset($users);
-      $username = $user->getAccountName();
-    }
-    return $username;
-  }
-
-
-  public function getUserRolelableUsingRoleId($roles) {
-    $role_storage = \Drupal::entityTypeManager()->getStorage('user_role');
-    $role_entities = $role_storage->loadMultiple(array_keys($roles));
-    
-    $role_labels = [];
-    foreach ($role_entities as $id => $role) {
-      $role_labels[] = $role->label();
-    }
-    
-    $role_labels_list = implode(', ', $role_labels);
-    return $role_labels_list;
   }
 
 
