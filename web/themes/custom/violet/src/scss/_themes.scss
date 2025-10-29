@@ -1,0 +1,62 @@
+$themes: (
+  default: (
+    main: #351B56,
+    light: #4F3570,
+    dark: #2D1749,
+    bg: #F5F4F7,
+    clear: #FBFBFC,
+  ),
+  blue: (
+    main: #BDD5FC,
+    light: #D3E3FD,
+    dark: #083F98,
+    bg: #F5F4F7,
+    clear: #FBFBFC,
+  ),
+  green: (
+    main: #99EA7E,
+    light: #BBF1A9,
+    dark: #1D520C,
+    bg: #F5F4F7,
+    clear: #FBFBFC,
+  ),
+  yellow: (
+    main: #FAD33E,
+    light: #FCE27C,
+    dark: #3D3202,
+    bg: #F5F4F7,
+    clear: #FBFBFC,
+  ),
+  purple: (
+    main: #E1CAFF,
+    light: #EBDCFF,
+    dark: #320E62,
+    bg: #F5F4F7,
+    clear: #FBFBFC,
+  ),
+  pink: (
+    main: #FFC3F0,
+    light: #FFD7F5,
+    dark: #B20086,
+    bg: #F5F4F7,
+    clear: #FBFBFC,
+  )
+);
+
+// Mixin to apply theme
+@mixin apply-theme($theme-name) {
+  $theme: map-get($themes, $theme-name);
+
+  --color-main: #{map-get($theme, default)};
+  --color-light: #{map-get($theme, light)};
+  --color-dark: #{map-get($theme, dark)};
+  --color-background: #{map-get($theme, bg)};
+  --color-clear: #{map-get($theme, clear)};
+}
+
+// Generate theme classes
+@each $theme-name, $theme-colors in $themes {
+  body.#{$theme-name} {
+    @include apply-theme($theme-name);
+  }
+}

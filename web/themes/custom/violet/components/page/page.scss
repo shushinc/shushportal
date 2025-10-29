@@ -18,7 +18,7 @@ body.toolbar-horizontal.toolbar-fixed {
 
 #sidebar {
   min-height: 100vh;
-  background-color: #052A48;
+  background-color: var(--color-dark);
   transition: margin-left 0.3s ease-in-out;
   position: fixed;
   top: 0;
