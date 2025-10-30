@@ -21,3 +21,11 @@ zcs_custom.api_attribute_settings:
     _form: 'Drupal\zcs_custom\Form\ApiAttributeSettingsForm'
   requirements:
     _permission: 'administer site configuration'
+
+zcs_custom.email_portal_settings:
+  path: '/admin/config/system/portal-email-settings'
+  defaults:
+    _title: 'Portal Email Settings'
+    _form: 'Drupal\zcs_custom\Form\PortalEmailTemplateSettings'
+  requirements:
+    _permission: 'administer site configuration'    
