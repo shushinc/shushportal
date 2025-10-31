@@ -156,6 +156,18 @@ function consolidate_schema() {
 }
 
 /**
+ * Implements hook_install().
+ */
+function hook_install($is_syncing) : void {
+  $schema = consolidate_schema();
+
+  if (!Database::getConnection()->schema()->tableExists('consolidate_data')) {
+    Database::getConnection()->schema()->createTable('consolidate_data', $schema['consolidate_data']);
+  }
+}
+
+
+/**
  * Create the consolidate_data table.
  */
 function consolidate_update_10001() {
