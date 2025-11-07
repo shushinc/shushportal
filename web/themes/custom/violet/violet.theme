@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * @file
+ * Theme functions.
+ */
+
+// Include all files from the includes directory.
+$includes_path = __DIR__ . '/includes/*.theme';
+foreach (glob($includes_path) as $file) {
+  require_once __DIR__ . '/includes/' . basename($file);
+}
+
+/**
+ * Implements hook_preprocess_html().
+ */
+function violet_preprocess_html(&$variables) {
+  $theme = 'default';
+
+  /** var \Drupal\Core\Session\AccountProxyInterface $current_user */
+  $current_user = \Drupal::currentUser();
+
+  /** var \Drupal\user\UserInterface $user */
+  $user = \Drupal::entityTypeManager()->getStorage('user')->load($current_user->id());
+
+  if ($user->hasField('field_theme')) {
+    $theme = $user->get('field_theme')->getValue()[0]['value'] ?? 'default';
+  }
+
+  $variables['attributes']['class'][] = $theme;
+}
