@@ -61,12 +61,51 @@ class CreateAttributeDrushCommands extends DrushCommands {
       $this->output()->writeln("Attribute created: " . $node->label());
     }
 
+    $pricing_type = 0;
+
+    /** @var \Drupal\zcs_client_management\Services\ClientManagementService $client_management_service */
+    $client_management_service = \Drupal::service('zcs_client_management.client_management');
+    $groups = $client_management_service->currentUserGroups();
+    if (!empty($groups)) {
+      /** @var \Drupal\group\Entity\GroupInterface $group */
+      $group = reset($groups);
+      $pricing_type = $group->hasField('field_pricing_type') ? $group->get('field_pricing_type')->value : 0;
+    }
+
     // For Rate sheet display approve the content on installtion setup.
     $current_date = date('Y-m-d', \Drupal::time()->getCurrentTime());
     $defaultCurrency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
     Database::getConnection()->insert('attributes_page_data')
-      ->fields(['submit_by', 'currency_locale', 'effective_date', 'effective_date_integer', 'page_data', 'approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'created', 'updated'])
-      ->values([1, $defaultCurrency, $current_date, strtotime($current_date), Json::encode($json_ratesheet), 1, 2, 1, 2, 2, \Drupal::time()->getRequestTime(), \Drupal::time()->getRequestTime()])
+      ->fields([
+        'submit_by',
+        'currency_locale',
+        'effective_date',
+        'effective_date_integer',
+        'page_data',
+        'approver1_uid',
+        'approver1_status',
+        'approver2_uid',
+        'approver2_status',
+        'attribute_status',
+        'created',
+        'updated',
+        'pricing_type',
+        ])
+      ->values([
+        1, // 'submit_by'
+        $defaultCurrency, // 'currency_locale'
+        $current_date, // 'effective_date'
+        strtotime($current_date), // 'effective_date_integer'
+        Json::encode($json_ratesheet), // 'page_data'
+        1, // approver1_uid
+        2, // approver1_status
+        1, // approver2_uid
+        2, // approver2_status
+        2, // attribute_status
+        \Drupal::time()->getRequestTime(), // created
+        \Drupal::time()->getRequestTime(), // updated
+        $pricing_type, // pricing_type
+    ])
       ->execute();
 
     // For api_attribute_sheet approve the content on installtion setup.

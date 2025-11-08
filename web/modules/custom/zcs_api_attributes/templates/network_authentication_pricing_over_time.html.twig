@@ -10,7 +10,7 @@
         <th>#</th>
         <th>API Attributes</th>
         {% for date , atts in content.header_date %}
-          <th>Price Effective<br>{{ atts }}</th>
+          <th>Price Effective<br>{{ atts }}<br>{{ content.header_pricing_type[date] }}</th>
         {% endfor %}
       </tr>
     </thead>

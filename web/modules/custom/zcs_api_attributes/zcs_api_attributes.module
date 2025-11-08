@@ -107,3 +107,15 @@ function zcs_api_attributes_preprocess_html(&$variables) {
   }
 
 }
+
+/**
+ * Implements hook_preprocess_form().
+ */
+// function zcs_api_attributes_preprocess_form(&$variables) {
+//   $form = $variables['element'];
+//   // Check if this is your specific form
+//   if (isset($form['#form_id']) && $form['#form_id'] === 'rate_sheet') {
+//     // Pass custom variables to the template
+//     $variables['current_pricing_type'] = $form['#current_pricing_type'] ?? NULL;
+//   }
+// }

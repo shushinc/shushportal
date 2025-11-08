@@ -9,6 +9,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Markup;
+use Drupal\field\Entity\FieldConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -61,6 +62,25 @@ class PriceRateSheet extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+
+    $pricing_type = 'international_pricing';
+
+    /** @var \Drupal\zcs_client_management\Services\ClientManagementService $client_management_service */
+    $client_management_service = \Drupal::service('zcs_client_management.client_management');
+    $groups = $client_management_service->currentUserGroups();
+
+    if (!empty($groups)) {
+      /** @var \Drupal\group\Entity\GroupInterface $group */
+      $group = reset($groups);
+      $pricing_type = $group->get('field_pricing_type')->value ?? 'international_pricing';
+    }
+
+    $field_config_pricing_type = FieldConfig::load('group.partner.field_pricing_type');
+    if ($field_config_pricing_type) {
+      $pricing_type_values = $field_config_pricing_type->getSetting('allowed_values');
+    }
+
+    $pricing_type_value = $pricing_type_values[$pricing_type];
 
     $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'financial_rate_sheet_approval_level_1']);
     foreach ($users as $user) {
@@ -134,6 +154,7 @@ class PriceRateSheet extends FormBase {
       $hide = TRUE;
     }
 
+    $form['#title'] = $this->t('Proposed API Pricing (@pricing_type)', ['@pricing_type' => $pricing_type_value]);
     $form['#theme'] = 'rate_sheet';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
     $form['submit'] = [
@@ -156,6 +177,18 @@ class PriceRateSheet extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+
+    $pricing_type = 0;
+
+    /** @var \Drupal\zcs_client_management\Services\ClientManagementService $client_management_service */
+    $client_management_service = \Drupal::service('zcs_client_management.client_management');
+    $groups = $client_management_service->currentUserGroups();
+    if (!empty($groups)) {
+      /** @var \Drupal\group\Entity\GroupInterface $group */
+      $group = reset($groups);
+      $pricing_type = $group->get('field_pricing_type')->value === 'domestic_pricing' ? 1 : 0;
+    }
+
     $values = $form_state->getValues();
     $nids = explode(",", $values['nodes']);
     $json = [];
@@ -181,8 +214,36 @@ class PriceRateSheet extends FormBase {
       }
     }
     $this->database->insert('attributes_page_data')
-      ->fields(['submit_by', 'currency_locale', 'effective_date', 'effective_date_integer', 'page_data', 'approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'created', 'updated'])
-      ->values([$this->currentUser()->id(), $values['currencies'], $values['attribute_date'], strtotime($values['attribute_date']), Json::encode($json), 0, 1, 0, 1, 1, \Drupal::time()->getRequestTime(), \Drupal::time()->getRequestTime()])
+      ->fields([
+        'submit_by',
+        'currency_locale',
+        'effective_date',
+        'effective_date_integer',
+        'page_data',
+        'approver1_uid',
+        'approver1_status',
+        'approver2_uid',
+        'approver2_status',
+        'attribute_status',
+        'created',
+        'updated',
+        'pricing_type',
+      ])
+      ->values([
+        $this->currentUser()->id(), // submit_by
+        $values['currencies'], // currency_locale
+        $values['attribute_date'], // effective_date
+        strtotime($values['attribute_date']), // effective_date_integer
+        Json::encode($json), // page_data
+        0, // approver1_uid
+        1, // approver1_status
+        0, // approver2_uid
+        1, // approver2_status
+        1, // attribute_status
+        \Drupal::time()->getRequestTime(), // created
+        \Drupal::time()->getRequestTime(), // updated
+        $pricing_type, // pricing_type
+      ])
       ->execute();
     $mailManager = \Drupal::service('plugin.manager.mail');
 

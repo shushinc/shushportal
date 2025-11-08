@@ -136,7 +136,7 @@ zcs_api_attributes.manage_pricing_history:
   requirements:
     _permission: 'access content'
   options:
-    _admin_route: TRUE' 
+    _admin_route: TRUE'
 
 zcs_api_attributes.delete_api_attribute:
   path: "/api-attribute/{id}/delete"
@@ -157,4 +157,4 @@ zcs_api_attributes.delete_pricing_history:
   requirements:
     _permission: 'access content'
   options:
-    _admin_route: TRUE'   
+    _admin_route: TRUE'
