@@ -20,17 +20,17 @@
     ],
     "require": {
         "aws/aws-sdk-php": "^3.336",
-        "bower-asset/swagger-ui": "^5.17",
+        "bower-asset/swagger-ui": "^4.17",
         "composer/installers": "^2.0",
         "cweagans/composer-patches": "^1.7",
         "drupal/address": "^2.0",
         "drupal/apigee_edge": "^3.0",
         "drupal/change_pwd_page": "^2.0",
         "drupal/config_ignore": "^3.3",
-        "drupal/core": "^10.2",
-        "drupal/core-composer-scaffold": "^10.2",
-        "drupal/core-project-message": "^10.2",
-        "drupal/core-vendor-hardening": "^10.3",
+        "drupal/core": "10.3.1",
+        "drupal/core-composer-scaffold": "10.3.1",
+        "drupal/core-project-message": "10.3.1",
+        "drupal/core-vendor-hardening": "10.3.1",
         "drupal/country": "^2.0",
         "drupal/devel": "^5.0",
         "drupal/devel_php": "^1.7",
@@ -43,11 +43,16 @@
         "drupal/menu_per_role": "^1.7",
         "drupal/mimemail": "^1.0@alpha",
         "drupal/password_policy": "^4.0",
+        "drupal/radix": "^6.0",
         "drupal/smtp": "^1.3",
         "drupal/swagger_ui_formatter": "^4.1",
+        "drupal/theme_switcher": "^2.1",
         "drupal/token": "^1.16",
+        "drupal/variationcache": "^1.5",
         "drush/drush": "^12.5",
-        "oomphinc/composer-installers-extender": "^2.0"
+        "oomphinc/composer-installers-extender": "^2.0",
+        "symfony/http-client": "^6.4",
+        "wikimedia/composer-merge-plugin": "^2.1"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -57,14 +62,19 @@
     "config": {
         "allow-plugins": {
             "composer/installers": true,
+            "cweagans/composer-patches": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
             "drupal/core-composer-scaffold": true,
             "drupal/core-project-message": true,
             "drupal/core-vendor-hardening": true,
-            "phpstan/extension-installer": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true,
-            "php-http/discovery": true,
+            "ergebnis/composer-normalize": true,
             "oomphinc/composer-installers-extender": true,
-            "cweagans/composer-patches": true
+            "php-http/discovery": true,
+            "phpstan/extension-installer": true,
+            "pronovix/drupal-qa": true,
+            "tbachert/spi": true,
+            "wikimedia/composer-merge-plugin": true,
+            "zaporylie/composer-drupal-optimizations": true
         },
         "sort-packages": true
     },
@@ -76,10 +86,10 @@
         },
         "patches" : {
             "drupal/password_policy": {
-              "password_policy": "https://www.drupal.org/files/issues/2023-01-12/3332884-integrity-constraint-violation.patch",
-              "password_policy_argument": "https://www.drupal.org/files/issues/2023-03-01/integrity_constraint_violation_2.patch"
+                "password_policy": "https://www.drupal.org/files/issues/2023-01-12/3332884-integrity-constraint-violation.patch",
+                "password_policy_argument": "https://www.drupal.org/files/issues/2023-03-01/integrity_constraint_violation_2.patch"
             }
-          },
+        },
         "installer-paths": {
             "web/core": [
                 "type:drupal-core"
@@ -114,7 +124,20 @@
                 "bower-asset/swagger-ui"
             ]
         },
-        "installer-types": ["bower-asset", "npm-asset"],
+        "merge-plugin": {
+            "include": [
+                "core/composer.json",
+                "web/modules/contrib/webform/composer.libraries.json",
+                "web/modules/contrib/swagger_ui_formatter/composer.json"
+            ],
+            "recurse": false,
+            "replace": false,
+            "merge-extra": false
+        },
+        "installer-types": [
+            "bower-asset",
+            "npm-asset"
+        ],
         "drupal-core-project-message": {
             "include-keys": [
                 "homepage",

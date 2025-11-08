@@ -418,3 +418,19 @@ function zcs_api_attributes_update_9006() {
   ]);
   $api_attribute_status_approval_menu_child_link2->save();
 }
+
+/**
+ * Adding pricing type field.
+ */
+function zcs_api_attributes_update_9007() {
+  $spec = [
+    'type' => 'int',
+    'description' => "Attribute Pricing Type.",
+    'length' => 1,
+    'not null' => TRUE,
+    'default' => 0, // 0: international, 1: domestic
+  ];
+
+  $schema = \Drupal::database()->schema();
+  $schema->addField('attributes_page_data', 'pricing_type', $spec);
+}

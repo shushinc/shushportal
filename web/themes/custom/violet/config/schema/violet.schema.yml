@@ -1,0 +1,5 @@
+# Schema for the configuration files of the violet theme.
+
+violet.settings:
+  type: theme_settings
+  label: 'violet settings'

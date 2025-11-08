@@ -1,0 +1,33 @@
+uuid: 4bf9833c-0ba0-4388-89da-d5db1f22ab44
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.user_profile
+  module:
+    - user
+    - views
+  theme:
+    - violet
+id: violet_views_block__user_profile_block_1
+theme: violet
+region: footer
+weight: 0
+provider: null
+plugin: 'views_block:user_profile-block_1'
+settings:
+  id: 'views_block:user_profile-block_1'
+  label: ''
+  label_display: '0'
+  provider: views
+  context_mapping: {  }
+  views_label: ''
+  items_per_page: none
+visibility:
+  user_role:
+    id: user_role
+    negate: false
+    context_mapping:
+      user: '@user.current_user_context:current_user'
+    roles:
+      authenticated: authenticated

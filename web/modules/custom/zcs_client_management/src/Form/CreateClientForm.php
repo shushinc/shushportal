@@ -79,7 +79,6 @@ class CreateClientForm extends FormBase {
       'custom_toggle_css',
     ];
 
-    
     $lists_currencies = require __DIR__ . '/../../resources/currencies.php';
     $form['partner_name'] = [
       '#type' => 'textfield',
@@ -88,8 +87,8 @@ class CreateClientForm extends FormBase {
       '#attributes' => [
         'autocomplete' => 'off'
       ],
-      '#maxlength' => 20,   
-      '#prefix' => '<div class="client-Layout-column-wrapper"><div class="tiles-wrapper client-Layout-column-first"><div class="partner-info grid-layout-column">',     
+      '#maxlength' => 20,
+      '#prefix' => '<div class="client-Layout-column-wrapper"><div class="tiles-wrapper client-Layout-column-first"><div class="partner-info grid-layout-column">',
     ];
 
     $form['contact_name'] = [
@@ -98,8 +97,9 @@ class CreateClientForm extends FormBase {
       '#required' => TRUE,
       '#attributes' => [
         'autocomplete' => 'off'
-      ],        
+      ],
     ];
+
     $form['contact_email'] = [
       '#type' => 'email',
       '#title' => 'Contact Email',
@@ -110,10 +110,6 @@ class CreateClientForm extends FormBase {
       '#suffix' => '</div>', // Closes the wrapper
     ];
 
-
-
-
-
     $form['client_legal_contact'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Legal Contact'),
@@ -121,15 +117,16 @@ class CreateClientForm extends FormBase {
       '#attributes' => [
         'autocomplete' => 'off'
       ],
-      '#prefix' => '<div class="partner-contact-info grid-layout-column">',         
+      '#prefix' => '<div class="partner-contact-info grid-layout-column">',
     ];
+
     $form['client_point_of_contact'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Point of Contact'),
       '#required' => TRUE,
       '#attributes' => [
         'autocomplete' => 'off'
-      ],        
+      ],
     ];
 
     $form['agreement_effective_date'] = [
@@ -138,8 +135,6 @@ class CreateClientForm extends FormBase {
       '#default_value' => date('Y-m-d'),
       '#suffix' => '</div>',
     ];
-
-
 
     $form['partner_type'] = [
       '#type' => 'select',
@@ -151,7 +146,7 @@ class CreateClientForm extends FormBase {
       '#required' => TRUE,
       '#prefix' => '<div class="partner-details grid-layout-column">',
     ];
-    
+
     $form['industry'] = [
       '#type' => 'select',
       '#title' => $this->t('Industry'),
@@ -167,17 +162,33 @@ class CreateClientForm extends FormBase {
       '#required' => TRUE,
     ];
 
-   
     $form['partner_status'] = [
       '#type' => 'select',
       '#title' => $this->t('Status'),
       '#options' => [
-         'active' => 'Active',
-         'inactive' => 'InActive',
-        ],
-      '#default_value' => 'active',  
+        'active' => 'Active',
+        'inactive' => 'InActive',
+      ],
+      '#default_value' => 'active',
       '#required' => TRUE,
       '#suffix' => '</div>',
+    ];
+
+    $form['client_pricing_column_wrapper_text'] = [
+      '#type' => 'fieldset',
+      '#attributes' => [
+        'class' => ['client-contact-details-col-4'],
+      ],
+    ];
+
+    $form['client_pricing_column_wrapper_text']['pricing_type'] = [
+      '#type' => 'select',
+      '#title' => 'Pricing Type',
+      '#required' => TRUE,
+      '#options' => [
+        'domestic_pricing' => $this->t('Domestic Pricing'),
+        'international_pricing' => $this->t('International Pricing'),
+      ],
     ];
 
     $form['client_Layout_column_wrapper_text'] = [
@@ -190,14 +201,14 @@ class CreateClientForm extends FormBase {
     $form['client_Layout_column_wrapper_text']['address'] = [
       '#type' => 'address',
       '#title' => $this->t('Address'),
-      '#required' => TRUE,  
+      '#required' => TRUE,
       '#after_build' => [[$this, 'customAddressAlter']],
       '#default_value' => [
         'country_code' => 'US',
       ],
       '#suffix' => '</div>',
     ];
-    
+
     $form['client_Layout_column_wrapper_text']['partner_description'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Description'),
@@ -245,12 +256,12 @@ class CreateClientForm extends FormBase {
       '#min' => 0,
       '#default_value' => 0.00,
       //'#step' => 0.001,
-      '#suffix' => '</div></div>',  
+      '#suffix' => '</div></div>',
     ];
-  
 
 
-    
+
+
 
 
     $form['api_agreement_covers'] = [
@@ -313,8 +324,8 @@ class CreateClientForm extends FormBase {
      // @todo Validate the form here.
     // @endcode
     parent::validateForm($form, $form_state);
-    $user_email = $form_state->getValue('contact_email'); 
-    $user_name = $form_state->getValue('contact_name'); 
+    $user_email = $form_state->getValue('contact_email');
+    $user_name = $form_state->getValue('contact_name');
     $users = \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['mail' => $user_email]);
     if ($users) {
       $form_state->setError($form['contact_email'], $this->t('This user is already registered or has an active invitation. Please verify their details and try again.'));
@@ -335,16 +346,16 @@ class CreateClientForm extends FormBase {
       $json[$nid] = $values['attribute_' . $nid];
     }
     $encoded_data = Json::encode($json);
-    $partner_name = $form_state->getValue('partner_name'); 
-    $contact_name = $form_state->getValue('contact_name'); 
-    $contact_email = $form_state->getValue('contact_email'); 
-    $partner_description = $form_state->getValue('partner_description'); 
-    $partner_status = $form_state->getValue('partner_status'); 
-    $partner_type = $form_state->getValue('partner_type'); 
-    $client_legal_contact = $form_state->getValue('client_legal_contact'); 
-    $client_point_of_contact = $form_state->getValue('client_point_of_contact'); 
-    $agreement_effective_date = $form_state->getValue('agreement_effective_date'); 
-    $industry = $form_state->getValue('industry'); 
+    $partner_name = $form_state->getValue('partner_name');
+    $contact_name = $form_state->getValue('contact_name');
+    $contact_email = $form_state->getValue('contact_email');
+    $partner_description = $form_state->getValue('partner_description');
+    $partner_status = $form_state->getValue('partner_status');
+    $partner_type = $form_state->getValue('partner_type');
+    $client_legal_contact = $form_state->getValue('client_legal_contact');
+    $client_point_of_contact = $form_state->getValue('client_point_of_contact');
+    $agreement_effective_date = $form_state->getValue('agreement_effective_date');
+    $industry = $form_state->getValue('industry');
     $prepayment_amount = $form_state->getValue('prepayment_amount');
     $prepayment_balance_left = $form_state->getValue('prepayment_balance_left');
     $prepayment_balance_used= $form_state->getValue('prepayment_balance_used');
@@ -365,12 +376,12 @@ class CreateClientForm extends FormBase {
     $family_name =  $form_state->getValue('address')['family_name'];
 
     if (\Drupal::moduleHandler()->moduleExists('zcs_kong')) {
-      // create consumer in kong: 
+      // create consumer in kong:
       try {
         $response = \Drupal::service('zcs_kong.kong_gateway')->createConsumer($contact_name, $contact_email);
         if($response != 'error'){
           $status_code = $response->getStatusCode();
-          if ($status_code == '201') {  
+          if ($status_code == '201') {
             $group = Group::create([
               'type' => 'partner',
               'label' => $partner_name,
@@ -391,7 +402,7 @@ class CreateClientForm extends FormBase {
               'user_id' => \Drupal::currentUser()->id(),
               'created' => \Drupal::time()->getRequestTime(),
             ]);
-            $group->save(); 
+            $group->save();
             $uid = \Drupal::currentUser()->id();
             $user = User::load($uid);
             $group->addMember($user, ['group_roles' => ['partner-admin']]);
@@ -417,19 +428,19 @@ class CreateClientForm extends FormBase {
             $user = User::create([
               'name' => $contact_name,
               'mail' => $contact_email,
-              'status' => 0, // 
-              'roles' => 'authenticated', 
-            ]);  
+              'status' => 0, //
+              'roles' => 'authenticated',
+            ]);
             $user->save();
-      
+
             $token = $this->generateToken();
             $save_invitation = $this->saveInvitation($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
             $send_email = $this->sendInvitationMail($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
-          
+
             $kong_response = $response->getBody()->getContents();
             $response = Json::decode($kong_response);
             $group->set('field_consumer_id', $response['id']);
-            $group->save();   
+            $group->save();
             $this->messenger()->addMessage($this->t('Client is invited successfully.'));
             $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
           }
@@ -437,13 +448,13 @@ class CreateClientForm extends FormBase {
             // logger
           }
         }
-     
+
       } catch (RequestException $e) {
         if ($e->hasResponse()) {
           $error_response = $e->getResponse();
           if ($error_response->getStatusCode() == '409') {
             $this->messenger()->addError($this->t('Unique constraint violation detected on Partner Name  or Contact Email.'));
-          } 
+          }
         } else {
           $this->messenger()->addError($this->t('Request Error: ' . $e->getMessage()));
         }
@@ -470,7 +481,7 @@ class CreateClientForm extends FormBase {
         'user_id' => \Drupal::currentUser()->id(),
         'created' => \Drupal::time()->getRequestTime(),
       ]);
-      $group->save(); 
+      $group->save();
 
       $group->set('field_address', [
         "langcode" => null,
@@ -496,9 +507,9 @@ class CreateClientForm extends FormBase {
       $user = User::create([
         'name' => $contact_name,
         'mail' => $contact_email,
-        'status' => 0, // 
-        'roles' => 'authenticated', 
-      ]);  
+        'status' => 0, //
+        'roles' => 'authenticated',
+      ]);
       $user->save();
       $token = $this->generateToken();
       $save_invitation = $this->saveInvitation($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
@@ -578,7 +589,7 @@ class CreateClientForm extends FormBase {
       'target' => '_blank',
       'style' => 'display: inline-block; padding: 12px 24px; font-size: 16px; color: #ffffff; text-decoration: none; font-weight: bold; background:#007bff; border-radius: 5px;',
     ];
-    
+
     $invitation_link = Link::fromTextAndUrl(t('Activate'), $invitation_url)
       ->toRenderable();
     $invitation_link['#attributes'] = $attributes;
@@ -596,7 +607,7 @@ class CreateClientForm extends FormBase {
     $key = 'client_member_invite';
     $to = $user_email;
     $params['subject'] = $email_subject;
-    $params['message'] = \Drupal::token()->replace($email_body, ['user_name' => $user_name, 'user_invite_activation_url' => $rendered_link, 'site_name' => $site_name]); 
+    $params['message'] = \Drupal::token()->replace($email_body, ['user_name' => $user_name, 'user_invite_activation_url' => $rendered_link, 'site_name' => $site_name]);
 
     $langcode = \Drupal::currentUser()->getPreferredLangcode();
     $send = TRUE;

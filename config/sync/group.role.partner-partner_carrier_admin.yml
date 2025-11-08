@@ -17,7 +17,9 @@ group_type: partner
 permissions:
   - 'access content overview'
   - 'access group_node overview'
+  - 'administer group invitations'
   - 'administer members'
+  - 'bulk invite users to group'
   - 'delete any invitation'
   - 'delete group'
   - 'delete group revisions'

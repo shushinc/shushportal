@@ -65,7 +65,7 @@ class RateSheetReviewForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, $id = 0) {
 
     $data = $this->database->select('attributes_page_data', 'apd')
-      ->fields('apd', ['approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'currency_locale', 'effective_date', 'attribute_status', 'page_data'])
+      ->fields('apd', ['approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'currency_locale', 'effective_date', 'attribute_status', 'page_data', 'pricing_type'])
       ->condition('id', $id)
       ->execute()->fetchObject();
 
