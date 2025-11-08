@@ -1,9 +1,0 @@
-uuid: da06836d-bf56-4769-aa90-1988ee963031
-langcode: en
-status: true
-dependencies: {  }
-id: theme_tester
-label: 'Theme Tester'
-weight: 13
-is_admin: null
-permissions: {  }
