@@ -180,17 +180,3 @@ function consolidate_update_10001() {
 
   return t('The consolidate_data table already exists.');
 }
-
-/**
- * Create the consolidate_data table.
- */
-function consolidate_update_10002() {
-  $schema = consolidate_schema();
-
-  if (!Database::getConnection()->schema()->tableExists('consolidate_data')) {
-    Database::getConnection()->schema()->createTable('consolidate_data', $schema['consolidate_data']);
-    return t('The consolidate_data table has been created successfully.');
-  }
-
-  return t('The consolidate_data table already exists.');
-}

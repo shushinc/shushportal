@@ -14,7 +14,6 @@ module:
   comment: 0
   config: 0
   config_ignore: 0
-  consolidate: 0
   contact: 0
   contextual: 0
   dashboard: 0
