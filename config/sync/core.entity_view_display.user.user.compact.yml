@@ -7,7 +7,6 @@ dependencies:
     - field.field.user.user.field_last_password_reset
     - field.field.user.user.field_password_expiration
     - field.field.user.user.field_pending_expire_sent
-    - field.field.user.user.field_theme
     - field.field.user.user.user_picture
     - image.style.thumbnail
   module:
@@ -35,5 +34,4 @@ hidden:
   field_last_password_reset: true
   field_password_expiration: true
   field_pending_expire_sent: true
-  field_theme: true
   member_for: true
