@@ -76,6 +76,7 @@ module:
   password_policy: 10
   views: 10
   standard: 1000
+  consolidate: 0
 theme:
   olivero: 0
   claro: 0

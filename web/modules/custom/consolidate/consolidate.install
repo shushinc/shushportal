@@ -25,121 +25,121 @@ function consolidate_schema() {
         'default' => 0,
         'description' => 'Timestamp when the record was created.',
       ],
-      'value_a1' => [
+      'YTD_revenue' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 1.',
       ],
-      'value_a2' => [
+      'MTD_revenue' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 2.',
       ],
-      'value_a3' => [
+      'last_week_revenue' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 3.',
       ],
-      'value_a4' => [
+      'yesterday_revenue' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 4.',
       ],
-      'value_a5' => [
+      'MTD_volume' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 5.',
       ],
-      'value_b1' => [
+      'Y_o_Y_revenue' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 6.',
       ],
-      'value_b2' => [
+      'M_o_M_revenue' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 7.',
       ],
-      'value_b3' => [
+      'W_o_W_revenue' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 8.',
       ],
-      'value_b4' => [
+      'D_o_D_revenue' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 9.',
       ],
-      'value_b5' => [
+      'M_o_M_volume' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 10.',
       ],
-      'value_c1' => [
+      'successful_api_calls' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 11.',
       ],
-      'value_c2' => [
+      'avg_api_latency' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 12.',
       ],
-      'value_c3' => [
+      'vol_from_slient_auth' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 13.',
       ],
-      'value_c4' => [
+      'api_vol_from_top_10_consumers' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 14.',
       ],
-      'value_c5' => [
+      'vol_top_customer' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 15.',
       ],
-      'value_d1' => [
+      'M_o_M_successful_api_calls' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 16.',
       ],
-      'value_d2' => [
+      'M_o_M_avg_api_latency' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 17.',
       ],
-      'value_d3' => [
+      'M_o_M_vol_from_silent_auth' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 18.',
       ],
-      'value_d4' => [
+      'M_o_M_api_vol_from_top_10_consumers' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
         'description' => 'Float value 19.',
       ],
-      'value_d5' => [
+      'M_o_M_vol_top_customer' => [
         'type' => 'float',
         'size' => 'normal',
         'not null' => FALSE,
