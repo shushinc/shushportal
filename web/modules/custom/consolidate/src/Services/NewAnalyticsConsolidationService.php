@@ -262,66 +262,66 @@ class NewAnalyticsConsolidationService {
 
     $data = [
       'created' => strtotime($today . ' -1 day'),
-      'value_a1' => $a1,
-      'value_b1' => $b1,
-      'value_a2' => $a2,
-      'value_b2' => $b2,
-      'value_a3' => $a3,
-      'value_b3' => $b3,
-      'value_a4' => $a4,
-      'value_b4' => $b4,
-      'value_a5' => $a5,
-      'value_b5' => $b5,
-      'value_c1' => $c1,
-      'value_d1' => $d1,
-      'value_c2' => $c2,
-      'value_d2' => $d2,
-      'value_c3' => $c3,
-      'value_d3' => $d3,
-      'value_c4' => $c4,
-      'value_d4' => $d4,
-      'value_c5' => $c5,
-      'value_d5' => $d5
+      'YTD_revenue' => $a1,
+      'Y_o_Y_revenue' => $b1,
+      'MTD_revenue' => $a2,
+      'M_o_M_revenue' => $b2,
+      'last_week_revenue' => $a3,
+      'W_o_W_revenue' => $b3,
+      'yesterday_revenue' => $a4,
+      'D_o_D_revenue' => $b4,
+      'MTD_volume' => $a5,
+      'M_o_M_volume' => $b5,
+      'successful_api_calls' => $c1,
+      'M_o_M_successful_api_calls' => $d1,
+      'avg_api_latency' => $c2,
+      'M_o_M_avg_api_latency' => $d2,
+      'vol_from_slient_auth' => $c3,
+      'M_o_M_vol_from_silent_auth' => $d3,
+      'api_vol_from_top_10_consumers' => $c4,
+      'M_o_M_api_vol_from_top_10_consumers' => $d4,
+      'vol_top_customer' => $c5,
+      'M_o_M_vol_top_customer' => $d5
     ];
 
     if ($b1 != 0) {
-      $data['value_b1'] = (int) ((((int) $a1 - (int) $b1) / (int) $b1) * 100);
+      $data['Y_o_Y_revenue'] = (int) ((((int) $a1 - (int) $b1) / (int) $b1) * 100);
     }
 
     if ($b2 != 0) {
-      $data['value_b2'] = (int) ((((int) $a2 - (int) $b2) / (int) $b2) * 100);
+      $data['M_o_M_revenue'] = (int) ((((int) $a2 - (int) $b2) / (int) $b2) * 100);
     }
 
     if ($b3 != 0) {
-      $data['value_b3'] = (int) ((((int) $a3 - (int) $b3) / (int) $b3) * 100);
+      $data['W_o_W_revenue'] = (int) ((((int) $a3 - (int) $b3) / (int) $b3) * 100);
     }
 
     if ($b4 != 0) {
-      $data['value_b4'] = (int) ((((int) $a4 - (int) $b4) / (int) $b4) * 100);
+      $data['D_o_D_revenue'] = (int) ((((int) $a4 - (int) $b4) / (int) $b4) * 100);
     }
 
     if ($b5 != 0) {
-      $data['value_b5'] = (int) ((((int) $a5 - (int) $b5) / (int) $b5) * 100);
+      $data['M_o_M_volume'] = (int) ((((int) $a5 - (int) $b5) / (int) $b5) * 100);
     }
 
     if ($d1 != 0) {
-      $data['value_d1'] = (int) ((((int) $c1 - (int) $d1) / (int) $d1) * 100);
+      $data['M_o_M_successful_api_calls'] = (int) ((((int) $c1 - (int) $d1) / (int) $d1) * 100);
     }
 
     if ($d2 != 0) {
-      $data['value_d2'] = (int) ((((int) $c2 - (int) $d2) / (int) $d2) * 100);
+      $data['M_o_M_avg_api_latency'] = (int) ((((int) $c2 - (int) $d2) / (int) $d2) * 100);
     }
 
     if ($d3 != 0) {
-      $data['value_d3'] = (int) ((((int) $c3 - (int) $d3) / (int) $d3) * 100);
+      $data['M_o_M_vol_from_silent_auth'] = (int) ((((int) $c3 - (int) $d3) / (int) $d3) * 100);
     }
 
     if ($d4 != 0) {
-      $data['value_d4'] = (int) ((((int) $c4 - (int) $d4) / (int) $d4) * 100);
+      $data['M_o_M_api_vol_from_top_10_consumers'] = (int) ((((int) $c4 - (int) $d4) / (int) $d4) * 100);
     }
 
     if ($d5 != 0) {
-      $data['value_d5'] = (int) ((((int) $c5 - (int) $d5) / (int) $d5) * 100);
+      $data['M_o_M_vol_top_customer'] = (int) ((((int) $c5 - (int) $d5) / (int) $d5) * 100);
     }
 
     return $data;
