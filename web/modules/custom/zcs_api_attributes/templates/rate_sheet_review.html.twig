@@ -12,13 +12,13 @@
     <span class="attribute-inputs">{{ form.attribute_date }}</span>
   </div>
 </div>
-<table class="attributes-table {% if active_theme() == 'violet' %}table table-bordered{% endif %}">
+<table class="attributes-table">
   <thead>
     <tr>
       <th>#</th>
       <th>API Attributes</th>
-      <th>Current API Pricing</th>
-      <th>Proposed API Pricing</th>
+      <th>Current API Pricing<br>International / Domestic</th>
+      <th>Proposed API Pricing<br>International / Domestic</th>
     </tr>
   </thead>
   <tbody>
@@ -29,11 +29,17 @@
         <td>{{ counter }}</td>
         <td>{{ title }}</td>
         <td>
-          {{ attributes.prices[id] }}
+          {{ attributes.international_prices[id] }} / {{ attributes.domestic_prices[id] }}
           {# {% if form['price' ~ id]|field_value != attributes.prices[id] %}
           {% endif %} #}
         </td>
-        <td>{{ form['price' ~ id] }}</td>
+        <td>
+          {% if form['price' ~ id] %}
+            {{ form['price' ~ id] }}
+          {% else %}
+            {{ form['international_price_' ~ id] }} / {{ form['domestic_price_' ~ id] }}
+          {% endif %}
+        </td>
       </tr>
       {% set counter = counter + 1 %}
     {% endfor %}

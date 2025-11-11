@@ -63,7 +63,7 @@ class PricingOverTime extends ControllerBase {
     $contents = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
 
     $resultSet = $this->database->select('attributes_page_data', 'apd')
-      ->fields('apd', ['id', 'page_data', 'effective_date', 'effective_date_integer', 'currency_locale', 'pricing_type'])
+      ->fields('apd', ['id', 'page_data', 'effective_date', 'effective_date_integer', 'currency_locale'])
       ->condition('attribute_status', 2)
       ->condition('effective_date_integer', strtotime('now'), '<')
       ->range(0, 3)
@@ -74,18 +74,22 @@ class PricingOverTime extends ControllerBase {
     foreach ($resultSet as $result) {
       $prices[] = Json::decode($result->page_data);
       $headerDate[] = date("M d, Y", strtotime($result->effective_date));
-      $headerPricingType[] = intval($result->pricing_type) == 0 ? $this->t('International Pricing') : $this->t('Domestic Pricing');
       $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
       $number = new \NumberFormatter($currency, \NumberFormatter::CURRENCY);
       $symbols[] = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
     }
     if (!empty($contents)) {
+
       foreach ($contents as $content) {
         $final[] = [
           'title' => $content->title->value,
-          'price0' => number_format($prices[0][$content->id()]['price'] ?? ($prices[0][$content->id()] ?? 0.000), 3),
-          'price1' => number_format($prices[1][$content->id()]['price'] ?? ($prices[1][$content->id()] ?? 0.000), 3),
-          'price2' => number_format($prices[2][$content->id()]['price'] ?? ($prices[2][$content->id()] ?? 0.000), 3),
+          'international_price_0' => number_format($prices[0]['international'][$content->id()] ?? ($prices[0][$content->id()]['price'] ?? ($prices[0][$content->id()] ?? 0.000)), 3),
+          'international_price_1' => number_format($prices[1]['international'][$content->id()] ?? ($prices[1][$content->id()]['price'] ?? ($prices[1][$content->id()] ?? 0.000)), 3),
+          'international_price_2' => number_format($prices[2]['international'][$content->id()] ?? ($prices[2][$content->id()]['price'] ?? ($prices[2][$content->id()] ?? 0.000)), 3),
+
+          'domestic_price_0' => number_format($prices[0]['domestic'][$content->id()] ?? ($prices[0][$content->id()]['price'] ?? ($prices[0][$content->id()] ?? 0.000)), 3),
+          'domestic_price_1' => number_format($prices[1]['domestic'][$content->id()] ?? ($prices[1][$content->id()]['price'] ?? ($prices[1][$content->id()] ?? 0.000)), 3),
+          'domestic_price_2' => number_format($prices[2]['domestic'][$content->id()] ?? ($prices[2][$content->id()]['price'] ?? ($prices[2][$content->id()] ?? 0.000)), 3),
         ];
       }
     }
@@ -125,7 +129,6 @@ class PricingOverTime extends ControllerBase {
     $data['create_rate_sheet_url'] = $url;
     $data['final'] = $final;
     $data['header_date'] = $headerDate;
-    $data['header_pricing_type'] = $headerPricingType;
 
     return [
       '#theme' => 'network_authentication_pricing_over_time',
@@ -168,7 +171,7 @@ class PricingOverTime extends ControllerBase {
 
     // Fetch results.
     $query = $this->database->select('attributes_page_data', 'apd')
-      ->fields('apd', ['id', 'submit_by', 'approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'created', 'effective_date', 'pricing_type']);
+      ->fields('apd', ['id', 'submit_by', 'approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'created', 'effective_date']);
     if (!empty($request->get('status'))) {
       $query->condition('apd.attribute_status', $request->get('status'));
     }

@@ -9,7 +9,6 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Markup;
-use Drupal\field\Entity\FieldConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -63,25 +62,6 @@ class PriceRateSheet extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
-    $pricing_type = 'international_pricing';
-
-    /** @var \Drupal\zcs_client_management\Services\ClientManagementService $client_management_service */
-    $client_management_service = \Drupal::service('zcs_client_management.client_management');
-    $groups = $client_management_service->currentUserGroups();
-
-    if (!empty($groups)) {
-      /** @var \Drupal\group\Entity\GroupInterface $group */
-      $group = reset($groups);
-      $pricing_type = $group->get('field_pricing_type')->value ?? 'international_pricing';
-    }
-
-    $field_config_pricing_type = FieldConfig::load('group.partner.field_pricing_type');
-    if ($field_config_pricing_type) {
-      $pricing_type_values = $field_config_pricing_type->getSetting('allowed_values');
-    }
-
-    $pricing_type_value = $pricing_type_values[$pricing_type];
-
     $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'financial_rate_sheet_approval_level_1']);
     foreach ($users as $user) {
       if ($user) {
@@ -126,10 +106,17 @@ class PriceRateSheet extends FormBase {
     if (!empty($contents)) {
       foreach ($contents as $content) {
         $nids[] = $content->id();
-        $form['price' . $content->id()] = [
+        $form['international_price_' . $content->id()] = [
           '#type' => 'number',
           '#min' => 0,
           '#default_value' => $content->field_standard_price->value ?? 0.000,
+          '#step' => 0.001,
+          '#field_prefix' => $symbol,
+        ];
+        $form['domestic_price_' . $content->id()] = [
+          '#type' => 'number',
+          '#min' => 0,
+          '#default_value' => $content->field_domestic_standard_price->value ?? 0.000,
           '#step' => 0.001,
           '#field_prefix' => $symbol,
         ];
@@ -154,7 +141,6 @@ class PriceRateSheet extends FormBase {
       $hide = TRUE;
     }
 
-    $form['#title'] = $this->t('Proposed API Pricing (@pricing_type)', ['@pricing_type' => $pricing_type_value]);
     $form['#theme'] = 'rate_sheet';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
     $form['submit'] = [
@@ -178,34 +164,31 @@ class PriceRateSheet extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
 
-    $pricing_type = 0;
-
-    /** @var \Drupal\zcs_client_management\Services\ClientManagementService $client_management_service */
-    $client_management_service = \Drupal::service('zcs_client_management.client_management');
-    $groups = $client_management_service->currentUserGroups();
-    if (!empty($groups)) {
-      /** @var \Drupal\group\Entity\GroupInterface $group */
-      $group = reset($groups);
-      $pricing_type = $group->get('field_pricing_type')->value === 'domestic_pricing' ? 1 : 0;
-    }
-
     $values = $form_state->getValues();
     $nids = explode(",", $values['nodes']);
     $json = [];
     foreach ($nids as $nid) {
-
-      // International pricing.
-      $price = $values['price' . $nid];
-      if ($values['price' . $nid] == 0) {
-        $price = number_format($values['price' . $nid] ?? 0.000, 3);
+      $international_price = $values['international_price_' . $nid];
+      if ($values['international_price_' . $nid] == 0) {
+        $international_price = number_format($values['international_price_' . $nid] ?? 0.000, 3);
       }
       else {
-        if (!preg_match('/^\d+\.\d{3}$/', $values['price' . $nid])) {
-          $price = number_format((float) $values['price' . $nid], 3, '.', '');
+        if (!preg_match('/^\d+\.\d{3}$/', $values['international_price_' . $nid])) {
+          $international_price = number_format((float) $values['international_price_' . $nid], 3, '.', '');
         }
       }
 
-      $json[$nid] = $price;
+      $domestic_price = $values['domestic_price_' . $nid];
+      if ($values['domestic_price_' . $nid] == 0) {
+        $domestic_price = number_format($values['domestic_price_' . $nid] ?? 0.000, 3);
+      } else {
+        if (!preg_match('/^\d+\.\d{3}$/', $values['domestic_price_' . $nid])) {
+          $domestic_price = number_format((float) $values['domestic_price_' . $nid], 3, '.', '');
+        }
+      }
+
+      $json['international'][$nid] = $international_price;
+      $json['domestic'][$nid] = $domestic_price;
     }
     $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'financial_rate_sheet_approval_level_1', 'status' => 1]);
     foreach ($users as $user) {
@@ -227,7 +210,6 @@ class PriceRateSheet extends FormBase {
         'attribute_status',
         'created',
         'updated',
-        'pricing_type',
       ])
       ->values([
         $this->currentUser()->id(), // submit_by
@@ -242,7 +224,6 @@ class PriceRateSheet extends FormBase {
         1, // attribute_status
         \Drupal::time()->getRequestTime(), // created
         \Drupal::time()->getRequestTime(), // updated
-        $pricing_type, // pricing_type
       ])
       ->execute();
     $mailManager = \Drupal::service('plugin.manager.mail');

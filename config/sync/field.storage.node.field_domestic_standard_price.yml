@@ -1,0 +1,20 @@
+uuid: d0665a0a-4c54-4a4a-b1f6-b5b1642c87c8
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_domestic_standard_price
+field_name: field_domestic_standard_price
+entity_type: node
+type: decimal
+settings:
+  precision: 15
+  scale: 3
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

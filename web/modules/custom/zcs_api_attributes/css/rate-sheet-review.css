@@ -11,7 +11,7 @@
 }
 
 .ui-dialog table.attributes-table .form-item {
-  display: flex;
+  display: inline-flex;
   flex-wrap: nowrap;
   align-items: baseline;
   margin: 0;
@@ -24,6 +24,7 @@
 .ui-dialog table.attributes-table .form-item input {
   margin: 0;
   height: 28px;
+  width: 70px;
 }
 
 .ui-dialog .field-prefix {
@@ -95,4 +96,9 @@
 }
 .ui-dialog .attribute-review .attributes-table thead th:first-child {
   width: 4%;
+}
+
+.ui-dialog .attribute-review .attributes-table th:nth-child(3),
+.ui-dialog .attribute-review .attributes-table th:nth-child(4) {
+  width: 25%;
 }

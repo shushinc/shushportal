@@ -54,7 +54,7 @@ class ManagePricingHistory extends FormBase {
     ];
 
     $query = $this->database->select('attributes_page_data', 'at')
-      ->fields('at', ['id', 'submit_by', 'approver1_uid', 'approver2_uid', 'approver1_status', 'approver2_status', 'attribute_status', 'created', 'pricing_type'])
+      ->fields('at', ['id', 'submit_by', 'approver1_uid', 'approver2_uid', 'approver1_status', 'approver2_status', 'attribute_status', 'created'])
       ->orderBy('at.created', 'DESC')
       ->extend('Drupal\Core\Database\Query\PagerSelectExtender')
       // 10 items per page
