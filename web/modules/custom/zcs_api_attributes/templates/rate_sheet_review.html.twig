@@ -17,8 +17,8 @@
     <tr>
       <th>#</th>
       <th>API Attributes</th>
-      <th>Current API Pricing</th>
-      <th>Proposed API Pricing</th>
+      <th>Current API Pricing<br>International / Domestic</th>
+      <th>Proposed API Pricing<br>International / Domestic</th>
     </tr>
   </thead>
   <tbody>
@@ -33,7 +33,13 @@
           {# {% if form['price' ~ id]|field_value != attributes.prices[id] %}
           {% endif %} #}
         </td>
-        <td>{{ form['price' ~ id] }}</td>
+        <td>
+          {% if form['price' ~ id] %}
+            {{ form['price' ~ id] }}
+          {% else %}
+            {{ form['international_price_' ~ id] }} / {{ form['domestic_price_' ~ id] }}
+          {% endif %}
+        </td>
       </tr>
       {% set counter = counter + 1 %}
     {% endfor %}

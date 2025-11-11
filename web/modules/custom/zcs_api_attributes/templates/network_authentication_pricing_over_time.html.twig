@@ -10,7 +10,7 @@
         <th>#</th>
         <th>API Attributes</th>
         {% for date , atts in content.header_date %}
-          <th>Price Effective<br>{{ atts }}<br>{{ content.header_pricing_type[date] }}</th>
+          <th>Price Effective<br>{{ atts }}<br>International / Domestic</th>
         {% endfor %}
       </tr>
     </thead>
@@ -22,8 +22,7 @@
           <td>{{ att.title }}</td>
           {% for key, date in content.header_date %}
             <td>
-              {{ content.symbols[key] }}
-              {{ att['price' ~ key] }}
+              {{ content.symbols[key] }} {{ att['international_price_' ~ key] }} / {{ content.symbols[key] }} {{ att['domestic_price_' ~ key] }}
             </td>
           {% endfor %}
         </tr>

@@ -153,13 +153,13 @@
 }
 
 .ui-dialog .rate-sheet table.attributes-table thead th:nth-child(2) {
-  width: 60%;
   text-align: left;
 }
 
 .ui-dialog .rate-sheet table.attributes-table thead th:nth-child(3),
-.ui-dialog .rate-sheet table.attributes-table thead th:nth-child(4) {
-  width: 20%;
+.ui-dialog .rate-sheet table.attributes-table thead th:nth-child(4),
+.ui-dialog .rate-sheet table.attributes-table thead th:nth-child(5) {
+  width: 15%;
   text-align: center;
 }
 

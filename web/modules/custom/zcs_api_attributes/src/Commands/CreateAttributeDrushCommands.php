@@ -61,17 +61,6 @@ class CreateAttributeDrushCommands extends DrushCommands {
       $this->output()->writeln("Attribute created: " . $node->label());
     }
 
-    $pricing_type = 0;
-
-    /** @var \Drupal\zcs_client_management\Services\ClientManagementService $client_management_service */
-    $client_management_service = \Drupal::service('zcs_client_management.client_management');
-    $groups = $client_management_service->currentUserGroups();
-    if (!empty($groups)) {
-      /** @var \Drupal\group\Entity\GroupInterface $group */
-      $group = reset($groups);
-      $pricing_type = $group->hasField('field_pricing_type') ? $group->get('field_pricing_type')->value : 0;
-    }
-
     // For Rate sheet display approve the content on installtion setup.
     $current_date = date('Y-m-d', \Drupal::time()->getCurrentTime());
     $defaultCurrency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
@@ -89,7 +78,6 @@ class CreateAttributeDrushCommands extends DrushCommands {
         'attribute_status',
         'created',
         'updated',
-        'pricing_type',
         ])
       ->values([
         1, // 'submit_by'
@@ -104,7 +92,6 @@ class CreateAttributeDrushCommands extends DrushCommands {
         2, // attribute_status
         \Drupal::time()->getRequestTime(), // created
         \Drupal::time()->getRequestTime(), // updated
-        $pricing_type, // pricing_type
     ])
       ->execute();
 

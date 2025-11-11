@@ -4,6 +4,7 @@
  * @file
  */
 
+use Drupal\Core\Database\Database;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 
 /**
@@ -420,7 +421,7 @@ function zcs_api_attributes_update_9006() {
 }
 
 /**
- * Adding pricing type field.
+ * Implementing HOOK_update_N.
  */
 function zcs_api_attributes_update_9007() {
   $spec = [
@@ -431,6 +432,91 @@ function zcs_api_attributes_update_9007() {
     'default' => 0, // 0: international, 1: domestic
   ];
 
+  /** Drupal\Core\Database\Schema $schema */
   $schema = \Drupal::database()->schema();
   $schema->addField('attributes_page_data', 'pricing_type', $spec);
+}
+
+/**
+ * Implementing HOOK_update_N.
+ */
+function zcs_api_attributes_update_9008() {
+  /** Drupal\Core\Database\Schema $schema */
+  $schema = \Drupal::database()->schema();
+  if ($schema->fieldExists('attributes_page_data', 'pricing_type')) {
+    $schema->dropField('attributes_page_data', 'pricing_type');
+  }
+}
+
+/**
+ * Implementing HOOK_update_N.
+ */
+function zcs_api_attributes_update_9009() {
+
+  $database = Database::getConnection();
+
+  // Initialize batch.
+  if (!isset($sandbox['progress'])) {
+    $sandbox['progress'] = 0;
+    $sandbox['current_id'] = 0;
+    $sandbox['max'] = $database->select('attributes_page_data', 'apd')
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+
+    if ($sandbox['max'] == 0) {
+      $sandbox['#finished'] = 1;
+      return t('No records found to update.');
+    }
+  }
+
+  // Process records in batches of 50.
+  $batch_size = 25;
+
+  $query = $database->select('attributes_page_data', 'apd')
+    ->fields('apd', ['id', 'page_data'])
+    ->condition('id', $sandbox['current_id'], '>')
+    ->orderBy('id', 'ASC')
+    ->range(0, $batch_size);
+
+  $records = $query->execute()->fetchAll();
+
+  foreach ($records as $record) {
+    try {
+      // Decode the existing JSON data.
+      $current_data = json_decode($record->page_data, TRUE);
+
+      if (is_array($current_data) && !isset($current_data['international']) && !isset($current_data['domestic'])) {
+        // Create new structure with international and domestic keys.
+        $new_data = [
+          'international' => $current_data,
+          'domestic' => $current_data, // Using same data as base for domestic
+        ];
+
+        // Encode back to JSON and update the record.
+        $new_json = json_encode($new_data);
+
+        $database->update('attributes_page_data')
+          ->fields(['page_data' => $new_json])
+          ->condition('id', $record->id)
+          ->execute();
+      }
+
+      $sandbox['progress']++;
+      $sandbox['current_id'] = $record->id;
+
+    } catch (Exception $e) {
+      \Drupal::logger('mymodule')->error('Error updating record @id: @message', [
+        '@id' => $record->id,
+        '@message' => $e->getMessage(),
+      ]);
+    }
+  }
+
+  // Update batch progress.
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+
+  if ($sandbox['#finished'] >= 1) {
+    return t('Updated @count records in attributes_page_data table.', ['@count' => $sandbox['progress']]);
+  }
 }
