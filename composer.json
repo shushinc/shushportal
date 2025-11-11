@@ -27,10 +27,10 @@
         "drupal/apigee_edge": "^3.0",
         "drupal/change_pwd_page": "^2.0",
         "drupal/config_ignore": "^3.3",
-        "drupal/core": "10.3.1",
-        "drupal/core-composer-scaffold": "10.3.1",
-        "drupal/core-project-message": "10.3.1",
-        "drupal/core-vendor-hardening": "10.3.1",
+        "drupal/core": "^10.2",
+        "drupal/core-composer-scaffold": "^10.2",
+        "drupal/core-project-message": "^10.2",
+        "drupal/core-vendor-hardening": "^10.3",
         "drupal/country": "^2.0",
         "drupal/devel": "^5.0",
         "drupal/devel_php": "^1.7",
@@ -49,7 +49,7 @@
         "drupal/variationcache": "^1.5",
         "drush/drush": "^12.5",
         "oomphinc/composer-installers-extender": "^2.0",
-        "symfony/http-client": "^6.4",
+        "symfony/http-client": "^7.3",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "conflict": {
@@ -65,14 +65,10 @@
             "drupal/core-composer-scaffold": true,
             "drupal/core-project-message": true,
             "drupal/core-vendor-hardening": true,
-            "ergebnis/composer-normalize": true,
             "oomphinc/composer-installers-extender": true,
             "php-http/discovery": true,
             "phpstan/extension-installer": true,
-            "pronovix/drupal-qa": true,
-            "tbachert/spi": true,
-            "wikimedia/composer-merge-plugin": true,
-            "zaporylie/composer-drupal-optimizations": true
+            "wikimedia/composer-merge-plugin": true
         },
         "sort-packages": true
     },
@@ -125,8 +121,7 @@
         "merge-plugin": {
             "include": [
                 "core/composer.json",
-                "web/modules/contrib/webform/composer.libraries.json",
-                "web/modules/contrib/swagger_ui_formatter/composer.json"
+                "web/modules/contrib/webform/composer.libraries.json"
             ],
             "recurse": false,
             "replace": false,
