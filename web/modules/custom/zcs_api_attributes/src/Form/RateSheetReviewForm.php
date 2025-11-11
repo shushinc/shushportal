@@ -65,7 +65,7 @@ class RateSheetReviewForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, $id = 0) {
 
     $data = $this->database->select('attributes_page_data', 'apd')
-      ->fields('apd', ['approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'currency_locale', 'effective_date', 'attribute_status', 'page_data', 'pricing_type'])
+      ->fields('apd', ['approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'currency_locale', 'effective_date', 'attribute_status', 'page_data'])
       ->condition('id', $id)
       ->execute()->fetchObject();
 
@@ -75,16 +75,43 @@ class RateSheetReviewForm extends FormBase {
     $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
 
     if (!empty($data)) {
-      foreach (Json::decode($data->page_data) as $key => $value) {
-        $nids[] = $key;
-        $form['price' . $key] = [
-          '#type' => 'number',
-          '#min' => 0,
-          '#default_value' => ($value['price'] ?? ($value ?? 0.000)),
-          '#step' => 0.001,
-          '#field_prefix' => $symbol,
-          '#disabled' => TRUE,
-        ];
+      $json_data = Json::decode($data->page_data);
+
+      if (isset($json_data['international'])) {
+        foreach ($json_data['international'] as $key => $value) {
+          $nids[] = $key;
+          $form['international_price_' . $key] = [
+            '#type' => 'number',
+            '#min' => 0,
+            '#default_value' => ($value['price'] ?? ($value ?? 0.000)),
+            '#step' => 0.001,
+            '#field_prefix' => $symbol,
+            '#disabled' => TRUE,
+          ];
+        }
+        foreach ($json_data['domestic'] as $key => $value) {
+          $form['domestic_price_' . $key] = [
+            '#type' => 'number',
+            '#min' => 0,
+            '#default_value' => ($value['price'] ?? ($value ?? 0.000)),
+            '#step' => 0.001,
+            '#field_prefix' => $symbol,
+            '#disabled' => TRUE,
+          ];
+        }
+      }
+      else {
+        foreach ($json_data as $key => $value) {
+          $nids[] = $key;
+          $form['price' . $key] = [
+            '#type' => 'number',
+            '#min' => 0,
+            '#default_value' => ($value['price'] ?? ($value ?? 0.000)),
+            '#step' => 0.001,
+            '#field_prefix' => $symbol,
+            '#disabled' => TRUE,
+          ];
+        }
       }
     }
     // To fetch currencies.
@@ -183,8 +210,13 @@ class RateSheetReviewForm extends FormBase {
       foreach (explode(",", $values['nodes']) as $id) {
         $node = Node::load($id);
         if ($node instanceof NodeInterface) {
-          $node->set('field_standard_price', $values['price' . $id]);
-          // $node->set('field_domestic_standard_price', $values['domestic_price' . $id]);
+          if (isset($values['price' . $id])) {
+            $node->set('field_standard_price', $values['price' . $id]);
+          }
+          else {
+            $node->set('field_standard_price', $values['international_price_' . $id]);
+            $node->set('field_domestic_standard_price', $values['domestic_price_' . $id]);
+          }
           $node->save();
         }
       }

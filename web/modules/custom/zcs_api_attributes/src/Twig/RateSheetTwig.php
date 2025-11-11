@@ -66,11 +66,12 @@ class RateSheetTwig extends AbstractExtension implements ExtensionInterface {
       foreach ($contents as $content) {
         // $final[$content->id()] = $content->title->value;
         $titles[$content->id()] = $content->title->value;
-        $prices[$content->id()] = $symbol . (($content->field_standard_price->value ?? "0.000"));
+        $international_prices[$content->id()] = $symbol . (($content->field_standard_price->value ?? "0.000"));
+        $domestic_prices[$content->id()] = $symbol . (($content->field_domestic_standard_price->value ?? "0.000"));
       }
     }
     // Return $final;.
-    return compact('titles', 'prices');
+    return compact('titles', 'international_prices', 'domestic_prices');
   }
 
 }
