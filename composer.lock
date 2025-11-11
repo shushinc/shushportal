@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "064dadf16b66082d62432951a0e2a055",
+    "content-hash": "fc51fe748410ccf5d99963034586846b",
     "packages": [
         {
             "name": "apigee/apigee-client-php",
@@ -3656,6 +3656,62 @@
                 "source": "https://github.com/Pronovix/swagger_ui_formatter",
                 "issues": "https://github.com/Pronovix/swagger_ui_formatter/issues",
                 "docs": "https://www.drupal.org/docs/8/modules/swagger-ui-field-formatter"
+            }
+        },
+        {
+            "name": "drupal/theme_switcher",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/theme_switcher.git",
+                "reference": "2.1.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/theme_switcher-2.1.0.zip",
+                "reference": "2.1.0",
+                "shasum": "4aa9b119c9c992fd9930fa50f97cd89959c3bafb"
+            },
+            "require": {
+                "drupal/core": "^8.9 || ^9 || ^10 || ^11"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "2.1.0",
+                    "datestamp": "1732010759",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "amarincolas",
+                    "homepage": "https://www.drupal.org/user/3529039"
+                },
+                {
+                    "name": "anybody",
+                    "homepage": "https://www.drupal.org/user/291091"
+                },
+                {
+                    "name": "carlos romero",
+                    "homepage": "https://www.drupal.org/user/3722452"
+                },
+                {
+                    "name": "mkalkbrenner",
+                    "homepage": "https://www.drupal.org/user/124705"
+                }
+            ],
+            "description": "Switches active themes on specific conditions.",
+            "homepage": "https://www.drupal.org/project/theme_switcher",
+            "support": {
+                "source": "https://git.drupalcode.org/project/theme_switcher"
             }
         },
         {
@@ -16676,6 +16732,6 @@
     "platform": {
         "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }
