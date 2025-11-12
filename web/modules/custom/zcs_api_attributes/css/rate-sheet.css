@@ -189,3 +189,10 @@
 .ui-dialog .rate-sheet table tbody td:nth-child(2) {
   text-align: left;
 }
+
+
+
+#date-validation-message .date-validation-message-error {
+  font-size: 15px;
+  color: red;
+}
