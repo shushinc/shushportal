@@ -10,6 +10,9 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Markup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Ajax\InvokeCommand;
 
 /**
  *
@@ -88,9 +91,7 @@ class PriceRateSheet extends FormBase {
     $form['currencies'] = [
       '#type' => 'select',
       '#options' => $currencies,
-     // '#default_value' => $defaultCurrency,
       '#default_value' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
-    // Disables the field.
       '#disabled' => TRUE,
       '#weight' => 0,
     ];
@@ -99,6 +100,18 @@ class PriceRateSheet extends FormBase {
       '#type' => 'date',
       '#default_value' => date('Y-m-d'),
       '#weight' => 1,
+      '#attributes' => [
+        'min' => date('Y-m-d'), // disables previous dates
+      ],
+      '#ajax' => [
+        'callback' => '::validateDateAjax',
+        'event' => 'change',
+        'progress' => [
+          'type' => 'throbber',
+          'message' => t('Checking date...'),
+        ],
+      ],
+      '#suffix' => '<div id="date-validation-message"></div>',
     ];
 
     $nids = [];
@@ -150,6 +163,49 @@ class PriceRateSheet extends FormBase {
     ];
 
     return $form;
+  }
+
+
+  public function validateDateAjax(array &$form, FormStateInterface $form_state) {
+    $response = new AjaxResponse();
+    $values = $form_state->getValues();
+    $exists = \Drupal::database()->select('attributes_page_data', 'apd')
+      ->fields('apd', ['effective_date'])
+      ->condition('effective_date', $values['attribute_date'])
+      ->execute()
+      ->fetchField();
+    if ($exists) {
+      $message = '<div class="messages date-validation-message-error">The selected date ' . $selected_date . ' already exists. Please choose another.</div>';
+      // Disable the submit button
+      $response->addCommand(new InvokeCommand(
+        '[data-drupal-selector="edit-submit"]',
+        'prop',
+        ['disabled', true]
+      ));
+      $response->addCommand(new InvokeCommand(
+        '[data-drupal-selector="edit-submit"]',
+        'addClass',
+        ['is-disabled']
+      ));    
+    }
+    else {
+      // Disable the submit button
+      $response->addCommand(new InvokeCommand(
+        '[data-drupal-selector="edit-submit"]',
+        'prop',
+        ['disabled', false]
+      ));
+      $response->addCommand(new InvokeCommand(
+        '[data-drupal-selector="edit-submit"]',
+        'removeClass',
+        ['is-disabled']
+      ));
+    }
+  
+    // Update the message container dynamically
+    $response->addCommand(new HtmlCommand('#date-validation-message', $message));
+  
+    return $response;
   }
 
   /**
