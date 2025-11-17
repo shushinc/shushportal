@@ -520,3 +520,20 @@ function zcs_api_attributes_update_9009() {
     return t('Updated @count records in attributes_page_data table.', ['@count' => $sandbox['progress']]);
   }
 }
+
+
+
+/**
+ * Add markup retail field column to attributes_page_data table.
+ */
+function zcs_api_attributes_update_9010() {
+  $schema = \Drupal::database()->schema();
+  if ($schema->tableExists('attributes_page_data')) {
+    $schema->addField('attributes_page_data', 'retail_markup_percentage', [
+      'type' => 'float',
+      'not null' => FALSE,
+      'default' => NULL,
+      'description' => 'Markup Retail Percentage.',
+    ]);
+  }
+}

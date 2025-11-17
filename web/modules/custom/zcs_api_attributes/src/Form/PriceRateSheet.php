@@ -64,6 +64,10 @@ class PriceRateSheet extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $proposePricingMessage = '';
+    if($this->checkExistingProposedPricingDates()) {
+      $proposePricingMessage = '<div class="messages date-validation-message-error">Date already already exists. Select another.</div>';
+    }
 
     $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'financial_rate_sheet_approval_level_1']);
     foreach ($users as $user) {
@@ -106,12 +110,19 @@ class PriceRateSheet extends FormBase {
       '#ajax' => [
         'callback' => '::validateDateAjax',
         'event' => 'change',
-        'progress' => [
-          'type' => 'throbber',
-          'message' => t('Checking date...'),
-        ],
+        // 'progress' => [
+        //   'type' => 'throbber',
+        //   'message' => t('Checking date...'),
+        // ],
       ],
-      '#suffix' => '<div id="date-validation-message"></div>',
+      '#suffix' => "<div id='date-validation-message'>$proposePricingMessage</div>",
+    ];
+
+    $form['retail_markup_percentage'] = [
+      '#type' => 'number',
+      '#min' => 1,      
+      '#step' => 1,
+      '#required' => TRUE,
     ];
 
     $nids = [];
@@ -145,7 +156,7 @@ class PriceRateSheet extends FormBase {
       ->fields('apd', ['id', 'submit_by'])
       ->condition('attribute_status', '1')
       ->execute()->fetchObject();
-    $hide = FALSE;
+
     if ($existing) {
       $form['message'] = [
         '#type' => 'markup',
@@ -153,7 +164,11 @@ class PriceRateSheet extends FormBase {
       ];
       $hide = TRUE;
     }
+    $hide = $hide ?? FALSE;
 
+    if ($this->checkExistingProposedPricingDates()) {
+      $hide = TRUE;
+    }
     $form['#theme'] = 'rate_sheet';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
     $form['submit'] = [
@@ -175,7 +190,7 @@ class PriceRateSheet extends FormBase {
       ->execute()
       ->fetchField();
     if ($exists) {
-      $message = '<div class="messages date-validation-message-error">The selected date ' . $selected_date . ' already exists. Please choose another.</div>';
+      $message = '<div class="messages date-validation-message-error">Date already already exists. Select another.</div>';
       // Disable the submit button
       $response->addCommand(new InvokeCommand(
         '[data-drupal-selector="edit-submit"]',
@@ -206,6 +221,22 @@ class PriceRateSheet extends FormBase {
     $response->addCommand(new HtmlCommand('#date-validation-message', $message));
   
     return $response;
+  }
+
+
+  public function checkExistingProposedPricingDates(){
+    // Todo update current pricing value.
+    $today = date('Y-m-d');
+    $status = FALSE;
+    $exists = \Drupal::database()->select('attributes_page_data', 'apd')
+    ->fields('apd', ['effective_date'])
+    ->condition('effective_date', $today)
+    ->execute()
+    ->fetchField();
+    if ($exists) {
+      $status = TRUE;
+    }
+    return $status;
   }
 
   /**
@@ -266,6 +297,7 @@ class PriceRateSheet extends FormBase {
         'attribute_status',
         'created',
         'updated',
+        'retail_markup_percentage',
       ])
       ->values([
         $this->currentUser()->id(), // submit_by
@@ -280,6 +312,7 @@ class PriceRateSheet extends FormBase {
         1, // attribute_status
         \Drupal::time()->getRequestTime(), // created
         \Drupal::time()->getRequestTime(), // updated
+        $values['retail_markup_percentage'],
       ])
       ->execute();
     $mailManager = \Drupal::service('plugin.manager.mail');

@@ -30,7 +30,7 @@
   margin-right: 10px;
 }
 
-.rate-sheet-filter {
+/* .rate-sheet-filter {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -39,7 +39,16 @@
   padding: 10px;
   border-radius: 15px;
   margin-bottom: 1.5rem;
+} */
+
+.rate-sheet-filter {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+  gap: 20px; /* spacing between columns */
+  align-items: start;
+  padding: 10px;
 }
+
 .ui-dialog .rate-sheet-filter {
   margin: 0;
 }
@@ -193,6 +202,6 @@
 
 
 #date-validation-message .date-validation-message-error {
-  font-size: 15px;
+  font-size: 12px;
   color: red;
 }

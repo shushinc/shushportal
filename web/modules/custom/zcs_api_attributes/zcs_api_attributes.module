@@ -5,6 +5,8 @@
  */
 
 use Drupal\Core\Render\Markup;
+use Drupal\group\Entity\Group;
+
 
 /**
  * @file
@@ -108,14 +110,44 @@ function zcs_api_attributes_preprocess_html(&$variables) {
 
 }
 
+
 /**
- * Implements hook_preprocess_form().
+ * Implements hook_cron().
  */
-// function zcs_api_attributes_preprocess_form(&$variables) {
-//   $form = $variables['element'];
-//   // Check if this is your specific form
-//   if (isset($form['#form_id']) && $form['#form_id'] === 'rate_sheet') {
-//     // Pass custom variables to the template
-//     $variables['current_pricing_type'] = $form['#current_pricing_type'] ?? NULL;
-//   }
-// }
+function zcs_api_attributes_cron() {
+    \Drupal::logger('RMP-step-1')->notice("cron initiated");
+    // Step: 1 get the partner lists tagged with ENTERPISE value
+    $partner_details_result = [];
+    $query = \Drupal::entityQuery('group')->condition('field_partner_type', 'enterprise');
+    $gids = $query->accessCheck(FALSE)->execute();
+    $groups = Group::loadMultiple($gids);
+    foreach ($groups as $group) {
+        $partner_details_result[] = [
+            'gid' => $group->id(),
+            'title' => $group->label(),
+            'pricing_type' => $group->get('field_pricing_type')->value,
+        ];
+    }
+    //create queue for retail price percentage calculation.
+    createRetailPricePercentageQueue($partner_details_result);
+}
+
+
+function  createRetailPricePercentageQueue($partner_details_result) {
+  $data_for_calculation = [];
+  $queue_factory = \Drupal::service('queue');
+  $queue = $queue_factory->get('retail_markup_percentage');
+  $number = $queue->numberOfItems();
+  \Drupal::logger('RMP-step-no-of-items')->notice($number);
+  if($number == 0) {
+    \Drupal::logger('RMP-step-2-processing')->notice("Cron Queue Processing");
+    // Step: 2: Get the list of analytic nodes for the respective partners.
+    foreach($partner_details_result as $key => $partner) {  
+      $item = new \stdClass();
+      $item->gid = $partner['gid'];
+      $item->partner_title = $partner['title'];
+      $item->price_type = $partner['pricing_type'];
+      $queue->createItem($item);
+    }
+  }
+}

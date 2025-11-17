@@ -47,6 +47,7 @@
         "drupal/swagger_ui_formatter": "^4.1",
         "drupal/theme_switcher": "^2.1",
         "drupal/token": "^1.16",
+        "drupal/ultimate_cron": "^2.0@beta",
         "drupal/variationcache": "^1.5",
         "drush/drush": "^12.5",
         "oomphinc/composer-installers-extender": "^2.0",
