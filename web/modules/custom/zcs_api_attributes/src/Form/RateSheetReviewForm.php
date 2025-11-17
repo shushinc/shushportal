@@ -65,7 +65,7 @@ class RateSheetReviewForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, $id = 0) {
 
     $data = $this->database->select('attributes_page_data', 'apd')
-      ->fields('apd', ['approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'currency_locale', 'effective_date', 'attribute_status', 'page_data'])
+      ->fields('apd', ['approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'currency_locale', 'effective_date', 'attribute_status', 'page_data', 'retail_markup_percentage'])
       ->condition('id', $id)
       ->execute()->fetchObject();
 
@@ -142,6 +142,11 @@ class RateSheetReviewForm extends FormBase {
     $form['attribute_date'] = [
       '#type' => 'date',
       '#default_value' => $data->effective_date,
+      '#disabled' => TRUE,
+    ];
+    $form['retail_markup_percentage'] = [
+      '#type' => 'number',
+      '#default_value' => $data->retail_markup_percentage ?? 0,
       '#disabled' => TRUE,
     ];
 

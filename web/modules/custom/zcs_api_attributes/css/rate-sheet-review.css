@@ -1,9 +1,9 @@
 .ui-dialog .rate-sheet-filter {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin: 0;
-  padding: 10px 10px 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+  gap: 20px; /* spacing between columns */
+  align-items: start;
+  padding: 10px;
 }
 .ui-dialog .rate-sheet-filter .rate-sheet-filter-currencies,
 .ui-dialog .rate-sheet-filter .rate-sheet-filter-effective {

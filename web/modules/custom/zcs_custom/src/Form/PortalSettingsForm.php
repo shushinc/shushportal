@@ -127,6 +127,21 @@ final class PortalSettingsForm extends ConfigFormBase {
       '#default_value' => $this->config('zcs_custom.settings')->get('currency') ?? 'en_US',
       '#description' => t('Provide a currency value.'),
     ];
+
+    $form['retail_markup_limit_data'] = [
+      '#type' => 'details',
+      '#open' => FALSE,
+      '#title' => $this->t('RMP Limit'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#description' => t('Set the limit for Analytics records to calculate retail markup percentage (eg: -6 months or 12 months)'),
+      '#tree' => TRUE,
+    ];
+    $form['retail_markup_limit_data']['rmp_limit'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Limit'),
+      '#default_value' => $this->config('zcs_custom.settings')->get('rmp_limit'),
+    ];
     return parent::buildForm($form, $form_state);
   }
 
@@ -166,6 +181,7 @@ final class PortalSettingsForm extends ConfigFormBase {
      $config->set('allowed_oauth_scopes', $form_state->getValue('aws_details')['allowed_oauth_scopes']);
    }
    $config->set('currency', $form_state->getValue('currency_settings')['currency']);
+   $config->set('rmp_limit', $form_state->getValue('retail_markup_limit_data')['rmp_limit']);
    $config->save();
    parent::submitForm($form, $form_state);
   }
