@@ -1,0 +1,17 @@
+uuid: 1e86edc1-6624-4e49-82f2-7552d8580a81
+langcode: en
+status: false
+dependencies:
+  module:
+    - consolidate
+title: 'Default cron handler'
+id: consolidate_cron
+weight: 0
+module: consolidate
+callback: 'consolidate#cron'
+scheduler:
+  id: simple
+launcher:
+  id: serial
+logger:
+  id: database
