@@ -26,11 +26,12 @@ class RetailPercentageMarkupQueue extends QueueWorkerBase {
     // Step: 2: Get the list of analytic nodes for the respective partners. 
     $date_value = \Drupal::config('zcs_custom.settings')->get('rmp_limit') ?: '-1 months';
     $date_filter = strtotime($date_value);
+    $date_value = date('Y-m-d', $date_filter);
     $nids = \Drupal::entityQuery('node')
     ->condition('type', 'analytics')
     ->condition('field_partner.target_id', $item->gid)
     ->condition('field_date', date('Y-m-d\TH:i:s', $date_filter), '>=')
-    ->accessCheck()
+    ->accessCheck(FALSE)
     ->execute();
     if ($nids) {
         \Drupal::logger('RMP-step-3-count')->notice('Nidfor GID ' . $item->gid . ': ' . count($nids));  
@@ -50,6 +51,9 @@ class RetailPercentageMarkupQueue extends QueueWorkerBase {
                 'date' => $node->get('field_date')->value,
             ];
         }
+    }
+    else {
+        \Drupal::logger('RMP-step-3-count')->error('no-nids-found');  
     }
 
 
@@ -109,10 +113,8 @@ class RetailPercentageMarkupQueue extends QueueWorkerBase {
             if($val['price_type'] == "domestic") {
                 $price_type =  "domestic_pricing";
             }
-            if (
-                $a1['api_attribute_title'] === $val['api_attribute_title'] &&
-                $a1['price_type'] === $price_type
-            ) {
+
+            if ($a1['api_attribute_title'] === $val['api_attribute_title'] && $a1['price_type'] === $price_type) {
                 // Build combined result
                 $calculate_revenue[] = [
                     'nid' => $a1['nid'],
@@ -123,6 +125,9 @@ class RetailPercentageMarkupQueue extends QueueWorkerBase {
                     'date' => $a1['date'],
                     'retail_markup_percentage' => $retail_markup_percentage,
                 ];
+            }
+            else {
+                \Drupal::logger('RMP-step-6-error')->error("pricing is not tagged with partner");
             }
         }
     }
