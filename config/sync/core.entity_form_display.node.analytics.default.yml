@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.node.analytics.body
     - field.field.node.analytics.field_404_api_volume_in_mil
+    - field.field.node.analytics.field_api_path
     - field.field.node.analytics.field_api_volume_in_mil
     - field.field.node.analytics.field_attribute
     - field.field.node.analytics.field_average_api_latency_in_mil
@@ -33,6 +34,14 @@ content:
     weight: 12
     region: content
     settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_api_path:
+    type: string_textfield
+    weight: 26
+    region: content
+    settings:
+      size: 60
       placeholder: ''
     third_party_settings: {  }
   field_api_volume_in_mil:
