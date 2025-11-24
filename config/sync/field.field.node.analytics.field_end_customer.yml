@@ -12,7 +12,7 @@ id: node.analytics.field_end_customer
 field_name: field_end_customer
 entity_type: node
 bundle: analytics
-label: 'End customer'
+label: 'Customer Name'
 description: ''
 required: false
 translatable: false
