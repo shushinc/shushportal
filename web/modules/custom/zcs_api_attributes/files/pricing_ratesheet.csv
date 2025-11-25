@@ -1,0 +1,2 @@
+Available,Enabled,APIAttributes,Endpoint,InternationalPrice,DomesticPrice,EffectiveDate,Currency,MarkupPercentage,DiscountPercentage
+TRUE,TRUE,SAMPLE,SAMPLE,internaltion_price,sample_domestic_price,effective_price,currency,markup_perecentage,discount_percentage
