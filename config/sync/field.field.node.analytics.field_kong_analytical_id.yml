@@ -9,7 +9,7 @@ id: node.analytics.field_kong_analytical_id
 field_name: field_kong_analytical_id
 entity_type: node
 bundle: analytics
-label: 'kong Analytical Id'
+label: 'Analytical Id'
 description: ''
 required: false
 translatable: false

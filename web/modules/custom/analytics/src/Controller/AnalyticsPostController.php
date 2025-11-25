@@ -121,11 +121,15 @@ class AnalyticsPostController extends ControllerBase {
         else {
           $customerTerm = reset($customerTerms);
         }
+
+        $average_api_ms = ($content['avg_latency_full_rate'] + $content['avg_latency_lower_rate']+ $content['avg_latency_no_billable']) / 3;
         $node->set('field_end_customer', $customerTerm->id());
 
         // remaining fields
         $node->set('field_api_volume_in_mil', array_sum($content['status_counts']));
-        $node->set('field_average_api_latency_in_mil', $content['avg_latency_ms']);
+        
+        $node->set('field_average_api_latency_in_mil', $average_api_ms);
+        
         $node->set('field_date', str_replace(' ', 'T', $content['timestamp_interval']));
         $node->set('field_error_api_volume_in_mil', $content['total_no_billable_transaction']);
         $node->set('field_success_api_volume_in_mil', $content['total_full_rate_billable_transaction']);

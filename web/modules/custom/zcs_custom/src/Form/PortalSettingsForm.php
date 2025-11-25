@@ -142,6 +142,20 @@ final class PortalSettingsForm extends ConfigFormBase {
       '#title' => $this->t('Limit'),
       '#default_value' => $this->config('zcs_custom.settings')->get('rmp_limit'),
     ];
+    $form['pricing_api_endpoint'] = [
+      '#type' => 'details',
+      '#open' => FALSE,
+      '#title' => $this->t('Proposed API Pricing Endpoint'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#description' => t('Configure Proposed API Pricing Endpoint Details'),
+      '#tree' => TRUE,
+    ];
+    $form['pricing_api_endpoint']['proposed_api_endpoint'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Proposed API Endpoint'),
+      '#default_value' => $this->config('zcs_custom.settings')->get('proposed_api_endpoint'),
+    ];
     return parent::buildForm($form, $form_state);
   }
 
@@ -182,6 +196,7 @@ final class PortalSettingsForm extends ConfigFormBase {
    }
    $config->set('currency', $form_state->getValue('currency_settings')['currency']);
    $config->set('rmp_limit', $form_state->getValue('retail_markup_limit_data')['rmp_limit']);
+   $config->set('proposed_api_endpoint', $form_state->getValue('pricing_api_endpoint')['proposed_api_endpoint']);
    $config->save();
    parent::submitForm($form, $form_state);
   }
