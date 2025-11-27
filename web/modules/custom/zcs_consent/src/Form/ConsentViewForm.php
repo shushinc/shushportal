@@ -133,7 +133,7 @@ final class ConsentViewForm extends FormBase {
           $data = json_decode($error, TRUE);      
           $msg = $data['detail'][0]['msg'] ?? '';
           $input = $data['detail'][0]['input'] ?? '';
-          $response = "<div class='consent-error'>$msg .'- input:'. $input</div>";
+          $response = "<div class='consent-error'>$msg input: $input</div>";
         }  
         $responses[] = $response;
       }
