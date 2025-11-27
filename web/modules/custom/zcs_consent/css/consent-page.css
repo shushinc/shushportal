@@ -1,0 +1,16 @@
+.top-consent-actions {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+    align-items: start;
+    padding: 10px;
+}
+
+.consent-submit {
+    padding-top:20px;
+}
+
+.consent-data {
+    padding-left: 10px;
+}
+

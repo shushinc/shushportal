@@ -1,0 +1,7 @@
+zcs_consent.consent_view:
+  path: '/consent'
+  defaults:
+    _title: 'Consent'
+    _form: 'Drupal\zcs_consent\Form\ConsentViewForm'
+  requirements:
+    _permission: 'access content'
