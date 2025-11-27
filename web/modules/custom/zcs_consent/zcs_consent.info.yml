@@ -1,0 +1,5 @@
+name: 'zcs_consent'
+type: module
+description: 'Consent workflow'
+package: Custom
+core_version_requirement: ^10 || ^11

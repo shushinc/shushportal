@@ -71,6 +71,7 @@ module:
   zcs_api_attributes: 0
   zcs_apis: 0
   zcs_client_management: 0
+  zcs_consent: 0
   zcs_custom: 0
   zcs_kong: 0
   zcs_menu: 0

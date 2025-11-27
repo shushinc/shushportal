@@ -254,4 +254,20 @@ function zcs_menu_install() {
   ]);
   $api_sandbox_review_parent_menu_link->save();
 
+
+        // Create the parent menu link.
+        $consent_menu_link = MenuLinkContent::create([
+          'title' => 'Consent',
+          'link' => ['uri' => 'internal:/consent'],
+          'menu_per_role__show_role' => [
+             'authenticated',
+             'administrator',
+             'carrier_admin',
+          ],
+          'menu_name' => $menu_name,
+          'expanded' => TRUE,
+          'weight' => 15,
+        ]);
+        $consent_menu_link->save();
+
 }

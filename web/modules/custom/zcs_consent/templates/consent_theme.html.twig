@@ -1,0 +1,22 @@
+{{ attach_library('zcs_consent/consent-page') }}
+
+{{ form.form_build_id }}
+{{ form.form_token }}
+{{ form.form_id }}
+
+<div class="consent-form-wrapper">
+  <div class="top-consent-actions">
+    <div class="">
+      {{ form.action }}
+    </div>
+    <div class="">
+      {{ form.grant_type }}
+    </div>
+    <div class="consent-submit">
+      {{ form.submit }}
+    </div>
+  </div>
+  <div class="consent-data">
+     {{ form.msisdn }}
+  </div>
+</div>

@@ -1,0 +1,4 @@
+consent-page:
+  css:
+    theme:
+      css/consent-page.css: {}
