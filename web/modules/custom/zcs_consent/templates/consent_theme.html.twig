@@ -5,18 +5,18 @@
 {{ form.form_id }}
 
 <div class="consent-form-wrapper">
-  <div class="top-consent-actions">
-    <div class="">
-      {{ form.action }}
-    </div>
-    <div class="">
-      {{ form.grant_type }}
-    </div>
-    <div class="consent-submit">
-      {{ form.submit }}
-    </div>
-  </div>
-  <div class="consent-data">
-     {{ form.msisdn }}
-  </div>
+	<div class="top-consent-actions">
+		<div class="form-action select-box-type">
+			{{ form.action }}
+		</div>
+		<div class="form-type select-box-type">
+			{{ form.grant_type }}
+		</div>
+		<div class="consent-submit">
+			{{ form.submit }}
+		</div>
+	</div>
+	<div class="consent-data">
+		{{ form.msisdn }}
+	</div>
 </div>
