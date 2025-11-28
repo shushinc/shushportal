@@ -2,3 +2,8 @@ consent-page:
   css:
     theme:
       css/consent-page.css: {}
+  js:
+    js/consent.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
