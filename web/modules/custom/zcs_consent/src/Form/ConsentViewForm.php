@@ -89,97 +89,225 @@ final class ConsentViewForm extends FormBase {
     $action = $form_state->getValue('action');
     $grant_type = $form_state->getValue('grant_type');
     $msisdn = $form_state->getValue('msisdn');
-    $response = $this->consentApiCall($action, $grant_type, $msisdn);
-    $display = '';
-    foreach ($response as $message) {
-      $display .= $message;
-    }
-
-    \Drupal::messenger()->addMessage(Markup::create($display), 'status');
-    $form_state->setRedirect('zcs_consent.consent_view');
-  }
-
-
-
-  public function consentApicall($action, $grant_type, $msisdn){
     $msisdn_values = array_map('trim', explode(',', $msisdn));
-    $endpoint = \Drupal::config('zcs_custom.settings')->get('consent_endpoint') ?? '';
     foreach ($msisdn_values as $num) {
       $result[] = [
         'msisdn' => trim($num),
         'status' => $grant_type,
       ];
     }
-    $responses = [];
-    if($action == 'add') {
-      foreach($result as $consent_data) {
-        $request_body = json::encode($consent_data);
-        try {
-          $response = \Drupal::httpClient()->request('POST', $endpoint, [
-            'headers' => [
-              'content-type' => 'application/json',
-            ],
-            'verify' => FALSE,
-            'json' => $consent_data,
-          ]);
-          if ($response->getStatusCode() == '201') {
-            $add_response = json_decode($response->getBody()->getContents(), TRUE);
-            $response = '<div class="consent-success">' . $consent_data['msisdn'] .': Success</div>';
-          }
-        }
-        catch (\Exception $e) {
-          if ($e->getResponse()->getStatusCode() == '409'){
-            $error = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
-            $data = json_decode($error, TRUE);
-            $msg = $data['detail'];
-            $input = $consent_data['msisdn'];
-            $response = "<div class='consent-error'>$msg for the input: $input</div>";
-          } 
-          else {
-            \Drupal::logger('consent_error')->info('Error in creating consumer in kong gateway : @message', ['@message' => $e->getMessage()]);
-            $error = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
-            $data = json_decode($error, TRUE);      
-            $msg = $data['detail'][0]['msg'] ?? '';
-            $input = $data['detail'][0]['input'] ?? '';
-            $response = "<div class='consent-error'>$msg input: $input</div>";
-          }
-      }  
-        $responses[] = $response;
+    if(count($result) == 1 ) {
+      if ($action == 'add') {
+        $endpoint = \Drupal::config('zcs_custom.settings')->get('consent_endpoint') ?? '';
+        $response = $this->addOperationForSingleCall($endpoint, $result);
+        \Drupal::messenger()->addMessage(Markup::create($response), 'status');
       }
-      return $responses;       
+      if($action == 'delete') {
+        $endpoint = \Drupal::config('zcs_custom.settings')->get('consent_endpoint') ?? '';
+        $response = $this->deleteOperationForSingleCall($endpoint, $result);
+        \Drupal::messenger()->addMessage(Markup::create($response), 'status');
+      }
     }
-    if($action == 'delete') {
-      foreach ($msisdn_values as $num) {
-        $delete_result[] = [
-          'msisdn' => trim($num),
-        ];
+    else {
+      if ($action == 'add') {
+        $endpoint = \Drupal::config('zcs_custom.settings')->get('consent_endpoint') ?? '';
+        $response = $this->addOperationForbatch($endpoint, $result);
+        \Drupal::messenger()->addMessage(Markup::create($response), 'status');
       }
-      foreach($delete_result as $consent_data_delete) {
-        try {
-          $response = \Drupal::httpClient()->request('DELETE', $endpoint, [
-            'headers' => [
-            'content-type' => 'application/json',
-            ],
-            'json' => $consent_data_delete,
-            'verify' => FALSE,
-          ]);
-          if ($response->getStatusCode() == '200') {
-            $delete_response = json_decode($response->getBody()->getContents(), TRUE);
-            $response = '<div class="consent-success">' .$consent_data_delete['msisdn'] .':'. $delete_response['message'] .'</div>';
-          }
-        }
-        catch (\Exception $e) {
-          \Drupal::logger('consent_error')->info('Error in creating consumer in kong gateway : @message', ['@message' => $e->getMessage()]);
-          $error = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
-          $data = json_decode($error, TRUE);      
-          $msg = $data['detail'][0]['msg'] ?? '';
-          $input = $data['detail'][0]['input'] ?? '';
-          $response = "<div class='consent-error'>$msg input: $input</div>";
-        }
-        $responses[] = $response; 
+      if ($action == 'delete') {
+        $endpoint = \Drupal::config('zcs_custom.settings')->get('consent_endpoint') ?? '';
+        $response = $this->deleteOperationForbatch($endpoint, $result);
+        \Drupal::messenger()->addMessage(Markup::create($response), 'status');
       }
-      return $responses;
+
+    }
+  
+    $form_state->setRedirect('zcs_consent.consent_view');
+  }
+
+
+  /**
+   * {@inheritdoc}
+   */
+  public function deleteOperationForbatch($endpoint, $result){
+    $endpoint = $endpoint .'/'. 'batch';
+
+    $msisdn_values = [];
+    foreach($result as $msisdn) {
+       $msisdn_values[]  = $msisdn['msisdn'];
+    }
+    $params = [];
+    foreach ($msisdn_values as $m) {
+        $params[] = 'msisdns=' . urlencode($m);
+    }
+    $query = implode('&', $params);
+    $url = $endpoint . '?' . $query;
+
+    try {
+      $response = \Drupal::httpClient()->request('DELETE',  $url, [
+        'headers' => [
+        'content-type' => 'application/json',
+        ],
+        'verify' => FALSE,
+      ]);
+      if ($response->getStatusCode() == '200') {
+        $response = '<div class="consent-success">Successfully Deleted.</div>';
+        return $response;
+      }
+    }
+    catch (\Exception $e) {
+      if ($e->getResponse()->getStatusCode() == '400') {
+        \Drupal::logger('consent_error')->info('Error in deleting consent : @message', ['@message' => $e->getMessage()]);
+        $error = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
+        $data = json_decode($error, TRUE);      
+        $msg = $data['detail'];
+        $response = "<div class='consent-error'>$msg</div>";
+        return $response;
+      }
+      elseif ($e->getResponse()->getStatusCode() == '422') {
+        \Drupal::logger('consent_error')->info('Error in deleting consent : @message', ['@message' => $e->getMessage()]);
+        $error = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
+        $data = json_decode($error, TRUE);      
+        $msg = $data['detail'];
+        $response = "<div class='consent-error'>$msg</div>";
+        return $response;
+      }
+      else {
+        return $response = "<div class='consent-error'>Something went wrong...!</div>";
+      }
     }
   }
 
+ /**
+   * {@inheritdoc}
+   */
+
+  public function addOperationForbatch($endpoint, $result){
+    $endpoint = $endpoint .'/'. 'batch';
+    $consents = [
+      'consents' => $result,
+    ];
+    $request_body = json::encode($consents);
+    try {
+      $response = \Drupal::httpClient()->request('POST', $endpoint, [
+        'headers' => [
+          'content-type' => 'application/json',
+        ],
+        'verify' => FALSE,
+        'body' => $request_body,
+      ]);
+      if ($response->getStatusCode() == '201') {
+        $add_response = json_decode($response->getBody()->getContents(), TRUE);
+        $response = '<div class="consent-success">Success</div>';
+        return $response;
+      }
+    }
+    catch (\Exception $e) {
+      if ($e->getResponse()->getStatusCode() == '400') {
+        \Drupal::logger('consent_error')->info('Error in creating consent : @message', ['@message' => $e->getMessage()]);
+        $error = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
+        $data = json_decode($error, TRUE);      
+        $msg =  $data['detail'][0]['msg'];
+        return $response = "<div class='consent-error'>$msg</div>";
+      }
+      else if ($e->getResponse()->getStatusCode() == '422') {
+        \Drupal::logger('consent_error')->info('Error in creating consent : @message', ['@message' => $e->getMessage()]);
+        $error = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
+        $data = json_decode($error, TRUE);      
+        $msg =  $data['detail'][0]['msg'];
+        return $response = "<div class='consent-error'>$msg</div>";
+      }
+      else {
+        return $response = "<div class='consent-error'>Something went wrong...!</div>";
+      }
+    }
+
+
+  }
+
+
+ /**
+   * {@inheritdoc}
+   */
+  public function deleteOperationForSingleCall($endpoint, $result){
+   $result = reset($result);
+   $value = $result['msisdn'];
+   $endpoint = $endpoint .'/'. $value;
+    try {
+      $response = \Drupal::httpClient()->request('DELETE', $endpoint, [
+        'headers' => [
+        'content-type' => 'application/json',
+        ],
+        'verify' => FALSE,
+      ]);
+      if ($response->getStatusCode() == '204') {
+        $response = '<div class="consent-success">Successfully Deleted.</div>';
+        return $response;
+      }
+    }
+    catch (\Exception $e) {
+      if ($e->getResponse()->getStatusCode() == '400') {
+        \Drupal::logger('consent_error')->info('Error in creating consent : @message', ['@message' => $e->getMessage()]);
+        $error = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
+        $data = json_decode($error, TRUE);      
+        $msg = $data['detail'];
+        $response = "<div class='consent-error'>$msg</div>";
+        return $response;
+      }
+      elseif ($e->getResponse()->getStatusCode() == '404') {
+        \Drupal::logger('consent_error')->info('Error in creating consent : @message', ['@message' => $e->getMessage()]);
+        $error = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
+        $data = json_decode($error, TRUE);      
+        $msg = $data['detail'];
+        $response = "<div class='consent-error'>$msg</div>";
+        return $response;
+      }
+      else {
+        return $response = "<div class='consent-error'>Something went wrong...!</div>";
+      }
+    }
+
+  }
+  
+
+  /**
+   * {@inheritdoc}
+   */
+  public function addOperationForSingleCall($endpoint, $result){
+    $result = reset($result);
+    $request_body = json::encode($result);
+    try {
+      $response = \Drupal::httpClient()->request('POST', $endpoint, [
+        'headers' => [
+          'content-type' => 'application/json',
+        ],
+        'verify' => FALSE,
+        'body' => $request_body,
+      ]);
+      if ($response->getStatusCode() == '201') {
+        $add_response = json_decode($response->getBody()->getContents(), TRUE);
+        $response = '<div class="consent-success">Success</div>';
+        return $response;
+      }
+    }
+    catch (\Exception $e) {
+      if ($e->getResponse()->getStatusCode() == '409'){
+        $error = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
+        $data = json_decode($error, TRUE);
+        $msg = $data['detail'];;
+        $response = "<div class='consent-error'>$msg for the input</div>";
+        return $response;
+      }
+      else if ($e->getResponse()->getStatusCode() == '422') {
+        \Drupal::logger('consent_error')->info('Error in creating consent : @message', ['@message' => $e->getMessage()]);
+        $error = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
+        $data = json_decode($error, TRUE);      
+        $msg =  $data['detail'][0]['msg'];
+        return $response = "<div class='consent-error'>$msg</div>";
+      }
+      else {
+        return $response = "<div class='consent-error'>Something went wrong...!</div>";
+      }
+    }
+  }
 }
