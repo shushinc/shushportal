@@ -45,8 +45,12 @@ final class ConsentViewForm extends FormBase {
         'true' => 'Allow',
         'false' => 'Deny',
       ],
-      '#required' => TRUE,
       '#weight' => 2,
+      '#states' => [
+        'invisible' => [
+          ':input[name="action"]' => ['value' => 'delete'],
+        ],
+      ],
     ];
     $form['submit'] = [
       '#type' => 'submit',
