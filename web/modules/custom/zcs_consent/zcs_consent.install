@@ -1,0 +1,41 @@
+
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the zcs_menu module.
+ */
+use Drupal\menu_link_content\Entity\MenuLinkContent;
+
+/**
+ * Implements hook_install().
+ */
+function zcs_consent_install() {
+ // Create the parent menu link.
+ $menu_name = 'main';
+ $consent_menu_link = MenuLinkContent::create([
+    'title' => 'Consent',
+    'link' => ['uri' => 'internal:/consent'],
+    'menu_per_role__show_role' => [
+       'authenticated',
+       'administrator',
+       'carrier_admin',
+    ],
+    'menu_name' => $menu_name,
+    'expanded' => TRUE,
+    'weight' => 15,
+  ]);
+  $consent_menu_link->save();    
+}
+
+
+/**
+ * Implements hook_uninstall().
+ */
+function zcs_consent_uninstall() {
+    $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+    $menu_item_object = current($storage->loadByProperties(['title' => 'Consent']));
+    if($menu_item_object) {
+      $menu_item_object->delete();
+    }
+}
+ 

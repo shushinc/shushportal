@@ -103,7 +103,7 @@ final class ConsentViewForm extends FormBase {
 
   public function consentApicall($action, $grant_type, $msisdn){
     $msisdn_values = array_map('trim', explode(',', $msisdn));
-    $endpoint = 'http://34.102.232.155/'.'consent/';
+    $endpoint = \Drupal::config('zcs_custom.settings')->get('consent_endpoint') ?? '';
     foreach ($msisdn_values as $num) {
       $result[] = [
         'msisdn' => trim($num),

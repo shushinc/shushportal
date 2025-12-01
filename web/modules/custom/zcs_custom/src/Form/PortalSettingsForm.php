@@ -156,6 +156,20 @@ final class PortalSettingsForm extends ConfigFormBase {
       '#title' => $this->t('Proposed API Endpoint'),
       '#default_value' => $this->config('zcs_custom.settings')->get('proposed_api_endpoint'),
     ];
+    $form['consent_api_endpoint'] = [
+      '#type' => 'details',
+      '#open' => FALSE,
+      '#title' => $this->t('Consent API Endpoint'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#description' => t('Consent API Pricing Endpoint Details'),
+      '#tree' => TRUE,
+    ];
+    $form['consent_api_endpoint']['consent_endpoint'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Consent API Endpoint'),
+      '#default_value' => $this->config('zcs_custom.settings')->get('consent_endpoint'),
+    ];
     return parent::buildForm($form, $form_state);
   }
 
@@ -197,6 +211,7 @@ final class PortalSettingsForm extends ConfigFormBase {
    $config->set('currency', $form_state->getValue('currency_settings')['currency']);
    $config->set('rmp_limit', $form_state->getValue('retail_markup_limit_data')['rmp_limit']);
    $config->set('proposed_api_endpoint', $form_state->getValue('pricing_api_endpoint')['proposed_api_endpoint']);
+   $config->set('consent_endpoint', $form_state->getValue('consent_api_endpoint')['consent_endpoint']);
    $config->save();
    parent::submitForm($form, $form_state);
   }
