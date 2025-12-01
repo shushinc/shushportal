@@ -124,17 +124,26 @@ final class ConsentViewForm extends FormBase {
           ]);
           if ($response->getStatusCode() == '201') {
             $add_response = json_decode($response->getBody()->getContents(), TRUE);
-            $response = '<div class="consent-success">' . $add_response['msisdn'] . ' - ' . $add_response['message'] . '</div>';
+            $response = '<div class="consent-success">' . $consent_data['msisdn'] .': Success</div>';
           }
         }
         catch (\Exception $e) {
-          \Drupal::logger('consent_error')->info('Error in creating consumer in kong gateway : @message', ['@message' => $e->getMessage()]);
-          $error = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
-          $data = json_decode($error, TRUE);      
-          $msg = $data['detail'][0]['msg'] ?? '';
-          $input = $data['detail'][0]['input'] ?? '';
-          $response = "<div class='consent-error'>$msg input: $input</div>";
-        }  
+          if ($e->getResponse()->getStatusCode() == '409'){
+            $error = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
+            $data = json_decode($error, TRUE);
+            $msg = $data['detail'];
+            $input = $consent_data['msisdn'];
+            $response = "<div class='consent-error'>$msg for the input: $input</div>";
+          } 
+          else {
+            \Drupal::logger('consent_error')->info('Error in creating consumer in kong gateway : @message', ['@message' => $e->getMessage()]);
+            $error = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
+            $data = json_decode($error, TRUE);      
+            $msg = $data['detail'][0]['msg'] ?? '';
+            $input = $data['detail'][0]['input'] ?? '';
+            $response = "<div class='consent-error'>$msg input: $input</div>";
+          }
+      }  
         $responses[] = $response;
       }
       return $responses;       
