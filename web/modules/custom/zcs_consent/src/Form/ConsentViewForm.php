@@ -45,8 +45,12 @@ final class ConsentViewForm extends FormBase {
         'true' => 'Allow',
         'false' => 'Deny',
       ],
-      '#required' => TRUE,
       '#weight' => 2,
+      '#states' => [
+        'invisible' => [
+          ':input[name="action"]' => ['value' => 'delete'],
+        ],
+      ],
     ];
     $form['submit'] = [
       '#type' => 'submit',
@@ -295,7 +299,7 @@ final class ConsentViewForm extends FormBase {
         $error = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
         $data = json_decode($error, TRUE);
         $msg = $data['detail'];;
-        $response = "<div class='consent-error'>$msg for the input</div>";
+        $response = "<div class='consent-error'>$msg</div>";
         return $response;
       }
       else if ($e->getResponse()->getStatusCode() == '422') {
