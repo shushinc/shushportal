@@ -47,7 +47,7 @@ final class ConsentViewForm extends FormBase {
       ],
       '#weight' => 2,
       '#states' => [
-        'invisible' => [
+        'disabled' => [
           ':input[name="action"]' => ['value' => 'delete'],
         ],
       ],
