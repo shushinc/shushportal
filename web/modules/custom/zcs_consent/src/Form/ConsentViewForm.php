@@ -66,7 +66,7 @@ final class ConsentViewForm extends FormBase {
     $form['msisdn'] = [
       '#type' => 'textarea',
       '#default_value' => '',
-      '#placeholder' => 'Provide inputs with comma seperated (eg: +897871232144, +232142124124)',
+      '#placeholder' => 'Provide inputs one per line',
       '#rows' => 5,
       '#cols' => 5,
       '#required' => TRUE,
@@ -93,7 +93,7 @@ final class ConsentViewForm extends FormBase {
     $action = $form_state->getValue('action');
     $grant_type = $form_state->getValue('grant_type');
     $msisdn = $form_state->getValue('msisdn');
-    $msisdn_values = array_map('trim', explode(',', $msisdn));
+    $msisdn_values = array_map('trim', preg_split('/\r\n|\r|\n/', $msisdn));
     foreach ($msisdn_values as $num) {
       $result[] = [
         'msisdn' => trim($num),
