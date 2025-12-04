@@ -456,6 +456,7 @@ final class EditClientForm extends FormBase {
     ]);
 
     $group->save();
+    $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
     $this->messenger()->addMessage($this->t('Client is updated successfully.'));
     $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
   }

@@ -441,6 +441,7 @@ class CreateClientForm extends FormBase {
             $response = Json::decode($kong_response);
             $group->set('field_consumer_id', $response['id']);
             $group->save();
+            $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
             $this->messenger()->addMessage($this->t('Client is invited successfully.'));
             $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
           }
@@ -500,6 +501,7 @@ class CreateClientForm extends FormBase {
         "family_name" => $form_state->getValue('contact_name') ?? '',
       ]);
       $group->save();
+      $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
       $uid = \Drupal::currentUser()->id();
       $user = User::load($uid);
       $group->addMember($user, ['group_roles' => ['partner-admin']]);
