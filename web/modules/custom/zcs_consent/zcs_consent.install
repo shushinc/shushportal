@@ -10,8 +10,20 @@ use Drupal\menu_link_content\Entity\MenuLinkContent;
  * Implements hook_install().
  */
 function zcs_consent_install() {
- // Create the parent menu link.
  $menu_name = 'main';
+ // Check if a menu link with the same properties already exists.
+ $carrier_menu_link = \Drupal::entityTypeManager()->getStorage('menu_link_content')->loadByProperties([
+   'menu_name' => $menu_name,
+   'title' => 'Carrier',
+ ]);
+ if (!empty($carrier_menu_link)) {
+   // Get the first matching menu link entity.
+   $carrier_menu_link = reset($carrier_menu_link);
+ 
+   // Now you can safely get the UUID.
+   $parent_id = 'menu_link_content:' . $carrier_menu_link->uuid();
+ }
+
  $consent_menu_link = MenuLinkContent::create([
     'title' => 'Consent',
     'link' => ['uri' => 'internal:/consent'],
@@ -20,6 +32,7 @@ function zcs_consent_install() {
        'administrator',
        'carrier_admin',
     ],
+    'parent' => $parent_id,
     'menu_name' => $menu_name,
     'expanded' => TRUE,
     'weight' => 15,
