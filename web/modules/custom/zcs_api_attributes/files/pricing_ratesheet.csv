@@ -1,2 +1,48 @@
 Available,Enabled,APIAttributes,Endpoint,InternationalPrice,DomesticPrice,EffectiveDate,Currency,MarkupPercentage,DiscountPercentage
-TRUE,TRUE,SAMPLE,SAMPLE,internaltion_price,sample_domestic_price,effective_price,currency,markup_perecentage,discount_percentage
+TRUE,TRUE,"Silent Authentication",/slient-auth,21.000,200.005,12/09/2025,USD,30,30
+TRUE,TRUE,"Zero Trust Silent Authentication",/update-endpoint,20.000,0.005,12/09/2025,USD,30,30
+TRUE,TRUE,"CAMARA Number Verification / Number Share",/update-endpoint,1.000,0.005,12/09/2025,USD,30,30
+TRUE,TRUE,"CAMARA Number Verification / Zero Trust",/update-endpoint,1.000,0.005,12/09/2025,USD,30,30
+TRUE,TRUE,"TS.43 Silent Authentication",/update-endpoint,1.000,0.005,12/09/2025,USD,30,30
+TRUE,TRUE,"TS.43 Zero Trust Silent Authentication",/update-endpoint,0.005,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Number Verify",/update-endpoint,0.005,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Name Verify (First and Last)",/update-endpoint,20.000,20.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Billing Address Verify",/update-endpoint,0.005,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Email Address Verify",/update-endpoint,0.005,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Age Verify",/update-endpoint,0.005,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Customer Verification Bundle (8-11)",/update-endpoint,0.005,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Customer Type",/update-endpoint,0.005,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Account Type",/update-endpoint,0.005,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Primary Account Holder",/update-endpoint,0.009,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Service Activation Date",/update-endpoint,0.005,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Subscriber Account Status",/update-endpoint,0.005,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Account Status Bundle (13-17)",/update-endpoint,0.005,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Last Mobile Number Change Date",/update-endpoint,0.005,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Subscription Status Change Date",/update-endpoint,0.005,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Last Primary Name Change Date",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Last Billing Address Change Date",/update-endpoint,0.005,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"MSISDN Porting Status",/update-endpoint,0.005,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Account Status Change Bundle (19-23)",/update-endpoint,0.005,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"IMEI Activation Date",/update-endpoint,0.005,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"IMEI Change Date",/update-endpoint,0.005,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"IMEI Lookup",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"MSISDN / IMSI Activation Date",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Device Lost / Stolen Indicator",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Device Lost / Stolen Date",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Device SIM Status Bundle (25-30)",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"CAMARA Device Status / Connectivity",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"SIM Swap Date",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"SIM Swap Date Verify",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"CAMARA SIM Swap / Date Retrieval",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"CAMARA SIM Swap / Date Verification",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Call Forwarding Indicator",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Roaming Status",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Routing Status Bundle (37 & 38)",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"CAMARA Device Status / Roaming",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Inbound Call",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Outbound Call",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"In Call State Bundle",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Device Location",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"Device Location Verify",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"CAMARA Device Location Retrieval",/update-endpoint,0.000,0.000,12/09/2025,USD,30,30
+TRUE,TRUE,"CAMARA Device Location Verification",/update-endpoint,21.000,22.000,12/09/2025,USD,30,30
