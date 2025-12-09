@@ -57,7 +57,7 @@ class ClientManagementService {
       $pricing_label = 'international';
     }
     if ($pricing_type == 'domestic_pricing'){
-      $pricing_label = 'international';
+      $pricing_label = 'domestic';
     }
     if($client_type == 'demand_partner'){
       $client_type = 'demandpartner';
