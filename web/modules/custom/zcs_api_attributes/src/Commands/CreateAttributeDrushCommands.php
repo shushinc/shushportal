@@ -54,6 +54,7 @@ class CreateAttributeDrushCommands extends DrushCommands {
         'title' => $item['title'],
         'field_able_to_be_used' => $item['able_to_used'],
         'field_attribute_weight' => $item['weight'],
+        'field_endpoint' => $item['endpoint'] ?? '',
       ]);
       $node->save();
       $json_ratesheet[$node->id()] = $item['standard_price'];

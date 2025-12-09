@@ -225,6 +225,7 @@ class RateSheetReviewForm extends FormBase {
           $node->save();
         }
       }
+      $price_sheet_post_api_call = \Drupal::service('zcs_api_attributes.propose_price_ratesheet')->RetailMarkupPrice($values['apid']);
     }
     elseif ($values['another_approver_status'] == 3 || $values['status'] == 3) {
       $updatedFields['attribute_status'] = 3;
@@ -234,7 +235,6 @@ class RateSheetReviewForm extends FormBase {
       ->condition('id', $values['apid'])
       ->execute();
     $this->messenger()->addStatus('Status submitted successfully');
-
     // Sending the email for approver2.
     if ($values['approved_by'] == 'approver1' && $values['status'] == 2) {
       $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'financial_rate_sheet_approval_level_2', 'status' => 1]);
