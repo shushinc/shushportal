@@ -35,23 +35,22 @@ class RetailMarkupPriceSheet  {
     public function RetailMarkupPrice($pricing_id) {
       $price_sheet = $this->PreparePricingCsv($pricing_id);
       $file_system = \Drupal::service('file_system');
-      // Get module path (absolute)
-      $module_path = DRUPAL_ROOT . '/' . \Drupal::service('extension.list.module')->getPath('zcs_api_attributes');
-      // Ensure /files folder exists
-      $target_dir = $module_path . '/files';
-      $file_system->prepareDirectory($target_dir, FileSystemInterface::CREATE_DIRECTORY);
-      // Full file path
+      // Private folder for your module
+      $directory = 'private://pricing';
+
+      // Ensure directory exists
+      $file_system->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
+      // Filename
       $filename = 'pricing_ratesheet.csv';
-      // $filename = 'api_pricing_25th.csv';
-      $file_path = $target_dir . '/' . $filename;
-
-      // Delete old file if exists
-      if (file_exists($file_path)) {
-        unlink($file_path);
+      $file_uri = $directory . '/' . $filename;
+      if (file_exists($file_system->realpath($file_uri))) {
+        $file_system->delete($file_uri);
       }
-
-     // Save new content
-     file_put_contents($file_path, $price_sheet['filecontent']);
+      $file_system->saveData(
+        $price_sheet['filecontent'],
+        $file_uri,
+        FileSystemInterface::EXISTS_REPLACE
+      );
      $endpoint = \Drupal::config('zcs_custom.settings')->get('proposed_api_endpoint');
       try {
         \Drupal::logger('retail_markup_api_hit')->info("API_HIT");
@@ -61,7 +60,7 @@ class RetailMarkupPriceSheet  {
           'multipart' => [
             [
               'name' => 'file',
-              'contents' => fopen($file_path, 'r'),
+              'contents' => fopen($file_uri, 'r'),
               'filename' => $price_sheet['filename'],
             ],
           ],
