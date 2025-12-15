@@ -7,3 +7,4 @@ consent-page:
   dependencies:
     - core/jquery
     - core/drupalSettings
+    - core/once

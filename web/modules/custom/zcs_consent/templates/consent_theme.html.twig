@@ -4,6 +4,10 @@
 {{ form.form_token }}
 {{ form.form_id }}
 
+{% if form.subtitle is defined %}
+  {{ form.subtitle }}
+{% endif %}
+
 <div class="consent-form-wrapper">
 	<div class="top-consent-actions">
 		<div class="form-action select-box-type">
@@ -18,5 +22,6 @@
 	</div>
 	<div class="consent-data">
 		{{ form.msisdn }}
+		<div class="lines-counter" aria-live="polite"></div>
 	</div>
 </div>

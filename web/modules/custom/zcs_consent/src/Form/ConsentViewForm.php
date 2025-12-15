@@ -28,6 +28,18 @@ final class ConsentViewForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
+
+    $request = $this->getRequest();
+
+    $action = $request->query->get('action');
+    $grant_type = $request->query->get('grant_type');
+
+    $form['subtitle'] = [
+      '#type' => 'markup',
+      '#markup' => '<p class="pt-2 page-subtitle">' . $this->t('Paste or type up to 1,000 MSISDNs (one per line) in E.164 format to add or deny consent.') . '</p>',
+      '#weight' => -100,
+    ];
+
     $form['action'] = [
       '#type' => 'select',
       '#title' => $this->t('Action'),
@@ -36,6 +48,7 @@ final class ConsentViewForm extends FormBase {
         'delete' => 'Delete',
       ],
       '#required' => TRUE,
+      '#default_value' => $action ?? NULL,
       '#weight' => 1,
     ];
     $form['grant_type'] = [
@@ -45,10 +58,14 @@ final class ConsentViewForm extends FormBase {
         'true' => 'Allow',
         'false' => 'Deny',
       ],
+      '#default_value' => $grant_type ?? 'true',
       '#weight' => 2,
       '#states' => [
         'disabled' => [
           ':input[name="action"]' => ['value' => 'delete'],
+        ],
+        'visible' => [
+          ':input[name="action"]' => ['!value' => 'delete'],
         ],
       ],
     ];
@@ -73,6 +90,7 @@ final class ConsentViewForm extends FormBase {
       '#weight' => 4,
       '#attributes' => [
         'style' => 'width:600px;',
+        'data-max-lines' => 1000,
       ],
     ];
     $form['#theme'] = 'consent_theme';
@@ -83,7 +101,25 @@ final class ConsentViewForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state): void {
+    parent::validateForm($form, $form_state);
 
+    $value = $form_state->getValue('msisdn');
+
+    if ($value === NULL || $value === '') {
+      return;
+    }
+
+    $lines = preg_split("/\r\n|\n|\r/", trim($value));
+    $line_count = count($lines);
+
+    if ($line_count > 1000) {
+      $form_state->setErrorByName(
+        'msisdn',
+        $this->t('You can provide a maximum of 1000 lines. You entered @count lines.', [
+          '@count' => $line_count,
+        ])
+      );
+    }
   }
 
   /**
@@ -125,8 +161,21 @@ final class ConsentViewForm extends FormBase {
       }
 
     }
+
+    $form_state->set('action', $form_state->getValue('action'));
+    $form_state->set('grant_type', $form_state->getValue('grant_type'));
+
   
-    $form_state->setRedirect('zcs_consent.consent_view');
+    $form_state->setRedirect(
+      'zcs_consent.consent_view',
+      [],
+      [
+        'query' => [
+          'action' => $form_state->getValue('action'),
+          'grant_type' => $form_state->getValue('grant_type'),
+        ],
+      ]
+    );
   }
 
 
