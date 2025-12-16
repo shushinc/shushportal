@@ -81,3 +81,13 @@
 .select-box-type .js-form-item select {
   margin-bottom: 0;
 }
+.lines-counter {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.lines-counter.is-invalid {
+  color: #c00;
+  font-weight: 600;
+}
