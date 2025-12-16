@@ -25,7 +25,7 @@ function zcs_consent_install() {
  }
 
  $consent_menu_link = MenuLinkContent::create([
-    'title' => 'Consent',
+    'title' => 'Consent Management',
     'link' => ['uri' => 'internal:/consent'],
     'menu_per_role__show_role' => [
        'authenticated',

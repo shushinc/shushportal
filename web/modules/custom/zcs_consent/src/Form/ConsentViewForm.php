@@ -61,9 +61,6 @@ final class ConsentViewForm extends FormBase {
       '#default_value' => $grant_type ?? 'true',
       '#weight' => 2,
       '#states' => [
-        'disabled' => [
-          ':input[name="action"]' => ['value' => 'delete'],
-        ],
         'visible' => [
           ':input[name="action"]' => ['!value' => 'delete'],
         ],
