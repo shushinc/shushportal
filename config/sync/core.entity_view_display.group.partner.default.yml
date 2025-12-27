@@ -13,6 +13,7 @@ dependencies:
     - field.field.group.partner.field_contact_name
     - field.field.group.partner.field_currency
     - field.field.group.partner.field_description
+    - field.field.group.partner.field_discount_pricing
     - field.field.group.partner.field_industry
     - field.field.group.partner.field_partner_status
     - field.field.group.partner.field_partner_type
@@ -109,6 +110,13 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: -2
+    region: content
+  field_discount_pricing:
+    type: basic_string
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 21
     region: content
   field_industry:
     type: list_default

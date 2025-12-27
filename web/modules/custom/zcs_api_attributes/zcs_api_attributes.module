@@ -6,6 +6,10 @@
 
 use Drupal\Core\Render\Markup;
 use Drupal\group\Entity\Group;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Entity\Query\QueryInterface;
 
 
 /**
@@ -52,6 +56,12 @@ function zcs_api_attributes_theme() {
       ],
       'template' => 'rate_sheet_approval',
     ],
+    'discount_sheet_approval_list' => [
+      'variables' => [
+        'content' => NULL,
+      ],
+      'template' => 'discount_sheet_approval_list',
+    ],
     'api_attribute_sheet_approval' => [
       'variables' => [
         'content' => NULL,
@@ -69,6 +79,20 @@ function zcs_api_attributes_theme() {
     'api_attribute_sheet' => [
       'render element' => 'form',
       'template' => 'api_attribute_sheet',
+    ],
+    'create_pricing_discount' => [
+      'render element' => 'form',
+      'template' => 'create_pricing_discount',
+    ],
+    'discount_sheet_approval_list' => [
+      'variables' => [
+        'content' => NULL,
+      ],
+      'template' => 'discount_sheet_approval_list',
+    ],
+    'discount_sheet_review' => [
+      'render element' => 'form',
+      'template' => 'discount_sheet_review',
     ],
   ];
 }
@@ -94,6 +118,13 @@ function zcs_api_attributes_mail($key, &$message, $params) {
       $message['body'][] = Markup::create($params['message']);
       $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed; delsp=yes';
       break;
+
+    case 'discount_price_sheet':
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = t('Discount Price sheet Requested for Approval', $options);
+      $message['body'][] = Markup::create($params['message']);
+      $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed; delsp=yes';
+      break;   
   }
 }
 
@@ -107,14 +138,13 @@ function zcs_api_attributes_preprocess_html(&$variables) {
   if (\Drupal::routeMatch()->getRouteName() == 'zcs_api_attributes.pricing_history') {
     $variables['attributes']['class'][] = 'network_authentication_pricing_over_time';
   }
-
 }
 
 
 /**
  * Implements hook_cron().
  */
-function zcs_api_attributes_cron() {
+function zcs_api_attributes_cron_() {
     \Drupal::logger('RMP-step-1')->notice("cron initiated");
     // Step: 1 get the partner lists tagged with ENTERPISE value
     $partner_details_result = [];

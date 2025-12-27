@@ -21,3 +21,8 @@ rate-sheet-review:
   css:
     theme:
       css/rate-sheet-review.css: {}
+
+discount-sheet:
+  js:
+    js/discount-sheet.js: {}
+
