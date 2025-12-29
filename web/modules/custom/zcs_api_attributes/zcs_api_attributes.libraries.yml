@@ -25,4 +25,7 @@ rate-sheet-review:
 discount-sheet:
   js:
     js/discount-sheet.js: {}
+  css:
+    theme:
+      css/discount-sheet.css: {}  
 

@@ -159,6 +159,7 @@ class DiscountPricingReviewForm extends FormBase {
 
     $form['#theme'] = 'discount_sheet_review';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-review';
+    $form['#attached']['library'][] = 'zcs_api_attributes/discount-sheet';
 
     if (((in_array('financial_rate_sheet_approval_level_1', $this->currentUser()->getRoles()) && !$data->approver1_uid) ||
          (in_array('financial_rate_sheet_approval_level_2', $this->currentUser()->getRoles()) && !$data->approver2_uid && $data->approver1_uid)) &&

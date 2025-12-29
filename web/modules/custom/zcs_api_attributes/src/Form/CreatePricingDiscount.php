@@ -135,6 +135,7 @@ class CreatePricingDiscount extends FormBase {
       '#type' => 'hidden',
       '#value' => implode(",", $nids),
     ];
+    $form['#attached']['library'][] = 'zcs_api_attributes/discount-sheet';
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => 'Create Pricing Discount',
