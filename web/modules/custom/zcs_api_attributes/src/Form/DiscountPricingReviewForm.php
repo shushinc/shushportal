@@ -200,7 +200,7 @@ class DiscountPricingReviewForm extends FormBase {
       $group = Group::load($client_id);
       $group->set('field_discount_pricing', $discount_pricing_json_data);
       $group->save();
-     // $price_sheet_post_api_call = \Drupal::service('zcs_api_attributes.propose_price_ratesheet')->RetailMarkupPrice($values['apid']);
+      $discount_calculation = \Drupal::service('zcs_api_attributes.discount_sheet')->DiscountPrice($values['apid']);
     }
     elseif ($values['another_approver_status'] == 3 || $values['status'] == 3) {
       $updatedFields['attribute_status'] = 3;

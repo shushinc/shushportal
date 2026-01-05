@@ -34,9 +34,8 @@ class DiscountPriceSheet  {
   /**
    * {@inheritdoc}
    */
-  public function DiscountPrice() {
+  public function DiscountPrice($pricing_id) {
     // step -1 Get the discount table id from the custom table. 
-    $pricing_id = 9;
     $data = $this->database->select('discount_pricing_page_data', 'dppd')
     ->fields('dppd', ['page_data', 'client_id', 'client_name'])
     ->condition('attribute_status', 2) // approved
