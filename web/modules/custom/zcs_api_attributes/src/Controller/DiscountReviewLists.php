@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  *
  */
-class DiscountReviewList extends ControllerBase {
+class DiscountReviewLists extends ControllerBase {
 
 
   /**

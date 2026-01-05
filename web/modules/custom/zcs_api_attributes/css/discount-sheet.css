@@ -28,6 +28,10 @@
     max-width: 192px;
     /* margin: 0 0 24px auto; */
   }
+  .pricing-discount-sheet .ajax-progress-throbber {
+    display: none;
+  }
+
   .pricing-discount-sheet .js-form-item-client label {
     display: none;
   }
