@@ -36,16 +36,17 @@ class DiscountPriceSheet  {
    */
   public function DiscountPrice($pricing_id) {
     // step -1 Get the discount table id from the custom table. 
+    \Drupal::logger('discount-step-1')->notice('pricing_id ' . $pricing_id);  
     $data = $this->database->select('discount_pricing_page_data', 'dppd')
     ->fields('dppd', ['page_data', 'client_id', 'client_name'])
     ->condition('attribute_status', 2) // approved
     ->condition('id', $pricing_id)
     ->execute()->fetchObject();
+    \Drupal::logger('discount-step-2')->notice('client_id ' . $data->client_id); 
     if($data->client_id) {
-    // step-2 : get the analytics node for the particular client id:
+      // step-2 : get the analytics node for the particular client id:
       \Drupal::logger('discount-step-2-count')->notice('fetching Nidfor GID ' . $data->client_id);  
       $date_value = \Drupal::config('zcs_custom.settings')->get('rmp_limit') ?: '-2 months';
-      $date_value = '-10 months';
       $date_filter = strtotime($date_value);
       $nids = \Drupal::entityQuery('node')
       ->condition('type', 'analytics')
@@ -56,7 +57,7 @@ class DiscountPriceSheet  {
       ->execute();
     }
     if ($nids) {
-      \Drupal::logger('discount-step-3-count')->notice('Nidfor GID ' . $data->client_id . ': ' . count($nids));  
+      \Drupal::logger('discount-step-3')->notice('Nidfor GID ' . $data->client_id . ': ' . count($nids));  
       $nodes = \Drupal\node\Entity\Node::loadMultiple($nids);
       foreach ($nodes as $node) {
         $group = Group::load($data->client_id);
@@ -75,19 +76,17 @@ class DiscountPriceSheet  {
           'date' => $node->get('field_date')->value,
         ];
       }
+      $rate_sheet_result = $this->getProposedPricingSheetData();
+      if (!empty($rate_sheet_result)) {
+        $retail_markup_percentage = $rate_sheet_result->retail_markup_percentage ?? 1;
+        $consolidate_price_sheet = $this->formatRateSheetDetails($rate_sheet_result->page_data);
+        $perform_calculation = $this->calculationForAnalyticsRevenue($retail_markup_percentage, $consolidate_price_sheet, $data_for_calculation, $data->page_data);
+        $result = $this->performCalucluationRevenue($perform_calculation);
+        return $result;
+      }
     }
     else {
-      \Drupal::logger('discount-step-3-count')->error('no-nids-found');  
-    }
-    $rate_sheet_result = $this->getProposedPricingSheetData();
-    if (!empty($rate_sheet_result)) {
-      $retail_markup_percentage = $rate_sheet_result->retail_markup_percentage ?? 1;
-      $consolidate_price_sheet = $this->formatRateSheetDetails($rate_sheet_result->page_data);
-      $perform_calculation = $this->calculationForAnalyticsRevenue($retail_markup_percentage, $consolidate_price_sheet, $data_for_calculation, $data->page_data);
-      dump($perform_calculation);
-      //die;
-      $result = $this->performCalucluationRevenue($perform_calculation);
-      return $result;
+      \Drupal::logger('discount-step-3-no-data')->error('no-nids-found');  
     }
   }
 
@@ -103,6 +102,10 @@ class DiscountPriceSheet  {
     $query->orderBy('apd.effective_date', 'DESC');          
     $query->range(0, 1);                                
     $result = $query->execute()->fetchObject();
+    if (!$result) {
+     \Drupal::logger('discount-step-4-no-data')->notice("No proposed API Pricinsheet:"); 
+      return NULL; // or false
+    }
     return $result;
   }
 
@@ -123,48 +126,57 @@ class DiscountPriceSheet  {
                 ];
             } 
         }
-    }    
+    }   
+    \Drupal::logger('discount-step-5-result')->notice(
+      'Formatted rate sheet result: <pre>@result</pre>',
+      ['@result' => print_r($result, TRUE)]
+    );
     return $result;
   }
 
 
   public function calculationForAnalyticsRevenue($retail_markup_percentage, $consolidate_price_sheet, $data_for_calculation, $discount_sheet) {
+    \Drupal::logger('discount-step-6')->notice("calculation data for analytics revenue");
     $discount_price_sheet =json::decode($discount_sheet);
     $calculate_revenue = [];
-        foreach ($data_for_calculation as $a1) {
-            foreach ($consolidate_price_sheet as $a2 => $val) {
-              if($val['price_type'] == "international") {
-                  $price_type = "international_pricing";
-              }
-              if($val['price_type'] == "domestic") {
-                  $price_type =  "domestic_pricing";
-              }
-              if ($a1['api_attribute_title'] === $val['api_attribute_title'] && $a1['price_type'] === $price_type) {
-                  // Build combined result
-                  $calculate_revenue[] = [
-                      'nid' => $a1['nid'],
-                      'title' => $a1['title'],
-                      'client_id' => $a1['node_gid'],
-                      'client_name' => $a1['parnter_title'],
-                      'api_attribute_title' => $a1['api_attribute_title'],
-                      'price_type' => $a1['price_type'],
-                      'price' => $val['price'],
-                      'date' => $a1['date'],
-                      'discount_price' => $discount_price_sheet[$val['nid']]['discount_pricing'],
-                      'retail_markup_percentage' => $retail_markup_percentage,
-                  ];
-              }
-              else {
-                  \Drupal::logger('discount-step-6-error')->error("pricing is not tagged with partner");
-              }
-            }
+    foreach ($data_for_calculation as $a1) {
+      foreach ($consolidate_price_sheet as $a2 => $val) {
+        if($val['price_type'] == "international") {
+            $price_type = "international_pricing";
         }
-        \Drupal::logger('discount-step-6')->notice("Analytics Revenue data");
-        return $calculate_revenue;
+        if($val['price_type'] == "domestic") {
+            $price_type =  "domestic_pricing";
+        }
+        if ($a1['api_attribute_title'] === $val['api_attribute_title'] && $a1['price_type'] === $price_type) {
+          // Build combined result
+          $calculate_revenue[] = [
+              'nid' => $a1['nid'],
+              'title' => $a1['title'],
+              'client_id' => $a1['node_gid'],
+              'client_name' => $a1['parnter_title'],
+              'api_attribute_title' => $a1['api_attribute_title'],
+              'price_type' => $a1['price_type'],
+              'price' => $val['price'],
+              'date' => $a1['date'],
+              'discount_price' => $discount_price_sheet[$val['nid']]['discount_pricing'],
+              'retail_markup_percentage' => $retail_markup_percentage,
+          ];
+        }
+        else {
+            \Drupal::logger('discount-step-6-error')->error("pricing is not tagged with partner");
+        }
+      }
     }
+    \Drupal::logger('discount-step-6-response')->notice(
+      'calculationForAnalyticsRevenue: <pre>@result</pre>',
+      ['@result' => print_r($calculate_revenue, TRUE)]
+    );
+    return $calculate_revenue;
+  }
 
 
     public function performCalucluationRevenue($perform_calculation_data) {
+      \Drupal::logger('discount-step-7')->notice("Peform_calculation");
       foreach ($perform_calculation_data as $data) {
           $pricing = $data['price'];
           $markup_percentage = $data['retail_markup_percentage'];
@@ -183,7 +195,7 @@ class DiscountPriceSheet  {
               $node = $node->save();
           }
           else {
-              \Drupal::logger('discount-step-6')->notice("FAILURE FOR NODE:");
+              \Drupal::logger('discount-step-7-failure')->notice("FAILURE FOR NODE:");
           }
       }
       return TRUE;
