@@ -74,6 +74,7 @@ class PricingDiscount extends FormBase {
     $group_type = 'partner';
     $group_storage = \Drupal::entityTypeManager()->getStorage('group');
     $query = $group_storage->getQuery()->condition('type', $group_type); 
+    $query = $group_storage->getQuery()->condition('field_partner_type', 'enterprise');
     $group_ids = $query->accessCheck(FALSE)->execute();
     $clients = $group_storage->loadMultiple($group_ids);
     
@@ -121,8 +122,15 @@ class PricingDiscount extends FormBase {
       ],
     ]);
 
+    $form['client_wrapper'] = [
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => ['client-discount-wrapper'],
+      ],
+    ];
+
     // Show only for carrier admin
-    $form['client'] = [
+    $form['client_wrapper']['client'] = [
       '#type' => 'select',
       '#title' => $this->t('Select Client'),
       '#options' => $client_groups,
@@ -130,14 +138,18 @@ class PricingDiscount extends FormBase {
       '#attributes' => [
         'class' => ['select-client'],
       ],
+      //'#prefix' => '<div class="client-discount-wrapper">',
     ];
-    $form['create_discount_pricing_link'] = [
+    $form['client_wrapper']['create_discount_pricing_link'] = [
       '#type' => 'link',
       '#title' => $this->t('Create Pricing Discount'),
       '#url' => $url,
       '#attributes' => [
         'class' => ['button', 'button--primary'],
       ],
+      '#prefix' => '<div class="create-discount-link-wrapper">',
+      '#suffix' => '</div>',
+      // '#suffix' => '</div>',
     ];
 
     $header = [

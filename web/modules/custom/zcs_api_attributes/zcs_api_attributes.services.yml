@@ -6,3 +6,6 @@ services:
   zcs_api_attributes.propose_price_ratesheet:
     class: Drupal\zcs_api_attributes\Services\RetailMarkupPriceSheet
     arguments: ['@database']
+  zcs_api_attributes.discount_sheet:
+    class: Drupal\zcs_api_attributes\Services\DiscountPriceSheet
+    arguments: ['@database']

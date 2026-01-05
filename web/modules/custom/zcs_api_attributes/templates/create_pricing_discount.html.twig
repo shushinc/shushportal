@@ -2,6 +2,10 @@
 {{ form.form_token }}
 {{ form.form_id }}
 
+{% if form.pricing_validation_message %}
+   {{ form.pricing_validation_message }}
+{% endif %}
+
 <div class="rate-sheet-filter">
   <div class="rate-sheet-filter-currencies">
     <span class="attributes-label">Currency</span>

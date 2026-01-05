@@ -13,9 +13,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\group\Entity\Group;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Ajax\AddClassCommand;
 use Drupal\Core\Ajax\InvokeCommand;
-
-
 
 /**
  *
@@ -67,7 +66,7 @@ class CreatePricingDiscount extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-
+   // $result = \Drupal::service('zcs_api_attributes.discount_sheet')->DiscountPrice();
     $defaultCurrency = 'en_US';
     if (!empty($this->getRequest()->get('cur'))) {
       $defaultCurrency = $this->getRequest()->get('cur');
@@ -85,6 +84,13 @@ class CreatePricingDiscount extends FormBase {
         $currencies[$list['locale']] = $list['currency'] . ' (' . $list['alphabeticCode'] . ')';
       }
     }
+    $form['pricing_validation_message'] = [
+      '#type' => 'markup',
+      '#markup' => '<div id="pricing-validation-message"></div>',
+      '#weight' => -100,
+    ];
+
+
     $form['currencies'] = [
       '#type' => 'select',
       '#options' => $currencies,
@@ -96,6 +102,7 @@ class CreatePricingDiscount extends FormBase {
     $group_type = 'partner';
     $group_storage = \Drupal::entityTypeManager()->getStorage('group');
     $query = $group_storage->getQuery()->condition('type', $group_type); 
+    $query = $group_storage->getQuery()->condition('field_partner_type', 'enterprise');
     $group_ids = $query->accessCheck(FALSE)->execute();
     $clients = $group_storage->loadMultiple($group_ids);
 
@@ -103,6 +110,7 @@ class CreatePricingDiscount extends FormBase {
     foreach($clients as $group) {
       $client_groups[$group->get('id')->value] = $group->get('label')->value;
     }
+ 
     // Show only for carrier admin
     $form['client'] = [
       '#type' => 'select',
@@ -112,7 +120,7 @@ class CreatePricingDiscount extends FormBase {
         'callback' => '::validateClientPricingAjax',
         'event' => 'change',
       ],
-      '#suffix' => '<div id="pricing-validation-message" class="message"></div>',
+      //'#suffix' => '<div id="pricing-validation-message" class="message"></div>',
     ];
     $form['#theme'] = 'create_pricing_discount';
 
@@ -154,7 +162,7 @@ class CreatePricingDiscount extends FormBase {
       ->condition('client_id', $client_id)
       ->condition('attribute_status', '1')
       ->execute()->fetchObject();
-    
+          
      if ($existing) {
        $email = $this->entityTypeManager->getStorage('user')->load($existing->submit_by)->mail->value;
        $message =  "There is one edit made by <b>" . $email . "</b> that is awaiting approval or rejection, so form submission is not possible.";
@@ -169,6 +177,11 @@ class CreatePricingDiscount extends FormBase {
           'addClass',
           ['is-disabled']
         ));    
+        $response->addCommand(new InvokeCommand(
+          '#pricing-validation-message',
+          'addClass',
+          ['message']
+        ));
       }
       else {
         // Disable the submit button
@@ -181,6 +194,12 @@ class CreatePricingDiscount extends FormBase {
           '[data-drupal-selector="edit-submit"]',
           'removeClass',
           ['is-disabled']
+        ));
+  
+        $response->addCommand(new InvokeCommand(
+          '#pricing-validation-message',
+          'removeClass',
+          ['message']
         ));
       }  
 
