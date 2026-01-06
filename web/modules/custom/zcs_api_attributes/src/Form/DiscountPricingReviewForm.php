@@ -87,7 +87,7 @@ class DiscountPricingReviewForm extends FormBase {
           '#min' => 0,
           '#default_value' => ($value['discount_pricing'] ?? ($value['discount_pricing'] ?? 0.000)),
           '#step' => 0.001,
-          '#field_prefix' => $symbol,
+          '#field_prefix' => '%',
           '#disabled' => TRUE,
         ];       
       }
