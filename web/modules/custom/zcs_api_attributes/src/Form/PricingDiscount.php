@@ -90,6 +90,7 @@ class PricingDiscount extends FormBase {
       ->fields('dppd', ['submit_by','currency_locale', 'client_id', 'client_name','approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'page_data','created', 'updated'])
       ->condition('attribute_status', 2)
       ->condition('client_id', $client_id)
+      ->orderBy('updated', 'DESC') 
       ->execute()->fetchObject();
 
     $url = Url::fromRoute('zcs_api_attributes.create_pricing_discount');
