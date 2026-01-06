@@ -198,13 +198,45 @@ function zcs_menu_install() {
             ]);
             $pricing_menu_child_link2->save();
 
+            $pricing_menu_child_link3 = MenuLinkContent::create([
+              'title' => 'Pricing Discount',
+              'link' => ['uri' => 'internal:/pricing/discount'], // Adjust path as needed.
+              'menu_name' => $menu_name,
+              'parent' => $pricing_parent_id, // Set the parent ID.
+              'weight' => 12,
+              'menu_per_role__show_role' => [
+                  'administrator',
+                  'carrier_admin',
+                  'finance_admin',
+                  'financial_rate_sheet_approval_level_1',
+                  'financial_rate_sheet_approval_level_2',
+              ],
+              ]);
+              $pricing_menu_child_link3->save();
+
+              $pricing_menu_child_link4 = MenuLinkContent::create([
+                'title' => 'Pricing Discount Review',
+                'link' => ['uri' => 'internal:/pricing/discount-review'], // Adjust path as needed.
+                'menu_name' => $menu_name,
+                'parent' => $pricing_parent_id, // Set the parent ID.
+                'weight' => 13,
+                'menu_per_role__show_role' => [
+                    'administrator',
+                    'carrier_admin',
+                    'finance_admin',
+                    'financial_rate_sheet_approval_level_1',
+                    'financial_rate_sheet_approval_level_2',
+                ],
+                ]);
+                $pricing_menu_child_link4->save();
+
   // Create the parent menu link.
   $use_case_review_parent_menu_link = MenuLinkContent::create([
     'title' => 'Use Case Review',
     'link' => ['uri' => 'route:<nolink>'],
     'menu_name' => $menu_name,
     'expanded' => TRUE,
-    'weight' => 12,
+    'weight' => 14,
     'menu_per_role__show_role' => [
         'authenticated',
       ],
@@ -229,7 +261,7 @@ function zcs_menu_install() {
         ],
         'menu_name' => $menu_name,
         'parent' => $use_case_parent_id, // Set the parent ID.
-        'weight' => 13,
+        'weight' => 15,
     ]);
     $usecase_menu_child_link2->save();
 
@@ -250,7 +282,7 @@ function zcs_menu_install() {
     ],
     'menu_name' => $menu_name,
     'expanded' => TRUE,
-    'weight' => 14,
+    'weight' => 16,
   ]);
   $api_sandbox_review_parent_menu_link->save();
 }

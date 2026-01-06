@@ -180,17 +180,18 @@ class DiscountPriceSheet  {
       foreach ($perform_calculation_data as $data) {
           $pricing = $data['price'];
           $markup_percentage = $data['retail_markup_percentage'];
-          $final_pricing = $pricing * (1 + ($markup_percentage / 100));
+          $final_pricing = $pricing * (1 + ($markup_percentage / 100)) - ($data['discount_price']/100);
           $node = \Drupal\node\Entity\Node::load($data['nid']);
           if ($node) {
-              \Drupal::logger('discount-step-6-calculation')->notice('NID: @nid, Retail%: @retail_value,  price: @price, Attribute: @attribute_title',
+              \Drupal::logger('discount-step-6-calculation')->notice('NID: @nid, Retail%: @retail_value,  price: @price, Attribute: @attribute_title, Discount_value: @discount_price, Final Price: @final_pricing',
               array(
                   '@price' => $data['price'],
                   '@nid' => $data['nid'],
                   '@retail_value' => $data['retail_markup_percentage'],
                   '@attribute_title'=> $data['api_attribute_title'],
+                  '@discount_price' => $data['discount_price'],
+                  '@final_pricing' => $final_pricing,
               ));
-  
               $node->set('field_est_revenue', $final_pricing);
               $node = $node->save();
           }
