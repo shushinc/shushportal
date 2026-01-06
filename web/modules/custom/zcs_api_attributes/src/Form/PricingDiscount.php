@@ -157,7 +157,7 @@ class PricingDiscount extends FormBase {
       'id' => $this->t('#'),
       'attribute_name' => $this->t('Attribute Name'),
       'client_name' => $this->t('Client Name'),
-      'discount_price' => $this->t('Discount Price'),
+      'discount_price' => $this->t('Discount Price(%)'),
     ];
 
     $rows = [];

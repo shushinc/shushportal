@@ -74,6 +74,8 @@ class DiscountPriceSheet  {
           'api_attribute_title' => $attribute_title,
           'price_type' => $price_type,
           'date' => $node->get('field_date')->value,
+          'full_billable_transaction_count' => $node->get('field_success_api_volume_in_mil')->value,
+          'half_billable_transaction_count' => $node->get('field_error_api_volume_in_mil')->value,
         ];
       }
       $rate_sheet_result = $this->getProposedPricingSheetData();
@@ -139,7 +141,7 @@ class DiscountPriceSheet  {
     \Drupal::logger('discount-step-6')->notice("calculation data for analytics revenue");
     $discount_price_sheet =json::decode($discount_sheet);
     $calculate_revenue = [];
-    foreach ($data_for_calculation as $a1) {
+    foreach ($data_for_calculation as $node) {
       foreach ($consolidate_price_sheet as $a2 => $val) {
         if($val['price_type'] == "international") {
             $price_type = "international_pricing";
@@ -147,23 +149,25 @@ class DiscountPriceSheet  {
         if($val['price_type'] == "domestic") {
             $price_type =  "domestic_pricing";
         }
-        if ($a1['api_attribute_title'] === $val['api_attribute_title'] && $a1['price_type'] === $price_type) {
+        if ($node['api_attribute_title'] === $val['api_attribute_title'] && $node['price_type'] === $price_type) {
           // Build combined result
           $calculate_revenue[] = [
-              'nid' => $a1['nid'],
-              'title' => $a1['title'],
-              'client_id' => $a1['node_gid'],
-              'client_name' => $a1['parnter_title'],
-              'api_attribute_title' => $a1['api_attribute_title'],
-              'price_type' => $a1['price_type'],
+              'nid' => $node['nid'],
+              'title' => $node['title'],
+              'client_id' => $node['node_gid'],
+              'client_name' => $node['parnter_title'],
+              'api_attribute_title' => $node['api_attribute_title'],
+              'price_type' => $node['price_type'],
               'price' => $val['price'],
-              'date' => $a1['date'],
+              'date' => $node['date'],
               'discount_price' => $discount_price_sheet[$val['nid']]['discount_pricing'],
               'retail_markup_percentage' => $retail_markup_percentage,
+              'full_billable_transaction_count' => $node['full_billable_transaction_count'],
+              'half_billable_transaction_count' => $node['half_billable_transaction_count'],
           ];
         }
         else {
-            \Drupal::logger('discount-step-6-error')->error("pricing is not tagged with partner");
+            \Drupal::logger('discount-step-6-error')->error("Attribute not matching");
         }
       }
     }
@@ -178,12 +182,22 @@ class DiscountPriceSheet  {
     public function performCalucluationRevenue($perform_calculation_data) {
       \Drupal::logger('discount-step-7')->notice("Peform_calculation");
       foreach ($perform_calculation_data as $data) {
-          $pricing = $data['price'];
+          $pricing_per_api_call = $data['price'];
+          $pricing = ($data['full_billable_transaction_count'] * $pricing_per_api_call) + 
+          ($data['half_billable_transaction_count'] * $pricing_per_api_call / 2);
           $markup_percentage = $data['retail_markup_percentage'];
           $final_pricing = $pricing * (1 + ($markup_percentage / 100)) - ($data['discount_price']/100);
           $node = \Drupal\node\Entity\Node::load($data['nid']);
           if ($node) {
-              \Drupal::logger('discount-step-6-calculation')->notice('NID: @nid, Retail%: @retail_value,  price: @price, Attribute: @attribute_title, Discount_value: @discount_price, Final Price: @final_pricing',
+            \Drupal::logger('discount-step-6-calculation')->notice(
+               'NID: @nid, 
+                Retail%: @retail_value,
+                price per api call: @price,
+                Attribute: @attribute_title,
+                Discount Price: @discount_price,
+                Final Price: @final_pricing,
+                Full bill: @full_billable_amount,
+                half bill: @half_billable_amount',
               array(
                   '@price' => $data['price'],
                   '@nid' => $data['nid'],
@@ -191,6 +205,8 @@ class DiscountPriceSheet  {
                   '@attribute_title'=> $data['api_attribute_title'],
                   '@discount_price' => $data['discount_price'],
                   '@final_pricing' => $final_pricing,
+                  '@full_billable_amount' => $data['full_billable_transaction_count'],
+                  '@half_billable_amount' => $data['half_billable_transaction_count'],
               ));
               $node->set('field_est_revenue', $final_pricing);
               $node = $node->save();
@@ -200,5 +216,5 @@ class DiscountPriceSheet  {
           }
       }
       return TRUE;
-  }
+    }
 }

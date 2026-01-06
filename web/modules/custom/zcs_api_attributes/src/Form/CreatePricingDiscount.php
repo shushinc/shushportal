@@ -134,7 +134,7 @@ class CreatePricingDiscount extends FormBase {
           '#type' => 'number',
           '#min' => 0,
           '#step' => 0.001,
-          '#field_prefix' => $symbol,
+          '#field_prefix' =>'%',
           '#default_value' => '0.000',
         ];
       }
