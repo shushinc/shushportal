@@ -3,3 +3,6 @@ services:
     class: Drupal\analytics\Twig\CustomTwig
     tags:
       - { name: twig.extension }
+  analytics.revenue_update:
+    class: Drupal\analytics\Services\UpdateRevenue
+    arguments: ['@database']
