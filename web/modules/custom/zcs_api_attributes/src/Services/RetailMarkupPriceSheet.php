@@ -125,7 +125,7 @@ class RetailMarkupPriceSheet  {
     $header = [
       'Available',
       'Enabled',
-      'APIAttributes',
+      'API',
       'Endpoint',
       'InternationalPrice',
       'DomesticPrice',
