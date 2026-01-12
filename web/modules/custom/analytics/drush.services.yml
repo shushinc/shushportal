@@ -1,0 +1,5 @@
+services:
+  analytics.delete_analytics_node:
+    class: Drupal\analytics\Commands\DeleteAnalyticsNode
+    tags:
+      - { name: drush.command }
