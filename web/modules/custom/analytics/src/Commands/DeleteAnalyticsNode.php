@@ -27,7 +27,7 @@ class DeleteAnalyticsNode extends DrushCommands {
     $nids = \Drupal::entityQuery('node')
       ->condition('type', 'analytics')
       ->sort('nid', 'ASC')
-      ->range(0, 500)
+      ->range(0, 25000)
       ->sort('created', 'DESC')
       ->accessCheck(false)
       ->execute();
