@@ -47,27 +47,27 @@ class UpdateRevenue  {
       $group = $node->get('field_partner')->entity;
       $group_title = $group->label();
       $pricing_type = $group->get('field_pricing_type')->value;
-    }
-    $gid = $node->get('field_partner')->target_id;
-    $revenue_node_calculation[] = [
-        'nid'        => $node->id(),
-        'title'      => $node->label(),
-        'parnter_title' => $group_title,
-        'gid'   => $gid,
-        'api_attribute'  => $node->get('field_attribute')->target_id,
-        'api_attribute_title' => $attribute_title ?? '' ,
-        'price_type' => $pricing_type,
-        'date' => $node->get('field_date')->value,
-        'full_billable_transaction_count' => $node->get('field_success_api_volume_in_mil')->value,
-        'half_billable_transaction_count' => $node->get('field_error_api_volume_in_mil')->value,
-     ];
-     $rate_sheet_result = $this->getProposedPricingSheetData();
-     $data = $this->getDiscountSheetData($gid);
-     if (!empty($rate_sheet_result)) {
-      $retail_markup_percentage = $rate_sheet_result->retail_markup_percentage ?? 1;
-      $consolidate_price_sheet = $this->formatRateSheetDetails($rate_sheet_result->page_data);
-      $perform_calculation = $this->calculationForAnalyticsRevenue($retail_markup_percentage, $consolidate_price_sheet, $revenue_node_calculation, $data->page_data);
-      $result = $this->performCalucluationRevenue($perform_calculation);
+      $gid = $node->get('field_partner')->target_id;
+      $revenue_node_calculation[] = [
+          'nid'        => $node->id(),
+          'title'      => $node->label(),
+          'parnter_title' => $group_title,
+          'gid'   => $gid,
+          'api_attribute'  => $node->get('field_attribute')->target_id,
+          'api_attribute_title' => $attribute_title ?? '' ,
+          'price_type' => $pricing_type,
+          'date' => $node->get('field_date')->value,
+          'full_billable_transaction_count' => $node->get('field_success_api_volume_in_mil')->value,
+          'half_billable_transaction_count' => $node->get('field_error_api_volume_in_mil')->value,
+       ];
+       $rate_sheet_result = $this->getProposedPricingSheetData();
+       $data = $this->getDiscountSheetData($gid);
+       if (!empty($rate_sheet_result)) {
+        $retail_markup_percentage = $rate_sheet_result->retail_markup_percentage ?? 1;
+        $consolidate_price_sheet = $this->formatRateSheetDetails($rate_sheet_result->page_data);
+        $perform_calculation = $this->calculationForAnalyticsRevenue($retail_markup_percentage, $consolidate_price_sheet, $revenue_node_calculation, $data->page_data);
+        $result = $this->performCalucluationRevenue($perform_calculation);
+      }
     }
     return $result;
   }
