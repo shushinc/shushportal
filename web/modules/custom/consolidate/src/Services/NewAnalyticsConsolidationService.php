@@ -229,6 +229,7 @@ class NewAnalyticsConsolidationService {
     $today = date('Y-m-d');
     $yesterday = date('Y-m-d', strtotime($today . ' -1 day'));
     $oneYearAgo = date('Y-m-d', strtotime($yesterday . ' -1 year'));
+    $oneMonthAgo = date('Y-m-d', strtotime($yesterday . ' -1 month'));
 
     $a1 = $this->consolidateYear('revenue', $yesterday);
     $b1 = $this->consolidateYear('revenue', $oneYearAgo);
@@ -243,22 +244,22 @@ class NewAnalyticsConsolidationService {
     $b4 = $this->consolidateDay('revenue', $oneYearAgo);
 
     $a5 = $this->consolidateMonth('volume', $yesterday);
-    $b5 = $this->consolidateMonth('volume', $oneYearAgo);
+    $b5 = $this->consolidateMonth('volume', $oneMonthAgo);
 
     $c1 = $this->consolidateMonth('successful_api_calls', $yesterday);
-    $d1 = $this->consolidateMonth('successful_api_calls', $oneYearAgo);
+    $d1 = $this->consolidateMonth('successful_api_calls', $oneMonthAgo);
 
     $c2 = $this->consolidateMonth('avg_api_latency', $yesterday);
-    $d2 = $this->consolidateMonth('avg_api_latency', $oneYearAgo);
+    $d2 = $this->consolidateMonth('avg_api_latency', $oneMonthAgo);
 
     $c3 = $this->consolidateMonth('vol_from_silent_auth', $yesterday);
-    $d3 = $this->consolidateMonth('vol_from_silent_auth', $oneYearAgo);
+    $d3 = $this->consolidateMonth('vol_from_silent_auth', $oneMonthAgo);
 
     $c4 = $this->consolidateMonth('top_10_customers', $yesterday);
-    $d4 = $this->consolidateMonth('top_10_customers', $oneYearAgo);
+    $d4 = $this->consolidateMonth('top_10_customers', $oneMonthAgo);
 
     $c5 = $this->consolidateMonth('top_client', $yesterday);
-    $d5 = $this->consolidateMonth('top_client', $oneYearAgo);
+    $d5 = $this->consolidateMonth('top_client', $oneMonthAgo);
 
     $data = [
       'created' => strtotime($today . ' -1 day'),
@@ -302,6 +303,9 @@ class NewAnalyticsConsolidationService {
 
     if ($b5 != 0) {
       $data['M_o_M_volume'] = (int) ((((int) $a5 - (int) $b5) / (int) $b5) * 100);
+    }
+    else {
+      $data['M_o_M_volume'] = 100;
     }
 
     if ($d1 != 0) {
