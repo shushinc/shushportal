@@ -161,7 +161,7 @@ class AnalyticsPostController extends ControllerBase {
               $responses[$key] = ['message' => $content['carrier_name'] . " Node created successfully."];
             } 
             else{
-              $responses[$key] = ['message' => $content['carrier_name'] . "Node created but revenue Failed."];
+              $responses[$key] = ['message' => $content['carrier_name'] . "Node created but Revenue process for performed."];
             }            
           }
         }
