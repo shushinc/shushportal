@@ -1,18 +1,17 @@
-uuid: 101629f6-e1ef-44f6-8bff-3c84e98c5715
+uuid: 278e5c64-d147-4e65-a0a4-0c11094ddea5
 langcode: en
 status: true
 dependencies:
   module:
     - node
-_core:
-  default_config_hash: oQ416qFmpjcEA4KY7jJi92FGVvbHySqGa8QbBnYGNAc
 id: node.field_est_revenue
 field_name: field_est_revenue
 entity_type: node
-type: integer
+type: string
 settings:
-  unsigned: false
-  size: normal
+  max_length: 255
+  case_sensitive: false
+  is_ascii: false
 module: core
 locked: false
 cardinality: 1
