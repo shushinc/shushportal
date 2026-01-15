@@ -2,9 +2,17 @@ services:
   sam.provider_manager:
     class: Drupal\sam\SsoProviderManager
     parent: default_plugin_manager
-    arguments: ['Plugin/SsoProvider', '@container.namespaces', '@module_handler', 'Drupal\sam\Plugin\SsoProvider\SsoProviderInterface']
+    arguments: 
+      - 'Plugin/SsoProvider'
+      - '@container.namespaces'
+      - '@module_handler'
+      - 'Drupal\sam\Plugin\SsoProvider\SsoProviderInterface'
   sam.identity_manager:
     class: Drupal\sam\Service\IdentityManager
-    arguments:
+    arguments: 
       - '@entity_type.manager'
       - '@config.factory'
+  sam.state_token:
+    class: Drupal\sam\Security\SamStateTokenService
+    arguments:
+      - '@session'

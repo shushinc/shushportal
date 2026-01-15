@@ -77,10 +77,6 @@ class IdentityManager {
   protected function createUserIfAllowed(array $identityData): ?User {
     $config = $this->configFactory->get('sam.settings');
 
-    if (!$config->get('auto_create_users')) {
-      return null;
-    }
-
     $user = User::create([
       'name' => $identityData['name'] ?? $identityData['email'],
       'mail' => $identityData['email'],

@@ -1,0 +1,5 @@
+services:
+  sam_oidc.discovery:
+    class: Drupal\sam_oidc\Service\OidcDiscoveryService
+    arguments:
+      - '@http_client_factory'

@@ -1,16 +1,16 @@
 sam.settings:
   type: config_object
-  label: 'Multi SSO settings'
+  label: 'SSO Authentication Manager settings'
   mapping:
-    enabled_providers:
-      type: sequence
-      label: 'Enabled SSO providers'
-      sequence:
-        type: string
-        label: 'Provider ID'
+    sso_active:
+      type: boolean
+      label: 'Activate SSO authentication flow'
+      description: 'If enabled, the SAM module will intercept login attempts and redirect users to the configured SSO provider.'
+    active_provider:
+      type: string
+      label: 'Active SSO provider'
+      description: 'The SSO provider responsible for handling authentication.'
     default_redirect:
       type: string
       label: 'Default redirect path after login'
-    auto_create_users:
-      type: boolean
-      label: 'Automatically create users'
+      description: 'Path to redirect users after successful authentication.'

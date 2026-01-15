@@ -1,0 +1,51 @@
+<?php
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function sam_form_user_login_form_alter(array &$form, FormStateInterface $form_state) {
+  $config = \Drupal::config('sam.settings');
+
+  // Only alter the form if SSO flow is active.
+  if (!$config->get('sso_active')) {
+    return;
+  }
+
+  // Keep only the email field.
+  if (isset($form['name'])) {
+    $form['name']['#title'] = t('Email');
+    $form['name']['#description'] = t('Enter your email to continue.');
+  }
+
+  // Remove password field.
+  unset($form['pass']);
+
+  // Remove "Forgot password" link.
+  if (isset($form['actions']['forgot_password'])) {
+    unset($form['actions']['forgot_password']);
+  }
+
+  // Change submit handler.
+  $form['#submit'][] = '_sam_user_login_sso_submit';
+}
+
+function _sam_user_login_sso_submit(array &$form, FormStateInterface $form_state) {
+    $email = $form_state->getValue('name');
+  
+    // We do NOT authenticate here.
+    // We just redirect into the SSO flow.
+    $form_state->setRedirect(
+      'sam.authenticate',
+      [
+        'provider' => \Drupal::config('sam.settings')->get('active_provider'),
+      ],
+      [
+        'query' => [
+          'email' => $email,
+        ],
+      ]
+    );
+  }
+  
