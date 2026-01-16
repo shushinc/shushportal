@@ -26,11 +26,15 @@ function zcs_custom_theme($existing, $type, $theme, $path) {
 function zcs_custom_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
   // Target the user login form.
   if ($form_id == 'user_login_form') {
+    $config = \Drupal::config('sam.settings');
     // Add  "Forgot Password?" link at the end of the form.
-    $form['forgot_password'] = [
-      '#markup' => '<p><a href="' . \Drupal\Core\Url::fromRoute('user.pass')->toString() . '">' . t('Forgot password?') . '</a></p>',
-      '#weight' => 10,
-    ];
+
+    if (!$config->get('sso_active')) {
+      $form['forgot_password'] = [
+        '#markup' => '<p><a href="' . \Drupal\Core\Url::fromRoute('user.pass')->toString() . '">' . t('Forgot password?') . '</a></p>',
+        '#weight' => 10,
+      ];
+    }
   }
   if ($form_id == 'change_pwd_form') {
     $form['#submit'][] = '_zcs_custom_form_submit';

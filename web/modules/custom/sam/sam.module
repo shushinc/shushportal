@@ -1,6 +1,8 @@
 <?php
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Implements hook_form_FORM_ID_alter().
@@ -8,44 +10,20 @@ use Drupal\Core\Form\FormStateInterface;
 function sam_form_user_login_form_alter(array &$form, FormStateInterface $form_state) {
   $config = \Drupal::config('sam.settings');
 
+  /** @var \Drupal\sam\Service\LoginFlowManager $login_flow */
+  $login_flow = \Drupal::service('sam.login_flow_manager');
+
   // Only alter the form if SSO flow is active.
   if (!$config->get('sso_active')) {
     return;
   }
 
-  // Keep only the email field.
-  if (isset($form['name'])) {
-    $form['name']['#title'] = t('Email');
-    $form['name']['#description'] = t('Enter your email to continue.');
-  }
-
-  // Remove password field.
-  unset($form['pass']);
-
-  // Remove "Forgot password" link.
-  if (isset($form['actions']['forgot_password'])) {
-    unset($form['actions']['forgot_password']);
-  }
-
-  // Change submit handler.
-  $form['#submit'][] = '_sam_user_login_sso_submit';
+  $login_flow->alterLoginForm($form, $form_state);
 }
 
 function _sam_user_login_sso_submit(array &$form, FormStateInterface $form_state) {
-    $email = $form_state->getValue('name');
-  
-    // We do NOT authenticate here.
-    // We just redirect into the SSO flow.
-    $form_state->setRedirect(
-      'sam.authenticate',
-      [
-        'provider' => \Drupal::config('sam.settings')->get('active_provider'),
-      ],
-      [
-        'query' => [
-          'email' => $email,
-        ],
-      ]
-    );
-  }
-  
+  /** @var \Drupal\sam\Service\LoginFlowManager $login_flow */
+  $login_flow = \Drupal::service('sam.login_flow_manager');
+
+  $login_flow->handleLoginFormSubmit($form_state);
+}

@@ -1,0 +1,6 @@
+sam.config:
+  title: 'SSO Authentication Manager Configuration'
+  description: 'Configure Single Sign-On authentication providers.'
+  route_name: sam.config
+  parent: user.admin_index
+  weight: 20

@@ -100,9 +100,10 @@ class SamConfigForm extends ConfigFormBase {
         'visible' => [
           ':input[name="sso_active"]' => ['checked' => TRUE],
         ],
-        'required' => [
-          ':input[name="sso_active"]' => ['checked' => TRUE],
-        ],
+      ],
+      '#ajax' => [
+        'callback' => '::providerAjaxCallback',
+        'wrapper' => 'sam-provider-config-wrapper',
       ],
       '#description' => $this->t('Select which SSO provider will handle authentication when SSO is enabled.'),
     ];
@@ -111,31 +112,40 @@ class SamConfigForm extends ConfigFormBase {
     // Provider-specific configuration (ONLY for the selected provider)
     // ------------------------------------------------------------------
 
+    $form['provider_config'] = [
+      '#type' => 'container',
+      '#attributes' => [
+        'id' => 'sam-provider-config-wrapper',
+      ],
+    ];
+
+
     $active_provider = $form_state->getValue('active_provider') ?? $config->get('active_provider');
 
     if ($active_provider && $this->providerManager->hasDefinition($active_provider)) {
       $provider_instance = $this->providerManager->getProvider($active_provider);
 
       if ($provider_instance) {
-        $form['provider_config'] = [
+        $form['provider_config']['details'] = [
           '#type' => 'details',
           '#title' => $this->t('@provider configuration', [
             '@provider' => $provider_options[$active_provider],
           ]),
           '#open' => TRUE,
-          '#states' => [
-            'visible' => [
-              ':input[name="sso_active"]' => ['checked' => TRUE],
-            ],
-          ],
         ];
 
-        $provider_form = $provider_instance->getConfigurationForm($form, $form_state);
-        $form['provider_config'] += $provider_form;
+        $form['provider_config']['details'] += $provider_instance->getConfigurationForm($form, $form_state);
       }
     }
 
     return parent::buildForm($form, $form_state);
+  }
+
+  /**
+   * AJAX callback to rebuild the provider configuration form.
+   */
+  public function providerAjaxCallback(array &$form, FormStateInterface $form_state) {
+    return $form['provider_config'];
   }
 
   /**
@@ -147,6 +157,10 @@ class SamConfigForm extends ConfigFormBase {
     $sso_active = (bool) $form_state->getValue('sso_active');
     $active_provider = $form_state->getValue('active_provider');
 
+    if (!$sso_active) {
+      return;
+    }
+
     // If SSO is enabled, an active provider is mandatory.
     if ($sso_active && empty($active_provider)) {
       $form_state->setErrorByName(
@@ -156,13 +170,10 @@ class SamConfigForm extends ConfigFormBase {
       return;
     }
 
-    // Validate provider-specific configuration (ONLY the active provider).
-    if ($sso_active && $active_provider) {
-      $provider_instance = $this->providerManager->getProvider($active_provider);
+    $provider_instance = $this->providerManager->getProvider($active_provider);
 
-      if ($provider_instance) {
-        $provider_instance->validateConfigurationForm($form, $form_state);
-      }
+    if ($provider_instance) {
+      $provider_instance->validateConfigurationForm($form, $form_state);
     }
   }
 

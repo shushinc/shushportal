@@ -85,13 +85,11 @@ final class GoogleProvider extends AbstractOidcProvider {
         '#type' => 'textfield',
         '#title' => $this->t('Client ID'),
         '#default_value' => $config->get('client_id'),
-        '#required' => TRUE,
       ],
       'client_secret' => [
         '#type' => 'textfield',
         '#title' => $this->t('Client Secret'),
         '#default_value' => $config->get('client_secret'),
-        '#required' => TRUE,
       ],
     ];
   }
@@ -101,7 +99,22 @@ final class GoogleProvider extends AbstractOidcProvider {
    * {@inheritdoc}
    */
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state): void {
-    // No validation yet.
+    $client_id = $form_state->getValue('client_id');
+    $client_secret = $form_state->getValue('client_secret');
+
+    if (empty($client_id)) {
+      $form_state->setErrorByName(
+        'client_id',
+        $this->t('Google Client ID is required.')
+      );
+    }
+
+    if (empty($client_secret)) {
+      $form_state->setErrorByName(
+        'client_secret',
+        $this->t('Google Client Secret is required.')
+      );
+    }
   }
 
   /**

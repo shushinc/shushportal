@@ -16,3 +16,14 @@ services:
     class: Drupal\sam\Security\SamStateTokenService
     arguments:
       - '@session'
+  sam.login_flow_manager:
+    class: Drupal\sam\Service\LoginFlowManager
+    arguments:
+      - '@config.factory'
+      - '@logger.factory'
+      - '@request_stack'
+  sam.oidc_discovery:
+    class: Drupal\sam\Service\OidcDiscoveryService
+    arguments:
+      - '@http_client_factory'
+      - '@logger.factory'

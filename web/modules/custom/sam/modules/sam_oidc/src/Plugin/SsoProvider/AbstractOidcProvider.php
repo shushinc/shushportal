@@ -9,6 +9,7 @@ use Drupal\sam_oidc\Service\OidcDiscoveryService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Base class for OIDC-based SSO providers.
