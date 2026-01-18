@@ -181,12 +181,22 @@ class UpdateRevenue  {
     public function performCalucluationRevenue($perform_calculation_data) {
       \Drupal::logger('revenue-update-step-6')->notice("Peform_calculation");
       $final_pricing = '';
+
+     //  Final Pricing = 
+     //  (Full Billable Transaction Count *Per API call Pricing )
+     // + (Half Billable Transaction Count * Per API call Pricing/2)
+     // x(1+markup %) x (1-discount%)
       foreach ($perform_calculation_data as $data) {
         $pricing_per_api_call = $data['price'];
-        $pricing = ($data['full_billable_transaction_count'] * $pricing_per_api_call) + 
-        ($data['half_billable_transaction_count'] * $pricing_per_api_call / 2);
         $markup_percentage = $data['retail_markup_percentage'];
-        $final_pricing = $pricing * (1 + ($markup_percentage / 100)) - ($data['discount_price']/100);
+       // $pricing = ($data['full_billable_transaction_count'] * $pricing_per_api_call) + 
+       // ($data['half_billable_transaction_count'] * $pricing_per_api_call / 2);
+        //$final_pricing = $pricing * (1 + ($markup_percentage / 100)) - ($data['discount_price']/100);
+        $final_pricing = 
+        (($data['full_billable_transaction_count'] * $pricing_per_api_call) + 
+        ($data['half_billable_transaction_count'] * $pricing_per_api_call / 2))
+        * (1+$markup_percentage/100) * (1-$data['discount_price']/100);
+         
         \Drupal::logger('discount-step-6-calculation')->notice(
             'NID: @nid, 
             Retail%: @retail_value,
