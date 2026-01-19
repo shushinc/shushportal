@@ -13,7 +13,7 @@ function consolidate_cron() {
   $today_midnight = strtotime('today midnight');
 
   // Only run if we haven't run today and it's past midnight
-  if ($last_run < $today_midnight && $current_time >= $today_midnight) {
+  //if ($last_run < $today_midnight && $current_time >= $today_midnight) {
     try {
       $service = \Drupal::service('consolidate.new_analytics_consolidate_service');
 
@@ -37,5 +37,5 @@ function consolidate_cron() {
         '@error' => $e->getMessage(),
       ]);
     }
-  }
+  //}
 }
