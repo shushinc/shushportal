@@ -102,10 +102,11 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_est_revenue:
-    type: number
-    weight: 7
+    type: string_textfield
+    weight: 27
     region: content
     settings:
+      size: 60
       placeholder: ''
     third_party_settings: {  }
   field_kong_analytical_id:

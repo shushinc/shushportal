@@ -121,13 +121,12 @@ content:
     weight: 105
     region: content
   field_est_revenue:
-    type: number_integer
+    type: string
     label: above
     settings:
-      thousand_separator: ''
-      prefix_suffix: true
+      link_to_entity: false
     third_party_settings: {  }
-    weight: 107
+    weight: 117
     region: content
   field_kong_analytical_id:
     type: string
