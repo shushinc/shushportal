@@ -183,6 +183,7 @@ class SsoController extends ControllerBase {
     $user->save();
     $session = \Drupal::request()->getSession();
     $session->set('sam_sso_user', $user->id());
+    $session->set('sam_login_email', $this->identityManager->getEmailFromToken($token));
 
     $config = $this->configFactory->get('sam.settings');
     if (!$config->get('sso_active')) {

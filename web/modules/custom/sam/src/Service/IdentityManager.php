@@ -152,19 +152,10 @@ class IdentityManager {
 
 
   public function getUserFromToken(string $token): bool|EntityInterface {
-    $query = $this->connection->select('zcs_user_invitations', 'ui');
-    $query->addField('ui', 'email');
-    $query = $query->condition('ui.token', $token);
-    $email = $query->execute()->fetchField();
-    $email = strtolower($email);
-    if (filter_var($email, FILTER_VALIDATE_EMAIL) == FALSE) {
-      return FALSE;
-    }
-
     $users = $this->entityTypeManager
       ->getStorage('user')
       ->loadByProperties([
-        'mail' => strtolower(trim($email)),
+        'mail' => strtolower(trim($this->getEmailFromToken($token))),
       ]);
     
     if (!empty($users)) {
@@ -173,6 +164,18 @@ class IdentityManager {
     }
 
     return FALSE;
+  }
+
+  public function getEmailFromToken(string $token): bool|string {
+    $query = $this->connection->select('zcs_user_invitations', 'ui');
+    $query->addField('ui', 'email');
+    $query = $query->condition('ui.token', $token);
+    $email = $query->execute()->fetchField();
+    $email = strtolower($email);
+    if (filter_var($email, FILTER_VALIDATE_EMAIL) == FALSE) {
+      return FALSE;
+    }
+    return $email;
   }
 
 }
