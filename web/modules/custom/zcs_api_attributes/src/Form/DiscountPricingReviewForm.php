@@ -208,9 +208,6 @@ class DiscountPricingReviewForm extends FormBase {
       ->fields($updatedFields)
       ->condition('id', $values['apid'])
       ->execute();
-    // if ($values['another_approver_status'] == 2 && $values['status'] == 2) {
-    //   $discount_calculation = \Drupal::service('zcs_api_attributes.discount_sheet')->DiscountPrice($values['apid']);
-    // }
     $this->messenger()->addStatus('Status submitted successfully');
     // Sending the email for approver2.
     if ($values['approved_by'] == 'approver1' && $values['status'] == 2) {
