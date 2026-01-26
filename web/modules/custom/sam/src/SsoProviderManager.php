@@ -87,4 +87,30 @@ class SsoProviderManager extends DefaultPluginManager {
     return $options;
   }
 
+  /**
+   * Returns the active SSO provider.
+   *
+   * @return \Drupal\sam\Plugin\SsoProvider\SsoProviderInterface|null
+   *   The active provider instance or NULL if none is active.
+   */
+  public function getActiveProvider(): ?SsoProviderInterface {
+    $config = \Drupal::config('sam.settings');
+
+    if (!$config->get('sso_active')) {
+      return NULL;
+    }
+
+    $provider_id = $config->get('active_provider') ?? [];
+
+    if ($provider_id === NULL) {
+      throw new \RuntimeException('Exactly one SSO provider must be enabled.');
+    }
+
+    if (!$this->hasDefinition($provider_id)) {
+      throw new \RuntimeException(sprintf('SSO provider "%s" is not defined.', $provider_id));
+    }
+
+    return $this->createInstance($provider_id);
+  }
+
 }

@@ -105,4 +105,13 @@ interface SsoProviderInterface extends PluginInspectionInterface, ContainerFacto
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state);
 
+
+  /**
+   * Get the Callback URI.
+   *
+   * @return string
+   *   The provider description.
+   */
+  public function getCallbackUri();
+
 }

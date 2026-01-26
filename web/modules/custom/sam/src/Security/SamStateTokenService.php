@@ -16,7 +16,7 @@ final class SamStateTokenService implements SamStateTokenInterface {
   /**
    * Session key used to store the state token.
    */
-  private const SESSION_KEY = 'sam_sso_state';
+  private const SESSION_KEY = 'sam_oidc_state';
 
   /**
    * The Symfony session service.
@@ -48,13 +48,20 @@ final class SamStateTokenService implements SamStateTokenInterface {
   /**
    * {@inheritdoc}
    */
-  public function validate(string $state): bool {
+  public function validate(?string $state): bool {
+    if (empty($state)) {
+      return FALSE;
+    }
+
     $stored_state = $this->session->get(self::SESSION_KEY);
 
-    // Always invalidate the stored state token to prevent replay attacks.
+
+    // Always invalidate the stored state (single-use).
     $this->session->remove(self::SESSION_KEY);
 
-    return !empty($stored_state) && hash_equals($stored_state, $state);
+    // Constant-time comparison to prevent timing attacks.
+    return is_string($stored_state)
+      && hash_equals($stored_state, $state);
   }
 
 }

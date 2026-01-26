@@ -3,3 +3,7 @@ services:
     class: Drupal\sam_oidc\Service\OidcDiscoveryService
     arguments:
       - '@http_client_factory'
+      - '@logger.factory'
+  sam_oidc.token_service:
+    class: Drupal\sam_oidc\Service\OidcTokenService
+    arguments: ['@http_client_factory']

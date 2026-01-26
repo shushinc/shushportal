@@ -12,6 +12,7 @@ services:
     arguments: 
       - '@entity_type.manager'
       - '@config.factory'
+      - '@database'
   sam.state_token:
     class: Drupal\sam\Security\SamStateTokenService
     arguments:
@@ -22,6 +23,8 @@ services:
       - '@config.factory'
       - '@logger.factory'
       - '@request_stack'
+      - '@session'
+      - '@sam.identity_manager'
   sam.oidc_discovery:
     class: Drupal\sam\Service\OidcDiscoveryService
     arguments:

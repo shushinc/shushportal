@@ -8,6 +8,8 @@ use Drupal\Core\Url;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Drupal\sam\Service\IdentityManager;
 
 /**
  * Manages the passwordless SSO login flow.
@@ -45,6 +47,15 @@ final class LoginFlowManager {
   protected $requestStack;
 
   /**
+   * The Symfony session service.
+   *
+   * @var \Symfony\Component\HttpFoundation\Session\SessionInterface
+   */
+  private SessionInterface $session;
+
+  protected IdentityManager $identityManager;
+
+  /**
    * Constructs the LoginFlowManager.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -53,15 +64,21 @@ final class LoginFlowManager {
    *   Logger factory.
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   Request stack service.
+   * @param \Symfony\Component\HttpFoundation\Session\SessionInterface $session
+   *   The session service.
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
     LoggerChannelFactoryInterface $logger_factory,
-    RequestStack $request_stack
+    RequestStack $request_stack,
+    SessionInterface $session,
+    IdentityManager $identity_manager,
   ) {
     $this->config = $config_factory->get('sam.settings');
     $this->logger = $logger_factory->get('sam');
     $this->requestStack = $request_stack;
+    $this->session = $session;
+    $this->identityManager = $identity_manager;
   }
 
   /**
@@ -83,17 +100,16 @@ final class LoginFlowManager {
     $form['#submit'] = [];
 
     if (!isset($form['actions']['submit']['#submit'])) {
-        $form['actions']['submit']['#submit'] = [];
+      $form['actions']['submit']['#submit'] = [];
     }
 
     $form['actions']['submit']['#submit'] = [
-        '_sam_user_login_sso_submit',
+      '_sam_user_login_sso_submit',
     ];
-
+    
     // Remove core password-based validators and submit handlers.
     $this->removePasswordValidators($form);
 
-    $this->logger->debug('User login form altered for SSO authentication.');
   }
 
   /**
@@ -103,38 +119,56 @@ final class LoginFlowManager {
    *   The form state.
    */
   public function handleLoginFormSubmit(FormStateInterface $form_state): void {
-    $email = trim((string) $form_state->getValue('name'));
+    $email = trim((string) $form_state->getCompleteForm()['name']['#value']);
+    
 
     if ($email === '') {
       $form_state->setErrorByName('name', t('Email is required.'));
       return;
     }
+    
+    $userContext = $this->identityManager->resolveUserContextByEmail($email);
 
-    // Resolve active provider.
-    $provider = $this->getActiveProvider();
-
-    if ($provider === NULL) {
-      $this->logger->error('SSO login attempted but no active provider is configured.');
-      $form_state->setErrorByName('name', t('SSO authentication is not properly configured.'));
+    if ($userContext['exists'] === FALSE) {
       return;
     }
 
-    // Redirect to SSO authentication entry point.
-    $url = Url::fromRoute('sam.authenticate', [
-      'provider' => $provider,
-    ]);
+    if ($userContext['type'] === 'carrier' && $userContext['can_use_sso']) {
+      $this->session->set('sam_login_email', $email);
 
-    $this->logger->info('Redirecting login request to SSO provider "{provider}".', [
-      'provider' => $provider,
-    ]);
-    
+      // Resolve active provider.
+      $provider = $this->getActiveProvider();
 
-    $form_state->setResponse(
-      new RedirectResponse($url->toString())
-    );
+      if ($provider === NULL) {
+        $this->logger->error('SSO login attempted but no active provider is configured.');
+        $form_state->setErrorByName('name', t('SSO authentication is not properly configured.'));
+        return;
+      }
 
-    $form_state->setRebuild(FALSE);
-    $form_state->disableRedirect();
+      // Redirect to SSO authentication entry point.
+      $url = Url::fromRoute('sam.authenticate', [
+        'provider' => $provider,
+      ]);
+
+      $this->logger->info('Redirecting login request to SSO provider "{provider}".', [
+        'provider' => $provider,
+      ]);
+
+      $form_state->setResponse(
+        new RedirectResponse($url->toString())
+      );
+
+      $form_state->setRebuild(FALSE);
+      $form_state->disableRedirect();
+    }
+    else if ($userContext['type'] === 'client') {
+      $this->session->set('sam_login_email', $email);
+
+      $url = Url::fromRoute('sam.client_auth_screen');
+      $form_state->setResponse(new RedirectResponse($url->toString()));
+      $form_state->setRebuild(FALSE);
+      $form_state->disableRedirect();
+    }
   }
 
   /**

@@ -6,12 +6,14 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Url;
 use Drupal\sam\SsoProviderManager;
-use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Drupal\sam\Service\IdentityManager;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 
 /**
  * Controller for SSO authentication.
@@ -39,6 +41,8 @@ class SsoController extends ControllerBase {
    */
   protected $identityManager;
 
+  protected $configFactory;
+
   /**
    * Constructs a new SsoController object.
    *
@@ -47,11 +51,17 @@ class SsoController extends ControllerBase {
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   The messenger service.
    */
-  public function __construct(SsoProviderManager $provider_manager, MessengerInterface $messenger, IdentityManager $identity_manager) {
-    $this->providerManager = $provider_manager;
-    $this->messenger = $messenger;
-    $this->identityManager = $identity_manager;
-  }
+  public function __construct(
+    SsoProviderManager $provider_manager, 
+    MessengerInterface $messenger,
+    IdentityManager $identity_manager,
+    ConfigFactoryInterface $config_factory)
+    {
+      $this->providerManager = $provider_manager;
+      $this->messenger = $messenger;
+      $this->identityManager = $identity_manager;
+      $this->configFactory = $config_factory;
+    }
 
   /**
    * {@inheritdoc}
@@ -60,7 +70,8 @@ class SsoController extends ControllerBase {
     return new static(
       $container->get('sam.provider_manager'),
       $container->get('messenger'),
-      $container->get('sam.identity_manager')
+      $container->get('sam.identity_manager'),
+      $container->get('config.factory')
     );
   }
 
@@ -120,18 +131,24 @@ class SsoController extends ControllerBase {
     }
 
     try {
-      $user_data = $provider_instance->handleCallback($request);
+      $auth_data = $provider_instance->handleCallback($request);
+
+      if (empty($auth_data['tokens']['id_token'])) {
+        $this->messenger->addError($this->t('Login failed. Please try again. Invalid Auth token'));
+        return $this->redirect('user.login');
+      }
 
       // Find or create user.
-      $account = $this->identityManager->resolveUser($userData);
+      $account = $this->identityManager->resolveUser(['email'=> $auth_data['auth_email']]);
 
       if ($account) {
         // Log in the user.
         user_login_finalize($account);
 
         // Redirect to configured path or user profile.
-        $config = $this->config('sam.settings');
-        $redirect_path = $config->get('default_redirect') ?: '/user';
+        // $config = $this->config('sam.settings');
+        // $redirect_path = $config->get('default_redirect') ?: '/user';
+        $redirect_path = '/user';
 
         return new RedirectResponse(Url::fromUserInput($redirect_path)->toString());
       }
@@ -149,5 +166,30 @@ class SsoController extends ControllerBase {
       $this->messenger->addError($this->t('Login failed. Please try again.'));
       return $this->redirect('user.login');
     }
+  }
+
+  // /**
+  //  * Handles SSO login via invitation token.
+  //  */
+  public function verifyInvitation(string $token, Request $request): RedirectResponse {
+    /** @var \Drupal\user\Entity\User $user */
+    $user = $this->identityManager->getUserFromToken($token);
+  
+    if (!$user) {
+      throw new AccessDeniedHttpException('Invalid or expired invitation token.');
+    }
+
+    $user->set('status', '1');
+    $user->save();
+    $session = \Drupal::request()->getSession();
+    $session->set('sam_sso_user', $user->id());
+
+    $config = $this->configFactory->get('sam.settings');
+    if (!$config->get('sso_active')) {
+      throw new AccessDeniedHttpException('SSO is not enabled.');
+    }
+    $provider = $this->providerManager->getActiveProvider();
+    $authenticate = $provider->authenticate($request);
+    return $authenticate;
   }
 }

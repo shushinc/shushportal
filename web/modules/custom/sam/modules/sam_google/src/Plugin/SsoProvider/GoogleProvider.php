@@ -62,16 +62,27 @@ final class GoogleProvider extends AbstractOidcProvider {
   /**
    * {@inheritdoc}
    */
-  public function isConfigured(): bool {
-    // V1: assume provider is configured.
-    return TRUE;
+  protected function getClientId(): string {
+    return (string) $this->configFactory
+      ->get('sam_google.settings')
+      ->get('client_id');
   }
 
   /**
    * {@inheritdoc}
    */
-  public function handleCallback(Request $request) {
-    return new RedirectResponse('/user/login');
+  protected function getClientSecret(): string {
+    return (string) $this->configFactory
+      ->get('sam_google.settings')
+      ->get('client_secret');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isConfigured(): bool {
+    // V1: assume provider is configured.
+    return TRUE;
   }
 
   /**
@@ -91,6 +102,16 @@ final class GoogleProvider extends AbstractOidcProvider {
         '#title' => $this->t('Client Secret'),
         '#default_value' => $config->get('client_secret'),
       ],
+      'hosted_domain' => [
+        '#type' => 'textfield',
+        '#title' => $this->t('Hosted Domain'),
+        '#default_value' => $config->get('hosted_domain'),
+      ],
+      'callback_uri' => [
+        '#type' => 'textfield',
+        '#title' => $this->t('Callback URI'),
+        '#default_value' => $config->get('callback_uri'),
+      ],
     ];
   }
   
@@ -101,6 +122,8 @@ final class GoogleProvider extends AbstractOidcProvider {
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state): void {
     $client_id = $form_state->getValue('client_id');
     $client_secret = $form_state->getValue('client_secret');
+    $hosted_domain = $form_state->getValue('hosted_domain');
+    $callback_uri = $form_state->getValue('callback_uri');
 
     if (empty($client_id)) {
       $form_state->setErrorByName(
@@ -115,6 +138,20 @@ final class GoogleProvider extends AbstractOidcProvider {
         $this->t('Google Client Secret is required.')
       );
     }
+
+    if (empty($hosted_domain)) {
+      $form_state->setErrorByName(
+        'hosted_domain',
+        $this->t('The Hosted Domain is required')
+      );
+    }
+
+    if (empty($callback_uri)) {
+      $form_state->setErrorByName(
+        'callback_uri',
+        $this->t('The callback URI is required')
+      );
+    }
   }
 
   /**
@@ -125,7 +162,24 @@ final class GoogleProvider extends AbstractOidcProvider {
     ->getEditable('sam_google.settings')
     ->set('client_id', $form_state->getValue('client_id'))
     ->set('client_secret', $form_state->getValue('client_secret'))
+    ->set('hosted_domain', $form_state->getValue('hosted_domain'))
+    ->set('callback_uri', $form_state->getValue('callback_uri'))
     ->save();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getHostedDomain(): ?string {
+    return (string) $this->configFactory
+      ->get('sam_google.settings')
+      ->get('hosted_domain');
+  }
+
+  public function getCallbackUri(): ?string {
+    return (string) $this->configFactory
+      ->get('sam_google.settings')
+      ->get('callback_uri');
   }
 
 }

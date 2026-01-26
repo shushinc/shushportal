@@ -128,7 +128,7 @@ final class UserInviteForm extends FormBase {
     $user->save();
     $user_roles_list = $this->getUserRolelableUsingRoleId($roles);
     $save_invitation = $this->saveInvitation($user_email, $user_roles_list, $token, $passkey, $user_name);
-    $send_emai = $this->sendInvitationMail($user_email,  $user_roles_list, $token, $passkey, $user_name);
+    $this->sendInvitationMail($user_email,  $user_roles_list, $token, $passkey, $user_name);
     $form_state->setRedirectUrl(Url::fromRoute('view.user_management.page_1'));
   }
 
@@ -150,10 +150,22 @@ final class UserInviteForm extends FormBase {
    */
   public function sendInvitationMail(string $email, $roles, $token, $passkey, $user_name) {
 
+    $config = \Drupal::config('sam.settings');
+    $sso_active = $config->get('sso_active');
+    $invitation_url = NULL;
     $pass = $this->randomPassword();
-    $invitation_url = Url::fromRoute('zcs_user_management.verify_invitation', [
-      'token' => $token,
-    ], ['absolute' => TRUE]);
+
+    if ($sso_active) {
+      $invitation_url = Url::fromRoute('sam.sso_verify_invitation', [
+        'token' => $token,
+      ], ['absolute' => TRUE]);
+    }
+    else {
+      $invitation_url = Url::fromRoute('zcs_user_management.verify_invitation', [
+        'token' => $token,
+      ], ['absolute' => TRUE]);
+    }
+
     $attributes = [
       'target' => '_blank',
       'style' => 'display: inline-block; padding: 12px 24px; font-size: 16px; color: #ffffff; text-decoration: none; font-weight: bold; background:#007bff; border-radius: 5px;',

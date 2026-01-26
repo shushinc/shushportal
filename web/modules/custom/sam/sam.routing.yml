@@ -12,6 +12,8 @@ sam.authenticate:
     _controller: '\Drupal\sam\Controller\SsoController::authenticate'
   requirements:
     _access: 'TRUE'
+  options:
+    no_cache: true
 
 sam.callback:
   path: '/sso/callback/{provider}'
@@ -19,3 +21,24 @@ sam.callback:
     _controller: '\Drupal\sam\Controller\SsoController::callback'
   requirements:
     _access: 'TRUE'
+  options:
+    no_cache: true
+sam.client_auth_screen:
+  path: '/sso/authenticate/client'
+  defaults:
+    _form: '\Drupal\sam\Form\ClientPasswordForm'
+    _title: 'Log in'
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: true
+
+sam.sso_verify_invitation:
+  path: '/sso/invitation/{token}'
+  defaults:
+    _controller: '\Drupal\sam\Controller\SsoController::verifyInvitation'
+    _title: 'Moriarty SSO Authentication'
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: true
