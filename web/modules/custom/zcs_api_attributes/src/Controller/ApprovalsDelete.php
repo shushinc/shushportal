@@ -58,4 +58,19 @@ class ApprovalsDelete extends ControllerBase {
     return $response->send();
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function pricingdiscountdelete($id) {
+    // Delete from 'api_attributes_page_data' table.
+    $num_deleted = $this->database->delete('discount_pricing_page_data')
+    // Replace with the actual ID or condition.
+      ->condition('id', $id)
+      ->execute();
+
+    \Drupal::messenger()->addMessage('Pricing Discount is Successfully Deleted');
+    $response = new RedirectResponse(Url::fromRoute('zcs_api_attributes.manage_discount_pricing')->toString());
+    return $response->send();
+  }
+
 }

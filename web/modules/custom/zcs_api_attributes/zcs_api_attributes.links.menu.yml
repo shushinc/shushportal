@@ -10,3 +10,10 @@ zcs_api_attributes.manage_pricing_history:
   parent: system.admin_structure
   route_name: zcs_api_attributes.manage_pricing_history
   weight: 10
+zcs_api_attributes.manage_discount_pricing:
+  title: Manage Discount Pricing
+  description: Manage Discount Pricing
+  parent: system.admin_structure
+  route_name: zcs_api_attributes.manage_discount_pricing
+  weight: 10 
+
