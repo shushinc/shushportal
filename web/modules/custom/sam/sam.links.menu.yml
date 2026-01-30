@@ -1,6 +1,17 @@
 sam.config:
   title: 'SSO Authentication Manager Configuration'
   description: 'Configure Single Sign-On authentication providers.'
-  route_name: sam.config
+  route_name: entity.sam_sso_app.collection
   parent: user.admin_index
   weight: 20
+sam.multi_sso.apps:
+  title: 'SSO Applications'
+  description: 'Manage SSO applications'
+  route_name: entity.sam_sso_app.collection
+  parent: system.admin_config_people
+  weight: 10
+sam.multi_sso.apps.add:
+  title: 'Add SSO application'
+  route_name: entity.sam_sso_app.add_form
+  parent: sam.multi_sso.apps
+  weight: 0

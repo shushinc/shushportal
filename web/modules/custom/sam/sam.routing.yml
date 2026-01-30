@@ -42,3 +42,34 @@ sam.sso_verify_invitation:
     _access: 'TRUE'
   options:
     no_cache: true
+entity.sam_sso_app.collection:
+  path: '/admin/config/people/multi-sso/apps'
+  defaults:
+    _entity_list: 'sam_sso_app'
+    _title: 'SSO Applications'
+  requirements:
+    _permission: 'administer sam sso'
+
+entity.sam_sso_app.add_form:
+  path: '/admin/config/people/multi-sso/apps/add'
+  defaults:
+    _entity_form: 'sam_sso_app.add'
+    _title: 'Add SSO Application'
+  requirements:
+    _permission: 'administer sam sso'
+
+entity.sam_sso_app.edit_form:
+  path: '/admin/config/people/multi-sso/apps/{sam_sso_app}'
+  defaults:
+    _entity_form: 'sam_sso_app.edit'
+    _title: 'Edit SSO Application'
+  requirements:
+    _permission: 'administer sam sso'
+
+entity.sam_sso_app.delete_form:
+  path: '/admin/config/people/multi-sso/apps/{sam_sso_app}/delete'
+  defaults:
+    _entity_form: 'sam_sso_app.delete'
+    _title: 'Delete SSO Application'
+  requirements:
+    _permission: 'administer sam sso'

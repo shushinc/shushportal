@@ -3,11 +3,8 @@
 namespace Drupal\sam_google\Plugin\SsoProvider;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Url;
-use Drupal\sam\Plugin\SsoProvider\SsoProviderInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\sam\SsoAppInterface;
 use Drupal\sam_oidc\Plugin\SsoProvider\AbstractOidcProvider;
 
 /**
@@ -88,31 +85,28 @@ final class GoogleProvider extends AbstractOidcProvider {
   /**
    * {@inheritdoc}
    */
-  public function getConfigurationForm(array $form, FormStateInterface $form_state): array {
+  public function getConfigurationForm(array $form, FormStateInterface $form_state, SsoAppInterface $app = NULL): array {
     $config = $this->configFactory->get('sam_google.settings');
-  
-    return [
+    
+    $settings = $app ? $app->getSettings() : [];
+    $formSettings = [
       'client_id' => [
         '#type' => 'textfield',
         '#title' => $this->t('Client ID'),
-        '#default_value' => $config->get('client_id'),
+        '#default_value' => $settings['details']['client_id'] ?? '',
       ],
       'client_secret' => [
         '#type' => 'textfield',
         '#title' => $this->t('Client Secret'),
-        '#default_value' => $config->get('client_secret'),
-      ],
-      'hosted_domain' => [
-        '#type' => 'textfield',
-        '#title' => $this->t('Hosted Domain'),
-        '#default_value' => $config->get('hosted_domain'),
+        '#default_value' => $settings['details']['client_secret'] ?? '',
       ],
       'callback_uri' => [
         '#type' => 'textfield',
         '#title' => $this->t('Callback URI'),
-        '#default_value' => $config->get('callback_uri'),
+        '#default_value' => $settings['details']['callback_uri'] ?? '',
       ],
-    ];
+    ]; 
+    return $formSettings;
   }
   
 
@@ -120,60 +114,32 @@ final class GoogleProvider extends AbstractOidcProvider {
    * {@inheritdoc}
    */
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state): void {
-    $client_id = $form_state->getValue('client_id');
-    $client_secret = $form_state->getValue('client_secret');
-    $hosted_domain = $form_state->getValue('hosted_domain');
-    $callback_uri = $form_state->getValue('callback_uri');
+    $client_id = $form_state->getValue(['settings', 'details', 'client_id']);
+    $client_secret = $form_state->getValue(['settings', 'details', 'client_secret']);
+    $callback_uri = $form_state->getValue(['settings', 'details', 'callback_uri']);
 
     if (empty($client_id)) {
-      $form_state->setErrorByName(
-        'client_id',
-        $this->t('Google Client ID is required.')
-      );
+      $form_state->setErrorByName('settings][details][client_id', $this->t('Google Client ID is required.'));
     }
 
     if (empty($client_secret)) {
-      $form_state->setErrorByName(
-        'client_secret',
-        $this->t('Google Client Secret is required.')
-      );
-    }
-
-    if (empty($hosted_domain)) {
-      $form_state->setErrorByName(
-        'hosted_domain',
-        $this->t('The Hosted Domain is required')
-      );
+      $form_state->setErrorByName('settings][details][client_secret', $this->t('Google Client Secret is required.'));
     }
 
     if (empty($callback_uri)) {
-      $form_state->setErrorByName(
-        'callback_uri',
-        $this->t('The callback URI is required')
-      );
+      $form_state->setErrorByName('settings][details][callback_uri', $this->t('The callback URI is required.'));
     }
   }
 
   /**
    * {@inheritdoc}
    */
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state): void {
-    $this->configFactory
-    ->getEditable('sam_google.settings')
-    ->set('client_id', $form_state->getValue('client_id'))
-    ->set('client_secret', $form_state->getValue('client_secret'))
-    ->set('hosted_domain', $form_state->getValue('hosted_domain'))
-    ->set('callback_uri', $form_state->getValue('callback_uri'))
-    ->save();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getHostedDomain(): ?string {
-    return (string) $this->configFactory
-      ->get('sam_google.settings')
-      ->get('hosted_domain');
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state, SsoAppInterface $soApp = NULL): array {
+    return [
+      'client_id' => $form_state->getValue(['settings', 'details', 'client_id']),
+      'client_secret' => $form_state->getValue(['settings', 'details', 'client_secret']),
+      'callback_uri' => $form_state->getValue(['settings', 'details', 'callback_uri']),
+    ];
   }
 
   public function getCallbackUri(): ?string {

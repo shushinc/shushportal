@@ -6,6 +6,7 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Drupal\sam\SsoAppInterface;
 
 /**
  * Defines an interface for SSO provider plugins.
@@ -83,7 +84,7 @@ interface SsoProviderInterface extends PluginInspectionInterface, ContainerFacto
    * @return array
    *   Form elements for provider configuration.
    */
-  public function getConfigurationForm(array $form, FormStateInterface $form_state);
+  public function getConfigurationForm(array $form, FormStateInterface $form_state, SsoAppInterface $soApp = NULL);
 
   /**
    * Validates the configuration form.
@@ -103,7 +104,7 @@ interface SsoProviderInterface extends PluginInspectionInterface, ContainerFacto
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state.
    */
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state);
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state, SsoAppInterface $soApp = NULL): array;
 
 
   /**

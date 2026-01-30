@@ -6,6 +6,7 @@ use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\sam\Plugin\SsoProvider\SsoProviderInterface;
+use Drupal\sam\SsoAppInterface;
 use Drupal\sam_oidc\Service\OidcDiscoveryService;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -193,7 +194,7 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
       expectedIssuer: $this->getIssuer(),
       expectedAudience: $this->getClientId(),
       expectedNonce: $this->session->get('sam_oidc_nonce'),
-      expectedHostedDomain: $this->getHostedDomain()
+      expectedHostedDomain: NULL
     );
 
     return [
@@ -214,7 +215,7 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
   /**
    * {@inheritdoc}
    */
-  public function getConfigurationForm(array $form, FormStateInterface $form_state): array {
+  public function getConfigurationForm(array $form, FormStateInterface $form_state, SsoAppInterface $soApp = NULL): array {
     return [];
   }
 
@@ -226,7 +227,7 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
   /**
    * {@inheritdoc}
    */
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state): void {}
+  abstract public function submitConfigurationForm(array &$form, FormStateInterface $form_state, SsoAppInterface $soApp = NULL): array;
 
   /**
    * Returns the redirect URI registered in the IdP.
@@ -237,19 +238,6 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
       ['provider' => $this->getPluginId()],
       ['absolute' => TRUE]
     )->toString();
-  }
-
-  /**
-   * Returns the expected hosted domain ("hd" claim) when applicable.
-   *
-   * For Google Workspace, the ID token may include the "hd" claim indicating
-   * the hosted domain (e.g. "shush.pw"). When this method returns a value,
-   * the token validation must ensure the claim matches.
-   *
-   * Default is NULL, meaning "do not enforce hosted domain restriction".
-   */
-  public function getHostedDomain(): ?string {
-    return NULL;
   }
 
   /**

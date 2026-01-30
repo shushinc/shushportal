@@ -1,16 +1,22 @@
-sam.settings:
-  type: config_object
-  label: 'SSO Authentication Manager settings'
+sam.sso_app.*:
+  type: config_entity
+  label: 'SSO App'
   mapping:
-    sso_active:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    domain:
+      type: string
+      label: 'Email domain'
+    provider:
+      type: string
+      label: 'SSO Provider'
+    is_enabled:
       type: boolean
-      label: 'Activate SSO authentication flow'
-      description: 'If enabled, the SAM module will intercept login attempts and redirect users to the configured SSO provider.'
-    active_provider:
-      type: string
-      label: 'Active SSO provider'
-      description: 'The SSO provider responsible for handling authentication.'
-    default_redirect:
-      type: string
-      label: 'Default redirect path after login'
-      description: 'Path to redirect users after successful authentication.'
+      label: 'Active'
+    settings:
+      type: mapping
+      label: 'Provider settings'
