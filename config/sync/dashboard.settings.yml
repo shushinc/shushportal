@@ -1,0 +1,7 @@
+refresh_interval: 300
+default_date_range: '30'
+enable_animations: true
+chart_height: 400
+cache_duration: 3600
+restrict_by_role: false
+allowed_roles: {  }

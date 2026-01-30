@@ -1,0 +1,21 @@
+uuid: 641d70f3-15ec-44d8-bc61-01ffa7aa626f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_data_group
+    - node.type.consolidated_analytics
+  module:
+    - options
+id: node.consolidated_analytics.field_data_group
+field_name: field_data_group
+entity_type: node
+bundle: consolidated_analytics
+label: 'Data Group'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

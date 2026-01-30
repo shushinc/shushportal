@@ -26,6 +26,11 @@
         $(this).parent().toggleClass('password-show');
         $('.zcs-aws-app-list table tr td').not(this).parent().removeClass('password-show');
       });
+
+      $(".zcs-kong-app-list table tr td.api-keys .pwd-toggle").unbind().on("click", function(event) {
+        $(this).parent().toggleClass('password-show');
+        $('.zcs-kong-app-list table tr td').not(this).parent().removeClass('password-show');
+      });
       
 
       //  Password copy
@@ -147,11 +152,103 @@
         slidesToScroll: 1,
         autoplay: true,
         autoplaySpeed: 5000,
-      }); 
-      $(".site__menu ul.menu .menu-item--expanded").unbind().on( "click", function(event) {
-        console.log('menu expand');
-        $(this).toggleClass('menuexpand');
       });
+      // $('.client-Layout-column-wrapper select.country').select2({
+      //   dropdownParent: $('.client-Layout-column-wrapper'),
+      //   minimumResultsForSearch: 0,
+      // });
+      
     }
   };
 })(jQuery, Drupal);
+
+jQuery(document).ready(function($){
+
+  // Toggle child menu visibility when the parent menu is clicked
+  $('.site__menu .menu-item--expanded > span').on('click', function (e) {
+    e.preventDefault();
+    
+    const $parentMenu = $(this).closest('.menu-item--expanded');
+    
+    const $childMenu = $parentMenu.children('ul.menu');
+    
+    const isExpanded = $parentMenu.hasClass('menuexpand');
+
+    // Collapse other menus
+    $('.site__menu .menu-item--expanded').not($parentMenu)
+      .removeClass('menuexpand')
+      .children('ul.menu').slideUp();
+
+    if (!isExpanded) {
+      $childMenu.stop(true, true).slideDown();
+      $parentMenu.addClass('menuexpand');
+    } else {
+      $childMenu.stop(true, true).slideUp();
+      $parentMenu.removeClass('menuexpand');
+    }
+  });
+  
+
+  $('.anchor-dropdown-btn').click(function(e) {
+    e.preventDefault();
+  });
+  $('.login .header-site-logo').insertBefore('main .highlighted');
+  const wordsToWrap = ['CAMARA', 'TS.43'];
+  const regex = new RegExp(`\\b(${wordsToWrap.join('|')})\\b`, 'g');
+
+  function wrapWordsInTextNode(node) {
+    const parent = node.parentNode;
+
+    // Skip if already inside a <strong class="text-bold">
+    if (parent && parent.matches('strong.text-bold')) return;
+
+    const text = node.textContent;
+    if (!regex.test(text)) return;
+
+    // Replace the matched text with <strong> elements
+    const newHTML = text.replace(regex, '<strong class="text-bold">$1</strong>');
+
+    // Replace the text node with new HTML
+    const temp = document.createElement('span');
+    temp.innerHTML = newHTML;
+    parent.replaceChild(temp, node);
+  }
+
+  function processTables(context = document) {
+    const tables = context.querySelectorAll('table.attributes-table');
+
+    tables.forEach(table => {
+      const cells = table.getElementsByTagName('td');
+      for (let i = 0; i < cells.length; i++) {
+        const cell = cells[i];
+
+        const walker = document.createTreeWalker(cell, NodeFilter.SHOW_TEXT, null, false);
+        const textNodes = [];
+        while (walker.nextNode()) {
+          textNodes.push(walker.currentNode);
+        }
+
+        textNodes.forEach(wrapWordsInTextNode);
+      }
+    });
+  }
+
+  // Initial run
+  processTables();
+
+  // Observe for dynamically added tables
+  const observer = new MutationObserver((mutationsList) => {
+    for (const mutation of mutationsList) {
+      for (const node of mutation.addedNodes) {
+        if (node.nodeType === 1) {
+          processTables(node);
+        }
+      }
+    }
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
+});

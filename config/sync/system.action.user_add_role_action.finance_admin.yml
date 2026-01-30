@@ -1,0 +1,14 @@
+uuid: 93b86653-b568-4330-9c5f-f0b3df8d78db
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.finance_admin
+  module:
+    - user
+id: user_add_role_action.finance_admin
+label: 'Add the Finance Admin role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: finance_admin

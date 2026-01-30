@@ -1,0 +1,182 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Consolidate module.
+ */
+
+use Drupal\Core\Database\Database;
+
+/**
+ * Implements hook_schema().
+ */
+function consolidate_schema() {
+  $schema['consolidate_data'] = [
+    'description' => 'Stores consolidate data with float columns.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique ID.',
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Timestamp when the record was created.',
+      ],
+      'YTD_revenue' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 1.',
+      ],
+      'MTD_revenue' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 2.',
+      ],
+      'last_week_revenue' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 3.',
+      ],
+      'yesterday_revenue' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 4.',
+      ],
+      'MTD_volume' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 5.',
+      ],
+      'Y_o_Y_revenue' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 6.',
+      ],
+      'M_o_M_revenue' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 7.',
+      ],
+      'W_o_W_revenue' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 8.',
+      ],
+      'D_o_D_revenue' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 9.',
+      ],
+      'M_o_M_volume' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 10.',
+      ],
+      'successful_api_calls' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 11.',
+      ],
+      'avg_api_latency' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 12.',
+      ],
+      'vol_from_slient_auth' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 13.',
+      ],
+      'api_vol_from_top_10_consumers' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 14.',
+      ],
+      'vol_top_customer' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 15.',
+      ],
+      'M_o_M_successful_api_calls' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 16.',
+      ],
+      'M_o_M_avg_api_latency' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 17.',
+      ],
+      'M_o_M_vol_from_silent_auth' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 18.',
+      ],
+      'M_o_M_api_vol_from_top_10_consumers' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 19.',
+      ],
+      'M_o_M_vol_top_customer' => [
+        'type' => 'float',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Float value 20.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'created' => ['created'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function hook_install($is_syncing) : void {
+  $schema = consolidate_schema();
+
+  if (!Database::getConnection()->schema()->tableExists('consolidate_data')) {
+    Database::getConnection()->schema()->createTable('consolidate_data', $schema['consolidate_data']);
+  }
+}
+
+
+/**
+ * Create the consolidate_data table.
+ */
+function consolidate_update_10001() {
+  $schema = consolidate_schema();
+
+  if (!Database::getConnection()->schema()->tableExists('consolidate_data')) {
+    Database::getConnection()->schema()->createTable('consolidate_data', $schema['consolidate_data']);
+    return t('The consolidate_data table has been created successfully.');
+  }
+
+  return t('The consolidate_data table already exists.');
+}

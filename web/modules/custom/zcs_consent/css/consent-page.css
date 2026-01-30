@@ -1,0 +1,93 @@
+.top-consent-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  align-items: end;
+  margin-bottom: 1.2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.consent-form-wrapper {
+  background: #fff;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 7px 0px rgba(0, 0, 0, 0.05);
+  margin-top: 56px;
+}
+
+.consent-data .form-type-textarea textarea {
+  width: 100% !important;
+  margin-bottom: 0;
+  padding: 10px;
+}
+
+.consent-data .form-type-textarea {
+  margin-bottom: 0;
+}
+
+.top-consent-actions .form-submit {
+  width: 100%;
+  background: #118df0;
+  color: #fff;
+  border-radius: 10px;
+  padding: 12px 15px;
+  font-size: 14px;
+  border: none;
+  letter-spacing: -0.2px;
+}
+.top-consent-actions .form-submit:hover {
+  background: #4f9bf5;
+}
+.consent .highlighted .messages--status {
+  padding-left: 60px;
+  position: relative;
+}
+
+.consent .messages--status::before {
+  position: absolute;
+  left: 20px;
+}
+.messages__wrapper .messages--error {
+  position: relative;
+  padding-left: 60px;
+}
+.messages__wrapper .messages--error::before {
+  content: "";
+  background: url("/themes/custom/shush/images/error.svg") no-repeat;
+  height: 26px;
+  width: 26px;
+  display: inline-block;
+  background-size: contain;
+  vertical-align: middle;
+  cursor: pointer;
+  margin-right: 20px;
+  position: absolute;
+  left: 20px;
+  filter: brightness(0) invert(1);
+}
+
+.select-box-type .js-form-item label {
+  color: rgb(43, 54, 116);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: -0.2px;
+  margin-bottom: 5px;
+}
+.select-box-type .js-form-item {
+  margin-bottom: 0;
+}
+.select-box-type .js-form-item select {
+  margin-bottom: 0;
+}
+.lines-counter {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.lines-counter.is-invalid {
+  color: #c00;
+  font-weight: 600;
+}

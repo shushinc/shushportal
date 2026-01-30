@@ -9,7 +9,7 @@ id: node.analytics.field_404_api_volume_in_mil
 field_name: field_404_api_volume_in_mil
 entity_type: node
 bundle: analytics
-label: '404 API volume in mil'
+label: '404 API volume'
 description: ''
 required: false
 translatable: false

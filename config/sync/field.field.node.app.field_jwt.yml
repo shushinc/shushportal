@@ -1,0 +1,19 @@
+uuid: 3e927447-f0ca-405c-ad55-7ffcee2e6a9e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_jwt
+    - node.type.app
+id: node.app.field_jwt
+field_name: field_jwt
+entity_type: node
+bundle: app
+label: JWT
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

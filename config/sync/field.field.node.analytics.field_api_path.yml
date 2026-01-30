@@ -1,0 +1,19 @@
+uuid: 93ae8323-930d-49ed-992c-1c40f4678064
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_api_path
+    - node.type.analytics
+id: node.analytics.field_api_path
+field_name: field_api_path
+entity_type: node
+bundle: analytics
+label: 'API path'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

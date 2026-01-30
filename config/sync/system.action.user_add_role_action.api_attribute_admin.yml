@@ -1,0 +1,14 @@
+uuid: f8b72301-8998-489e-bfdb-3c3290e00362
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.api_attribute_admin
+  module:
+    - user
+id: user_add_role_action.api_attribute_admin
+label: 'Add the API Attribute Admin role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: api_attribute_admin

@@ -30,7 +30,7 @@ display:
     display_plugin: default
     position: 0
     display_options:
-      title: ''
+      title: 'Client Management'
       fields:
         id:
           id: id
@@ -175,7 +175,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "{% if field_partner_type|lower == 'demandpartner' %}\r\n  Demand Partner\r\n{% else %}\r\n  Other Partner\r\n{% endif %}"
+            text: ''
             make_link: false
             path: ''
             absolute: false
@@ -234,7 +234,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: field
-          label: Email
+          label: 'Contact Email'
           exclude: false
           alter:
             alter_text: false
@@ -288,19 +288,19 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        field_partner_status:
-          id: field_partner_status
-          table: group__field_partner_status
-          field: field_partner_status
+        field_partner_type:
+          id: field_partner_type
+          table: group__field_partner_type
+          field: field_partner_type
           relationship: none
           group_type: group
           admin_label: ''
           plugin_id: field
-          label: Status
+          label: 'Partner Type'
           exclude: false
           alter:
             alter_text: true
-            text: "<div class=\"user__mangement-status {% if field_partner_status == \"in_active\" %} user-inactive {% else %} user-active  {% endif %}\">\r\n     {% if field_partner_status == \"in_active\" %} \r\n        {{ \"InActive\" }} \r\n    {% else %}\r\n      {{ field_partner_status }}\r\n   {% endif %}\r\n</div>"
+            text: "{% if field_partner_type|lower == 'demandpartner' %}\r\n  Demand Partner\r\n{% else %}\r\n {{ field_partner_type }}\r\n{% endif %}"
             make_link: false
             path: ''
             absolute: false
@@ -350,19 +350,19 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        field_partner_type:
-          id: field_partner_type
-          table: group__field_partner_type
-          field: field_partner_type
+        field_partner_status:
+          id: field_partner_status
+          table: group__field_partner_status
+          field: field_partner_status
           relationship: none
           group_type: group
           admin_label: ''
           plugin_id: field
-          label: 'Partner Type'
+          label: Status
           exclude: false
           alter:
             alter_text: true
-            text: "{% if field_partner_type|lower == 'demandpartner' %}\r\n  Demand Partner\r\n{% else %}\r\n {{ field_partner_type }}\r\n{% endif %}"
+            text: "<div class=\"user__mangement-status {% if field_partner_status == \"Inactive\" %} user-inactive {% else %} user-active  {% endif %}\">\r\n     {% if field_partner_status == \"Inactive\" %} \r\n        {{ \"InActive\" }} \r\n    {% else %}\r\n      {{ field_partner_status }}\r\n   {% endif %}\r\n</div>"
             make_link: false
             path: ''
             absolute: false
@@ -469,11 +469,11 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: custom
-          label: Edit
+          label: Operations
           exclude: false
           alter:
             alter_text: true
-            text: "<div class=\"user__mangement-edit\"></div>\r\n<div class=\"edit-operation\">\r\n<div class=\"edit-operation-wrap\">\r\n<a href=\"/client/{{ id }}/edit?destination=/client-management\" class=\"use-ajax anchor-dropdown-btn\" data-toggle='modal'  data-dialog-type='modal'  data-dialog-options='{\"width\": 400, \"title\": \"Update Client\"}'>Edit</a>\r\n<a href=\"/view_client_image\">View</a>\r\n</div>"
+            text: "<div class=\"user__mangement-edit\"></div>\r\n<div class=\"edit-operation\">\r\n<div class=\"edit-operation-wrap\">\r\n<a href=\"/client/{{ id }}/edit?destination=/client/client-management\" class=\"use-ajax anchor-dropdown-btn\" data-toggle=\"modal\" data-dialog-type=\"modal\" data-dialog-options='{\"width\": 1000, \"title\": \"Update Client\"}'>Edit</a>\r\n<a href=\"/view/{{id}}/client\" class=\"use-ajax anchor-dropdown-btn\" data-toggle=\"modal\" data-dialog-type=\"modal\" data-dialog-options='{\"width\": 1000, \"title\": \"View Client\"}'>View</a>\r\n</div>"
             make_link: false
             path: ''
             absolute: false
@@ -563,7 +563,23 @@ display:
           empty: true
           content: 'There is no clients invited....!'
           tokenize: false
-      sorts: {  }
+      sorts:
+        changed:
+          id: changed
+          table: groups_field_data
+          field: changed
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: group
+          entity_field: changed
+          plugin_id: date
+          order: DESC
+          expose:
+            label: ''
+            field_identifier: ''
+          exposed: false
+          granularity: second
       arguments: {  }
       filters:
         status:
@@ -677,7 +693,7 @@ display:
           admin_label: ''
           plugin_id: text_custom
           empty: true
-          content: '<a href="/create-client?destination=/client-management" class="btn-primary use-ajax anchor-dropdown-btn" data-toggle=''modal''  data-dialog-type=''modal''  data-dialog-options=''{"width": 400, "title": "Invite Client"}''>Invite Client</a>'
+          content: '<a href="/client/create-client?destination=/client/client-management" class="btn-primary use-ajax anchor-dropdown-btn" data-toggle="modal" data-dialog-type="modal" data-dialog-options=''{"width": 1000, "title": "Invite Client"}''>Invite Client</a>'
           tokenize: false
       footer: {  }
       display_extenders: {  }
@@ -700,7 +716,7 @@ display:
     position: 1
     display_options:
       display_extenders: {  }
-      path: client-management
+      path: client/client-management
     cache_metadata:
       max-age: -1
       contexts:

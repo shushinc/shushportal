@@ -52,49 +52,68 @@ final class UserEditForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $uid = $this->request->get('uid');
     $user = User::load($uid);
-    $role_to_keep = 'carrier_admin';
+
     $roles = Role::loadMultiple();
+    $roles_to_keep = [
+      'carrier_admin',
+      'finance_admin', 
+      'financial_rate_sheet_approval_level_1', 
+      'financial_rate_sheet_approval_level_2',
+      'api_attribute_admin',
+      'api_attribute_approval_level_1',
+      'api_attribute_approval_level_2',
+     ];
     $role_options = [];
+
+
+    $user_roles = $user->getRoles();
+
     foreach ($roles as $role) {
-      if ($role->id() == $role_to_keep) {
-        $role_options[$role->id()] = $role->label();
+      if (in_array($role->id(), $roles_to_keep)) {
+          $role_options[$role->id()] = $role->label();
       }
     }
-    $form['user_mail'] = [
-      '#type' => 'email',
-      '#title' => t('Email'),
-      '#default_value' => $user->getEmail(),
-      '#attributes' => [
-        'readonly' => 'readonly',
-      ],
-    ];
+
     $form['user_name'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('User Name'),
-      '#required' => TRUE,
+      '#title' => $this->t('User Full Name'),
       '#default_value' => $user->get('name')->value,
       '#attributes' => [
         'readonly' => 'readonly',
       ],
     ]; 
+    
+    $form['user_mail'] = [
+      '#type' => 'email',
+      '#title' => t('User Email'),
+      '#default_value' => $user->getEmail(),
+      '#attributes' => [
+        'readonly' => 'readonly',
+      ],
+    ];
+
     $form['user_role'] = [
       '#type' => 'select',
-      '#title' => $this->t('User Role'),
+      '#title' => $this->t('Role'),
       '#options' => $role_options,
       '#empty_option' => $this->t('- Select a role -'),
-      '#default_value' => 'carrier_admin',
+      '#default_value' => $user_roles,
+      '#multiple' => true,
+      '#attributes' => [
+        'class' => ['multi-select']
+      ]
     ];
 
        // Define the status options.
        $status_options = [
         1 => $this->t('Active'),
-        0 => $this->t('Inactive'),
+        0 => $this->t('InActive'),
       ];
   
       // Define the form fields.
       $form['status'] = [
         '#type' => 'select',
-        '#title' => $this->t('User Status'),
+        '#title' => $this->t('Status'),
         '#options' => $status_options,
         '#default_value' => $user->isActive() ? 1 : 0, // Set default value based on current user status.
       ];
@@ -103,9 +122,12 @@ final class UserEditForm extends FormBase {
       '#type' => 'actions',
       'submit' => [
         '#type' => 'submit',
-        '#value' => $this->t('Update User'),
+        '#value' => $this->t('Update Carrier User'),
       ],
     ];
+
+    $form['#attached']['library'][] = 'zcs_user_management/bootstrap_multiselect';
+    $form['#attached']['library'][] = 'zcs_user_management/bootstrap_multiselect_css';
     return $form;
   }
 
@@ -122,7 +144,7 @@ final class UserEditForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
     $user_email = $form_state->getValue('user_mail'); 
-    $role = $form_state->getValue('user_role');
+    $roles = $form_state->getValue('user_role');
     $user_name = $form_state->getValue('user_name');
     $status = $form_state->getValue('status');
     $query = \Drupal::entityQuery('user')->condition('mail', $user_email);
@@ -132,6 +154,7 @@ final class UserEditForm extends FormBase {
       $uid = reset($uids);
       $user = User::load($uid);
       $user->set('status', $status);
+      $user->set('roles', array_keys($roles)); 
       $user->save();
       $this->messenger()->addMessage($this->t('User updated successfully.'));
       $form_state->setRedirectUrl(Url::fromRoute('view.user_management.page_1'));

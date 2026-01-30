@@ -103,6 +103,87 @@ final class PortalSettingsForm extends ConfigFormBase {
         '#description' => t('Provide values comma seperated eg: resourcetype/read, resourcetype/write.'),
       ];
     }
+    //$defaultCurrency = 'en_US';
+    $lists = require __DIR__ . '/../../resources/currencies.php';
+    // to fetch currencies.
+    $currencies = [];
+    foreach ($lists as $list) {
+      if (!empty($list['locale'])) {
+        $currencies[$list['locale']] = $list['currency'] .' ('. $list['alphabeticCode'] .')';
+      }
+    }
+    $form['currency_settings'] = [
+      '#type' => 'details',
+      '#open' => FALSE,
+      '#title' => $this->t('Currency'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#description' => t('Add the currency configuration'),
+      '#tree' => TRUE,
+    ];
+    $form['currency_settings']['currency'] = [
+      '#type' => 'select',
+      '#options' => $currencies,
+      '#default_value' => $this->config('zcs_custom.settings')->get('currency') ?? 'en_US',
+      '#description' => t('Provide a currency value.'),
+    ];
+
+    $form['retail_markup_limit_data'] = [
+      '#type' => 'details',
+      '#open' => FALSE,
+      '#title' => $this->t('RMP Limit'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#description' => t('Set the limit for Analytics records to calculate retail markup percentage (eg: -6 months or 12 months)'),
+      '#tree' => TRUE,
+    ];
+    $form['retail_markup_limit_data']['rmp_limit'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Limit'),
+      '#default_value' => $this->config('zcs_custom.settings')->get('rmp_limit'),
+    ];
+    $form['pricing_api_endpoint'] = [
+      '#type' => 'details',
+      '#open' => FALSE,
+      '#title' => $this->t('Proposed API Pricing Endpoint'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#description' => t('Configure Proposed API Pricing Endpoint Details'),
+      '#tree' => TRUE,
+    ];
+    $form['pricing_api_endpoint']['proposed_api_endpoint'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Proposed API Endpoint'),
+      '#default_value' => $this->config('zcs_custom.settings')->get('proposed_api_endpoint'),
+    ];
+    $form['consent_api_endpoint'] = [
+      '#type' => 'details',
+      '#open' => FALSE,
+      '#title' => $this->t('Consent API Endpoint'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#description' => t('Consent API Pricing Endpoint Details'),
+      '#tree' => TRUE,
+    ];
+    $form['consent_api_endpoint']['consent_endpoint'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Consent API Endpoint'),
+      '#default_value' => $this->config('zcs_custom.settings')->get('consent_endpoint'),
+    ];
+    $form['client_billing_endpoint'] = [
+      '#type' => 'details',
+      '#open' => FALSE,
+      '#title' => $this->t('Client Billing Endpoint'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#description' => t('Client Billing Endpoint Details'),
+      '#tree' => TRUE,
+    ];
+    $form['client_billing_endpoint']['client_billing_api_endpoint'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Client Billing API Endpoint'),
+      '#default_value' => $this->config('zcs_custom.settings')->get('client_billing_api_endpoint'),
+    ];
     return parent::buildForm($form, $form_state);
   }
 
@@ -141,6 +222,12 @@ final class PortalSettingsForm extends ConfigFormBase {
      $config->set('allowed_oauth_flows', $form_state->getValue('aws_details')['allowed_oauth_flows']);
      $config->set('allowed_oauth_scopes', $form_state->getValue('aws_details')['allowed_oauth_scopes']);
    }
+   $config->set('currency', $form_state->getValue('currency_settings')['currency']);
+   $config->set('rmp_limit', $form_state->getValue('retail_markup_limit_data')['rmp_limit']);
+   $config->set('proposed_api_endpoint', $form_state->getValue('pricing_api_endpoint')['proposed_api_endpoint']);
+   $config->set('consent_endpoint', $form_state->getValue('consent_api_endpoint')['consent_endpoint']);
+   $config->set('client_billing_api_endpoint', $form_state->getValue('client_billing_endpoint')['client_billing_api_endpoint']);
+
    $config->save();
    parent::submitForm($form, $form_state);
   }

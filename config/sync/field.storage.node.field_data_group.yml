@@ -1,0 +1,42 @@
+uuid: 5c54434e-9581-4b8d-b7d1-4837dffda1c7
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_data_group
+field_name: field_data_group
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: revenue
+      label: Revenue
+    -
+      value: volume
+      label: Volume
+    -
+      value: successful_api_calls
+      label: 'Successful API Calls'
+    -
+      value: avg_api_latency
+      label: 'Avg API Latency'
+    -
+      value: vol_from_silent_auth
+      label: 'Vol from Silent Auth'
+    -
+      value: top_10_customers
+      label: 'Top 10 Customers'
+    -
+      value: top_client
+      label: 'Top Client'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,6 @@
+name: Metabase Integration
+type: module
+description: 'Integrates Drupal with Metabase analytics platform.'
+core_version_requirement: ^10 || ^11
+package: Analytics
+configure: metabase.settings

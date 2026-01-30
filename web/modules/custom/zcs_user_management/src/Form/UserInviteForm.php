@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 
+
 /**
  * Provides a zcs_user_management form.
  */
@@ -34,28 +35,46 @@ final class UserInviteForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $roles = Role::loadMultiple();
-    $role_to_keep = 'carrier_admin';
+    $roles_to_keep = [
+       'carrier_admin',
+       'finance_admin', 
+       'financial_rate_sheet_approval_level_1', 
+       'financial_rate_sheet_approval_level_2',
+       'api_attribute_admin',
+       'api_attribute_approval_level_1',
+       'api_attribute_approval_level_2',
+      ];
     $role_options = [];
+    
     foreach ($roles as $role) {
-      if ($role->id() == $role_to_keep) {
-        $role_options[$role->id()] = $role->label();
+      if (in_array($role->id(), $roles_to_keep)) {
+          $role_options[$role->id()] = $role->label();
       }
     }
     $form['user_name'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('User Name'),
-      '#required' => TRUE
+      '#title' => $this->t('User Full Name'),
+      '#required' => TRUE,
+      '#maxlength' => 18,
+      '#attributes' => [
+        'autocomplete' => 'off',
+        'data-1password-disable' => 'true',
+      ],
     ];
     $form['user_mail'] = array(
       '#type' => 'email',
-      '#title' => t('Email'),
+      '#title' => t('User Email'),
       '#required' => TRUE,
     );
     $form['user_role'] = [
       '#type' => 'select',
-      '#title' => $this->t('User Role'),
+      '#title' => $this->t('Role'),
       '#options' => $role_options,
       '#empty_option' => $this->t('- Select a role -'),
+      '#multiple' => true,
+      '#attributes' => [
+        'class' => ['multi-select']
+      ]
     ];
     $form['actions'] = [
       '#type' => 'actions',
@@ -64,6 +83,9 @@ final class UserInviteForm extends FormBase {
         '#value' => $this->t('Invite Carrier User'),
       ],
     ];
+    $form['#attached']['library'][] = 'zcs_user_management/bootstrap_multiselect';
+    $form['#attached']['library'][] = 'zcs_user_management/bootstrap_multiselect_css';
+
     return $form;
   }
 
@@ -93,7 +115,7 @@ final class UserInviteForm extends FormBase {
     $token = $this->generateToken();
     $passkey = $this->randomPassword();
     $user_email = $form_state->getValue('user_mail'); 
-    $role = $form_state->getValue('user_role');
+    $roles = $form_state->getValue('user_role');
     $user_name = $form_state->getValue('user_name');
 
     $user = User::create([
@@ -101,11 +123,12 @@ final class UserInviteForm extends FormBase {
       'mail' => $user_email,
       'pass' => $passkey,
       'status' => 0, // 
-      'roles' => $role, 
+      'roles' => array_keys($roles)
     ]);  
     $user->save();
-    $save_invitation = $this->saveInvitation($user_email, $role, $token, $passkey, $user_name);
-    $send_emai = $this->sendInvitationMail($user_email, $role, $token, $passkey, $user_name);
+    $user_roles_list = $this->getUserRolelableUsingRoleId($roles);
+    $save_invitation = $this->saveInvitation($user_email, $user_roles_list, $token, $passkey, $user_name);
+    $send_emai = $this->sendInvitationMail($user_email,  $user_roles_list, $token, $passkey, $user_name);
     $form_state->setRedirectUrl(Url::fromRoute('view.user_management.page_1'));
   }
 
@@ -125,23 +148,37 @@ final class UserInviteForm extends FormBase {
    /**
    *
    */
-  public function sendInvitationMail(string $email, $role, $token, $passkey, $user_name) {
+  public function sendInvitationMail(string $email, $roles, $token, $passkey, $user_name) {
 
     $pass = $this->randomPassword();
     $invitation_url = Url::fromRoute('zcs_user_management.verify_invitation', [
       'token' => $token,
     ], ['absolute' => TRUE]);
-    $invitation_link = Link::fromTextAndUrl(t('here'), $invitation_url)->toString();
+    $attributes = [
+      'target' => '_blank',
+      'style' => 'display: inline-block; padding: 12px 24px; font-size: 16px; color: #ffffff; text-decoration: none; font-weight: bold; background:#007bff; border-radius: 5px;',
+    ];
+    
+    $invitation_link = Link::fromTextAndUrl(t('Activate'), $invitation_url)
+      ->toRenderable();
+    $invitation_link['#attributes'] = $attributes;
 
-    $email_body = 'Click below link to activate your account.<br>After activation you will be receiving further emails for onboarding process.';
-    $email_body .= '<br>link:' .  $invitation_link;
+    $rendered_link = \Drupal::service('renderer')->render($invitation_link);
+   
+    $site_name = \Drupal::config('system.site')->get('name');
+  
+    $email_subject = \Drupal::config('zcs_custom.portal_email_settings')->get('email_subject');
+    $email_body = \Drupal::config('zcs_custom.portal_email_settings')->get('email_body');
 
+ 
 
+    $user_name = $this->getUserNameUsingEmail($email);
+    $email_body = \Drupal::token()->replace($email_body, ['user_name' => $user_name, 'user_invite_activation_url' => $rendered_link, 'site_name' => $site_name, 'roles' => $roles]); 
     $mailManager = \Drupal::service('plugin.manager.mail');
     $module = 'zcs_user_management';
     $key = 'user_invite';
     $to = $email;
-    $params['subject'] = 'Activate your account';
+    $params['subject'] = $email_subject;
     $params['message'] = $email_body;
     $langcode = \Drupal::currentUser()->getPreferredLangcode();
     $send = TRUE;
@@ -152,11 +189,37 @@ final class UserInviteForm extends FormBase {
       ]), 'error');
     }
     else {
-      \Drupal::messenger()->addMessage(t('An invitation mail has been sent to %email for %role  role', [
+      \Drupal::messenger()->addMessage(t('An initation mail has been sent to %email for %role  role', [
         '%email' => $email,
-        '%role ' => $role,
+        '%role ' => $roles,
       ]));
     }
+  }
+
+  public function getUserNameUsingEmail($email) {
+    $username = '';
+    $users = \Drupal::entityTypeManager()
+      ->getStorage('user')
+      ->loadByProperties(['mail' => $email]);
+    if (!empty($users)) {
+      $user = reset($users);
+      $username = $user->getAccountName();
+    }
+    return $username;
+  }
+
+
+  public function getUserRolelableUsingRoleId($roles) {
+    $role_storage = \Drupal::entityTypeManager()->getStorage('user_role');
+    $role_entities = $role_storage->loadMultiple(array_keys($roles));
+    
+    $role_labels = [];
+    foreach ($role_entities as $id => $role) {
+      $role_labels[] = $role->label();
+    }
+    
+    $role_labels_list = implode(', ', $role_labels);
+    return $role_labels_list;
   }
 
 

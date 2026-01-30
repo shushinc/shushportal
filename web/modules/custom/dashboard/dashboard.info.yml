@@ -1,0 +1,8 @@
+name: Dashboard
+type: module
+description: 'Custom dashboard module with Chart.js integration for revenue and analytics display.'
+core_version_requirement: ^10
+package: Custom
+dependencies: []
+libraries:
+  - dashboard/chartjs

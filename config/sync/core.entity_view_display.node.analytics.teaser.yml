@@ -6,6 +6,7 @@ dependencies:
     - core.entity_view_mode.node.teaser
     - field.field.node.analytics.body
     - field.field.node.analytics.field_404_api_volume_in_mil
+    - field.field.node.analytics.field_api_path
     - field.field.node.analytics.field_api_volume_in_mil
     - field.field.node.analytics.field_attribute
     - field.field.node.analytics.field_average_api_latency_in_mil
@@ -45,6 +46,7 @@ content:
     region: content
 hidden:
   field_404_api_volume_in_mil: true
+  field_api_path: true
   field_api_volume_in_mil: true
   field_attribute: true
   field_average_api_latency_in_mil: true

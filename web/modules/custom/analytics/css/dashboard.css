@@ -1,7 +1,9 @@
 .row {
   /* display: flex; */
 }
-
+.chart-wrapper {
+  margin-top: 1rem;
+}
 .col-6 {
   width: 48%;
 }
@@ -197,7 +199,7 @@
   letter-spacing: 0.2px;
 }
 .user-logged-in .dashboard-page {
-  margin-left: 290px !important;
+  margin-left: 270px !important;
   padding-right: 2.5rem !important;
 }
 

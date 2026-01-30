@@ -63,6 +63,9 @@ class EditClientMemberForm extends FormBase {
     $cid = $this->request->get('cid');
     $user = User::load($cid);  
     $group_type = 'partner';
+
+
+    $group_object = Group::load($gid);
     $group_storage = \Drupal::entityTypeManager()->getStorage('group');
     $query = $group_storage->getQuery()->condition('type', $group_type); 
     $group_ids = $query->accessCheck()->execute();
@@ -72,6 +75,7 @@ class EditClientMemberForm extends FormBase {
       $user_id = $membership->get('entity_id')->target_id;
       $user = User::load($user_id);
       $email = $user->getEmail();
+      $username = $user->getAccountName();
       $client_role = $membership->get('group_roles')->target_id;
     }
 
@@ -89,26 +93,44 @@ class EditClientMemberForm extends FormBase {
     foreach($clients as $group) {
       $client_groups[$group->get('id')->value] = $group->get('label')->value;
     }
-    // Show only for carrier admin
+   // Show only for carrier admin
+    // $form['client'] = [
+    //   '#type' => 'select',
+    //   '#title' => $this->t('Select Client'),
+    //   '#options' => $client_groups,
+    //   '#required' => TRUE,
+    //   '#default_value' => $gid,
+    //   '#attributes' => ['disabled' => 'disabled'],
+    // ];
     $form['client'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Select Client'),
-      '#options' => $client_groups,
+      '#type' => 'textfield',
+      '#title' => $this->t('Client'),
+      '#default_value' => $group_object->get('label')->value ?? '',
+      '#attributes' => [
+        'readonly' => 'readonly',
+      ],
+    ];
+
+    $form['user_name'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('User Full Name'),
       '#required' => TRUE,
-      '#default_value' => $gid,
-      '#attributes' => ['disabled' => 'disabled'],
+      '#attributes' => [
+        'readonly' => 'readonly',
+      ], 
+      '#default_value' => $username,
     ];
  
     // To to validation fetch only the user who is not admin
     $form['client_email'] = [
       '#type' => 'email',
-      '#title' => $this->t('Client User Email'),
-      '#weight' => '0',
+      '#title' => $this->t('User Email'),
       '#required' => TRUE,
       '#placeholder' => 'Enter the client Email',
       '#default_value' => $email,
-      '#attributes' => ['disabled' => 'disabled'],
-      '#autocomplete_route_name' => 'zcs_client_management.autocomplete_users',
+      '#attributes' => [
+        'readonly' => 'readonly',
+      ], 
     ];
     $form['partner_role'] = [
       '#type' => 'select',
@@ -155,6 +177,7 @@ class EditClientMemberForm extends FormBase {
     $user_email = $form_state->getValue('client_email'); 
     $user_status = $form_state->getValue('status');
     $cid = $this->request->get('cid');
+ 
     $membership = GroupMembership::load($cid);
     if ($membership) {
       $membership->set('group_roles', $partner_role);

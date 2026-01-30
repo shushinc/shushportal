@@ -1,0 +1,81 @@
+{#
+/**
+ * @file
+ * Template for the main dashboard page.
+ *
+ * Available variables:
+ * - metrics_cards: Array of revenue metric cards data.
+ * - performance_cards: Array of performance metric cards data.
+ * - filters: Array of filter options.
+ * - charts_data: Array of chart configuration data.
+ */
+#}
+
+<div class="dashboard-container">
+
+  <h3>{{ 'Main Dashboard'|t }}</h3>
+
+  {# Revenue Metrics Cards #}
+  <section class="dashboard-metrics">
+    {% for card in metrics_cards %}
+      <div class="metric-card" data-metric-type="revenue" data-metric-key="{{ loop.index0 }}">
+        <div class="metric-card--parameter">
+          <div class="metric-card--parameter--value">{{ card.value }}<span>{{ card.suffix }}</span></div>
+          <div class="metric-card--parameter--title">{{ card.title }}</div>
+        </div>
+        <div class="metric-card--change metric-card--change--{{ card.change_type }}">
+          {% if change_type == 'positive' %}
+            <span class="metric-card--change--value">▲ {{ card.change }}</span>
+          {% elseif change_type == 'negative' %}
+            <span class="metric-card--change--value">▼ {{ card.change }}</span>
+          {% else %}
+            <span class="metric-card--change--value">{{ card.change }}</span>
+          {% endif %}
+          <span class="metric-card--change--period">{{ card.period }}</span>
+        </div>
+      </div>
+    {% endfor %}
+  </section>
+
+  <h3>{{ 'Charts'|t }}</h3>
+
+  {# Filters Section #}
+  <section class="dashboard-filters">
+    <div class="dashboard-filters--grid">
+      {% for filter_key, filter in filters %}
+        <div class="filter-item">
+          <label class="filter-item--label" for="filter-{{ filter_key }}">
+            {{ filter.label }}
+          </label>
+          <select
+            id="filter-{{ filter_key }}"
+            name="{{ filter_key }}"
+            class="filter-item--select"
+          >
+            {% for option_key, option_label in filter.options %}
+              <option
+                value="{{ option_key }}"
+                {% if option_key == filter.selected %}selected{% endif %}
+              >
+                {{ option_label }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# Charts Section #}
+  <section class="dashboard-charts">
+    {% for chart_key, chart in charts_data %}
+      <div class="chart-container">
+        <h4 class="chart-container--title">{{ chart.title }}</h4>
+        <div class="chart-wrapper">
+          <div class="chart" data-chart-id="{{ chart.id }}"></div>
+        </div>
+      </div>
+    {% endfor %}
+  </section>
+
+</div>

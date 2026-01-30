@@ -1,0 +1,14 @@
+uuid: aa21f8da-e19c-4101-9614-bf249d4b87ba
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.finance_admin
+  module:
+    - user
+id: user_remove_role_action.finance_admin
+label: 'Remove the Finance Admin role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: finance_admin

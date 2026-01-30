@@ -2,3 +2,30 @@ attributes-page:
   css:
     theme:
       css/attribute-page.css: {}
+
+rate-sheet:
+  css:
+    theme:
+      css/rate-sheet.css: {}
+  js:
+    js/rate-sheet.js: {}
+
+rate-sheet-approval:
+  css:
+    theme:
+      css/rate-sheet-approval.css: {}
+  js:
+    js/rate-sheet-approval.js: {}
+
+rate-sheet-review:
+  css:
+    theme:
+      css/rate-sheet-review.css: {}
+
+discount-sheet:
+  js:
+    js/discount-sheet.js: {}
+  css:
+    theme:
+      css/discount-sheet.css: {}  
+

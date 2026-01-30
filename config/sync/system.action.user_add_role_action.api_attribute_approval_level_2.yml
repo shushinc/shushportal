@@ -1,0 +1,14 @@
+uuid: 878db21f-3bc3-4aa4-acdd-5eb039891a12
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.api_attribute_approval_level_2
+  module:
+    - user
+id: user_add_role_action.api_attribute_approval_level_2
+label: 'Add the API Attribute Approval Level 2 role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: api_attribute_approval_level_2

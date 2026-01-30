@@ -1,0 +1,23 @@
+uuid: 2da1e069-2c98-4176-b493-686ba3a29970
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.group.field_prepayment_balance_left
+    - group.type.partner
+id: group.partner.field_prepayment_balance_left
+field_name: field_prepayment_balance_left
+entity_type: group
+bundle: partner
+label: 'Prepayment Balance left'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: 0
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

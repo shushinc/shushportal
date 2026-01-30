@@ -1,0 +1,21 @@
+uuid: a9547a46-cfc5-4aa8-9a74-196bb21e9d45
+langcode: en
+status: true
+dependencies:
+  module:
+    - group
+id: group.field_client_point_of_contact
+field_name: field_client_point_of_contact
+entity_type: group
+type: string
+settings:
+  max_length: 255
+  case_sensitive: false
+  is_ascii: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,14 @@
+uuid: a5448b10-2238-4391-8fb5-e09b1d3a360c
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.api_attribute_approval_level_1
+  module:
+    - user
+id: user_remove_role_action.api_attribute_approval_level_1
+label: 'Remove the API Attribute Approval Level 1 role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: api_attribute_approval_level_1

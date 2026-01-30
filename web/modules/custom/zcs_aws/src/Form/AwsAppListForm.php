@@ -39,34 +39,57 @@ final class AwsAppListForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state): array {
 
     $url = Url::fromRoute('zcs_aws.create_key');
+
+    $route_name = $url->getRouteName();
+    $route_parameters = $url->getRouteParameters();
+    
+    // Use access manager to check access
+    $access = \Drupal::service('access_manager')->checkNamedRoute(
+      $route_name,
+      $route_parameters,
+      \Drupal::currentUser(),
+      TRUE // return AccessResult object
+    );
+
+    // Build class list dynamically
+    $classes =  ['button', 'btn-primary', 'button--primary', 'use-ajax'];
+    if (!$access->isAllowed()) {
+      $classes[] = 'disable-link';
+    }
+
+
     $url->setOptions([
       'attributes' => [
-        'class' => ['button', 'button--primary', 'use-ajax'],
+        'class' => $classes,
         'data-dialog-type' => 'modal',
-        'data-dialog-options' => json_encode(['width' => 700]),
+        'data-dialog-options' => json_encode(['width' => 400]),
       ],
     ]);
   
     $form['top_actions'] = [
       '#type' => 'container',
-      '#attributes' => ['class' => ['top-actions']],
-      'create_link' => [
-        '#markup' => Link::fromTextAndUrl($this->t('Create Client Credentials'), $url)->toString(),
+      '#attributes' => ['class' => ['top-actions', 'user-management-view']],
+      'create_link_wrapper' => [
+        '#type' => 'html_tag',
+        '#tag' => 'header',
+        '#attributes' => [
+          'class' => ['client-credentials-header'],
+        ],
+        '#children' => Link::fromTextAndUrl($this->t('Create Client Credentials'), $url)->toString(),
       ],
       '#weight' => -10,
     ];
-
+  
     $header = [
       'api_name' => $this->t('Client Name'),
-      'description' => $this->t('Description'),
-      'app' => $this->t('App name'),
-      'created' => $this->t('Created'),
+      'app' => $this->t('App Name'),
       'client_id' => $this->t('Client ID'),
       'client_secret' => $this->t('Client Secret'),
+      'created' => $this->t('Created Date'),
       'status' => $this->t('Status'),
     ];
 
-
+    $class = ['operations-enabled'];
     if (\Drupal::currentUser()->hasRole('carrier_admin') || \Drupal::currentUser()->hasRole('administrator')) {
       $header['operation'] = $this->t('Operations');
       $group_type = 'partner';
@@ -86,7 +109,7 @@ final class AwsAppListForm extends FormBase {
             if ($gateway_name != 'aws') {
               continue;
             }
-            $description = Markup::create($group->get('field_description')->getValue()[0]['value']);
+            
             $app_status = $app->get('field_app_status')->value;
             if ($app_status == 'active') {
               $url = Url::fromRoute('zcs_aws.edit_key', ['id' => $app->id()]);
@@ -101,10 +124,10 @@ final class AwsAppListForm extends FormBase {
               ]);
               $update_link = Link::fromTextAndUrl('Edit', $url);
               $delete_link = Link::createFromRoute('Delete', 'zcs_aws.delete_key', ['id' => $app->id()]);
-              $operation_link = Markup::create($update_link->toString() . ' | ' . $delete_link->toString());
+              $operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$update_link->toString() . '' . $delete_link->toString()."</div></div>");
             }
             else {
-              $operation_link = '';
+              $operation_link = Markup::create('<div class="edit-operation disabled">');
             }
 
             $created_time = $app->get('created')->value;
@@ -115,13 +138,11 @@ final class AwsAppListForm extends FormBase {
               $app_status = Markup::create("<div class='key-active'>Active</div>");
             }
             else {
-              $app_status = Markup::create("<div class='key-inactive'>Inactive</div>");
+              $app_status = Markup::create("<div class='key-inactive'>InActive</div>");
             }
             $apps[] = [
               'api_name' => $app->getTitle(),
-              'description' => $description,
               'app' => $app->get('field_tag')->value ?? '',
-              'created' => date('d M Y' , (int)$created_time),
               'client_id' => [
                 'data' =>  Markup::create("<div class='client-key'>$client_id</div><div class='pwd-toggle'></div><div class='client-password'></div>"),
                 'class' => 'api-keys',
@@ -130,12 +151,20 @@ final class AwsAppListForm extends FormBase {
                 'data' =>  Markup::create("<div class='secret-key'>$secret_key</div><div class='pwd-toggle'></div><div class='secret-password'></div>"),
                 'class' => 'api-keys',
               ],
+              'created' => date('M d, Y' , (int)$created_time),
+              'created_timestamp' => (int) $created_time, // Add this line
               'status' => $app_status,
               'update_key' => [
                 'data' => $operation_link ?? '',
-                'class' => 'app-operations',
+                'class' => 'app-operation',
               ],
             ];
+          }
+                // After building the full $apps array, sort it
+          if (is_array($apps)) {        
+            usort($apps, function ($a, $b) {
+              return $b['created_timestamp'] <=> $a['created_timestamp']; // Sort newest first
+            });
           }
       }
     }
@@ -143,6 +172,9 @@ final class AwsAppListForm extends FormBase {
       $response =  \Drupal::service('zcs_aws.aws_gateway')->checkUserAccessGeneratekey();
       if ($response !== "error") {
         $header['operation'] = $this->t('Operations');
+      }
+      else {
+        $class = ['operations-disabled'];
       }
 
       $group_type = 'partner';
@@ -167,10 +199,10 @@ final class AwsAppListForm extends FormBase {
             if ($app_status == 'active') {
               $update_link = Link::createFromRoute('Edit', 'zcs_aws.edit_key', ['id' => $app->id()]);
               $delete_link = Link::createFromRoute('Delete', 'zcs_aws.delete_key', ['id' => $app->id()]);
-              $operation_link = Markup::create($update_link->toString() . ' | ' . $delete_link->toString());
+              $operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$update_link->toString() . '' . $delete_link->toString()."</div></div>");
             }
             else {
-              $operation_link = '';
+              $operation_link = Markup::create('<div class="edit-operation disabled">');
             }
             $created_time = $app->get('created')->value;
             $client_id = $app->get('field_client_id')->value ?? '';
@@ -181,13 +213,11 @@ final class AwsAppListForm extends FormBase {
               $app_status = Markup::create("<div class='key-active'>Active</div>");
             }
             else {
-              $app_status = Markup::create("<div class='key-inactive'>Inactive</div>");
+              $app_status = Markup::create("<div class='key-inactive'>InActive</div>");
             }
             $apps[] = [
               'api_name' => $app->getTitle(),
-              'description' => $description,
               'tag' => $app->get('field_tag')->value ?? '',
-              'created' => date('d M Y' , (int)$created_time),
               'client_id' => [
                 'data' =>  Markup::create("<div class='client-key''>$client_id</div><div class='pwd-toggle'></div><div class='client-password'></div>"),
                 'class' => 'api-keys',
@@ -196,6 +226,8 @@ final class AwsAppListForm extends FormBase {
                 'data' =>  Markup::create("<div class='secret-key'>$secret_key</div><div class='pwd-toggle'></div><div class='secret-password'></div>"),
                 'class' => 'api-keys',
               ],
+              'created' => date('M d, Y' , (int)$created_time),
+              'created_timestamp' => (int) $created_time, // Add this line
               'status' => $app_status,
             ];
 
@@ -203,14 +235,20 @@ final class AwsAppListForm extends FormBase {
             if ($response !== "error") {
                $apps[count($apps) - 1]['update_key'] = [
                 'data' => $operation_link ?? '',
-                'class' => 'app-operations',
+                'class' => 'app-operation',
                ];
             }
           }
+        
+        // After building the full $apps array, sort it  
+        if (is_array($apps)) {      
+          usort($apps, function ($a, $b) {
+            return $b['created_timestamp'] <=> $a['created_timestamp']; // Sort newest first
+          });
+        }
+
       }
     }
-
-
     if (empty($apps)){
       $form['table'] = [
         '#type' => 'table',
@@ -220,11 +258,20 @@ final class AwsAppListForm extends FormBase {
       ];
       return $form;
     }
+    if (is_array($apps)) { 
+      // Optionally remove 'created_timestamp' if not needed
+      foreach ($apps as &$app_value) {
+        unset($app_value['created_timestamp']);
+      }
+    }
     $form['table'] = [
       '#type' => 'table',
       '#header' => $header,
       '#rows' => $apps,
       '#empty' => $this->t('No data available.'),
+      '#attributes' => [
+        'class' => $class,
+      ],
     ];
     $form['pager'] = [
       '#type' => 'pager',

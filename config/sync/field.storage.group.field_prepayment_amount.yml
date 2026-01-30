@@ -1,0 +1,20 @@
+uuid: 7ab806a9-b5c3-463c-b9bb-fa6b57f41914
+langcode: en
+status: true
+dependencies:
+  module:
+    - group
+id: group.field_prepayment_amount
+field_name: field_prepayment_amount
+entity_type: group
+type: integer
+settings:
+  unsigned: false
+  size: normal
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

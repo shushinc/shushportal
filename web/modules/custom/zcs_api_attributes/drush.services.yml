@@ -1,0 +1,5 @@
+services:
+  zcs_api_attributes.create_attribute_drush_commands:
+    class: Drupal\zcs_api_attributes\Commands\CreateAttributeDrushCommands
+    tags:
+      - { name: drush.command }

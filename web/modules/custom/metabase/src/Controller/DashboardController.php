@@ -1,0 +1,287 @@
+<?php
+
+namespace Drupal\metabase\Controller;
+
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\metabase\Service\MetabaseService;
+use Firebase\JWT\JWT;
+use GuzzleHttp\ClientInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
+
+/**
+ * Controller for dashboards.
+ */
+class DashboardController extends ControllerBase {
+
+  /**
+   * The API service.
+   *
+   * @var \Drupal\metabase\Service\MetabaseService
+   */
+  protected $metabaseApiService;
+
+  /**
+   * The HTTP client.
+   *
+   * @var \GuzzleHttp\ClientInterface
+   */
+  protected $httpClient;
+
+  /**
+   * The logger factory.
+   *
+   * @var \Drupal\Core\Logger\LoggerChannelInterface
+   */
+  protected $logger;
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
+   */
+  protected $currentUser;
+
+  /**
+   * The config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
+   * The request stack.
+   *
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected $requestStack;
+
+  /**
+   * Constructs a new DashboardController object.
+   *
+   * @param \Drupal\metabase\Service\MetabaseService $metabase_api_service
+   *   The API service.
+   * @param \GuzzleHttp\ClientInterface $http_client
+   *   The HTTP client.
+   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
+   *   The logger factory service.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\Core\Session\AccountProxyInterface $current_user
+   *   The current user.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+   *   The request stack.
+   */
+  public function __construct(
+    MetabaseService $metabase_api_service,
+    ClientInterface $http_client,
+    LoggerChannelFactoryInterface $logger_factory,
+    EntityTypeManagerInterface $entity_type_manager,
+    AccountProxyInterface $current_user,
+    ConfigFactoryInterface $config_factory,
+    RequestStack $request_stack,
+  ) {
+    $this->metabaseApiService = $metabase_api_service;
+    $this->httpClient = $http_client;
+    $this->logger = $logger_factory->get('metabase');
+    $this->entityTypeManager = $entity_type_manager;
+    $this->currentUser = $current_user;
+    $this->configFactory = $config_factory;
+    $this->requestStack = $request_stack;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('metabase.service'),
+      $container->get('http_client'),
+      $container->get('logger.factory'),
+      $container->get('entity_type.manager'),
+      $container->get('current_user'),
+      $container->get('config.factory'),
+      $container->get('request_stack'),
+    );
+  }
+
+  /**
+   * Displays a dashboard.
+   *
+   * @return array|RedirectResponse
+   *   A render array for the dashboard or a redirect if there's an error.
+   */
+  public function dashboard($name = null) {
+
+    $build = [
+      '#cache' => [
+        'contexts' => ['url.path'],
+        'max-age' => 0,
+      ],
+      '#attached' => [
+        'library' => [
+          'metabase/iframe-resize',
+        ],
+      ],
+    ];
+
+    $build['title'] = [
+      '#type' => 'markup',
+      '#markup' => '<div class="user-management-header"><h3>Main Dashboard</h3></div>',
+    ];
+
+    $user = $this->currentUser;
+    $roles = $user->getRoles();
+    $frames = ['other'];
+    if (in_array('administrator', $roles) || in_array('carrier_admin', $roles)) {
+      $frames = ['top', 'main'];
+      if ($name != 'mb') {
+        $frames = ['elango', 'main'];
+      }
+    }
+
+    $config = $this->configFactory->get('metabase.settings');
+
+    foreach ($frames as $value) {
+
+      if ($value == 'main') {
+        $build['chart'] = [
+          '#type' => 'markup',
+          '#markup' => '<div class="user-management-header"><h3>Charts</h3></div>',
+        ];
+      }
+
+      $dashboard_ids = $config->get('embeding.dashboard.' . $value);
+
+      $build[$value] = [
+        '#type' => 'container',
+        '#attributes' => [
+          'class' => [$value, 'iframe-container'],
+        ]
+      ];
+
+      if (strpos($dashboard_ids, ',') !== FALSE) {
+        // Get the embed URL from the API service.
+        $counter = 0;
+        foreach (explode(',', $dashboard_ids) as $id) {
+          $embed_url = $this->getEmbedUrl($value, $id);
+          if (empty($embed_url)) {
+            $this->messenger()->addError($this->t('Unable to load the @position dashboard. Please check your configuration.', ['@position' => $value]));
+            continue;
+          }
+          $build[$value]['iframe' . $counter] = $this->getIframe($embed_url . '&iframe=' . $counter, $value);
+          $counter++;
+        }
+      }
+      else {
+        $build[$value]['iframe'] = $this->getIframe($this->getEmbedUrl($value, $dashboard_ids), $value);
+      }
+
+    }
+
+    return $build;
+  }
+
+  public function getIframe($embed_url, $value) {
+    return [
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => ['item'],
+      ],
+      'iframe' => [
+        '#type' => 'html_tag',
+        '#tag' => 'iframe',
+        '#attributes' => [
+          'id' => "iframe-{$value}",
+          'src' => $embed_url . "&id=iframe-{$value}",
+          'frameborder' => '0',
+          'width' => '100%',
+          // 'height' => '800px',
+          'allowfullscreen' => 'true',
+          'title' => $this->t('Dashboard'),
+          'allowtransparency' => 'true',
+          'class' => [$value, 'mb-iframe'],
+          'scrolling' => 'no',
+        ],
+      ]
+    ];
+  }
+
+  /**
+   * Get the embed URL for a dashboard.
+   *
+   * @return string|null
+   *   The embed URL, or NULL if there was an error.
+   */
+  public function getEmbedUrl($position = 'top', $dashboard_id = NULL) {
+    $config = $this->configFactory->get('metabase.settings');
+    $base_url = $this->requestStack->getCurrentRequest()->getSchemeAndHttpHost() . $config->get('embeding.base_url');
+    $force_https = boolval($config->get('embeding.force_https'));
+    $secket_key = $config->get('embeding.api_token');
+
+    if ($force_https === TRUE) {
+      $base_url = str_replace('http://', 'https://', $base_url);
+    }
+
+    // Ensure we have all required configuration.
+    if (empty($base_url) || empty($secket_key) || empty($dashboard_id)) {
+      $this->logger->error('Missing required configuration for API.');
+      return NULL;
+    }
+
+    $params = [];
+
+    if ($position == 'other') {
+      $current_user = $this->currentUser;
+      $group_membership_service = \Drupal::service('group.membership_loader');
+      $group_memberships = $group_membership_service->loadByUser($current_user);
+
+      $groups = [];
+      foreach ($group_memberships as $group_membership) {
+        /** @var \Drupal\group\Entity\GroupInterface $group */
+        $group = $group_membership->getGroup();
+        $groups[] = $group->label();
+      }
+
+      if (!empty($groups)) {
+        $params['client'] = count($groups) == 1 ? $groups[0] : $groups;
+      }
+    }
+
+    // Create JWT payload.
+    $payload = [
+      'resource' => ['dashboard' => (int) $dashboard_id],
+      'params' => (object) $params,
+      'exp' => time() + (60 * 60), // 60 minutes
+    ];
+
+    try {
+      // Generate token.
+      $token = JWT::encode($payload, $secket_key, 'HS256');
+
+      // Build the embed URL.
+      $embed_url = $base_url . '/embed/dashboard/' . $token . '#background=false&bordered=false&titled=false';
+
+      // Return the URL as JSON.
+      return $embed_url;
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Error fetching embed URL from API: @error', ['@error' => $e->getMessage()]);
+      return "";
+    }
+  }
+
+}

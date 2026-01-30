@@ -1,0 +1,20 @@
+uuid: ff70bdac-210f-458b-a888-1493d6266f53
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_value
+field_name: field_value
+entity_type: node
+type: integer
+settings:
+  unsigned: false
+  size: normal
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,49 @@
+body.dashboard #block-shush-content .user-management-header h3 {
+  padding: 0;
+  margin: 1.5rem 0 1rem;
+}
+
+body.dashboard #block-shush-content>div {
+  padding: 0 1.5rem;
+}
+
+a.group-link.client-link {
+  display: inline-block;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  padding: 3px 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  text-decoration: none;
+  background-color: white;
+}
+
+div.iframe-container.top {
+  display: flex;
+  flex-flow: row wrap;
+  column-gap: 5px;
+}
+
+div.iframe-container.top>div.item{
+  flex-basis: 19%;
+}
+
+@media (max-width: 1023px) {
+  div.iframe-container.top {
+    flex-flow: column wrap;
+    column-gap: 0;
+    row-gap: 0;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  div.iframe-container.top>div.item {
+    flex-basis: 49%;
+  }
+}
+
+@media (min-width: 1920px) {
+  div.iframe-container.top>div.item {
+    flex-basis: 9.5%;
+  }
+}

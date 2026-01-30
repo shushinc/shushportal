@@ -11,7 +11,7 @@ id: node.analytics.field_average_api_latency_in_mil
 field_name: field_average_api_latency_in_mil
 entity_type: node
 bundle: analytics
-label: 'Average API Latency in milsec'
+label: 'Avg Latency'
 description: ''
 required: false
 translatable: false

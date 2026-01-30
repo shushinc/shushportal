@@ -1,0 +1,10 @@
+web/sites/**/files/
+web/sites/**/files/*
+web/libraries/
+web/modules/contrib/
+web/modules/local/
+web/core/
+web/themes/contrib/
+vendor/
+**/*.code-workspace
+**/*.DS_Store

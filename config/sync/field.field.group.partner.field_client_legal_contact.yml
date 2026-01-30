@@ -1,0 +1,19 @@
+uuid: 31b477d4-0394-4c4a-9fc6-bbfd01c95d88
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.group.field_client_legal_contact
+    - group.type.partner
+id: group.partner.field_client_legal_contact
+field_name: field_client_legal_contact
+entity_type: group
+bundle: partner
+label: 'Client Legal Contact'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

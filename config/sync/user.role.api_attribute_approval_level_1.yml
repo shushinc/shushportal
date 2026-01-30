@@ -1,0 +1,9 @@
+uuid: 36011d92-7abb-4b69-88a2-886ee7ea37c7
+langcode: en
+status: true
+dependencies: {  }
+id: api_attribute_approval_level_1
+label: 'API Attribute Approval Level 1'
+weight: 11
+is_admin: null
+permissions: {  }

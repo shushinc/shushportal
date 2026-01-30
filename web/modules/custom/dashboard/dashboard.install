@@ -1,0 +1,92 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the dashboard module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function dashboard_install() {
+  // Set default configuration values.
+  $config = \Drupal::configFactory()->getEditable('dashboard.settings');
+  $config->set('refresh_interval', 300)
+    ->set('default_date_range', '30')
+    ->set('enable_animations', TRUE)
+    ->set('chart_height', 400)
+    ->set('cache_duration', 3600)
+    ->set('restrict_by_role', FALSE)
+    ->set('allowed_roles', [])
+    ->save();
+
+  // Create sample database tables if needed
+  // This would be where you'd create custom tables for storing dashboard data
+
+  \Drupal::messenger()->addMessage(t('Dashboard module has been installed successfully. You can configure it at /admin/config/dashboard/settings'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function dashboard_uninstall() {
+  // Remove module configuration.
+  \Drupal::configFactory()->getEditable('dashboard.settings')->delete();
+
+  // Clear any cached data
+  \Drupal::cache()->deleteAll();
+
+  \Drupal::messenger()->addMessage(t('Dashboard module has been uninstalled and all related data has been removed.'));
+}
+
+/**
+ * Implements hook_schema().
+ */
+function dashboard_schema() {
+  $schema = [];
+
+  // Example table for storing dashboard metrics
+  $schema['dashboard_metrics'] = [
+    'description' => 'Stores dashboard metric data',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique metric ID.',
+      ],
+      'metric_type' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'Type of metric (revenue, performance, etc.)',
+      ],
+      'metric_name' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'description' => 'Name of the metric',
+      ],
+      'metric_value' => [
+        'type' => 'float',
+        'not null' => TRUE,
+        'description' => 'Numeric value of the metric',
+      ],
+      'metric_date' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Unix timestamp of when the metric was recorded',
+      ],
+      'additional_data' => [
+        'type' => 'text',
+        'description' => 'JSON encoded additional metric data',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'metric_type_date' => ['metric_type', 'metric_date'],
+      'metric_name_date' => ['metric_name', 'metric_date'],
+    ],
+  ];
+
+  return $schema;
+}

@@ -1,0 +1,14 @@
+uuid: 3fdf771d-9644-4146-a673-1143d85af298
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.reports_admin
+  module:
+    - user
+id: user_remove_role_action.reports_admin
+label: 'Remove the Reports Admin role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: reports_admin

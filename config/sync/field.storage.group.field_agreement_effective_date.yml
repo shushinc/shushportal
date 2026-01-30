@@ -1,0 +1,20 @@
+uuid: bafe3d36-d36b-4534-b8b9-8ef3748b8e01
+langcode: en
+status: true
+dependencies:
+  module:
+    - datetime
+    - group
+id: group.field_agreement_effective_date
+field_name: field_agreement_effective_date
+entity_type: group
+type: datetime
+settings:
+  datetime_type: date
+module: datetime
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

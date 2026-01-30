@@ -121,20 +121,26 @@ class AnalyticsPostController extends ControllerBase {
         else {
           $customerTerm = reset($customerTerms);
         }
+
+        $average_api_ms = ($content['avg_latency_full_rate'] + $content['avg_latency_lower_rate']+ $content['avg_latency_no_billable']) / 3;
         $node->set('field_end_customer', $customerTerm->id());
 
         // remaining fields
         $node->set('field_api_volume_in_mil', array_sum($content['status_counts']));
-        $node->set('field_average_api_latency_in_mil', $content['avg_latency_ms']);
+        
+        $node->set('field_average_api_latency_in_mil', $average_api_ms);     
         $node->set('field_date', str_replace(' ', 'T', $content['timestamp_interval']));
-        $node->set('field_error_api_volume_in_mil', $content['status_counts']['other_non_200']);
-        $node->set('field_success_api_volume_in_mil', $content['status_counts']['200']);
-        $node->set('field_404_api_volume_in_mil', $content['status_counts']['404']);
-        $node->set('field_transaction_type', $content['transaction_type']);
-        $node->set('field_transaction_type_count', $content['transaction_type_count']);
+        $node->set('field_error_api_volume_in_mil', $content['total_no_billable_transaction']);
+        $node->set('field_success_api_volume_in_mil', $content['total_full_rate_billable_transaction']);
+        $node->set('field_404_api_volume_in_mil', $content['total_lower_rate_billable_transaction']);
         $node->set('field_est_revenue', $content['est_revenue']);
         $node->set('field_partner',  $group_relation);
         $node->set('field_kong_analytical_id', $content['analytical_id']);
+        $node->set('field_api_path', $content['api_path']);
+         // Full Billable Transaction Count ->  field_success_api_volume_in_mil -> total_full_rate_billable_transaction
+         // Half Billable Transaction Count ->  field_error_api_volume_in_mil ->  total_no_billable_transaction
+         // 404 API volume                  ->  field_404_api_volume_in_mil -> total_lower_rate_billable_transaction
+
 
         $node_exsist = $this->checkAnalyticalId($content['analytical_id']);
         if($node_exsist) {
@@ -147,7 +153,16 @@ class AnalyticsPostController extends ControllerBase {
             $responses[$key] = ['message' => $content['carrier_name'] . " Node creation failed."];
           }
           else {
-            $responses[$key] = ['message' => $content['carrier_name'] . " Node created successfully."];
+            $final_pricing = \Drupal::service('analytics.revenue_update')->AnalyticsUpdate($node);
+            if ($final_pricing) {
+              \Drupal::logger('revenue-update-7')->notice("Peform_calculation completed");
+              $node->set('field_est_revenue', $final_pricing);
+              $node = $node->save();
+              $responses[$key] = ['message' => $content['carrier_name'] . " Node created successfully."];
+            } 
+            else{
+              $responses[$key] = ['message' => $content['carrier_name'] . "Node created but Revenue process for performed."];
+            }            
           }
         }
       }

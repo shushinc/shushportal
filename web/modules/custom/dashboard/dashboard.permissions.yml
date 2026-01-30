@@ -1,0 +1,8 @@
+access dashboard:
+  title: 'Access Dashboard'
+  description: 'View dashboard metrics and analytics'
+
+administer dashboard:
+  title: 'Administer Dashboard'
+  description: 'Configure dashboard settings and manage access'
+  restrict access: true

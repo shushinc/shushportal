@@ -1,0 +1,54 @@
+
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the zcs_menu module.
+ */
+use Drupal\menu_link_content\Entity\MenuLinkContent;
+
+/**
+ * Implements hook_install().
+ */
+function zcs_consent_install() {
+ $menu_name = 'main';
+ // Check if a menu link with the same properties already exists.
+ $carrier_menu_link = \Drupal::entityTypeManager()->getStorage('menu_link_content')->loadByProperties([
+   'menu_name' => $menu_name,
+   'title' => 'Carrier',
+ ]);
+ if (!empty($carrier_menu_link)) {
+   // Get the first matching menu link entity.
+   $carrier_menu_link = reset($carrier_menu_link);
+ 
+   // Now you can safely get the UUID.
+   $parent_id = 'menu_link_content:' . $carrier_menu_link->uuid();
+ }
+
+ $consent_menu_link = MenuLinkContent::create([
+    'title' => 'Consent Management',
+    'link' => ['uri' => 'internal:/consent'],
+    'menu_per_role__show_role' => [
+       'authenticated',
+       'administrator',
+       'carrier_admin',
+    ],
+    'parent' => $parent_id,
+    'menu_name' => $menu_name,
+    'expanded' => TRUE,
+    'weight' => 15,
+  ]);
+  $consent_menu_link->save();    
+}
+
+
+/**
+ * Implements hook_uninstall().
+ */
+function zcs_consent_uninstall() {
+    $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+    $menu_item_object = current($storage->loadByProperties(['title' => 'Consent']));
+    if($menu_item_object) {
+      $menu_item_object->delete();
+    }
+}
+ 

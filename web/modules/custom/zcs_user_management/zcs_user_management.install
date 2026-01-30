@@ -156,13 +156,27 @@ function zcs_user_management_update_9001(){
     ],
   ]);
   $carrier_menu_child_link1->save();
+}
 
-  if (\Drupal::moduleHandler()->moduleExists('zcs_kong')) {
+
+function zcs_user_management_update_9002(){
+  $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+
+  $menu_item_object1 = current($storage->loadByProperties(['title' => 'API Attribute Status']));
+  if($menu_item_object1) {
+    $menu_item_object1->delete();
+  }
+
+
+  $parent_menu = current($storage->loadByProperties(['title' => 'Carrier']));
+  $parent_id = 'menu_link_content:' . $parent_menu->uuid();
+
+  if (\Drupal::moduleHandler()->moduleExists('zcs_aws')) {
     // Create the child menu link.
     $carrier_menu_child_link2 = MenuLinkContent::create([
       'title' => 'API Attribute Status',
       'link' => ['uri' => 'internal:/api-attribute-status'], // Adjust path as needed.
-      'menu_name' => $menu_name,
+      'menu_name' => 'main',
       'parent' => $parent_id, // Set the parent ID.
       'weight' => 2,
     ]);

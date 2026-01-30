@@ -1,0 +1,45 @@
+<?php
+
+/**
+ * @file
+ * Dashboard module hooks and functions.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function dashboard_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.dashboard':
+      return '<p>' . t('The Dashboard module provides a comprehensive analytics dashboard with revenue metrics, API performance data, and interactive charts.') . '</p>';
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function dashboard_theme() {
+  return [
+    'dashboard_main' => [
+      'variables' => [
+        'metrics_cards' => [],
+        'performance_cards' => [],
+        'filters' => [],
+        'charts_data' => [],
+      ],
+      'template' => 'dashboard-main',
+    ],
+    'dashboard_metric_card' => [
+      'variables' => [
+        'title' => '',
+        'value' => '',
+        'change' => '',
+        'change_type' => '',
+        'period' => '',
+      ],
+      'template' => 'dashboard-metric-card',
+    ],
+  ];
+}

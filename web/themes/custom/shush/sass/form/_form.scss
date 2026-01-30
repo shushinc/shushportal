@@ -1,3 +1,4 @@
+@use "../base/variables" as *;
 form.user-logout-confirm {
   text-align: center;
   #edit-submit {
@@ -10,15 +11,13 @@ form.user-logout-confirm {
   nav {
     list-style-type: none;
     padding: 0;
-    margin: 2rem 0;
+    margin: 0 0 0.9rem;
     li {
+      text-align: right;
       a {
         font-family: $poppins;
         font-weight: 500;
         display: inline-block;
-        padding: 5px 40px;
-        border-radius: 3px;
-        color: $white;
         text-transform: capitalize;
         font-size: 16px;
         transition: all 0.3s;
@@ -26,14 +25,15 @@ form.user-logout-confirm {
         overflow: hidden;
         z-index: 1;
         text-decoration: none;
-        background-color: $light-grey;
-        border: none;
-        //width: 100%;
         min-width: fit-content;
-        text-align: center;
+        background: #fff;
+        border: 2px solid #118df0;
+        color: #118df0;
+        border-radius: 50px;
+        padding: 10px 15px;
         &:hover {
-          color: #fff;
-          background: $primary-color;
+          color: #118df0;
+          background: #fff;
         }
       }
     }
@@ -74,7 +74,6 @@ form.user-logout-confirm {
   max-width: 540px;
   margin: 0 auto;
   background: #fff;
-  padding: 30px;
   border-radius: 10px;
 }
 .ui-dialog {
@@ -98,7 +97,7 @@ form.user-logout-confirm {
     padding-left: 50px !important;
     &::before {
       content: "";
-      background: url("/themes/custom/shush/images/login-icon.svg") no-repeat;
+      background: url("../images/login-icon.svg") no-repeat;
       height: 18px;
       width: 18px;
       background-size: cover;
@@ -111,7 +110,7 @@ form.user-logout-confirm {
       background: transparent;
       border: none;
       .ui-button-icon {
-        background: url("/themes/custom/shush/images/close.png") no-repeat;
+        background: url("../images/close.png") no-repeat;
         background-position: center center;
         background-size: contain;
       }
@@ -167,14 +166,12 @@ form.user-logout-confirm {
       .form-submit {
         width: 100%;
         padding: 15px;
-        background: rgba(17, 141, 240, 1);
+        background: #118df0;
         border: none;
         border-radius: 10px;
         font-size: 14px;
         letter-spacing: -0.2px;
         color: #fff;
-        line-height: normal;
-        margin-top: 1rem;
       }
       #edit-user-type--wrapper {
         .form-item-user-type {

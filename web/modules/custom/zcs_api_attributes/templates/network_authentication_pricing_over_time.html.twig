@@ -1,38 +1,34 @@
 <div>
-
+  <div class="user-management-view api-attribute-status-header">
+    <header>
+      {{ content.link|merge({'#attributes': {'class': ['btn-primary']}}) }}
+    </header>
+  </div>
   <table class="attributes-table">
     <thead>
       <tr>
-        <th>API Category</th>
-        <th>API Attribute</th>
-        <th>Effective Date
-          </br>
-           {{ content.effective_date_1 }}
-        </th>
-        <th>Effective Date
-          </br>
-         {{ content.effective_date_2 }}
-        </th>
-        <th>Effective Date
-         </br>
-         {{ content.effective_date_3 }}
-        </th>
+        <th>#</th>
+        <th>API Attributes</th>
+        {% for date , atts in content.header_date %}
+          <th>Price Effective<br>{{ atts }}<br>International / Domestic</th>
+        {% endfor %}
       </tr>
     </thead>
     <tbody>
-      {% for mainkey, attributes in content.final %}
-          {% for key, att in attributes %}
-          <tr>
-            {% if key == 0 %} 
-              <td rowspan={{ attributes|length }}>{{ content.titles[mainkey].name }}</td>
-            {% endif %}
-            <td>{{ att.title }}</td>
-            <td><span class=" ">{{ att.effective_date_1_price_per_call}}</span></td>
-            <td><span class=" ">{{ att.effective_date_2_price_per_call}}</span></td>
-            <td><span class=" ">{{ att.effective_date_3_price_per_call}}</span></td>
-          </tr>
+      {% set counter = 1 %}
+      {% for key, att in content.final %}
+        <tr>
+          <td>{{ counter }}</td>
+          <td>{{ att.title }}</td>
+          {% for key, date in content.header_date %}
+            <td>
+              {{ content.symbols[key] }} {{ att['international_price_' ~ key] }} / {{ content.symbols[key] }} {{ att['domestic_price_' ~ key] }}
+            </td>
           {% endfor %}
+        </tr>
+        {% set counter = counter + 1 %}
       {% endfor %}
+
     </tbody>
   </table>
 </div>

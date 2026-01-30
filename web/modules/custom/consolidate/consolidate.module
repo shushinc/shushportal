@@ -1,0 +1,41 @@
+<?php
+
+/**
+ * Implements hook_cron().
+ */
+function consolidate_cron() {
+  // Get the last run time from state
+  // \Drupal::state()->set('consolidate.analytics_consolidate.last_run', 0);
+  $last_run = \Drupal::state()->get('consolidate.analytics_consolidate.last_run', 0);
+
+  // Get current time and calculate if we should run (once per day at midnight)
+  $current_time = \Drupal::time()->getRequestTime();
+  $today_midnight = strtotime('today midnight');
+
+  // Only run if we haven't run today and it's past midnight
+  //if ($last_run < $today_midnight && $current_time >= $today_midnight) {
+    try {
+      $service = \Drupal::service('consolidate.new_analytics_consolidate_service');
+
+      $connection = \Drupal::database();
+
+      $data = $service->consolidateAll();
+
+      $id = $connection->insert('consolidate_data')
+        ->fields($data)
+        ->execute();
+
+      // Update the last run time
+      \Drupal::state()->set('consolidate.analytics_consolidate.last_run', $current_time);
+
+      // Log success
+      \Drupal::logger('consolidate')->info('Analytics consolidation completed successfully.');
+
+    } catch (Exception $e) {
+      // Log any errors
+      \Drupal::logger('consolidate')->error('Analytics consolidation failed: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+    }
+  //}
+}

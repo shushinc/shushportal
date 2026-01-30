@@ -1,0 +1,18 @@
+<?php 
+/**
+ * @file
+ * Primary module hooks for zcs_consent module.
+ */
+
+/**
+ *
+ */
+function zcs_consent_theme() {
+    return [
+        'consent_theme' => [
+            'render element' => 'form',
+            'template' => 'consent_theme',
+          ],
+    ];
+
+}

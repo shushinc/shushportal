@@ -1,0 +1,264 @@
+:root {
+  --mb-default-font-family: "Montserrat" !important;
+  --default-font-family: "Montserrat" !important;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 700;
+  src: url("/themes/custom/shush/assets/fonts/Montserrat/Montserrat-VariableFont_wght.ttf");
+}
+
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 600;
+  src: url("/themes/custom/shush/assets/fonts/Montserrat/Montserrat-VariableFont_wght.ttf");
+}
+
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/themes/custom/shush/assets/fonts/Montserrat/Montserrat-VariableFont_wght.ttf");
+}
+
+body {
+  background-color: transparent !important;
+}
+
+header {
+  display: none !important;
+}
+
+#root>div {
+  height: 100%;
+  overflow: hidden;
+}
+
+#root>div,
+#root>div>div {
+  background-color: transparent !important;
+}
+
+#root>div>div>main>div>div {
+  padding: 0px !important;
+}
+
+footer {
+  display: none !important;
+}
+
+a {
+  color: red !important;
+}
+
+/* Dashboard - Cards */
+
+#iframe-elango div.react-grid-layout {
+  display: flex !important;
+  flex-flow: row wrap !important;
+  height: auto !important;
+  width: 100% !important;
+  gap: 5px;
+}
+
+#iframe-elango div.react-grid-layout>.react-grid-item {
+  flex-basis: calc(calc(100% - 35px) / 5) !important;
+  width: auto !important;
+  position: relative !important;
+  transform: none !important;
+  padding: 0 !important;
+}
+
+#iframe-elango div.react-grid-layout>.react-grid-item.container-small {
+  padding: 0 !important;
+}
+
+.dashcard,
+.decrease,
+.increase,
+.equals {
+  border-radius: 24px !important;
+}
+
+.dashcard {
+  background-color: #e0e5f2 !important;
+  border: 1px solid #7f85ae !important;
+  color: #2b3674;
+  padding: 0;
+}
+
+div.dashcard>div>div>div {
+  align-items: flex-start !important;
+}
+
+div[data-testid="dashcard"] {
+  border-radius: 9.44px !important;
+}
+
+div.dashcard>div>div>div>div[data-testid="scalar-title"] {
+  justify-content: flex-start !important;
+}
+
+.decrease h1,
+.decrease h3,
+.increase h1,
+.increase h3,
+.equals h1,
+.equals h3 {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: 18px !important;
+}
+
+.decrease h1,
+.increase h1,
+.equals h1 {
+  font-weight: 400 !important;
+}
+
+.decrease h3,
+.increase h3,
+.equals h3 {
+  font-weight: 600 !important;
+}
+
+.decrease {
+  background-color: #ffefef !important;
+  border: 1px solid #ff8080 !important;
+  color: #a80202;
+}
+
+.increase {
+  background-color: #d0fff3 !important;
+  border: 1px solid #7bbdab !important;
+  color: #005d42;
+}
+
+.equals {
+  background-color: #eeeeee !important;
+  border: 1px solid #9c9c9c !important;
+  color: #373838;
+}
+
+.increase>div>div>div,
+.decrease>div>div>div,
+.equals>div>div>div {
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}
+
+.increase>div>div>div>div[data-testid="scalar-title"],
+.decrease>div>div>div>div[data-testid="scalar-title"],
+.equals>div>div>div>div[data-testid="scalar-title"] {
+  display: block !important;
+  max-height: 100% !important;
+  text-overflow: inherit;
+  width: auto !important;
+  padding-right: 8px !important;
+}
+
+div[data-testid="dashboard-parameters-widget-container"] {
+  background-color: transparent !important;
+  padding: 0 !important;
+}
+
+div[data-testid="parameter-value-widget-target"]>div>div {
+  min-width: 109px !important;
+}
+
+div[data-testid="parameter-value-widget-target"]>div>div>div {
+  max-width: 10.7vw !important;
+}
+
+.increase h1:before {
+  content: "\25B2";
+}
+
+.decrease h1:before {
+  content: "\25BC";
+}
+
+div.dashcard>div>div>div>div:nth-child(2) {
+  padding: 0px 16px !important;
+}
+
+div.dashcard>div>div>div>div:nth-child(3) {
+  padding: 0 16px !important;
+}
+
+div.dashcard h1 {
+  font-size: 28px !important;
+  line-height: normal !important;
+}
+
+div.dashcard h1 span {
+  font-size: 18px !important;
+}
+
+div.dashcard h3 {
+  font-size: 12px !important;
+  line-height: 14px !important;
+  max-height: 14px !important;
+}
+
+#iframe-elango div[data-testid="dashcard-container"] {
+  height: 97px !important;
+}
+
+#iframe-elango div[data-testid="dashcard-container"].container-small,
+#iframe-elango div.DashCard.container-small {
+  height: 47px !important;
+  margin-bottom: 24px !important;
+}
+
+#iframe-elango button.mantine-active {
+  display: none !important;
+}
+
+.increase h1:before, .decrease h1:before {
+  font-size: 24px;
+  padding: 0 8px;
+}
+
+/* Dashboard - Charts */
+
+div[data-testid="fixed-width-filters"]>div {
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+div[data-testid="fixed-width-filters"]>div>div {
+  flex-basis: 16.6%;
+}
+
+div[data-testid="fixed-width-filters"]>div>div fieldset a .text-nowrap {
+  text-overflow: ellipsis;
+  max-width: 250px;
+  overflow: hidden;
+}
+
+div[data-viz-ui-name="Bar"]>div>div>div:nth-child(2)>div:nth-child(1) {
+  display: none !important;
+}
+
+div[data-viz-ui-name="Bar"]>div>div>div:nth-child(2)>div:last-child {
+  display: flex !important;
+}
+
+div[data-testid="legend-caption"]>div{
+  font-size: 28px !important;
+}
+
+div[data-testid="chart-container"]>div>svg>g>text[text-anchor="middle"]{
+  font-size: 24px !important;
+}
+
+div.mb-mantine-Popover-dropdown>form>div>button {
+  font-size: 0.1em;
+  padding: 0;
+  margin: 0;
+  height: 1px;
+}

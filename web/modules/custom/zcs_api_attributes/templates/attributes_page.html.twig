@@ -1,46 +1,35 @@
 <div>
-	<table class="attributes-table">
-		<thead>
-			<tr>
-				<th>API Category</th>
-				<th>API Attribute</th>
-				<th>Network Connected</th>
-				<th>Enabled for 3rd Party</th>
-				<th>Able to be used</th>
-				<th>Std Pricing (USD)</th>
-				{% if content.admin %}
-					<th>Edit</th>
-				{% endif %}
-			</tr>
-		</thead>
-		<tbody>
-			{% for mainkey, attributes in content.final %}
-				{% for key, att in attributes %}
-					<tr>
-						{% if key == 0 %}
-							<td rowspan={{ attributes|length }}>{{ content.titles[mainkey].name }}</td>
-						{% endif %}
-						<td>{{ att.title }}</td>
-						<td>
-							<span class=" ">{{ att.integrated_carrier_network }}</span>
-						</td>
-						<td>
-							<span class=" ">{{ att.carrier_enabled_3rd_party_use }}</span>
-						</td>
-						<td>
-							<span class=" ">{{ att.to_be_used }}</span>
-						</td>
-						<td>{{ att.current_standard_price}}</td>
-						{% if content.admin %}
-							<td>
-								<div class="edit-operation">
-									<div class="edit-operation-wrap">{{ att.url }}</div>
-								</div>
-							</td>
-						{% endif %}
-					</tr>
-				{% endfor %}
-			{% endfor %}
-		</tbody>
-	</table>
+  <div class="user-management-view api-attribute-status-header">
+    <header>
+      {{ content.link|merge({'#attributes': {'class': ['btn-primary']}}) }}
+    </header>
+  </div>
+  <table class="attributes-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>API Attributes</th>
+        {# <th>Network Connected</th> #}
+        <th>Able to be used</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% set counter = 1 %}
+      {% for mainkey, attributes in content.final %}
+        {% for key, att in attributes %}
+          <tr>
+            <td>{{ counter }}</td>
+            <td>{{ att.title }}</td>
+            {# <td>
+              {{ att.integrated_carrier_network }}
+            </td> #}
+            <td>
+              {{ att.to_be_used }}
+            </td>
+          </tr>
+          {% set counter = counter + 1 %}
+        {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
 </div>

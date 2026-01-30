@@ -1,0 +1,19 @@
+uuid: 4da8565e-d17c-4da5-a7cf-e8fcd7d133cc
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.group.field_apis_agreement_covers
+    - group.type.partner
+id: group.partner.field_apis_agreement_covers
+field_name: field_apis_agreement_covers
+entity_type: group
+bundle: partner
+label: 'APIs Agreement Covers'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

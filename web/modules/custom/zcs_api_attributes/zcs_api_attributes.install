@@ -1,49 +1,53 @@
 <?php
 
+/**
+ * @file
+ */
 
-use \Drupal\menu_link_content\Entity\MenuLinkContent;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\user\Entity\Role;
+use Drupal\Core\Database\Database;
+use Drupal\menu_link_content\Entity\MenuLinkContent;
 
-
+/**
+ *
+ */
 function zcs_api_attributes_install() {
 
-    $menu_name = 'main';
-    $title = 'API Attribute Status';
-    $link_uri = 'internal:/api-attribute-status';
+  $menu_name = 'main';
+  $title = 'API Attribute Status';
+  $link_uri = 'internal:/api-attribute-status';
 
-    // Check if a menu link with the same properties already exists.
-    $existing_menu_links = \Drupal::entityTypeManager()->getStorage('menu_link_content')->loadByProperties([
+  // Check if a menu link with the same properties already exists.
+  $existing_menu_links = \Drupal::entityTypeManager()->getStorage('menu_link_content')->loadByProperties([
+    'menu_name' => $menu_name,
+    'title' => $title,
+    'link__uri' => $link_uri,
+  ]);
+
+  if (empty($existing_menu_links)) {
+
+    // Add a sample link to the main menu.
+    $menu_link = MenuLinkContent::create([
       'menu_name' => $menu_name,
       'title' => $title,
-      'link__uri' => $link_uri,
+      'link' => [
+           ['uri' => $link_uri],
+      ],
+      'weight' => 7   ,
+      'menu_per_role__show_role' => [
+        'authenticated',
+      ],
     ]);
+    $menu_link->save();
+  }
 
-    if (empty($existing_menu_links)) {
-
-     // Add a sample link to the main menu.
-        $menu_link = MenuLinkContent::create([
-          'menu_name' => $menu_name,
-          'title' =>  $title,
-          'link' => [
-             ['uri' => $link_uri]
-          ],
-          'weight' => 7   ,
-          'menu_per_role__show_role' => [
-            'authenticated',
-          ],
-        ]);
-        $menu_link->save();
-    }
-
-
-
-   // Create the parent menu link.
+  // Create the parent menu link.
   $parent_menu_link = MenuLinkContent::create([
     'title' => 'Price',
-    'link' => ['uri' => 'route:<nolink>'],  // Adjust path as needed.
+  // Adjust path as needed.
+    'link' => ['uri' => 'route:<nolink>'],
     'menu_name' => $menu_name,
-    'expanded' => TRUE, // Keep it expanded to show child links.
+  // Keep it expanded to show child links.
+    'expanded' => TRUE,
     'weight' => 8,
   ]);
   $parent_menu_link->save();
@@ -54,9 +58,11 @@ function zcs_api_attributes_install() {
   // Create the child menu link.
   $child_menu_link1 = MenuLinkContent::create([
     'title' => 'Change Pricing',
-    'link' => ['uri' => 'internal:/change-network-authentication-pricing'], // Adjust path as needed.
+  // Adjust path as needed.
+    'link' => ['uri' => 'internal:/change-network-authentication-pricing'],
     'menu_name' => $menu_name,
-    'parent' => $parent_id, // Set the parent ID.
+  // Set the parent ID.
+    'parent' => $parent_id,
     'weight' => 1,
   ]);
   $child_menu_link1->save();
@@ -64,9 +70,11 @@ function zcs_api_attributes_install() {
   // Create the child menu link.
   $child_menu_link2 = MenuLinkContent::create([
     'title' => 'Pricing Over Time',
-    'link' => ['uri' => 'internal:/network_authentication_pricing_over_time'], // Adjust path as needed.
+  // Adjust path as needed.
+    'link' => ['uri' => 'internal:/network_authentication_pricing_over_time'],
     'menu_name' => $menu_name,
-    'parent' => $parent_id, // Set the parent ID.
+  // Set the parent ID.
+    'parent' => $parent_id,
     'weight' => 2,
   ]);
   $child_menu_link2->save();
@@ -74,24 +82,26 @@ function zcs_api_attributes_install() {
   // Create the child menu link.
   $child_menu_link3 = MenuLinkContent::create([
     'title' => 'Client Discounts',
-    'link' => ['uri' => 'internal:/demand_partner_discounts_or_different_pricing'], // Adjust path as needed.
+  // Adjust path as needed.
+    'link' => ['uri' => 'internal:/demand_partner_discounts_or_different_pricing'],
     'menu_name' => $menu_name,
-    'parent' => $parent_id, // Set the parent ID.
+  // Set the parent ID.
+    'parent' => $parent_id,
     'weight' => 3,
   ]);
   $child_menu_link3->save();
 
 }
 
-
-
+/**
+ *
+ */
 function zcs_api_attributes_uninstall() {
   $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
   $menu_items = $storage->loadByProperties(['link__uri' => 'internal:/api-attribute-status']);
   foreach ($menu_items as $menu_item) {
     $menu_item->delete();
   }
-
 
   $query = \Drupal::entityQuery('menu_link_content')
     ->condition('title', 'Price')
@@ -124,20 +134,510 @@ function zcs_api_attributes_uninstall() {
       }
     }
   }
+}
 
+/**
+ * Adding new tables to add the audit record of attribute pages.
+ */
+function zcs_api_attributes_update_9002() {
+  $tables['attributes_page_data'] = [
+    'description' => 'Table for storing information about attributes.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique aggregator static ID.',
+      ],
+      'submit_by' => [
+        'description' => 'Submitter User ID.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'currency_locale' => [
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Currency of the attributes page.',
+      ],
+      'effective_date' => [
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Date of the effective date.',
+      ],
+      'page_data' => [
+        'type' => 'blob',
+        'size' => 'big',
+        'not null' => FALSE,
+        'description' => 'Attribute Page data for reference.',
+      ],
+      'approver1_uid' => [
+        'description' => 'Approver-1 User ID.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'approver1_status' => [
+        'description' => 'Approver-1 Status.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'approver2_uid' => [
+        'description' => 'Approver-2 User ID.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'approver2_status' => [
+        'description' => 'Approver-2 Status.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'attribute_status' => [
+        'description' => 'Attribute Status.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'created' => [
+        'description' => 'Attribute Page Created date.',
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'updated' => [
+        'description' => 'Attribute Page Updated date.',
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
 
+  $tables['attribute_status'] = [
+    'description' => 'Table for storing information about attribute status.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique aggregator static ID.',
+      ],
+      'status' => [
+        'description' => 'Attribute Page Status.',
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
 
+  $database = \Drupal::database()->schema();
+  foreach ($tables as $table_name => $table) {
+    // First check if the tables exist and if missing...
+    if (!$database->tableExists($table_name)) {
+      $database->createTable($table_name, $table);
+    }
+  }
+
+  \Drupal::database()->insert('attribute_status')
+    ->fields(['status'])
+    ->values(['Pending'])
+    ->values(['Approved'])
+    ->values(['Rejected'])
+    ->execute();
+}
+
+/**
+ *
+ */
+function zcs_api_attributes_update_9003() {
+  $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+
+  $menu_item_object1 = current($storage->loadByProperties(['title' => 'Finance Approval']));
+  if ($menu_item_object1) {
+    $menu_item_object1->delete();
+  }
+  $menu_item_object2 = current($storage->loadByProperties(['title' => 'Change Pricing']));
+  if ($menu_item_object2) {
+    $menu_item_object2->delete();
+  }
+
+  $parent_menu = current($storage->loadByProperties(['title' => 'Price']));
+  $parent_id = 'menu_link_content:' . $parent_menu->uuid();
+
+  // Create the child menu link.
+  $finance_approval_menu_child_link3 = MenuLinkContent::create([
+    'title' => 'Finance Approval',
+  // Adjust path as needed.
+    'link' => ['uri' => 'internal:/finance-approval'],
+    'menu_name' => 'main',
+  // Set the parent ID.
+    'parent' => $parent_id,
+    'weight' => 4,
+  ]);
+  $finance_approval_menu_child_link3->save();
 
 }
 
+/**
+ * Adding new fields to add the integer format record of attribute pages.
+ */
+function zcs_api_attributes_update_9004() {
+  $spec = [
+    'type' => 'int',
+    'description' => "Effective Date Integer Format",
+    'length' => 20,
+    'not null' => FALSE,
+  ];
+  $schema = \Drupal::database()->schema();
+  $schema->addField('attributes_page_data', 'effective_date_integer', $spec);
 
-function zcs_api_attributes_update_9001(){
-  $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
-  $menu_item_object = current($storage->loadByProperties(['title' => 'Price']));
-  if($menu_item_object) {
-     // Set the weight
-     $menu_item_object->set('weight', 3); // Adjust the weight as needed
-     $menu_item_object->save();
+  $resultSet = \Drupal::database()->select('attributes_page_data', 'apd')
+    ->fields('apd', ['id', 'effective_date'])
+    ->execute()->fetchAll();
+  foreach ($resultSet as $result) {
+    \Drupal::database()->update('attributes_page_data')
+      ->fields(['effective_date_integer' => strtotime($result->effective_date)])
+      ->condition('id', $result->id)
+      ->execute();
   }
 
+  $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+  $menu_item_object1 = current($storage->loadByProperties(['title' => 'Pricing Over Time']));
+  $menu_item_object1->set('title', 'Pricing History');
+  $menu_item_object1->save();
+}
+
+/**
+ * Adding new tables to add the audit record of API attribute pages.
+ */
+function zcs_api_attributes_update_9006() {
+  $tables['api_attributes_page_data'] = [
+    'description' => 'Table for storing information about attributes.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique aggregator static ID.',
+      ],
+      'submit_by' => [
+        'description' => 'Submitter User ID.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'page_data' => [
+        'type' => 'blob',
+        'size' => 'big',
+        'not null' => FALSE,
+        'description' => 'Attribute Page data for reference.',
+      ],
+      'approver1_uid' => [
+        'description' => 'Approver-1 User ID.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'approver1_status' => [
+        'description' => 'Approver-1 Status.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'approver2_uid' => [
+        'description' => 'Approver-2 User ID.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'approver2_status' => [
+        'description' => 'Approver-2 Status.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'attribute_status' => [
+        'description' => 'Attribute Status.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'created' => [
+        'description' => 'Attribute Page Created date.',
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'updated' => [
+        'description' => 'Attribute Page Updated date.',
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+  $database = \Drupal::database()->schema();
+  foreach ($tables as $table_name => $table) {
+    // First check if the tables exist and if missing...
+    if (!$database->tableExists($table_name)) {
+      $database->createTable($table_name, $table);
+    }
+  }
+
+  $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+  $parent_menu = current($storage->loadByProperties(['title' => 'Carrier']));
+  $parent_id = 'menu_link_content:' . $parent_menu->uuid();
+
+  // Create the child menu link.
+  $api_attribute_status_approval_menu_child_link2 = MenuLinkContent::create([
+    'title' => 'API Attribute Approval',
+  // Adjust path as needed.
+    'link' => ['uri' => 'internal:/api-attribute-approval'],
+    'menu_name' => 'main',
+  // Set the parent ID.
+    'parent' => $parent_id,
+    'weight' => 3,
+    'menu_per_role__show_role' => [
+      'administrator',
+      'api_attribute_admin',
+      'api_attribute_approval_level_1',
+      'api_attribute_approval_level_2',
+    ],
+  ]);
+  $api_attribute_status_approval_menu_child_link2->save();
+}
+
+/**
+ * Implementing HOOK_update_N.
+ */
+function zcs_api_attributes_update_9007() {
+  $spec = [
+    'type' => 'int',
+    'description' => "Attribute Pricing Type.",
+    'length' => 1,
+    'not null' => TRUE,
+    'default' => 0, // 0: international, 1: domestic
+  ];
+
+  /** Drupal\Core\Database\Schema $schema */
+  $schema = \Drupal::database()->schema();
+  $schema->addField('attributes_page_data', 'pricing_type', $spec);
+}
+
+/**
+ * Implementing HOOK_update_N.
+ */
+function zcs_api_attributes_update_9008() {
+  /** Drupal\Core\Database\Schema $schema */
+  $schema = \Drupal::database()->schema();
+  if ($schema->fieldExists('attributes_page_data', 'pricing_type')) {
+    $schema->dropField('attributes_page_data', 'pricing_type');
+  }
+}
+
+/**
+ * Implementing HOOK_update_N.
+ */
+function zcs_api_attributes_update_9009() {
+
+  $database = Database::getConnection();
+
+  // Initialize batch.
+  if (!isset($sandbox['progress'])) {
+    $sandbox['progress'] = 0;
+    $sandbox['current_id'] = 0;
+    $sandbox['max'] = $database->select('attributes_page_data', 'apd')
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+
+    if ($sandbox['max'] == 0) {
+      $sandbox['#finished'] = 1;
+      return t('No records found to update.');
+    }
+  }
+
+  // Process records in batches of 50.
+  $batch_size = 25;
+
+  $query = $database->select('attributes_page_data', 'apd')
+    ->fields('apd', ['id', 'page_data'])
+    ->condition('id', $sandbox['current_id'], '>')
+    ->orderBy('id', 'ASC')
+    ->range(0, $batch_size);
+
+  $records = $query->execute()->fetchAll();
+
+  foreach ($records as $record) {
+    try {
+      // Decode the existing JSON data.
+      $current_data = json_decode($record->page_data, TRUE);
+
+      if (is_array($current_data) && !isset($current_data['international']) && !isset($current_data['domestic'])) {
+        // Create new structure with international and domestic keys.
+        $new_data = [
+          'international' => $current_data,
+          'domestic' => $current_data, // Using same data as base for domestic
+        ];
+
+        // Encode back to JSON and update the record.
+        $new_json = json_encode($new_data);
+
+        $database->update('attributes_page_data')
+          ->fields(['page_data' => $new_json])
+          ->condition('id', $record->id)
+          ->execute();
+      }
+
+      $sandbox['progress']++;
+      $sandbox['current_id'] = $record->id;
+
+    } catch (Exception $e) {
+      \Drupal::logger('mymodule')->error('Error updating record @id: @message', [
+        '@id' => $record->id,
+        '@message' => $e->getMessage(),
+      ]);
+    }
+  }
+
+  // Update batch progress.
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+
+  if ($sandbox['#finished'] >= 1) {
+    return t('Updated @count records in attributes_page_data table.', ['@count' => $sandbox['progress']]);
+  }
+}
+
+
+
+/**
+ * Add markup retail field column to attributes_page_data table.
+ */
+function zcs_api_attributes_update_9010() {
+  $schema = \Drupal::database()->schema();
+  if ($schema->tableExists('attributes_page_data')) {
+    $schema->addField('attributes_page_data', 'retail_markup_percentage', [
+      'type' => 'float',
+      'not null' => FALSE,
+      'default' => NULL,
+      'description' => 'Markup Retail Percentage.',
+    ]);
+  }
+}
+
+
+
+/**
+ * Adding new tables to add the audit record of discount prices.
+ */
+function zcs_api_attributes_update_9011() {
+  $tables['discount_pricing_page_data'] = [
+    'description' => 'Table for storing information about discount pricing.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique aggregator static ID.',
+      ],
+      'submit_by' => [
+        'description' => 'Submitter User ID.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'currency_locale' => [
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Currency of the attributes page.',
+      ],
+      'page_data' => [
+        'type' => 'blob',
+        'size' => 'big',
+        'not null' => FALSE,
+        'description' => 'Attribute Page data for reference.',
+      ],
+      'client_id' => [
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Client id.',
+      ],
+      'client_name' => [
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Client Name.',
+      ],
+      'approver1_uid' => [
+        'description' => 'Approver-1 User ID.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'approver1_status' => [
+        'description' => 'Approver-1 Status.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'approver2_uid' => [
+        'description' => 'Approver-2 User ID.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'approver2_status' => [
+        'description' => 'Approver-2 Status.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'attribute_status' => [
+        'description' => 'Attribute Status.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'created' => [
+        'description' => 'Attribute Page Created date.',
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'updated' => [
+        'description' => 'Attribute Page Updated date.',
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+
+  $database = \Drupal::database()->schema();
+  foreach ($tables as $table_name => $table) {
+    // First check if the tables exist and if missing...
+    if (!$database->tableExists($table_name)) {
+      $database->createTable($table_name, $table);
+    }
+  }
 }

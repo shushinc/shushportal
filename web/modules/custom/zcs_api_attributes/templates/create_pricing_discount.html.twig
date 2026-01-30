@@ -1,0 +1,45 @@
+{{ form.form_build_id }}
+{{ form.form_token }}
+{{ form.form_id }}
+
+{% if form.pricing_validation_message %}
+   {{ form.pricing_validation_message }}
+{% endif %}
+
+<div class="rate-sheet-filter">
+  <div class="rate-sheet-filter-currencies">
+    <span class="attributes-label">Currency</span>
+    <span class="attribute-inputs">{{ form.currencies }}</span>
+  </div>
+  <div class="rate-sheet-filter-effective">
+    <span class="attributes-label">Select Client</span>
+    <span class="attribute-inputs">{{ form.client }}</span>
+  </div>
+</div>
+<div>
+  <span class="attribute-inputs">
+    {% set attributes = fetch_attributes() %}
+    <table class="attributes-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>API Attributes</th>
+          <th>Proposed Discount Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% set counter = 1 %}
+          {% for id, title in attributes.titles %}
+            <tr>
+              <td>{{ counter }}</td>
+              <td>{{ title }}</td>
+              <td>{{ form['discount_price_' ~ id] }}</td>
+            </tr>
+          {% set counter = counter + 1 %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </span>
+</div>      
+
+{{ form.submit }}

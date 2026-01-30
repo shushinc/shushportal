@@ -1,0 +1,6 @@
+services:
+  dashboard.commands:
+    class: Drupal\dashboard\Commands\DashboardCommands
+    arguments: ['@dashboard.query_service']
+    tags:
+      - { name: drush.command }

@@ -1,0 +1,19 @@
+uuid: 7c719113-74a6-472b-9d68-e02d7e7838c0
+langcode: en
+status: true
+dependencies:
+  module:
+    - group
+id: group.field_apis_agreement_covers
+field_name: field_apis_agreement_covers
+entity_type: group
+type: string_long
+settings:
+  case_sensitive: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

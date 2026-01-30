@@ -1,0 +1,9 @@
+administer module reports:
+  title: 'Administer module reports'
+  description: 'Allow users to configure module reports settings.'
+  restrict access: TRUE
+
+access module reports:
+  title: 'Access module reports'
+  description: 'Allow users to access the module reports page.'
+  restrict access: TRUE

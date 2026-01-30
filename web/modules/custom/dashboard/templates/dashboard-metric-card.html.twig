@@ -1,0 +1,28 @@
+{#
+/**
+ * @file
+ * Template for individual metric cards.
+ *
+ * Available variables:
+ * - title: The metric title.
+ * - value: The metric value.
+ * - change: The change percentage or value.
+ * - change_type: Type of change (positive, negative, neutral).
+ * - period: The period indicator (Y-o-Y, M-o-M, etc.).
+ */
+#}
+
+<div class="metric-card">
+  <div class="metric-card__title">{{ card.title }}</div>
+  <div class="metric-card__value">{{ card.value }}</div>
+  <div class="metric-card__change metric-card__change--{{ card.change_type }}">
+    {% if card.change_type == 'positive' %}
+      <span class="metric-card__change-value">▲ {{ card.change }}</span>
+    {% elseif card.change_type == 'negative' %}
+      <span class="metric-card__change-value">▼ {{ card.change }}</span>
+    {% else %}
+      <span class="metric-card__change-value">{{ card.change }}</span>
+    {% endif %}
+    <span class="metric-card__period">{{ card.period }}</span>
+  </div>
+</div>

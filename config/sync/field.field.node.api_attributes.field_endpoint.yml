@@ -1,0 +1,19 @@
+uuid: b81ad491-d67a-4f22-bf7e-a04d1fda9b6c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_endpoint
+    - node.type.api_attributes
+id: node.api_attributes.field_endpoint
+field_name: field_endpoint
+entity_type: node
+bundle: api_attributes
+label: Endpoint
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

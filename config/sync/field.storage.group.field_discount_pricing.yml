@@ -1,0 +1,19 @@
+uuid: 44ba2603-ab9d-4fd1-b16c-7637e757a950
+langcode: en
+status: true
+dependencies:
+  module:
+    - group
+id: group.field_discount_pricing
+field_name: field_discount_pricing
+entity_type: group
+type: string_long
+settings:
+  case_sensitive: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

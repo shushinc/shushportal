@@ -1,0 +1,11 @@
+services:
+  zcs_api_attributes.twig.CustomTwig:
+    class: Drupal\zcs_api_attributes\Twig\RateSheetTwig
+    tags:
+      - { name: twig.extension }
+  zcs_api_attributes.propose_price_ratesheet:
+    class: Drupal\zcs_api_attributes\Services\RetailMarkupPriceSheet
+    arguments: ['@database']
+  zcs_api_attributes.discount_sheet:
+    class: Drupal\zcs_api_attributes\Services\DiscountPriceSheet
+    arguments: ['@database']

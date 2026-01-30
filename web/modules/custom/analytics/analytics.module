@@ -15,3 +15,14 @@ function analytics_theme() {
     ]
   ];
 }
+
+
+function analytics_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  if($form_id == 'node_analytics_edit_form' || $form_id == 'node_analytics_form') {
+    // Change label of a field.
+    if (isset($form['field_api_volume_in_mil'])) {
+      $form['field_api_volume_in_mil']['widget'][0]['value']['#title'] = 'Sum (Full Billable Transaction Count + Half Billable Transaction Count + NO Billable Transaction Count)';
+    }
+  }
+ 
+}

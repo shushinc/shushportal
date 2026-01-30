@@ -1,0 +1,23 @@
+uuid: f1ddcbcb-e9fe-4f62-8d34-0d77dbd2c38d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_attribute_weight
+    - node.type.api_attributes
+id: node.api_attributes.field_attribute_weight
+field_name: field_attribute_weight
+entity_type: node
+bundle: api_attributes
+label: 'Attribute Weight'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

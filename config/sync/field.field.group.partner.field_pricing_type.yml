@@ -1,0 +1,23 @@
+uuid: d085a17b-1d44-40c2-8114-f4453c68623d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.group.field_pricing_type
+    - group.type.partner
+  module:
+    - options
+id: group.partner.field_pricing_type
+field_name: field_pricing_type
+entity_type: group
+bundle: partner
+label: 'Pricing Type'
+description: ''
+required: true
+translatable: false
+default_value:
+  -
+    value: domestic_pricing
+default_value_callback: ''
+settings: {  }
+field_type: list_string

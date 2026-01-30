@@ -37,38 +37,60 @@ final class AppListForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
-    // $url = Url::fromRoute('zcs_aws.create_key');
-    // $url->setOptions([
-    // 'attributes' => [
-    // 'class' => ['use-ajax'],
-    // 'data-dialog-type' => 'modal',
-    // 'data-dialog-options' => json_encode(['width' => 700]),
-    // ],
-    // ]);
+    $url = Url::fromRoute('zcs_kong.create_key');
+    
+    $route_name = $url->getRouteName();
+    $route_parameters = $url->getRouteParameters();
+    
+    // Use access manager to check access
+    $access = \Drupal::service('access_manager')->checkNamedRoute(
+      $route_name,
+      $route_parameters,
+      \Drupal::currentUser(),
+      TRUE // return AccessResult object
+    );
 
-    // $link = Link::fromTextAndUrl($this->t('Create Client Credentials'), $url)->toRenderable();
-    // $link['#attached']['library'][] = 'core/drupal.dialog.ajax'];
-
-    // // Add the link to the form before the table.
-    // $form['create_link'] = [
-    // '#type' => 'container',
-    // '#attributes' => ['class' => ['zcs-create-link']],
-    // 'link' => $link,
-    // ];
-
+    // Build class list dynamically
+    $classes =  ['button', 'btn-primary', 'button--primary', 'use-ajax'];
+    if (!$access->isAllowed()) {
+      $classes[] = 'disable-link';
+    }
+    
+    
+    $url->setOptions([
+      'attributes' => [
+        'class' => $classes,
+        'data-dialog-type' => 'modal',
+        'data-dialog-options' => json_encode(['width' => 400]),
+      ],
+    ]);
+  
+    $form['top_actions'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['top-actions', 'user-management-view']],
+      'create_link_wrapper' => [
+        '#type' => 'html_tag',
+        '#tag' => 'header',
+        '#attributes' => [
+          'class' => ['client-credentials-header'],
+        ],
+        '#children' => Link::fromTextAndUrl($this->t('Create Client Credentials'), $url)->toString(),
+      ],
+      '#weight' => -10,
+    ];
 
 
     $header = [
       'api_name' => $this->t('Client Name'),
-      'description' => $this->t('Description'),
+      'app_name' => $this->t('App Name'),
       'tag' => $this->t('Tag'),
-      'created' => $this->t('Created'),
-      'renewal' => $this->t('Renewal'),
-      'expiry' => $this->t('Expiry'),
-      'api_key' => $this->t('API Key'),
+      'created' => $this->t('Created Date'),
+      'client_id' => $this->t('Client ID'),
+      'client_secret' => $this->t('Client Secret'),
+      'status' => $this->t('Status'),
     ];
 
-
+    $class = ['operations-enabled'];
     if (\Drupal::currentUser()->hasRole('carrier_admin') || \Drupal::currentUser()->hasRole('administrator')) {
       $header['operation'] = $this->t('Operations');
       $group_type = 'partner';
@@ -95,20 +117,23 @@ final class AppListForm extends FormBase {
             $description = $group->get('field_description')->getValue()[0]['value'];
             $app_status = $app->get('field_app_status')->value;
             if ($app_status == 'active') {
-              $url = Url::fromRoute('zcs_kong.edit_key', ['id' => $app->id()]);
-              $url->setOptions([
-                'attributes' => [
-                  'class' => ['use-ajax'], // Enables AJAX
-                  'data-dialog-type' => 'modal', // Opens in a modal
-                  'data-dialog-options' => json_encode([
-                    'width' => 400,
-                  ]),
-                ],
-              ]);
+              // $url = Url::fromRoute('zcs_kong.edit_key', ['id' => $app->id()]);
+              // $url->setOptions([
+              //   'attributes' => [
+              //     'class' => ['use-ajax'], // Enables AJAX
+              //     'data-dialog-type' => 'modal', // Opens in a modal
+              //     'data-dialog-options' => json_encode([
+              //       'width' => 400,
+              //     ]),
+              //   ],
+              // ]);
 
-              $update_link = Link::fromTextAndUrl('Edit', $url);
+              // $update_link = Link::fromTextAndUrl('Edit', $url);
               $delete_link = Link::createFromRoute('Delete', 'zcs_kong.delete_key', ['id' => $app->id()]);
-              $operation_link = Markup::create($update_link->toString() . ' | ' . $delete_link->toString());
+              $operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$delete_link->toString()."</div></div>");
+            }
+            else {
+              $operation_link = Markup::create('<div class="edit-operation disabled">');
             }
 
 
@@ -116,7 +141,7 @@ final class AppListForm extends FormBase {
             $updated_time = $app->get('changed')->value;
             $expiry_time = $app->get('field_expiry_date')->value;
             if ($updated_time > $created_time) {
-               $renewal_date =  date('d M Y' , (int)$app->get('changed')->value);
+               $renewal_date =  date('M d, Y' , (int)$app->get('changed')->value);
             }
 
 
@@ -128,34 +153,63 @@ final class AppListForm extends FormBase {
             else {
               $ttl = $app->get('field_ttl')->value;
               if($expiry_time > $created_time) {
-                $expiry_time = date('d M Y' , (int)$app->get('field_expiry_date')->value);
+                $expiry_time = date('M d, Y' , (int)$app->get('field_expiry_date')->value);
               }
             }
             $key = $app->get('field_app_key')->value ?? '';
+            $client_id = $app->get('field_client_id')->value ?? '';
+            $secret_key = $app->get('field_client_secret')->value ?? '';
+            $app_status = $app->get('field_app_status')->value;
+            if ($app_status == 'active') {
+              $app_status = Markup::create("<div class='key-active'>Active</div>");
+            }
+            else {
+              $app_status = Markup::create("<div class='key-inactive'>InActive</div>");
+            }
             $apps[] = [
-              'api_name' => $app->getTitle(),
-              'description' => $description,
+              'api_name' => $group->label(),
+              'app_name' => $app->getTitle(),
               'tag' => $app->get('field_tag')->value ?? '',
-              'created' => date('d M Y' , (int)$created_time),
-              'renewal' => $renewal_date ?? '-',
-              'expiry' => $expiry_time ?? '-',
-              'api_key' => [
-                'data' =>  Markup::create("<div class='kong-key'>$key</div><div class='pwd-toggle'></div><div class='pwd-copy'></div>"),
+              'created' => date('M d, Y' , (int)$created_time),
+              // 'renewal' => $renewal_date ?? '-',
+              // 'expiry' => $expiry_time ?? '-',
+              'client_id' => [
+                'data' =>  Markup::create("<div class='client-key''>$client_id</div><div class='pwd-toggle'></div><div class='client-password'></div>"),
                 'class' => 'api-keys',
               ],
+              'client_secret' => [
+                'data' =>  Markup::create("<div class='secret-key'>$secret_key</div><div class='pwd-toggle'></div><div class='secret-password'></div>"),
+                'class' => 'api-keys',
+              ],
+              'status' => $app_status,
+              'created_timestamp' => (int) $created_time, // Add this line
+              // 'api_key' => [
+              //   'data' =>  Markup::create("<div class='kong-key'>$key</div><div class='pwd-toggle'></div><div class='pwd-copy'></div>"),
+              //   'class' => 'api-keys',
+              // ],
               'update_key' => [
                 'data' => $operation_link ?? '',
-                'class' => 'app-operations',
+                'class' => 'app-operation',
               ],
             ];
+                // After building the full $apps array, sort it
+          if (is_array($apps)) {        
+            usort($apps, function ($a, $b) {
+              return $b['created_timestamp'] <=> $a['created_timestamp']; // Sort newest first
+            });
           }
+          }
+      
         }
       }
     }
     else {
       $response =  \Drupal::service('zcs_kong.kong_gateway')->checkUserAccessGeneratekey();
-      if($response != "error") {
+      if($response !== "error") {
         $header['operation'] = $this->t('Operations');
+      }
+      else {
+        $class = ['operations-disabled'];
       }
 
       $group_type = 'partner';
@@ -179,18 +233,21 @@ final class AppListForm extends FormBase {
             }
             $key_id = $app->get('field_app_id')->value;
             $consumer_id = $app->get('field_consumer_id')->value;
-            $description = $group->get('field_description')->getValue()[0]['value'];
+           // $description = $group->get('field_description')->getValue()[0]['value'];
             $app_status = $app->get('field_app_status')->value;
             if ($app_status == 'active') {
-              $update_link = Link::createFromRoute('Edit', 'zcs_kong.edit_key', ['id' => $app->id()]);
+              // $update_link = Link::createFromRoute('Edit', 'zcs_kong.edit_key', ['id' => $app->id()]);
               $delete_link = Link::createFromRoute('Delete', 'zcs_kong.delete_key', ['id' => $app->id()]);
-              $operation_link = Markup::create($update_link->toString() . ' | ' . $delete_link->toString());
+              $operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$delete_link->toString()."</div></div>");
+            }
+            else {
+              $operation_link = Markup::create('<div class="edit-operation disabled">');
             }
             $created_time = $app->get('created')->value;
             $updated_time = $app->get('changed')->value;
             $expiry_time = $app->get('field_expiry_date')->value;
             if ($updated_time > $created_time) {
-               $renewal_date =  date('d M Y' , (int)$app->get('changed')->value);
+               $renewal_date =  date('M d, Y' , (int)$app->get('changed')->value);
             }
             if ($app->get('field_ttl')->value == 'never_expires') {
               $ttl = 'Never Expires';
@@ -199,32 +256,61 @@ final class AppListForm extends FormBase {
             else {
               $ttl = $app->get('field_ttl')->value;
               if($expiry_time > $created_time) {
-                $expiry_time = date('d M Y' , (int)$app->get('field_expiry_date')->value);
+                $expiry_time = date('M d, Y' , (int)$app->get('field_expiry_date')->value);
               }
             }
             $key = $app->get('field_app_key')->value ?? '';
-            $apps[] = [
+            $client_id = $app->get('field_client_id')->value ?? '';
+            $secret_key = $app->get('field_client_secret')->value ?? '';
 
-              'api_name' => $app->getTitle(),
-              'description' => $description,
+            $app_status = $app->get('field_app_status')->value;
+            if ($app_status == 'active') {
+              $app_status = Markup::create("<div class='key-active'>Active</div>");
+            }
+            else {
+              $app_status = Markup::create("<div class='key-inactive'>InActive</div>");
+            }
+
+            
+            $apps[] = [
+              'api_name' => $group->label(),
+              'app_name' => $app->getTitle(),
+             // 'description' => $description,
               'tag' => $app->get('field_tag')->value ?? '',
               // 'ttl' => $app->get('field_ttl')->value ?? '',
-              'created' => date('d M Y' , (int)$created_time),
-              'renewal' => $renewal_date ?? '-',
-              'expiry' => $expiry_time ?? '-',
-              'api_key' => [
-                'data' =>  Markup::create("<div class='kong-key'>$key</div><div class='pwd-toggle'></div><div class='pwd-copy'></div>"),
+              'created' => date('M d, Y' , (int)$created_time),
+              // 'renewal' => $renewal_date ?? '-',
+              // 'expiry' => $expiry_time ?? '-',
+              'client_id' => [
+                'data' =>  Markup::create("<div class='client-key''>$client_id</div><div class='pwd-toggle'></div><div class='client-password'></div>"),
                 'class' => 'api-keys',
               ],
+              'client_secret' => [
+                'data' =>  Markup::create("<div class='secret-key'>$secret_key</div><div class='pwd-toggle'></div><div class='secret-password'></div>"),
+                'class' => 'api-keys',
+              ],
+              'status' => $app_status,
+              'created_timestamp' => (int) $created_time, // Add this line
+              
+              // 'api_key' => [
+              //   'data' =>  Markup::create("<div class='kong-key'>$key</div><div class='pwd-toggle'></div><div class='pwd-copy'></div>"),
+              //   'class' => 'api-keys',
+              // ],
             ];
 
             // Condition to check if `update_key` should be added.
-            if ($response != "error") {
+            if ($response !== "error") {
                $apps[count($apps) - 1]['update_key'] = [
                 'data' => $operation_link ?? '',
-                'class' => 'app-operations',
+                'class' => 'app-operation',
                ];
             }
+                    // After building the full $apps array, sort it
+          if (is_array($apps)) {        
+            usort($apps, function ($a, $b) {
+              return $b['created_timestamp'] <=> $a['created_timestamp']; // Sort newest first
+            });
+          }
           }
         }
       }
@@ -240,11 +326,20 @@ final class AppListForm extends FormBase {
       ];
       return $form;
     }
+    if (is_array($apps)) { 
+      // Optionally remove 'created_timestamp' if not needed
+      foreach ($apps as &$app_value) {
+        unset($app_value['created_timestamp']);
+      }
+    }
     $form['table'] = [
       '#type' => 'table',
       '#header' => $header,
       '#rows' => $apps,
       '#empty' => $this->t('No data available.'),
+      '#attributes' => [
+        'class' => $class,
+      ],
     ];
     $form['pager'] = [
       '#type' => 'pager',

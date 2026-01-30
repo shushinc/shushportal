@@ -1,0 +1,8 @@
+name: Consolidate
+type: module
+description: 'Module to consolidate analytics data'
+core_version_requirement: ^10
+package: Custom
+dependencies:
+  - drupal:node
+  - dashboard

@@ -1,0 +1,19 @@
+uuid: 8b898d69-0f82-4089-9a2c-baa135ff0952
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.group.field_client_point_of_contact
+    - group.type.partner
+id: group.partner.field_client_point_of_contact
+field_name: field_client_point_of_contact
+entity_type: group
+bundle: partner
+label: 'Client Point of Contact'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string
