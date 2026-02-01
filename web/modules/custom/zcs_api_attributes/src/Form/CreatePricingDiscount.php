@@ -102,7 +102,6 @@ class CreatePricingDiscount extends FormBase {
     $group_type = 'partner';
     $group_storage = \Drupal::entityTypeManager()->getStorage('group');
     $query = $group_storage->getQuery()->condition('type', $group_type); 
-    $query = $group_storage->getQuery()->condition('field_partner_type', 'enterprise');
     $group_ids = $query->accessCheck(FALSE)->execute();
     $clients = $group_storage->loadMultiple($group_ids);
 
