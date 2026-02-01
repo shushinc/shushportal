@@ -47,12 +47,14 @@ class UpdateRevenue  {
       $group = $node->get('field_partner')->entity;
       $group_title = $group->label();
       $pricing_type = $group->get('field_pricing_type')->value;
+      $partner_type = $group->get('field_partner_type')->value;
       $gid = $node->get('field_partner')->target_id;
       $revenue_node_calculation[] = [
           'nid'        => $node->id(),
           'title'      => $node->label(),
           'parnter_title' => $group_title,
           'gid'   => $gid,
+          'partner_type' => $partner_type,
           'api_attribute'  => $node->get('field_attribute')->target_id,
           'api_attribute_title' => $attribute_title ?? '' ,
           'price_type' => $pricing_type,
@@ -157,6 +159,7 @@ class UpdateRevenue  {
               'nid' => $node['nid'],
               'title' => $node['title'],
               'client_id' => $node['gid'],
+              'partner_type' => $node['partner_type'],
               'client_name' => $node['parnter_title'],
               'api_attribute_title' => $node['api_attribute_title'],
               'price_type' => $node['price_type'],
@@ -181,25 +184,26 @@ class UpdateRevenue  {
     public function performCalucluationRevenue($perform_calculation_data) {
       \Drupal::logger('revenue-update-step-6')->notice("Peform_calculation");
       $final_pricing = '';
-
-     //  Final Pricing = 
-     //  (Full Billable Transaction Count *Per API call Pricing )
-     // + (Half Billable Transaction Count * Per API call Pricing/2)
-     // x(1+markup %) x (1-discount%)
       foreach ($perform_calculation_data as $data) {
         $pricing_per_api_call = $data['price'];
-        $markup_percentage = $data['retail_markup_percentage'];
-       // $pricing = ($data['full_billable_transaction_count'] * $pricing_per_api_call) + 
-       // ($data['half_billable_transaction_count'] * $pricing_per_api_call / 2);
-        //$final_pricing = $pricing * (1 + ($markup_percentage / 100)) - ($data['discount_price']/100);
-        $final_pricing = 
-        (($data['full_billable_transaction_count'] * $pricing_per_api_call) + 
-        ($data['half_billable_transaction_count'] * $pricing_per_api_call / 2))
-        * (1+$markup_percentage/100) * (1-$data['discount_price']/100);
-         
+        $markup_percentage = 0;
+        if($data['partner_type'] == 'enterprise') {
+          $markup_percentage = $data['retail_markup_percentage'];
+          $final_pricing = 
+          (($data['full_billable_transaction_count'] * $pricing_per_api_call) + 
+          ($data['half_billable_transaction_count'] * $pricing_per_api_call / 2))
+          * (1+$markup_percentage/100) * (1-$data['discount_price']/100);
+        } 
+        else {
+          $final_pricing = 
+          (($data['full_billable_transaction_count'] * $pricing_per_api_call) + 
+          ($data['half_billable_transaction_count'] * $pricing_per_api_call / 2))
+          * (1+0) * (1-$data['discount_price']/100);
+        }
         \Drupal::logger('discount-step-6-calculation')->notice(
             'NID: @nid, 
-            Retail%: @retail_value,
+            partner_type: @partner_type,
+            markup Retail%: @retail_value,
             price per api call: @price,
             Attribute: @attribute_title,
             Discount Price: @discount_price,
@@ -209,7 +213,8 @@ class UpdateRevenue  {
           array(
               '@price' => $data['price'],
               '@nid' => $data['nid'],
-              '@retail_value' => $data['retail_markup_percentage'],
+              '@partner_type' => $data['partner_type'],
+              '@retail_value' => $markup_percentage,
               '@attribute_title'=> $data['api_attribute_title'],
               '@discount_price' => $data['discount_price'],
               '@final_pricing' => $final_pricing,
