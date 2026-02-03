@@ -3,6 +3,8 @@
 namespace Drupal\zcs_client_management\Services;
 
 use Drupal\group\Entity\GroupInterface;
+use Drupal\Component\Serialization\Json;
+use Drupal\node\Entity\Node;
 
 /**
  * Service to consolidate analytics data.
@@ -48,6 +50,7 @@ class ClientManagementService {
 
 
   public function createUpdateClientBilling($group) {
+    $client_id = $group->id();
     $client_name = $group->get('label')->value ?? '';
     $client_type = $group->get('field_partner_type')->value ?? '';
     $client_status = $group->get('field_partner_status')->value ?? '';
@@ -63,13 +66,33 @@ class ClientManagementService {
       $client_type = 'demandpartner';
     }
 
+
+    $database = \Drupal::database();
+    $data = $database->select('discount_pricing_page_data', 'dppd')
+    ->fields('dppd', ['submit_by','currency_locale', 'client_id', 'client_name','approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'attribute_status', 'page_data','created', 'updated'])
+    ->condition('attribute_status', 2)
+    ->condition('client_id', $client_id)
+    ->orderBy('updated', 'DESC') 
+    ->range(0, 1)
+    ->execute()->fetchObject();
+    $discount_attributes = [];
+    if (!empty($data)) {
+      foreach (Json::decode($data->page_data) as $key => $value) {
+        $node = Node::load($key);
+        $discount_attributes[] = [
+          'attribute_name' => $node->get('title')->value,
+          'client_name' => $data->client_name,
+          'discount_price' => number_format((float)$value['discount_pricing'] ?? ((float)$value['discount_pricing'] ?? ((float)$value['discount_pricing'] ?? 0.000)), 3),
+        ];         
+      }
+    }
     $endpoint = \Drupal::config('zcs_custom.settings')->get('client_billing_api_endpoint') ?? '';
-    
     $client_billing_data = [
       'client' => $client_name,
       'client_type' => $client_type,
       'status' => $client_status,
       'pricing_type' => $pricing_label,
+      'discount_price' => $discount_attributes,
     ];
     $data = json_encode($client_billing_data, TRUE);
     try {
