@@ -107,6 +107,11 @@ class ClientManagementService {
         \Drupal::logger('client_billing')->info('success billing  update for the client @client_name', [
           '@client_name' => $client_name,
         ]);
+        $data_logger = json_encode($data, JSON_PRETTY_PRINT);
+
+        \Drupal::logger('my_module')->info('Client billing data: @data', [
+          '@data' =>  $data_logger,
+        ]);
         return TRUE;
       } else {
         \Drupal::logger('client_billing')->error('failure for  billing  update for the client @client_name', [
