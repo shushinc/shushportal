@@ -209,6 +209,10 @@ class DiscountPricingReviewForm extends FormBase {
       ->condition('id', $values['apid'])
       ->execute();
     $this->messenger()->addStatus('Status submitted successfully');
+    if ($values['another_approver_status'] == 2 && $values['status'] == 2) {
+      $group = Group::load($client_id);
+      $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
+    } 
     // Sending the email for approver2.
     if ($values['approved_by'] == 'approver1' && $values['status'] == 2) {
       $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'financial_rate_sheet_approval_level_2', 'status' => 1]);
