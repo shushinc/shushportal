@@ -57,7 +57,7 @@ interface SsoProviderInterface extends PluginInspectionInterface, ContainerFacto
    * @return \Symfony\Component\HttpFoundation\Response
    *   The response, typically a redirect to the SSO provider.
    */
-  public function authenticate(Request $request);
+  public function authenticate(Request $request, SsoAppInterface $soApp = NULL);
 
   /**
    * Handles the callback from the SSO provider.
@@ -71,7 +71,7 @@ interface SsoProviderInterface extends PluginInspectionInterface, ContainerFacto
    * @throws \Exception
    *   When authentication fails.
    */
-  public function handleCallback(Request $request);
+  public function handleCallback(Request $request, SsoAppInterface $app);
 
   /**
    * Gets configuration form elements for this provider.
@@ -105,14 +105,5 @@ interface SsoProviderInterface extends PluginInspectionInterface, ContainerFacto
    *   The form state.
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state, SsoAppInterface $soApp = NULL): array;
-
-
-  /**
-   * Get the Callback URI.
-   *
-   * @return string
-   *   The provider description.
-   */
-  public function getCallbackUri();
 
 }

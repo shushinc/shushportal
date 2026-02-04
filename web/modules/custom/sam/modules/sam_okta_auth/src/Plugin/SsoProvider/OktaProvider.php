@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\sam_google\Plugin\SsoProvider;
+namespace Drupal\sam_okta_auth\Plugin\SsoProvider;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
@@ -8,29 +8,29 @@ use Drupal\sam\SsoAppInterface;
 use Drupal\sam_oidc\Plugin\SsoProvider\AbstractOidcProvider;
 
 /**
- * Google OpenID Connect SSO provider.
+ * Okta Auth0 Connect SSO provider.
  *
  * @SsoProvider(
- *   id = "google",
- *   name = @Translation("Google"),
- *   description = @Translation("Google OpenID Connect authentication provider"),
+ *   id = "okta_auth0",
+ *   name = @Translation("Okta Auth0"),
+ *   description = @Translation("Okta Auth0 OIDC authentication provider"),
  *   weight = 0
  * )
  */
-final class GoogleProvider extends AbstractOidcProvider {
+final class OktaProvider extends AbstractOidcProvider {
 
   /**
    * {@inheritdoc}
    */
   public function getName(): string {
-    return $this->t('Google');
+    return $this->t('Okta');
   }
 
   /**
    * {@inheritdoc}
    */
   public function getDescription(): string {
-    return $this->t('Authenticate users using Google OpenID Connect.');
+    return $this->t('Authenticate users using Okta Auth0 OIDC Connect.');
   }
 
   /**
@@ -44,7 +44,7 @@ final class GoogleProvider extends AbstractOidcProvider {
    * {@inheritdoc}
    */
   protected function getIssuer(SsoAppInterface $app): string {
-    // return 'https://accounts.google.com';
+    // return 'https://dev-ericlmhgav.us.auth0.com/';
     return (string) $app->getSetting('issuer_url');
   }
 
@@ -65,15 +65,8 @@ final class GoogleProvider extends AbstractOidcProvider {
   /**
    * {@inheritdoc}
    */
-  protected function getCallbackUri(SsoAppInterface $app): string {
-    return (string) $app->getSetting('callback_url');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   protected function getHostedDomain(SsoAppInterface $app): string|NULL {
-    return (string) $app->getDomain();
+    return NULL;
   }
 
   /**
@@ -88,7 +81,7 @@ final class GoogleProvider extends AbstractOidcProvider {
    * {@inheritdoc}
    */
   public function getConfigurationForm(array $form, FormStateInterface $form_state, SsoAppInterface $app = NULL): array {
-    $config = $this->configFactory->get('sam_google.settings');
+    $config = $this->configFactory->get('sam_okta_auth.settings');
     
     $settings = $app ? $app->getSettings() : [];
     $formSettings = [
@@ -127,15 +120,15 @@ final class GoogleProvider extends AbstractOidcProvider {
     $callback_uri = $form_state->getValue(['settings', 'details', 'callback_uri']);
 
     if (empty($issuer_url)) {
-      $form_state->setErrorByName('settings][details][issuer_url', $this->t('Google APP Issuer URL is required.'));
+      $form_state->setErrorByName('settings][details][issuer_url', $this->t('Okta Auth0 Issuer URL is required.'));
     }
 
     if (empty($client_id)) {
-      $form_state->setErrorByName('settings][details][client_id', $this->t('Google Client ID is required.'));
+      $form_state->setErrorByName('settings][details][client_id', $this->t('Okta Auth0 Client ID is required.'));
     }
 
     if (empty($client_secret)) {
-      $form_state->setErrorByName('settings][details][client_secret', $this->t('Google Client Secret is required.'));
+      $form_state->setErrorByName('settings][details][client_secret', $this->t('Okta Auth0 Client Secret is required.'));
     }
 
     if (empty($callback_uri)) {
@@ -153,6 +146,13 @@ final class GoogleProvider extends AbstractOidcProvider {
       'client_secret' => $form_state->getValue(['settings', 'details', 'client_secret']),
       'callback_uri' => $form_state->getValue(['settings', 'details', 'callback_uri']),
     ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getCallbackUri(SsoAppInterface $app): string {
+    return (string) $app->getSetting('callback_url');
   }
 
 }

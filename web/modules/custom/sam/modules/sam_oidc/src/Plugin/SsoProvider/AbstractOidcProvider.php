@@ -17,6 +17,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\sam\Security\SamStateTokenService;
 use Drupal\sam_oidc\Service\OidcTokenService;
 use Drupal\Core\Url;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * Base class for OIDC-based SSO providers.
@@ -52,11 +53,17 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
   protected SamStateTokenService $stateToken;
 
   /**
-   * The stateToken service.
+   * The OidcToken service.
    *
    * @var \Drupal\sam_oidc\Service\OidcTokenService
    */
   protected OidcTokenService $tokenService;
+
+  /**
+   * The EntityTypeManager Service
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface EntityTypeManagerInterface
+   */
+  protected EntityTypeManagerInterface $entityTypeManager;
 
   /**
    * Constructs the OIDC provider.
@@ -69,7 +76,8 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
     OidcDiscoveryService $discovery,
     SessionInterface $session,
     SamStateTokenService $state_token,
-    OidcTokenService $token_service
+    OidcTokenService $token_service,
+    EntityTypeManagerInterface $entity_type_manager,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->configFactory = $config_factory;
@@ -77,6 +85,7 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
     $this->session = $session;
     $this->stateToken = $state_token;
     $this->tokenService = $token_service;
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -97,35 +106,48 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
       $container->get('session'),
       $container->get('sam.state_token'),
       $container->get('sam_oidc.token_service'),
+      $container->get('entity_type.manager'),
     );
   }
 
   /**
    * Returns the issuer URL for the provider.
    */
-  abstract protected function getIssuer(): string;
+  abstract protected function getIssuer(SsoAppInterface $app): string;
 
   /**
    * Returns the OIDC client ID.
    */
-  abstract protected function getClientId(): string;
+  abstract protected function getClientId(SsoAppInterface $app): string;
 
   /**
    * Returns the OIDC client secret.
    */
-  abstract protected function getClientSecret(): string;
+  abstract protected function getClientSecret(SsoAppInterface $app): string;
 
   /**
    * {@inheritdoc}
    */
-  public function authenticate(Request $request): TrustedRedirectResponse {
-    $issuer = $this->getIssuer();
+  abstract protected function getCallbackUri(SsoAppInterface $app): string;
+
+  /**
+   * {@inheritdoc}
+   */
+  abstract protected function getHostedDomain(SsoAppInterface $app): string|NULL;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function authenticate(Request $request, SsoAppInterface $app = NULL): TrustedRedirectResponse {
+    $issuer = $this->getIssuer($app);
     $discovery = $this->discovery->discover($issuer);
 
-    $config = $this->configFactory->get('sam_google.settings');
+    $clientId = $app->getSetting('client_id');
+    $redirectUri = $request->getSchemeAndHttpHost() . $app->getSetting('callback_uri');
 
-    $clientId = $config->get('client_id');
-    $redirectUri = $request->getSchemeAndHttpHost() . $this->getCallbackUri();
+    if (empty($clientId) || empty($redirectUri)) {
+      throw new \RuntimeException('SSO app is missing required OIDC configuration.');
+    }
 
     // Generate security tokens.
     $state = Crypt::randomBytesBase64(32);
@@ -134,6 +156,7 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
     $this->session->start();
     $this->session->set('sam_oidc_state', $state);
     $this->session->set('sam_oidc_nonce', $nonce);
+    $this->session->set('sam_sso_app_id', $app->id());
 
     $query = [
       'client_id' => $clientId,
@@ -160,7 +183,7 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
   /**
    * {@inheritdoc}
    */
-  public function handleCallback(Request $request): array {
+  public function handleCallback(Request $request, SsoAppInterface $app): array {
     
     $code = $request->query->get('code');
     $state = $request->query->get('state');
@@ -170,37 +193,53 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
       throw new \RuntimeException('Missing "code" or "state" in OIDC callback.');
     }
 
-    // Step 1: Validate state
+    $app_id = $this->session->get('sam_sso_app_id');
+
+    if (!$app_id) {
+      throw new \RuntimeException('Missing SSO application context in session.');
+    }
+
+    /** @var \Drupal\sam\SsoAppInterface|null $app */
+    $app = $this->entityTypeManager
+      ->getStorage('sam_sso_app')
+      ->load($app_id);
+
+    if (!$app || !$app->isEnabled()) {
+      throw new \RuntimeException('SSO application is not available.');
+    }
+
     if (!$this->stateToken->validate($state)) {
       throw new \RuntimeException('Invalid OIDC state token:' . $state);
     }
 
-    // Step 2: Discover provider metadata
-    $discovery = $this->discovery->discover($this->getIssuer());
+    $discovery = $this->discovery->discover($this->getIssuer($app));
 
     // Step 3: Exchange code for tokens
     $tokens = $this->tokenService->exchangeCodeForTokens(
       $discovery,
       $code,
-      $this->getRedirectUri(),
-      $this->getClientId(),
-      $this->getClientSecret(),
+      $request->getSchemeAndHttpHost() . $app->getSetting('callback_uri'),
+      $this->getClientId($app),
+      $this->getClientSecret($app),
     );
 
-    $claims = $this->tokenService->decodeWithoutVerification($tokens['id_token']);
+    $claims = $this->tokenService->decode($tokens['id_token']);
   
     $this->tokenService->validateIdTokenClaims(
       claims: $claims,
-      expectedIssuer: $this->getIssuer(),
-      expectedAudience: $this->getClientId(),
+      expectedIssuer: $this->getIssuer($app),
+      expectedAudience: $this->getClientId($app),
       expectedNonce: $this->session->get('sam_oidc_nonce'),
-      expectedHostedDomain: NULL
+      expectedHostedDomain: $this->getHostedDomain($app),
+      expectedEmail: $auth_email,
     );
 
     return [
-      'issuer' => $this->getIssuer(),
+      'issuer' => $this->getIssuer($app),
       'discovery' => $discovery,
       'tokens' => $tokens,
+      'claims'=> $claims,
+      'sso_app' => $app,
       'auth_email' => $auth_email,
     ];
   }
@@ -238,13 +277,6 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
       ['provider' => $this->getPluginId()],
       ['absolute' => TRUE]
     )->toString();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getCallbackUri(): ?string {
-    return NULL;
   }
 
 }

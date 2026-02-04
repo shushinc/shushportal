@@ -17,14 +17,19 @@ services:
     class: Drupal\sam\Security\SamStateTokenService
     arguments:
       - '@session'
+  sam.sso_app_resolver:
+    class: Drupal\sam\Service\SsoAppResolver
+    arguments:
+      - '@entity_type.manager'
   sam.login_flow_manager:
     class: Drupal\sam\Service\LoginFlowManager
     arguments:
-      - '@config.factory'
       - '@logger.factory'
       - '@request_stack'
       - '@session'
       - '@sam.identity_manager'
+      - '@sam.sso_app_resolver'
+      - '@sam.provider_manager'
   sam.oidc_discovery:
     class: Drupal\sam\Service\OidcDiscoveryService
     arguments:

@@ -71,7 +71,7 @@ class SsoApp extends ConfigEntityBase implements SsoAppInterface {
   }
 
   public function getSettings(): array {
-    return $this->get('settings') ?? [];
+    return $this->settings['details'] ?? [];
   }
 
   public function getSetting(string $key, $default = NULL) {

@@ -2,7 +2,6 @@
 
 namespace Drupal\sam\Service;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
@@ -10,6 +9,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Drupal\sam\Service\IdentityManager;
+use Drupal\sam\Service\SsoAppResolver;
+use Drupal\sam\SsoProviderManager;
 
 /**
  * Manages the passwordless SSO login flow.
@@ -24,13 +25,6 @@ use Drupal\sam\Service\IdentityManager;
  * keeping .module files thin and declarative.
  */
 final class LoginFlowManager {
-
-  /**
-   * SAM module configuration.
-   *
-   * @var \Drupal\Core\Config\ImmutableConfig
-   */
-  protected $config;
 
   /**
    * Logger channel.
@@ -53,32 +47,55 @@ final class LoginFlowManager {
    */
   private SessionInterface $session;
 
+  /**
+   * Summary of identityManager
+   * @var \Drupal\sam\Service\IdentityManager IdentityManager
+   */
   protected IdentityManager $identityManager;
+
+  /**
+   * Summary of ssoAppResolver
+   * @var \Drupal\sam\Service\SsoAppResolver SsoAppResolver
+   */
+  protected SsoAppResolver $ssoAppResolver;
+
+  /**
+   * The SSO provider manager.
+   *
+   * @var \Drupal\sam\SsoProviderManager
+   */
+  protected $providerManager;
 
   /**
    * Constructs the LoginFlowManager.
    *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The config factory.
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   Logger factory.
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   Request stack service.
    * @param \Symfony\Component\HttpFoundation\Session\SessionInterface $session
    *   The session service.
+   * @param \Drupal\sam\Service\IdentityManager $identity_manager
+   *   The identityManager service.
+   * @param \Drupal\sam\Service\SsoAppResolver $sso_app_resolver
+   *   The ssoAppResolver service.
+   * @param \Drupal\sam\SsoProviderManager $provider_manager
+   *   The providerManger service.
    */
   public function __construct(
-    ConfigFactoryInterface $config_factory,
     LoggerChannelFactoryInterface $logger_factory,
     RequestStack $request_stack,
     SessionInterface $session,
     IdentityManager $identity_manager,
+    SsoAppResolver $sso_app_resolver,
+    SsoProviderManager $provider_manager,
   ) {
-    $this->config = $config_factory->get('sam.settings');
     $this->logger = $logger_factory->get('sam');
     $this->requestStack = $request_stack;
     $this->session = $session;
     $this->identityManager = $identity_manager;
+    $this->ssoAppResolver = $sso_app_resolver;
+    $this->providerManager = $provider_manager;
   }
 
   /**
@@ -90,9 +107,6 @@ final class LoginFlowManager {
    *   The form state.
    */
   public function alterLoginForm(array &$form, FormStateInterface $form_state): void {
-    if (!$this->isSsoActive()) {
-      return;
-    }
 
     // Remove password field (passwordless flow).
     unset($form['pass']);
@@ -121,38 +135,27 @@ final class LoginFlowManager {
   public function handleLoginFormSubmit(FormStateInterface $form_state): void {
     $email = trim((string) $form_state->getCompleteForm()['name']['#value']);
     
-
     if ($email === '') {
       $form_state->setErrorByName('name', t('Email is required.'));
       return;
     }
     
-    $userContext = $this->identityManager->resolveUserContextByEmail($email);
+    $app = $this->ssoAppResolver->resolveByEmail($email);
 
-    if ($userContext['exists'] === FALSE) {
+    if ($app === NULL) {
+      // No SSO app configured for this domain: fallback to normal login.
       return;
     }
 
-    if ($userContext['type'] === 'carrier' && $userContext['can_use_sso']) {
-      $this->session->set('sam_login_email', $email);
+    $this->session->set('sam_login_email', $email);
+    $this->session->set('sam_sso_app_id', $app->id());
 
-      // Resolve active provider.
-      $provider = $this->getActiveProvider();
+    $provider_id = $app->getProvider();
+    $provider = $this->providerManager->getProvider($provider_id);
 
-      if ($provider === NULL) {
-        $this->logger->error('SSO login attempted but no active provider is configured.');
-        $form_state->setErrorByName('name', t('SSO authentication is not properly configured.'));
-        return;
-      }
-
+    if ($provider !== NULL) {
       // Redirect to SSO authentication entry point.
-      $url = Url::fromRoute('sam.authenticate', [
-        'provider' => $provider,
-      ]);
-
-      $this->logger->info('Redirecting login request to SSO provider "{provider}".', [
-        'provider' => $provider,
-      ]);
+      $url = Url::fromRoute('sam.authenticate');
 
       $form_state->setResponse(
         new RedirectResponse($url->toString())
@@ -161,7 +164,8 @@ final class LoginFlowManager {
       $form_state->setRebuild(FALSE);
       $form_state->disableRedirect();
     }
-    else if ($userContext['type'] === 'client') {
+
+    else {
       $this->session->set('sam_login_email', $email);
 
       $url = Url::fromRoute('sam.client_auth_screen');
@@ -169,27 +173,6 @@ final class LoginFlowManager {
       $form_state->setRebuild(FALSE);
       $form_state->disableRedirect();
     }
-  }
-
-  /**
-   * Determines whether SSO is currently active.
-   *
-   * @return bool
-   *   TRUE if SSO authentication is enabled.
-   */
-  protected function isSsoActive(): bool {
-    return (bool) $this->config->get('sso_active');
-  }
-
-  /**
-   * Returns the active SSO provider ID.
-   *
-   * @return string|null
-   *   Provider ID or NULL if not configured.
-   */
-  protected function getActiveProvider(): ?string {
-    $provider = $this->config->get('active_provider');
-    return is_string($provider) && $provider !== '' ? $provider : NULL;
   }
 
   /**

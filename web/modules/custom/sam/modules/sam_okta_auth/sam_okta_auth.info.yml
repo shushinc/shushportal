@@ -1,0 +1,7 @@
+name: SAM Okta Auth0 OIDC 
+type: module
+description: Okta Auth0 OIDC provider for SAM.
+core_version_requirement: ^10
+package: SAM
+dependencies:
+  - sam_oidc:sam_oidc

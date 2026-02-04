@@ -167,14 +167,36 @@ class IdentityManager {
   }
 
   public function getEmailFromToken(string $token): bool|string {
-    $query = $this->connection->select('zcs_user_invitations', 'ui');
-    $query->addField('ui', 'email');
-    $query = $query->condition('ui.token', $token);
-    $email = $query->execute()->fetchField();
-    $email = strtolower($email);
-    if (filter_var($email, FILTER_VALIDATE_EMAIL) == FALSE) {
+    // query on zcs_user_invitations
+    $query1 = $this->connection->select('zcs_user_invitations', 'ui');
+    $query1->addField('ui', 'email');
+    $query1->condition('ui.token', $token);
+    $queries[] = $query1;
+
+    // query on zcs_client_member_invitations
+    $query2 = $this->connection->select('zcs_client_member_invitations', 'cmi');
+    $query2->addField('cmi', 'email');
+    $query2->condition('cmi.token', $token);
+    $queries[] = $query2;
+
+    // UNION the queries.
+    $union = array_shift($queries);
+    foreach ($queries as $query) {
+      $union->union($query);
+    }
+
+    $email = $union->execute()->fetchField();
+
+    if (!$email) {
       return FALSE;
     }
+
+    $email = strtolower(trim($email));
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      return FALSE;
+    }
+
     return $email;
   }
 

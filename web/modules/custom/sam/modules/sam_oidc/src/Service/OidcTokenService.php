@@ -52,7 +52,8 @@ final class OidcTokenService {
     string $expectedIssuer,
     string $expectedAudience,
     string $expectedNonce,
-    ?string $expectedHostedDomain = null
+    ?string $expectedHostedDomain = null,
+    string $expectedEmail,
   ):void {
     
     if (($claims['iss'] ?? null) !== $expectedIssuer) {
@@ -75,7 +76,7 @@ final class OidcTokenService {
       throw new \RuntimeException('Invalid hosted domain');
     }
 
-    if (empty($claims['email']) || empty($claims['email_verified'])) {
+    if (empty($claims['email']) || ($claims['email'] !== $expectedEmail)) {
       throw new \RuntimeException('Email not verified');
     }
 
@@ -88,7 +89,7 @@ final class OidcTokenService {
    * @throws \InvalidArgumentException
    * @return array
    */
-  public function decodeWithoutVerification(string $jwt): array {
+  public function decode(string $jwt): array {
     $parts = explode('.', $jwt);
     if (count($parts) !== 3) {
       throw new \InvalidArgumentException('Invalid JWT format: expected 3 parts.');

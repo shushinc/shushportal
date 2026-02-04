@@ -7,7 +7,7 @@ sam.config:
     _permission: 'administer site configuration'
 
 sam.authenticate:
-  path: '/sso/authenticate/{provider}'
+  path: '/sso/authenticate'
   defaults:
     _controller: '\Drupal\sam\Controller\SsoController::authenticate'
   requirements:

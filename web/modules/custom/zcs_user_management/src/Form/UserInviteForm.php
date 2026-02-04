@@ -12,16 +12,41 @@ use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Drupal\Core\Site\Settings;
 use Drupal\user\Entity\User;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-
+use Drupal\sam\Service\SsoAppResolver;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
 /**
  * Provides a zcs_user_management form.
  */
 final class UserInviteForm extends FormBase {
+
+
+  /**
+   * Summary of ssoAppResolver
+   * @var \Drupal\sam\Service\SsoAppResolver SsoAppResolver
+   */
+  protected SsoAppResolver $ssoAppResolver;
+
+  /**
+   * Constructs a new SamConfigForm object.
+   *
+   * @param \Drupal\sam\Service\SsoAppResolver $sso_app_resolver
+   *   The SSO provider manager.
+   */
+  public function __construct(SsoAppResolver $sso_app_resolver) {
+    $this->ssoAppResolver = $sso_app_resolver;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('sam.sso_app_resolver')
+    );
+  }
+
 
   /**
    * {@inheritdoc}
@@ -150,12 +175,10 @@ final class UserInviteForm extends FormBase {
    */
   public function sendInvitationMail(string $email, $roles, $token, $passkey, $user_name) {
 
-    $config = \Drupal::config('sam.settings');
-    $sso_active = $config->get('sso_active');
     $invitation_url = NULL;
-    $pass = $this->randomPassword();
+    $ssoApp = $this->ssoAppResolver->resolveByEmail($email);
 
-    if ($sso_active) {
+    if ($ssoApp !== NULL) {
       $invitation_url = Url::fromRoute('sam.sso_verify_invitation', [
         'token' => $token,
       ], ['absolute' => TRUE]);

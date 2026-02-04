@@ -1,16 +1,16 @@
-sam_google.settings:
+sam_okta_auth.settings:
   type: config_object
-  label: 'Google SSO settings'
+  label: 'Okta Auth0 SSO settings'
   mapping:
     issuer_url:
       type: string
-      label: 'Google Issuer URL'
+      label: 'Okta Auth0 Issuer URL'
     client_id:
       type: string
-      label: 'Google Client ID'
+      label: 'Okta Auth0 Client ID'
     client_secret:
       type: string
-      label: 'Google Client Secret'
+      label: 'Okta Auth0 Client Secret'
     callback_url:
       type: string
       label: 'SAM  App Callback URL'
