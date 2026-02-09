@@ -6,17 +6,13 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Access\AccessResult;
 use Drupal\user\Entity\User;
 use Drupal\group\Entity\Group;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Site\Settings;
+use Drupal\sam\Service\SsoAppResolver;
 
 /**
  * Class Create Client Member.
@@ -26,10 +22,17 @@ class AddClientMemberForm extends FormBase {
   protected $entityTypeManager;
 
   /**
+   * Summary of ssoAppResolver
+   * @var \Drupal\sam\Service\SsoAppResolver SsoAppResolver
+   */
+  protected SsoAppResolver $ssoAppResolver;
+
+  /**
    *
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, SsoAppResolver $sso_app_resolver) {
     $this->entityTypeManager = $entity_type_manager;
+    $this->ssoAppResolver = $sso_app_resolver;
   }
 
   /**
@@ -37,7 +40,8 @@ class AddClientMemberForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('sam.sso_app_resolver'),
     );
   }
 
@@ -153,8 +157,8 @@ class AddClientMemberForm extends FormBase {
     }
     
 
-    $save_invitation = $this->saveInvitation($client_id, $user_name, $user_email, $partner_role, $token);
-    $send_email = $this->sendInvitationMail($client_id, $user_name, $user_email, $partner_role, $token);
+    $this->saveInvitation($client_id, $user_name, $user_email, $partner_role, $token);
+    $this->sendInvitationMail($client_id, $user_name, $user_email, $partner_role, $token);
     $this->messenger()->addMessage($this->t('Invite is sent successfully.'));
   
     $form_state->setRedirectUrl(Url::fromRoute('view.client_memberships.page_1'));   
@@ -209,9 +213,20 @@ class AddClientMemberForm extends FormBase {
    *
    */
   public function sendInvitationMail($client_id, $user_name, $user_email, $partner_role, $token) {
-    $invitation_url = Url::fromRoute('zcs_client_management.verify_invitation', [
-      'token' => $token,
-    ], ['absolute' => TRUE]);
+
+    $ssoApp = $this->ssoAppResolver->resolveByEmail($user_email);
+    $invitation_url = NULL;
+
+    if ($ssoApp !== NULL) {
+      $invitation_url = Url::fromRoute('sam.sso_verify_invitation', [
+        'token' => $token,
+      ], ['absolute' => TRUE]);
+    } else {
+
+      $invitation_url = Url::fromRoute('zcs_client_management.verify_invitation', [
+          'token' => $token,
+      ], ['absolute' => TRUE]);
+    }
 
     $attributes = [
       'target' => '_blank',

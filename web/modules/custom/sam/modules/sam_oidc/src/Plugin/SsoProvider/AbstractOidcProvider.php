@@ -230,8 +230,8 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
       expectedIssuer: $this->getIssuer($app),
       expectedAudience: $this->getClientId($app),
       expectedNonce: $this->session->get('sam_oidc_nonce'),
-      expectedHostedDomain: $this->getHostedDomain($app),
       expectedEmail: $auth_email,
+      expectedHostedDomain: $this->getHostedDomain($app),
     );
 
     return [

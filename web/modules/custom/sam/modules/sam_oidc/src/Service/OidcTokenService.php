@@ -52,8 +52,8 @@ final class OidcTokenService {
     string $expectedIssuer,
     string $expectedAudience,
     string $expectedNonce,
-    ?string $expectedHostedDomain = null,
     string $expectedEmail,
+    ?string $expectedHostedDomain = null,
   ):void {
     
     if (($claims['iss'] ?? null) !== $expectedIssuer) {

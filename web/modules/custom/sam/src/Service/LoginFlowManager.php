@@ -144,34 +144,32 @@ final class LoginFlowManager {
 
     if ($app === NULL) {
       // No SSO app configured for this domain: fallback to normal login.
-      return;
-    }
-
-    $this->session->set('sam_login_email', $email);
-    $this->session->set('sam_sso_app_id', $app->id());
-
-    $provider_id = $app->getProvider();
-    $provider = $this->providerManager->getProvider($provider_id);
-
-    if ($provider !== NULL) {
-      // Redirect to SSO authentication entry point.
-      $url = Url::fromRoute('sam.authenticate');
-
-      $form_state->setResponse(
-        new RedirectResponse($url->toString())
-      );
-
-      $form_state->setRebuild(FALSE);
-      $form_state->disableRedirect();
-    }
-
-    else {
       $this->session->set('sam_login_email', $email);
 
       $url = Url::fromRoute('sam.client_auth_screen');
       $form_state->setResponse(new RedirectResponse($url->toString()));
       $form_state->setRebuild(FALSE);
       $form_state->disableRedirect();
+    }
+
+    else {
+      $this->session->set('sam_login_email', $email);
+      $this->session->set('sam_sso_app_id', $app->id());
+
+      $provider_id = $app->getProvider();
+      $provider = $this->providerManager->getProvider($provider_id);
+
+      if ($provider !== NULL) {
+        // Redirect to SSO authentication entry point.
+        $url = Url::fromRoute('sam.authenticate');
+
+        $form_state->setResponse(
+          new RedirectResponse($url->toString())
+        );
+
+        $form_state->setRebuild(FALSE);
+        $form_state->disableRedirect();
+      }
     }
   }
 

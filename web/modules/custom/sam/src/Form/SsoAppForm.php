@@ -145,7 +145,8 @@ class SsoAppForm extends EntityForm {
     $app->set('label', $form_state->getValue('label'));
     $app->set('domain', $form_state->getValue('domain'));
     $app->set('provider', $form_state->getValue('provider'));
-    $app->set('is_enabled',$form_state->getValue('is_enabled') ? 1 : 0);
+    $app->set('is_enabled',$app->get('is_enabled') ? TRUE : FALSE);
+    $app->set('status',$app->get('is_enabled') ? TRUE : FALSE);
 
     $provider = $this->providerManager->getProvider($app->getProvider());
     if ($provider) {
