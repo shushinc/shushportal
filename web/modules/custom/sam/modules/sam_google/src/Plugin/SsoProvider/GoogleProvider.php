@@ -44,7 +44,6 @@ final class GoogleProvider extends AbstractOidcProvider {
    * {@inheritdoc}
    */
   protected function getIssuer(SsoAppInterface $app): string {
-    // return 'https://accounts.google.com';
     return (string) $app->getSetting('issuer_url');
   }
 

@@ -106,7 +106,6 @@ class SsoAppForm extends EntityForm {
         $form_state,
         $app
       );
-      // $form['settings']['details'] = $provider->getConfigurationForm($form, $form_state, $app);
     }
 
     return parent::form($form, $form_state);
