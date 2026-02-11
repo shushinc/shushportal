@@ -1,0 +1,16 @@
+sam_google.settings:
+  type: config_object
+  label: 'Google SSO settings'
+  mapping:
+    issuer_url:
+      type: string
+      label: 'Google Issuer URL'
+    client_id:
+      type: string
+      label: 'Google Client ID'
+    client_secret:
+      type: string
+      label: 'Google Client Secret'
+    callback_url:
+      type: string
+      label: 'SAM  App Callback URL'

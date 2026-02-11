@@ -12,16 +12,41 @@ use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Drupal\Core\Site\Settings;
 use Drupal\user\Entity\User;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-
+use Drupal\sam\Service\SsoAppResolver;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
 /**
  * Provides a zcs_user_management form.
  */
 final class UserInviteForm extends FormBase {
+
+
+  /**
+   * Summary of ssoAppResolver
+   * @var \Drupal\sam\Service\SsoAppResolver SsoAppResolver
+   */
+  protected SsoAppResolver $ssoAppResolver;
+
+  /**
+   * Constructs a new SamConfigForm object.
+   *
+   * @param \Drupal\sam\Service\SsoAppResolver $sso_app_resolver
+   *   The SSO provider manager.
+   */
+  public function __construct(SsoAppResolver $sso_app_resolver) {
+    $this->ssoAppResolver = $sso_app_resolver;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('sam.sso_app_resolver')
+    );
+  }
+
 
   /**
    * {@inheritdoc}
@@ -128,7 +153,7 @@ final class UserInviteForm extends FormBase {
     $user->save();
     $user_roles_list = $this->getUserRolelableUsingRoleId($roles);
     $save_invitation = $this->saveInvitation($user_email, $user_roles_list, $token, $passkey, $user_name);
-    $send_emai = $this->sendInvitationMail($user_email,  $user_roles_list, $token, $passkey, $user_name);
+    $this->sendInvitationMail($user_email,  $user_roles_list, $token, $passkey, $user_name);
     $form_state->setRedirectUrl(Url::fromRoute('view.user_management.page_1'));
   }
 
@@ -150,10 +175,20 @@ final class UserInviteForm extends FormBase {
    */
   public function sendInvitationMail(string $email, $roles, $token, $passkey, $user_name) {
 
-    $pass = $this->randomPassword();
-    $invitation_url = Url::fromRoute('zcs_user_management.verify_invitation', [
-      'token' => $token,
-    ], ['absolute' => TRUE]);
+    $invitation_url = NULL;
+    $ssoApp = $this->ssoAppResolver->resolveByEmail($email);
+
+    if ($ssoApp !== NULL) {
+      $invitation_url = Url::fromRoute('sam.sso_verify_invitation', [
+        'token' => $token,
+      ], ['absolute' => TRUE]);
+    }
+    else {
+      $invitation_url = Url::fromRoute('zcs_user_management.verify_invitation', [
+        'token' => $token,
+      ], ['absolute' => TRUE]);
+    }
+
     $attributes = [
       'target' => '_blank',
       'style' => 'display: inline-block; padding: 12px 24px; font-size: 16px; color: #ffffff; text-decoration: none; font-weight: bold; background:#007bff; border-radius: 5px;',

@@ -90,6 +90,7 @@ main {
 }
 .user-invite,
 .user-login,
+.sso-authenticate-client,
 .user-register,
 .user-password,
 [class^="user-management-"],
@@ -138,6 +139,7 @@ main {
 .user-login,
 .user-register,
 .user-password,
+.sso-authenticate-client,
 .login {
   background: linear-gradient(
     171.52deg,
@@ -176,6 +178,41 @@ main {
       }
     }
     #block-shush-content {
+      #sam-login-wrapper {
+        .form-actions {
+          display: flex;
+          justify-content: center;
+          .form-submit {
+            font-family: "Poppins", sans-serif;
+            font-weight: 500;
+            display: inline-block;
+            text-transform: capitalize;
+            transition: all 0.3s;
+            position: relative;
+            font-size: 18px;
+            width: 100%;
+            padding: 10px 15px;
+            max-width: 400px;
+            background: rgba(17, 141, 240, 1);
+            border-radius: 10px;
+            color: $white;
+            border: 2px solid #118df0;
+            &:hover {
+              color: #118df0;
+            }
+            &.is-disabled {
+              background: #94c4eb;
+              border-color: #94c4eb;
+              &:hover {
+                background: #94c4eb!important;
+                border-color: #94c4eb!important;
+                color: #FFFFFF!important;
+              }
+            }
+          }
+        }
+        
+      }
       padding: 1rem;
       form {
         &.user-pass p {
@@ -189,6 +226,15 @@ main {
           color: $white;
           &:hover {
             color: #118df0;
+          }
+          &.is-disabled {
+            background: #94c4eb;
+            border-color: #94c4eb;
+            &:hover {
+              background: #94c4eb!important;
+              border-color: #94c4eb!important;
+              color: #FFFFFF!important;
+            }
           }
         }
       }

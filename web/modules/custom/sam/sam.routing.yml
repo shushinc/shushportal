@@ -1,0 +1,75 @@
+sam.config:
+  path: '/admin/config/people/multi-sso'
+  defaults:
+    _form: '\Drupal\sam\Form\SamConfigForm'
+    _title: 'Multi SSO Configuration'
+  requirements:
+    _permission: 'administer site configuration'
+
+sam.authenticate:
+  path: '/sso/authenticate'
+  defaults:
+    _controller: '\Drupal\sam\Controller\SsoController::authenticate'
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: true
+
+sam.callback:
+  path: '/sso/callback/{provider}'
+  defaults:
+    _controller: '\Drupal\sam\Controller\SsoController::callback'
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: true
+sam.client_auth_screen:
+  path: '/sso/authenticate/client'
+  defaults:
+    _form: '\Drupal\sam\Form\ClientPasswordForm'
+    _title: 'Log in'
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: true
+
+sam.sso_verify_invitation:
+  path: '/sso/invitation/{token}'
+  defaults:
+    _controller: '\Drupal\sam\Controller\SsoController::verifyInvitation'
+    _title: 'Moriarty SSO Authentication'
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: true
+entity.sam_sso_app.collection:
+  path: '/admin/config/people/multi-sso/apps'
+  defaults:
+    _entity_list: 'sam_sso_app'
+    _title: 'SSO Applications'
+  requirements:
+    _permission: 'administer sam sso'
+
+entity.sam_sso_app.add_form:
+  path: '/admin/config/people/multi-sso/apps/add'
+  defaults:
+    _entity_form: 'sam_sso_app.add'
+    _title: 'Add SSO Application'
+  requirements:
+    _permission: 'administer sam sso'
+
+entity.sam_sso_app.edit_form:
+  path: '/admin/config/people/multi-sso/apps/{sam_sso_app}'
+  defaults:
+    _entity_form: 'sam_sso_app.edit'
+    _title: 'Edit SSO Application'
+  requirements:
+    _permission: 'administer sam sso'
+
+entity.sam_sso_app.delete_form:
+  path: '/admin/config/people/multi-sso/apps/{sam_sso_app}/delete'
+  defaults:
+    _entity_form: 'sam_sso_app.delete'
+    _title: 'Delete SSO Application'
+  requirements:
+    _permission: 'administer sam sso'

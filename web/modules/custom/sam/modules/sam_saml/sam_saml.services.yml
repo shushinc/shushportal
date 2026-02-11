@@ -1,0 +1,3 @@
+services:
+  sam_saml.saml_provider:
+    class: Drupal\sam_saml\Plugin\SsoProvider\SamlProvider

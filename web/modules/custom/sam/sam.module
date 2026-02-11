@@ -1,0 +1,29 @@
+<?php
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function sam_form_user_login_form_alter(array &$form, FormStateInterface $form_state) {
+  $config = \Drupal::config('sam.settings');
+
+  /** @var \Drupal\sam\Service\LoginFlowManager $login_flow */
+  $login_flow = \Drupal::service('sam.login_flow_manager');
+
+  // Only alter the form if SSO flow is active.
+  if (!$config->get('sso_active')) {
+    return;
+  }
+
+  $login_flow->alterLoginForm($form, $form_state);
+}
+
+function _sam_user_login_sso_submit(array &$form, FormStateInterface $form_state) {
+  /** @var \Drupal\sam\Service\LoginFlowManager $login_flow */
+  $login_flow = \Drupal::service('sam.login_flow_manager');
+
+  $login_flow->handleLoginFormSubmit($form_state);
+}

@@ -1,0 +1,8 @@
+name: SSO Authentication Manager
+type: module
+description: 'Provides multiple Single Sign-On authentication methods through plugin system'
+package: Authentication
+core_version_requirement: ^10
+dependencies:
+  - drupal:user
+  - drupal:system

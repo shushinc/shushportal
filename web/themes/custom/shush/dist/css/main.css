@@ -838,6 +838,7 @@ main {
 
 .user-invite,
 .user-login,
+.sso-authenticate-client,
 .user-register,
 .user-password,
 [class^=user-management-],
@@ -849,6 +850,7 @@ main {
 }
 .user-invite main,
 .user-login main,
+.sso-authenticate-client main,
 .user-register main,
 .user-password main,
 [class^=user-management-] main,
@@ -860,6 +862,7 @@ main {
 }
 .user-invite main .layout-content,
 .user-login main .layout-content,
+.sso-authenticate-client main .layout-content,
 .user-register main .layout-content,
 .user-password main .layout-content,
 [class^=user-management-] main .layout-content,
@@ -900,6 +903,7 @@ main {
 .user-login,
 .user-register,
 .user-password,
+.sso-authenticate-client,
 .login {
   background: linear-gradient(171.52deg, #ffffff 28.65%, #f8fcff 47.55%, #b4dbfa 68.65%, #118df0 93.52%);
   width: 100%;
@@ -908,6 +912,7 @@ main {
 .user-login main,
 .user-register main,
 .user-password main,
+.sso-authenticate-client main,
 .login main {
   margin-top: 0;
   position: relative;
@@ -915,6 +920,7 @@ main {
 .user-login main .layout-content,
 .user-register main .layout-content,
 .user-password main .layout-content,
+.sso-authenticate-client main .layout-content,
 .login main .layout-content {
   padding: 0;
   box-shadow: none;
@@ -924,6 +930,7 @@ main {
 .user-login main #block-shush-page-title,
 .user-register main #block-shush-page-title,
 .user-password main #block-shush-page-title,
+.sso-authenticate-client main #block-shush-page-title,
 .login main #block-shush-page-title {
   text-align: center;
   padding: 20px;
@@ -932,6 +939,7 @@ main {
 .user-login main #block-shush-page-title::before,
 .user-register main #block-shush-page-title::before,
 .user-password main #block-shush-page-title::before,
+.sso-authenticate-client main #block-shush-page-title::before,
 .login main #block-shush-page-title::before {
   content: "";
   background: url(../images/login-icon.svg) no-repeat;
@@ -944,19 +952,74 @@ main {
 .user-login main #block-shush-page-title h1,
 .user-register main #block-shush-page-title h1,
 .user-password main #block-shush-page-title h1,
+.sso-authenticate-client main #block-shush-page-title h1,
 .login main #block-shush-page-title h1 {
   text-align: center;
   margin: 0 0 1rem;
 }
+.user-login main #block-shush-content #sam-login-wrapper .form-actions,
+.user-register main #block-shush-content #sam-login-wrapper .form-actions,
+.user-password main #block-shush-content #sam-login-wrapper .form-actions,
+.sso-authenticate-client main #block-shush-content #sam-login-wrapper .form-actions,
+.login main #block-shush-content #sam-login-wrapper .form-actions {
+  display: flex;
+  justify-content: center;
+}
+.user-login main #block-shush-content #sam-login-wrapper .form-actions .form-submit,
+.user-register main #block-shush-content #sam-login-wrapper .form-actions .form-submit,
+.user-password main #block-shush-content #sam-login-wrapper .form-actions .form-submit,
+.sso-authenticate-client main #block-shush-content #sam-login-wrapper .form-actions .form-submit,
+.login main #block-shush-content #sam-login-wrapper .form-actions .form-submit {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  display: inline-block;
+  text-transform: capitalize;
+  transition: all 0.3s;
+  position: relative;
+  font-size: 18px;
+  width: 100%;
+  padding: 10px 15px;
+  max-width: 400px;
+  background: rgb(17, 141, 240);
+  border-radius: 10px;
+  color: #ffffff;
+  border: 2px solid #118df0;
+}
+.user-login main #block-shush-content #sam-login-wrapper .form-actions .form-submit:hover,
+.user-register main #block-shush-content #sam-login-wrapper .form-actions .form-submit:hover,
+.user-password main #block-shush-content #sam-login-wrapper .form-actions .form-submit:hover,
+.sso-authenticate-client main #block-shush-content #sam-login-wrapper .form-actions .form-submit:hover,
+.login main #block-shush-content #sam-login-wrapper .form-actions .form-submit:hover {
+  color: #118df0;
+}
+.user-login main #block-shush-content #sam-login-wrapper .form-actions .form-submit.is-disabled,
+.user-register main #block-shush-content #sam-login-wrapper .form-actions .form-submit.is-disabled,
+.user-password main #block-shush-content #sam-login-wrapper .form-actions .form-submit.is-disabled,
+.sso-authenticate-client main #block-shush-content #sam-login-wrapper .form-actions .form-submit.is-disabled,
+.login main #block-shush-content #sam-login-wrapper .form-actions .form-submit.is-disabled {
+  background: #94c4eb;
+  border-color: #94c4eb;
+}
+.user-login main #block-shush-content #sam-login-wrapper .form-actions .form-submit.is-disabled:hover,
+.user-register main #block-shush-content #sam-login-wrapper .form-actions .form-submit.is-disabled:hover,
+.user-password main #block-shush-content #sam-login-wrapper .form-actions .form-submit.is-disabled:hover,
+.sso-authenticate-client main #block-shush-content #sam-login-wrapper .form-actions .form-submit.is-disabled:hover,
+.login main #block-shush-content #sam-login-wrapper .form-actions .form-submit.is-disabled:hover {
+  background: #94c4eb !important;
+  border-color: #94c4eb !important;
+  color: #FFFFFF !important;
+}
 .user-login main #block-shush-content,
 .user-register main #block-shush-content,
 .user-password main #block-shush-content,
+.sso-authenticate-client main #block-shush-content,
 .login main #block-shush-content {
   padding: 1rem;
 }
 .user-login main #block-shush-content form.user-pass p,
 .user-register main #block-shush-content form.user-pass p,
 .user-password main #block-shush-content form.user-pass p,
+.sso-authenticate-client main #block-shush-content form.user-pass p,
 .login main #block-shush-content form.user-pass p {
   color: rgb(163, 174, 208);
   letter-spacing: -0.2px;
@@ -964,6 +1027,7 @@ main {
 .user-login main #block-shush-content form #edit-actions .form-submit,
 .user-register main #block-shush-content form #edit-actions .form-submit,
 .user-password main #block-shush-content form #edit-actions .form-submit,
+.sso-authenticate-client main #block-shush-content form #edit-actions .form-submit,
 .login main #block-shush-content form #edit-actions .form-submit {
   max-width: 400px;
   background: rgb(17, 141, 240);
@@ -973,12 +1037,31 @@ main {
 .user-login main #block-shush-content form #edit-actions .form-submit:hover,
 .user-register main #block-shush-content form #edit-actions .form-submit:hover,
 .user-password main #block-shush-content form #edit-actions .form-submit:hover,
+.sso-authenticate-client main #block-shush-content form #edit-actions .form-submit:hover,
 .login main #block-shush-content form #edit-actions .form-submit:hover {
   color: #118df0;
+}
+.user-login main #block-shush-content form #edit-actions .form-submit.is-disabled,
+.user-register main #block-shush-content form #edit-actions .form-submit.is-disabled,
+.user-password main #block-shush-content form #edit-actions .form-submit.is-disabled,
+.sso-authenticate-client main #block-shush-content form #edit-actions .form-submit.is-disabled,
+.login main #block-shush-content form #edit-actions .form-submit.is-disabled {
+  background: #94c4eb;
+  border-color: #94c4eb;
+}
+.user-login main #block-shush-content form #edit-actions .form-submit.is-disabled:hover,
+.user-register main #block-shush-content form #edit-actions .form-submit.is-disabled:hover,
+.user-password main #block-shush-content form #edit-actions .form-submit.is-disabled:hover,
+.sso-authenticate-client main #block-shush-content form #edit-actions .form-submit.is-disabled:hover,
+.login main #block-shush-content form #edit-actions .form-submit.is-disabled:hover {
+  background: #94c4eb !important;
+  border-color: #94c4eb !important;
+  color: #FFFFFF !important;
 }
 .user-login main .login-footer-logo,
 .user-register main .login-footer-logo,
 .user-password main .login-footer-logo,
+.sso-authenticate-client main .login-footer-logo,
 .login main .login-footer-logo {
   position: absolute;
   bottom: 0;
@@ -2055,7 +2138,7 @@ table tbody td .text-bold {
 }
 
 .attribute-review .attributes-table th:nth-child(2) {
-  width: 50%;
+  width: 40%;
   text-align: left;
 }
 .attribute-review .attributes-table th:last-child, .attribute-review .attributes-table th:nth-child(3) {

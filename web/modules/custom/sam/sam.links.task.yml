@@ -1,0 +1,11 @@
+sam.multi_sso.apps_tab:
+  route_name: entity.sam_sso_app.collection
+  title: 'SSO Applications'
+  base_route: entity.sam_sso_app.collection
+  weight: 0
+
+sam.multi_sso.settings_tab:
+  route_name: sam.config
+  title: 'General settings'
+  base_route: entity.sam_sso_app.collection
+  weight: 10
