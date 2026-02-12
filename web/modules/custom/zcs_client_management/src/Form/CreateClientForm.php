@@ -356,6 +356,7 @@ class CreateClientForm extends FormBase {
     $client_point_of_contact = $form_state->getValue('client_point_of_contact');
     $agreement_effective_date = $form_state->getValue('agreement_effective_date');
     $industry = $form_state->getValue('industry');
+    $pricing_type = $form_state->getValue('pricing_type');
     $prepayment_amount = $form_state->getValue('prepayment_amount');
     $prepayment_balance_left = $form_state->getValue('prepayment_balance_left');
     $prepayment_balance_used= $form_state->getValue('prepayment_balance_used');
@@ -398,6 +399,7 @@ class CreateClientForm extends FormBase {
               'field_prepayment_balance_used' => $prepayment_balance_used,
               'field_currency' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
               'field_industry' => $industry,
+              'field_pricing_type' => $pricing_type,
               'field_apis_agreement_covers' => $encoded_data,
               'user_id' => \Drupal::currentUser()->id(),
               'created' => \Drupal::time()->getRequestTime(),
@@ -478,6 +480,7 @@ class CreateClientForm extends FormBase {
         'field_prepayment_balance_used' => $prepayment_balance_used,
         'field_currency' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
         'field_industry' => $industry,
+        'field_pricing_type' => $pricing_type,
         'field_apis_agreement_covers' => $encoded_data,
         'user_id' => \Drupal::currentUser()->id(),
         'created' => \Drupal::time()->getRequestTime(),
