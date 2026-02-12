@@ -145,6 +145,13 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
     $clientId = $app->getSetting('client_id');
     $redirectUri = $request->getSchemeAndHttpHost() . $app->getSetting('callback_uri');
 
+    \Drupal::logger('SSO Authentication Manager')->info('Client ID: @nid', [
+      '@nid' => $clientId,
+    ]);
+    \Drupal::logger('SSO Authentication Manager')->info('Redirect URI: @redirectUri', [
+      '@redirectUri' => $redirectUri,
+    ]);
+
     if (empty($clientId) || empty($redirectUri)) {
       throw new \RuntimeException('SSO app is missing required OIDC configuration.');
     }
@@ -171,6 +178,10 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
     $authorizationUrl =
       $discovery['authorization_endpoint']
       . '?' . http_build_query($query);
+
+    \Drupal::logger('SSO Authentication Manager')->info('Authorization URL: @authorizationUrl', [
+      '@authorizationUrl' => $authorizationUrl,
+    ]);
 
     $response = new TrustedRedirectResponse($authorizationUrl);
     $response->headers->addCacheControlDirective('no-store', TRUE);
