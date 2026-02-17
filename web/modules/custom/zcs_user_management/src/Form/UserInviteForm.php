@@ -26,7 +26,7 @@ final class UserInviteForm extends FormBase {
    * Summary of ssoAppResolver
    * @var \Drupal\sam\Service\SsoAppResolver SsoAppResolver
    */
-  protected SsoAppResolver $ssoAppResolver;
+  protected ?SsoAppResolver $ssoAppResolver;
 
   /**
    * Constructs a new SamConfigForm object.
@@ -34,7 +34,7 @@ final class UserInviteForm extends FormBase {
    * @param \Drupal\sam\Service\SsoAppResolver $sso_app_resolver
    *   The SSO provider manager.
    */
-  public function __construct(SsoAppResolver $sso_app_resolver) {
+  public function __construct(?SsoAppResolver $sso_app_resolver = NULL) {
     $this->ssoAppResolver = $sso_app_resolver;
   }
 
@@ -42,9 +42,14 @@ final class UserInviteForm extends FormBase {
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('sam.sso_app_resolver')
-    );
+
+    $resolver = NULL;
+
+    if ($container->has('sam.sso_app_resolver')) {
+      $resolver = $container->get('sam.sso_app_resolver');
+    }
+
+    return new static($resolver);
   }
 
 
@@ -176,7 +181,11 @@ final class UserInviteForm extends FormBase {
   public function sendInvitationMail(string $email, $roles, $token, $passkey, $user_name) {
 
     $invitation_url = NULL;
-    $ssoApp = $this->ssoAppResolver->resolveByEmail($email);
+    $ssoApp = NULL;
+
+    if ($this->ssoAppResolver !== NULL) {
+      $ssoApp = $this->ssoAppResolver->resolveByEmail($email);
+    }
 
     if ($ssoApp !== NULL) {
       $invitation_url = Url::fromRoute('sam.sso_verify_invitation', [

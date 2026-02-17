@@ -134,16 +134,22 @@ final class LoginFlowManager {
    */
   public function handleLoginFormSubmit(FormStateInterface $form_state): void {
     $email = trim((string) $form_state->getCompleteForm()['name']['#value']);
-    
+
     if ($email === '') {
       $form_state->setErrorByName('name', t('Email is required.'));
       return;
     }
-    
+
+    /**
+     * @var \Drupal\user\UserInterface
+     */
+    $user = user_load_by_mail($email);
     $app = $this->ssoAppResolver->resolveByEmail($email);
 
-    if ($app === NULL) {
-      // No SSO app configured for this domain: fallback to normal login.
+    if ($app === NULL || $user->hasRole('administrator')) {
+      // No SSO app configured for this domain OR
+      // User has the administrator role:
+      // fallback to normal login.
       $this->session->set('sam_login_email', $email);
 
       $url = Url::fromRoute('sam.client_auth_screen');

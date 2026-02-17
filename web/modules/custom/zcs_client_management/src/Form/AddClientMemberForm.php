@@ -25,12 +25,12 @@ class AddClientMemberForm extends FormBase {
    * Summary of ssoAppResolver
    * @var \Drupal\sam\Service\SsoAppResolver SsoAppResolver
    */
-  protected SsoAppResolver $ssoAppResolver;
+  protected ?SsoAppResolver $ssoAppResolver;
 
   /**
    *
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, SsoAppResolver $sso_app_resolver) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, ?SsoAppResolver $sso_app_resolver = NULL) {
     $this->entityTypeManager = $entity_type_manager;
     $this->ssoAppResolver = $sso_app_resolver;
   }
@@ -39,9 +39,17 @@ class AddClientMemberForm extends FormBase {
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
+
+    $resolver = NULL;
+    $entity_manager = $container->get('entity_type.manager');
+
+    if ($container->has('sam.sso_app_resolver')) {
+      $resolver = $container->get('sam.sso_app_resolver');
+    }
+
     return new static(
-      $container->get('entity_type.manager'),
-      $container->get('sam.sso_app_resolver'),
+      $entity_manager,
+      $resolver,
     );
   }
 
@@ -214,7 +222,11 @@ class AddClientMemberForm extends FormBase {
    */
   public function sendInvitationMail($client_id, $user_name, $user_email, $partner_role, $token) {
 
-    $ssoApp = $this->ssoAppResolver->resolveByEmail($user_email);
+    $ssoApp = NULL;
+    if ($this->ssoAppResolver !== NULL) {
+      $ssoApp = $this->ssoAppResolver->resolveByEmail($user_email);
+    }
+
     $invitation_url = NULL;
 
     if ($ssoApp !== NULL) {
