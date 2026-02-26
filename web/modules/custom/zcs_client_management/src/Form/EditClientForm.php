@@ -122,6 +122,7 @@ final class EditClientForm extends FormBase {
       '#required' => TRUE,
       '#attributes' => [
         'autocomplete' => 'off',
+        'readonly' => 'readonly',
       ],
       '#default_value' => $group->get('field_contact_name')->value ?? '',
     ];
