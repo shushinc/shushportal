@@ -53,9 +53,11 @@ function zcs_consent_install() {
  */
 function zcs_consent_uninstall() {
     $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
-    $menu_item_object = current($storage->loadByProperties(['title' => 'Consent Management']));
-    if($menu_item_object) {
-      $menu_item_object->delete();
+    $menu_items = $storage->loadByProperties(['title' => 'Consent Management']);
+    if (!empty($menu_items)) {
+      foreach ($menu_items as $menu_item) {
+        $menu_item->delete();
+      }
     }
 }
  
