@@ -140,7 +140,7 @@ class ProxyService {
       ) {
 
         $content = (string) $proxyResponse->getBody();
-        $content = $this->cachedContent($request, 'css', $content, $path, $queryString);
+        $content = $this->cachedContents($request, 'css', $content, $path, $queryString);
 
         // Create and return the response.
         $response = new Response(
@@ -158,7 +158,7 @@ class ProxyService {
         strpos($targetUrl, '.js') !== FALSE
       ) {
         $content = (string) $proxyResponse->getBody();
-        $content = $this->cachedContent($request, 'js', $content, $path, $queryString);
+        $content = $this->cachedContents($request, 'js', $content, $path, $queryString);
 
         // Create and return the response.
         $response = new Response(
@@ -288,6 +288,23 @@ class ProxyService {
       );
     }
     return $content;
+  }
+
+  private function cachedContents(Request $request, $type, $content, $path, $queryString) {
+    $config = $this->configFactory->get('metabase.settings');
+      if ($type == 'css') {
+        $css = "\r\n" . $config->get('overwrite.css');
+        if ($css) {
+          $content .= $css;
+        }
+      }
+      elseif ($type == 'js') {
+        $js = "\r\n" . $config->get('overwrite.js');
+        if ($js) {
+          $content .= $js;
+        }
+      }
+     return $content;
   }
 
 }
