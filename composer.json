@@ -10,6 +10,11 @@
     },
     "repositories": [
         {
+            "name": "asset-packagist",
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        },
+        {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
         },
@@ -28,9 +33,9 @@
         "drupal/apigee_edge": "^3.0",
         "drupal/change_pwd_page": "^2.0",
         "drupal/config_ignore": "^3.3",
-        "drupal/core-composer-scaffold": "^10.6",
-        "drupal/core-project-message": "^10.6",
-        "drupal/core-recommended": "^10.6",
+        "drupal/core-composer-scaffold": "^10.0",
+        "drupal/core-project-message": "^10.0",
+        "drupal/core-recommended": "^10.0",
         "drupal/core-vendor-hardening": "10.3.1",
         "drupal/country": "^2.0",
         "drupal/devel": "^5.0",
@@ -162,5 +167,8 @@
                 "      composer remove drupal/core-project-message"
             ]
         }
+    },
+    "require-dev": {
+        "mglaman/phpstan-drupal": "^2.0"
     }
 }
