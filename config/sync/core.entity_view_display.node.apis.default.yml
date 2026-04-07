@@ -9,7 +9,7 @@ dependencies:
     - field.field.node.apis.field_swagger
     - node.type.apis
   module:
-    - swagger_ui_formatter
+    - file
     - text
     - user
 _core:
@@ -27,24 +27,12 @@ content:
     weight: 0
     region: content
   field_swagger:
-    type: swagger_ui_file
-    label: hidden
+    type: file_default
+    label: above
     settings:
-      validator: default
-      validator_url: ''
-      doc_expansion: list
-      show_top_bar: false
-      sort_tags_by_name: false
-      supported_submit_methods:
-        get: get
-        put: put
-        post: post
-        delete: delete
-        options: options
-        head: head
-        patch: patch
+      use_description_as_link_text: true
     third_party_settings: {  }
-    weight: 1
+    weight: 2
     region: content
 hidden:
   field_image: true
