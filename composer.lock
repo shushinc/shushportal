@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9bdf083ff99ceb80a0fc3cc29b98f9e0",
+    "content-hash": "4a65f7a817a7e47195a37250e16e4d90",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3468,133 +3468,6 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/smtp",
                 "issues": "https://www.drupal.org/project/issues/smtp"
-            }
-        },
-        {
-            "name": "drupal/swagger_ui_formatter",
-            "version": "4.4.2",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/swagger_ui_formatter.git",
-                "reference": "4.4.2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/swagger_ui_formatter-4.4.2.zip",
-                "reference": "4.4.2",
-                "shasum": "81490d3f305aa77f0eba8f1bab9e36e8399f5dab"
-            },
-            "require": {
-                "drupal/core": "^10.4.5 || ^11.1.7",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
-            },
-            "require-dev": {
-                "composer/installers": "^2.2.0",
-                "drupal/devel": "^5.2.1",
-                "league/container": "<4.0.0 || >=4.2.2",
-                "mglaman/phpstan-drupal": "^1.3.8",
-                "npm-asset/swagger-ui-dist": "^5.29.2",
-                "phpstan/phpstan-deprecation-rules": "^1.2.1",
-                "pronovix/drupal-qa": "^4"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "4.4.2",
-                    "datestamp": "1759783363",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                },
-                "branch-alias": {
-                    "dev-master": "4.x-dev"
-                },
-                "composer-exit-on-patch-failure": true,
-                "composer-normalize": {
-                    "indent-size": 4,
-                    "indent-style": "space"
-                },
-                "drupal-scaffold": {
-                    "file-mapping": {
-                        "[web-root]/libraries/swagger-ui/dist/oauth2-redirect.html": "vendor/npm-asset/swagger-ui-dist/oauth2-redirect.html",
-                        "[web-root]/libraries/swagger-ui/dist/oauth2-redirect.js": "vendor/npm-asset/swagger-ui-dist/oauth2-redirect.js",
-                        "[web-root]/libraries/swagger-ui/dist/swagger-ui-bundle.js": "vendor/npm-asset/swagger-ui-dist/swagger-ui-bundle.js",
-                        "[web-root]/libraries/swagger-ui/dist/swagger-ui-standalone-preset.js": "vendor/npm-asset/swagger-ui-dist/swagger-ui-standalone-preset.js",
-                        "[web-root]/libraries/swagger-ui/dist/swagger-ui.css": "vendor/npm-asset/swagger-ui-dist/swagger-ui.css",
-                        "[web-root]/libraries/swagger-ui/package.json": "vendor/npm-asset/swagger-ui-dist/package.json",
-                        "[project-root]/.gitattributes": false
-                    }
-                },
-                "enable-patching": true,
-                "patchLevel": {
-                    "drupal/core": "-p2"
-                },
-                "patches-ignore": {
-                    "pronovix/drupal-qa": {
-                        "drupal/core": {
-                            "copy() can fail in FunctionalTestSetupTrait::prepareSettings() because of a race condition  [#3191369]": "https://git.drupalcode.org/project/drupal/-/merge_requests/218.diff"
-                        }
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Drupal\\swagger_ui_formatter\\": "./src/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "Drupal\\Tests\\swagger_ui_formatter\\": "./tests/src",
-                    "Drupal\\swagger_ui_formatter_test\\": "./tests/modules/swagger_ui_formatter_test/src"
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "ajay_reddy",
-                    "homepage": "https://www.drupal.org/user/3261994"
-                },
-                {
-                    "name": "balazswmann",
-                    "homepage": "https://www.drupal.org/user/2204810"
-                },
-                {
-                    "name": "drupal.dinesh",
-                    "homepage": "https://www.drupal.org/user/3378060"
-                },
-                {
-                    "name": "dsudheesh",
-                    "homepage": "https://www.drupal.org/user/956506"
-                },
-                {
-                    "name": "lizlynch",
-                    "homepage": "https://www.drupal.org/user/3569234"
-                },
-                {
-                    "name": "mxr576",
-                    "homepage": "https://www.drupal.org/user/315522"
-                },
-                {
-                    "name": "pronovix",
-                    "homepage": "https://www.drupal.org/user/3834019"
-                }
-            ],
-            "description": "Provides a Swagger UI field formatter for File and Link fields.",
-            "homepage": "https://www.drupal.org/project/swagger_ui_formatter",
-            "keywords": [
-                "API docs",
-                "Drupal",
-                "OpenAPI",
-                "Swagger"
-            ],
-            "support": {
-                "source": "https://github.com/Pronovix/swagger_ui_formatter",
-                "issues": "https://github.com/Pronovix/swagger_ui_formatter/issues",
-                "docs": "https://www.drupal.org/docs/8/modules/swagger-ui-field-formatter"
             }
         },
         {
