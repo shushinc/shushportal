@@ -30,7 +30,6 @@
         "cweagans/composer-patches": "^1.7",
         "drupal/address": "^2.0",
         "drupal/admin_toolbar": "^3.6",
-        "drupal/apigee_edge": "^3.0",
         "drupal/change_pwd_page": "^2.0",
         "drupal/config_ignore": "^3.3",
         "drupal/core-composer-scaffold": "^10.0",
@@ -79,7 +78,6 @@
             "oomphinc/composer-installers-extender": true,
             "php-http/discovery": true,
             "phpstan/extension-installer": true,
-            "pronovix/drupal-qa": true,
             "tbachert/spi": true,
             "wikimedia/composer-merge-plugin": true,
             "zaporylie/composer-drupal-optimizations": true
@@ -167,8 +165,5 @@
                 "      composer remove drupal/core-project-message"
             ]
         }
-    },
-    "require-dev": {
-        "mglaman/phpstan-drupal": "^2.0"
     }
 }
