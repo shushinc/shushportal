@@ -62,6 +62,10 @@ class UpdateRevenue  {
           'full_billable_transaction_count' => $node->get('field_success_api_volume_in_mil')->value,
           'half_billable_transaction_count' => $node->get('field_error_api_volume_in_mil')->value,
        ];
+       \Drupal::logger('revenue_node_calculation')->notice(
+        'revenue_node_calculation: <pre>@result</pre>',
+        ['@result' => print_r($revenue_node_calculation, TRUE)]
+      );
        $rate_sheet_result = $this->getProposedPricingSheetData();
        $data = $this->getDiscountSheetData($gid);
        if (!empty($rate_sheet_result)) {
@@ -187,9 +191,9 @@ class UpdateRevenue  {
         ['@result' => print_r($perform_calculation_data, TRUE)]
       );
       $final_pricing = 0;
+      $markup_percentage = 0;
       foreach ($perform_calculation_data as $data) {
         $pricing_per_api_call = $data['price'];
-        $markup_percentage = 0;
         if($data['partner_type'] == 'enterprise') {
           $markup_percentage = $data['retail_markup_percentage'];
           $line_price =
@@ -197,7 +201,7 @@ class UpdateRevenue  {
           ($data['half_billable_transaction_count'] * $pricing_per_api_call / 2))
           * (1+$markup_percentage/100) * (1-$data['discount_price']/100);
         } 
-        if($data['partner_type'] == 'demand_partner') {
+        if ($data['partner_type'] == 'demand_partner') {
           $line_price =
           (($data['full_billable_transaction_count'] * $pricing_per_api_call) + 
           ($data['half_billable_transaction_count'] * $pricing_per_api_call / 2))

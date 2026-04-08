@@ -75,6 +75,11 @@ class AnalyticsPostController extends ControllerBase {
     $response = [];
     if ($contents) {
       foreach ($contents as $key => $content) {
+        \Drupal::logger('analytics_node_post_data')->notice(
+          'analytics_node_post_data: <pre>@result</pre>',
+          ['@result' => print_r($content, TRUE)]
+        );
+
         $node = Node::create(['type' => 'analytics']);
         $node->set('title', $content['carrier_name']);
         $node->set('uid', key($user));
