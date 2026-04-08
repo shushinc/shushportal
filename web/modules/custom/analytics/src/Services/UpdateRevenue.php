@@ -60,7 +60,7 @@ class UpdateRevenue  {
           'price_type' => $pricing_type,
           'date' => $node->get('field_date')->value,
           'full_billable_transaction_count' => $node->get('field_success_api_volume_in_mil')->value,
-          'half_billable_transaction_count' => $node->get('field_error_api_volume_in_mil')->value,
+          'half_billable_transaction_count' => $node->get('field_404_api_volume_in_mil')->value,
        ];
        \Drupal::logger('revenue_node_calculation')->notice(
         'revenue_node_calculation: <pre>@result</pre>',
