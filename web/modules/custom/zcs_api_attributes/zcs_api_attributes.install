@@ -641,3 +641,116 @@ function zcs_api_attributes_update_9011() {
     }
   }
 }
+
+/**
+ * Adding new tables to add the new client/ratesheet structure.
+ */
+function zcs_api_attributes_update_9012() {
+
+  $tables['client_ratesheet'] = [
+    'description' => 'Table for storing information about client rate sheet.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique aggregator static ID.',
+      ],
+      'submit_by' => [
+        'description' => 'Submitter User ID.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'currency_locale' => [
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Currency of the attributes page.',
+      ],
+      'rate_sheet_data' => [
+        'type' => 'blob',
+        'size' => 'big',
+        'not null' => FALSE,
+        'description' => 'Rate sheet API Attributes data.',
+      ],
+      'client_id' => [
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Client id.',
+      ],
+      'client_name' => [
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Client Name.',
+      ],
+      'created' => [
+        'description' => 'Rate Sheet Created date.',
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'updated' => [
+        'description' => 'Rate Sheet Updated date.',
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+
+  $tables['client_ratesheet_action_log'] = [
+    'description' => 'Table for storing information about client rate sheet.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique aggregator static ID.',
+      ],
+      'user_id' => [
+        'description' => 'Submitter User ID.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ],
+      'client_ratesheet_id' => [
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Client rate sheet id.',
+      ],
+      'status' => [
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Action Status name.',
+      ],
+      'created' => [
+        'description' => 'Rate Sheet created date.',
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+
+  $database = \Drupal::database()->schema();
+  foreach ($tables as $table_name => $table) {
+  
+    if (!$database->tableExists($table_name)) {
+      $database->createTable($table_name, $table);
+    }
+  }
+
+}

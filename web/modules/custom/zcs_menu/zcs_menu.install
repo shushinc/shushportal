@@ -199,71 +199,87 @@ function zcs_menu_install() {
   $pricing_parent_id = 'menu_link_content:' . $price_parent_menu_link->uuid();
   
   
-         // Create the child menu link.
-         $pricing_menu_child_link1 = MenuLinkContent::create([
-            'title' => 'Pricing History',
-            'link' => ['uri' => 'internal:/pricing/history'], // Adjust path as needed.
-            'menu_name' => $menu_name,
-            'parent' => $pricing_parent_id, // Set the parent ID.
-            'weight' => 10,
-            'menu_per_role__show_role' => [
-              'administrator',
-              'carrier_admin',
-              'finance_admin',
-              'financial_rate_sheet_approval_level_1',
-              'financial_rate_sheet_approval_level_2',
-            ],
-            ]);
-            $pricing_menu_child_link1->save();
+  // Create the child menu link.
+  $pricing_menu_child_link1 = MenuLinkContent::create([
+    'title' => 'Pricing History',
+    'link' => ['uri' => 'internal:/pricing/history'], // Adjust path as needed.
+    'menu_name' => $menu_name,
+    'parent' => $pricing_parent_id, // Set the parent ID.
+    'weight' => 10,
+    'menu_per_role__show_role' => [
+      'administrator',
+      'carrier_admin',
+      'finance_admin',
+      'financial_rate_sheet_approval_level_1',
+      'financial_rate_sheet_approval_level_2',
+    ],
+  ]);
+  $pricing_menu_child_link1->save();
 
-              // Create the child menu link.
-         $pricing_menu_child_link2 = MenuLinkContent::create([
-            'title' => 'Pricing Review',
-            'link' => ['uri' => 'internal:/pricing/review'], // Adjust path as needed.
-            'menu_name' => $menu_name,
-            'parent' => $pricing_parent_id, // Set the parent ID.
-            'weight' => 11,
-            'menu_per_role__show_role' => [
-                'administrator',
-                'carrier_admin',
-                'finance_admin',
-                'financial_rate_sheet_approval_level_1',
-                'financial_rate_sheet_approval_level_2',
-            ],
-            ]);
-            $pricing_menu_child_link2->save();
+  // Create the child menu link.
+  $pricing_menu_child_link2 = MenuLinkContent::create([
+    'title' => 'Pricing Review',
+    'link' => ['uri' => 'internal:/pricing/review'], // Adjust path as needed.
+    'menu_name' => $menu_name,
+    'parent' => $pricing_parent_id, // Set the parent ID.
+    'weight' => 11,
+    'menu_per_role__show_role' => [
+      'administrator',
+      'carrier_admin',
+      'finance_admin',
+      'financial_rate_sheet_approval_level_1',
+      'financial_rate_sheet_approval_level_2',
+    ],
+  ]);
+  $pricing_menu_child_link2->save();
 
-            $pricing_menu_child_link3 = MenuLinkContent::create([
-              'title' => 'Pricing Discount',
-              'link' => ['uri' => 'internal:/pricing/discount'], // Adjust path as needed.
-              'menu_name' => $menu_name,
-              'parent' => $pricing_parent_id, // Set the parent ID.
-              'weight' => 12,
-              'menu_per_role__show_role' => [
-                  'administrator',
-                  'carrier_admin',
-                  'finance_admin',
-                  'financial_rate_sheet_approval_level_1',
-                  'financial_rate_sheet_approval_level_2',
-              ],
-              ]);
-              $pricing_menu_child_link3->save();
+  $pricing_menu_child_link3 = MenuLinkContent::create([
+    'title' => 'Pricing Discount',
+    'link' => ['uri' => 'internal:/pricing/discount'], // Adjust path as needed.
+    'menu_name' => $menu_name,
+    'parent' => $pricing_parent_id, // Set the parent ID.
+    'weight' => 12,
+    'menu_per_role__show_role' => [
+      'administrator',
+      'carrier_admin',
+      'finance_admin',
+      'financial_rate_sheet_approval_level_1',
+      'financial_rate_sheet_approval_level_2',
+    ],
+  ]);
+  $pricing_menu_child_link3->save();
 
-              $pricing_menu_child_link4 = MenuLinkContent::create([
-                'title' => 'Pricing Discount Review',
-                'link' => ['uri' => 'internal:/pricing/discount-review'], // Adjust path as needed.
-                'menu_name' => $menu_name,
-                'parent' => $pricing_parent_id, // Set the parent ID.
-                'weight' => 13,
-                'menu_per_role__show_role' => [
-                    'administrator',
-                    'carrier_admin',
-                    'finance_admin',
-                    'financial_rate_sheet_approval_level_1',
-                    'financial_rate_sheet_approval_level_2',
-                ],
-                ]);
-                $pricing_menu_child_link4->save();
+  $pricing_menu_child_link4 = MenuLinkContent::create([
+    'title' => 'Pricing Discount Review',
+    'link' => ['uri' => 'internal:/pricing/discount-review'], // Adjust path as needed.
+    'menu_name' => $menu_name,
+    'parent' => $pricing_parent_id, // Set the parent ID.
+    'weight' => 13,
+    'menu_per_role__show_role' => [
+      'administrator',
+      'carrier_admin',
+      'finance_admin',
+      'financial_rate_sheet_approval_level_1',
+      'financial_rate_sheet_approval_level_2',
+    ],
+  ]);
+  $pricing_menu_child_link4->save();
+
+  $pricing_menu_child_link5 = MenuLinkContent::create([
+    'title' => 'Client Rate Sheet',
+    'link' => ['uri' => 'internal:/pricing/client-rate-sheet'],
+    'menu_name' => $menu_name,
+    'parent' => $pricing_parent_id, // Set the parent ID.
+    'weight' => 14,
+    'menu_per_role__show_role' => [
+      'administrator',
+      'carrier_admin',
+      'finance_admin',
+      'financial_rate_sheet_approval_level_1',
+      'financial_rate_sheet_approval_level_2',
+    ],
+  ]);
+  $pricing_menu_child_link5->save();
 
   // Create the parent menu link.
   $use_case_review_parent_menu_link = MenuLinkContent::create([
