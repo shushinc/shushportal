@@ -37,6 +37,7 @@
         "drupal/email_registration": "^1.4",
         "drupal/ginvite": "^4.0@RC",
         "drupal/group": "^3.2",
+        "drupal/json_field": "^1.7",
         "drupal/login_onlyemail": "^2.0",
         "drupal/mailsystem": "^4.4",
         "drupal/menu_link_attributes": "^1.3",
