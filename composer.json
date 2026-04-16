@@ -30,6 +30,7 @@
         "cweagans/composer-patches": "^1.7",
         "doctrine/annotations": "^1.14",
         "drupal/address": "^2.0",
+        "drupal/admin_toolbar": "^3.6",
         "drupal/change_pwd_page": "^2.0",
         "drupal/config_ignore": "^3.3",
         "drupal/core-composer-scaffold": "^10.0",
