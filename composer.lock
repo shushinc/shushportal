@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f12063723238f169d45c552b5dcbd003",
+    "content-hash": "0b2e7ff785d74d87d567822a5920f4a2",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -212,21 +212,6 @@
                 "source": "https://github.com/aws/aws-sdk-php/tree/3.379.1"
             },
             "time": "2026-04-16T18:06:02+00:00"
-        },
-        {
-            "name": "bower-asset/swagger-ui",
-            "version": "v4.19.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/swagger-api/swagger-ui.git",
-                "reference": "92ffd76d15671954c239fdefb43d1951e06f8bb5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/92ffd76d15671954c239fdefb43d1951e06f8bb5",
-                "reference": "92ffd76d15671954c239fdefb43d1951e06f8bb5"
-            },
-            "type": "bower-asset"
         },
         {
             "name": "chi-teck/drupal-code-generator",
