@@ -133,8 +133,7 @@
         "merge-plugin": {
             "include": [
                 "core/composer.json",
-                "web/modules/contrib/webform/composer.libraries.json",
-                "web/modules/contrib/swagger_ui_formatter/composer.json"
+                "web/modules/contrib/webform/composer.libraries.json"
             ],
             "recurse": false,
             "replace": false,
