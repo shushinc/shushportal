@@ -12,6 +12,7 @@ use Drupal\Core\Url;
 use Drupal\group\Entity\Group;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use NumberFormatter;
 
 /**
  * Provides a zcs_client_management edit form.
@@ -401,8 +402,7 @@ final class EditClientForm extends FormBase {
     $prepayment_balance_left = $form_state->getValue('prepayment_balance_left');
     $prepayment_balance_used = $form_state->getValue('prepayment_balance_used');
     $pricing_type = $form_state->getValue('pricing_type');
-    $currency = $form_state->getValue('currencies');
-
+ 
     $gid = $this->request->get('id');
     $group = Group::load($gid);
 
@@ -420,7 +420,7 @@ final class EditClientForm extends FormBase {
     $group->set('field_prepayment_amount', $prepayment_amount);
     $group->set('field_prepayment_balance_left', $prepayment_balance_left);
     $group->set('field_prepayment_balance_used', $prepayment_balance_used);
-
+    $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
     $group->set('field_currency', $currency);
     $group->set('field_industry', $industry);
     $group->set('field_apis_agreement_covers', $encoded_data);
