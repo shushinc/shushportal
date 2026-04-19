@@ -3,3 +3,8 @@ services:
     class: Drupal\zcs_api_attributes\Commands\CreateAttributeDrushCommands
     tags:
       - { name: drush.command }
+  zcs_api_attributes.update_endpoint_attribute_drush_command:
+    class: Drupal\zcs_api_attributes\Commands\UpdateAttributeEndpoint
+    tags:
+      - { name: drush.command }
+

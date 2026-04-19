@@ -1,0 +1,7 @@
+name: SAM OIDC
+type: module
+description: Base OpenID Connect provider for the SSO Authentication Manager.
+core_version_requirement: ^10
+package: SAM
+dependencies:
+  - sam:sam

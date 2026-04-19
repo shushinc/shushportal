@@ -1,0 +1,192 @@
+{
+    "apis_attributes": [
+      {
+        "name": "Silent Authentication",
+        "endpoint": "/silent-authentication/v0/retrieve-ip-address"
+      },
+      {
+        "name": "Zero Trust Silent Authentication",
+        "endpoint": "/silent-authentication/v0/verify-ip-address"
+      },
+      {
+        "name": "CAMARA Number Verification / Number Share",
+        "endpoint": "/number-verification/v0/retrieve_phone_number"
+      },
+      {
+        "name": "CAMARA Number Verification / Zero Trust",
+        "endpoint": "/number-verification/v0/verify_phone_number"
+      },
+      {
+        "name": "TS.43 Silent Authentication",
+        "endpoint": "/silent-authentication/v2/ts43-retrieve-phone-number"
+      },
+      {
+        "name": "TS.43 Zero Trust Silent Authentication",
+        "endpoint": "/silent-authentication/v2/ts43-verify-phone-number"
+      },
+      {
+        "name": "Number Verify",
+        "endpoint": "/number-verification/v0/verify-number"
+      },
+      {
+        "name": "Name Verify (First and Last)",
+        "endpoint": "/customer-verification/v0/verify-name"
+      },
+      {
+        "name": "Billing Address Verify",
+        "endpoint": "/customer-verification/v0/verify-billing-address"
+      },
+      {
+        "name": "Email Address Verify",
+        "endpoint": "/customer-verification/v0/verify-email-address"
+      },
+      {
+        "name": "Age Verify",
+        "endpoint": "/customer-verification/v0/verify-age"
+      },
+      {
+        "name": "Customer Verification Bundle (8-11)",
+        "endpoint": "/customer-verification/v0/verify-bundle"
+      },
+      {
+        "name": "Customer Type",
+        "endpoint": "/account-status/v0/retrieve-customer-type"
+      },
+      {
+        "name": "Account Type",
+        "endpoint": "/account-status/v0/retrieve-account-type"
+      },
+      {
+        "name": "Primary Account Holder",
+        "endpoint": "/account-status/v0/retrieve-primary-account-holder"
+      },
+      {
+        "name": "Service Activation Date",
+        "endpoint": "/account-status/v0/retrieve-service-activation-date"
+      },
+      {
+        "name": "Subscriber Account Status",
+        "endpoint": "/account-status/v0/retrieve-subscriber-account-status"
+      },
+      {
+        "name": "Account Status Bundle (13-17)",
+        "endpoint": "/account-status/v0/retrieve-bundle"
+      },
+      {
+        "name": "Last Mobile Number Change Date",
+        "endpoint": "/account-status-change/v0/retrieve-last-number-change-date"
+      },
+      {
+        "name": "Subscription Status Change Date",
+        "endpoint": "/account-status-change/v0/retrieve-subscription-status-change-date"
+      },
+      {
+        "name": "Last Primary Name Change Date",
+        "endpoint": "/account-status-change/v0/retrieve-last-primary-name-change-date"
+      },
+      {
+        "name": "Last Billing Address Change Date",
+        "endpoint": "/account-status-change/v0/retrieve-last-billing-address-change-date"
+      },
+      {
+        "name": "MSISDN Porting Status",
+        "endpoint": "/account-status-change/v0/retrieve-msisdn-porting-status"
+      },
+      {
+        "name": "Account Status Change Bundle (19-23)",
+        "endpoint": "/account-status-change/v0/retrieve-bundle"
+      },
+      {
+        "name": "IMEI Activation Date",
+        "endpoint": "/device-sim-status/v0/retrieve-imei-activation-date"
+      },
+      {
+        "name": "IMEI Change Date",
+        "endpoint": "/device-sim-status/v0/retrieve-imei-change-date"
+      },
+      {
+        "name": "IMEI Lookup",
+        "endpoint": "/device-sim-status/v0/retrieve-imei"
+      },
+      {
+        "name": "MSISDN / IMSI Activation Date",
+        "endpoint": "/device-sim-status/v0/retrieve-imsi-activation-date"
+      },
+      {
+        "name": "Device Lost / Stolen Indicator",
+        "endpoint": "/device-sim-status/v0/retrieve-device-lost-stolen-status"
+      },
+      {
+        "name": "Device Lost / Stolen Date",
+        "endpoint": "/device-sim-status/v0/retrieve-device-lost-stolen-date"
+      },
+      {
+        "name": "Device Sim Status Bundle",
+        "endpoint": "/device-sim-status/v0/retrieve-bundle"
+      },
+      {
+        "name": "CAMARA Device Status / Connectivity",
+        "endpoint": "/device-status/v0/connectivity"
+      },
+      {
+        "name": "SIM Swap Date",
+        "endpoint": "/device-sim-status/v0/retrieve-imsi-change-date"
+      },
+      {
+        "name": "SIM Swap Date Verify",
+        "endpoint": "/device-sim-status/v0/check-sim-swap"
+      },
+      {
+        "name": "CAMARA SIM Swap / Date Retrieval",
+        "endpoint": "/sim-swap/v0/retrieve-date"
+      },
+      {
+        "name": "CAMARA SIM Swap / Date Verification",
+        "endpoint": "/sim-swap/v0/check"
+      },
+      {
+        "name": "Call Forwarding Indicator",
+        "endpoint": "/routing-status/v0/retrieve-call-forwarding"
+      },
+      {
+        "name": "Roaming Status",
+        "endpoint": "/routing-status/v0/retrieve-roaming-status"
+      },
+      {
+        "name": "Routing Status Bundle (37 & 38)",
+        "endpoint": "/routing-status/v0/retrieve-bundle"
+      },
+      {
+        "name": "CAMARA Device Status / Roaming",
+        "endpoint": "/device-status/v0/roaming"
+      },
+      {
+        "name": "Inbound Call",
+        "endpoint": "/in-call-state/v0/retrieve-active-inbound"
+      },
+      {
+        "name": "Outbound Call",
+        "endpoint": "/in-call-state/v0/retrieve-active-outbound"
+      },
+      {
+        "name": "In Call State Bundle (41, 42)",
+        "endpoint": "/in-call-state/v0/retrieve-bundle"
+      },
+      {
+        "name": "Device Location",
+        "endpoint": "/device-location/v0/retrieve-device-location"
+      },
+      {
+        "name": "Device Location Verify",
+        "endpoint": "/device-location/v0/verify-device-location"
+      },
+      {
+        "name": "CAMARA Device Location Retrieval",
+        "endpoint": "/location-retrieval/v0/retrieve"
+      },
+      {
+        "name": "CAMARA Device Location Verification",
+        "endpoint": "/location-verification/v0/verify"
+      }
+    ]
+  }

@@ -24,20 +24,27 @@ function zcs_consent_install() {
    $parent_id = 'menu_link_content:' . $carrier_menu_link->uuid();
  }
 
- $consent_menu_link = MenuLinkContent::create([
-    'title' => 'Consent Management',
-    'link' => ['uri' => 'internal:/consent'],
-    'menu_per_role__show_role' => [
-       'authenticated',
-       'administrator',
-       'carrier_admin',
-    ],
-    'parent' => $parent_id,
-    'menu_name' => $menu_name,
-    'expanded' => TRUE,
-    'weight' => 15,
-  ]);
-  $consent_menu_link->save();    
+ $consent_menu_link = \Drupal::entityTypeManager()->getStorage('menu_link_content')->loadByProperties([
+  'menu_name' => $menu_name,
+  'title' => 'Consent Management',
+ ]);
+
+ if (empty($consent_menu_link)) {
+    $consent_menu_link = MenuLinkContent::create([
+      'title' => 'Consent Management',
+      'link' => ['uri' => 'internal:/consent'],
+      'menu_per_role__show_role' => [
+        'authenticated',
+        'administrator',
+        'carrier_admin',
+      ],
+      'parent' => $parent_id,
+      'menu_name' => $menu_name,
+      'expanded' => TRUE,
+      'weight' => 15,
+    ]);
+    $consent_menu_link->save();  
+ }  
 }
 
 
@@ -46,9 +53,11 @@ function zcs_consent_install() {
  */
 function zcs_consent_uninstall() {
     $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
-    $menu_item_object = current($storage->loadByProperties(['title' => 'Consent']));
-    if($menu_item_object) {
-      $menu_item_object->delete();
+    $menu_items = $storage->loadByProperties(['title' => 'Consent Management']);
+    if (!empty($menu_items)) {
+      foreach ($menu_items as $menu_item) {
+        $menu_item->delete();
+      }
     }
 }
  

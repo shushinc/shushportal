@@ -1,0 +1,74 @@
+<?php
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function sam_form_user_login_form_alter(array &$form, FormStateInterface $form_state) {
+  $config = \Drupal::config('sam.settings');
+
+  /** @var \Drupal\sam\Service\LoginFlowManager $login_flow */
+  $login_flow = \Drupal::service('sam.login_flow_manager');
+
+  // Only alter the form if SSO flow is active.
+  if (!$config->get('sso_active')) {
+    return;
+  }
+
+  $login_flow->alterLoginForm($form, $form_state);
+}
+
+function _sam_user_login_sso_submit(array &$form, FormStateInterface $form_state) {
+  /** @var \Drupal\sam\Service\LoginFlowManager $login_flow */
+  $login_flow = \Drupal::service('sam.login_flow_manager');
+
+  $login_flow->handleLoginFormSubmit($form_state);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function sam_form_user_pass_alter(&$form, FormStateInterface $form_state) {
+
+
+  if (!\Drupal::hasService('sam.sso_app_resolver')) {
+    return;
+  }
+
+  // /** @var \Drupal\sam\Service\SsoAppResolver $resolver */
+  $resolver = \Drupal::service('sam.sso_app_resolver');
+  $email = '';
+
+  if (!empty($form['name']['#default_value'])) {
+    $email = $form['name']['#default_value'];
+  }
+
+  if ($form_state->getValue('name')) {
+    $email = $form_state->getValue('name');
+  }
+
+  if (empty($email)) {
+    return;
+  }
+
+  $app = $resolver->resolveByEmail($email);
+  if ($app !== NULL && $app->isEnabled()) {
+
+    // Disable submit button.
+    $form['actions']['submit']['#disabled'] = TRUE;
+
+    // Add warning message.
+    $form['sso_warning'] = [
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => ['messages', 'messages--error'],
+        'role' => 'alert',
+      ],
+      'content' => [
+        '#markup' => t('Password reset is not available for this email domain because it is managed via Single Sign-On (SSO). Please contact your administrator or use your SSO login.'),
+      ],
+      '#weight' => -10,
+    ];
+  }
+}

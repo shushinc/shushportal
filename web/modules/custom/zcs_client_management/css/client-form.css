@@ -32,3 +32,22 @@
     height: 20px;
     margin-right: 0.5rem;
 }
+
+.zcs_validation_message {
+    font-size: 14px;
+    color: red;
+}
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset.form-actions button.is-disabled {
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    text-transform: capitalize;
+    font-size: 14px;
+    min-width: -moz-fit-content;
+    min-width: fit-content;
+    background-color: rgba(118, 118, 118, 0.3);
+    border: 2px solid rgba(118, 118, 118, 0.3);
+    color: rgba(118, 118, 118, 0.3);
+    border-radius: 10px;
+    padding: 10px 15px;
+    margin: 20px auto;
+}

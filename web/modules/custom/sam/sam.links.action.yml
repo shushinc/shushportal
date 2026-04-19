@@ -1,0 +1,5 @@
+sam.sso_app.add:
+  route_name: entity.sam_sso_app.add_form
+  title: 'Add SSO application'
+  appears_on:
+    - entity.sam_sso_app.collection

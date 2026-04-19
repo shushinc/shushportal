@@ -1,0 +1,22 @@
+sam.sso_app.*:
+  type: config_entity
+  label: 'SSO App'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    domain:
+      type: string
+      label: 'Email domain'
+    provider:
+      type: string
+      label: 'SSO Provider'
+    is_enabled:
+      type: boolean
+      label: 'Active'
+    settings:
+      type: mapping
+      label: 'Provider settings'

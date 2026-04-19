@@ -18,6 +18,10 @@ use Drupal\Core\Site\Settings;
 use GuzzleHttp\Exception\RequestException;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Render\Markup;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Ajax\AddClassCommand;
+use Drupal\Core\Ajax\InvokeCommand;
 
 /**
  * Provides a zcs Client Management form.
@@ -80,12 +84,22 @@ class CreateClientForm extends FormBase {
     ];
 
     $lists_currencies = require __DIR__ . '/../../resources/currencies.php';
+
+    $form['client_validation_message'] = [
+      '#type' => 'markup',
+      '#markup' => '<div id="client_validation_message" class="zcs_validation_message"></div>',
+      '#weight' => -100,
+    ];
     $form['partner_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client Name'),
       '#required' => TRUE,
       '#attributes' => [
         'autocomplete' => 'off'
+      ],
+      '#ajax' => [
+        'callback' => '::validateClientajax',
+        'event' => 'change',
       ],
       '#maxlength' => 20,
       '#prefix' => '<div class="client-Layout-column-wrapper"><div class="tiles-wrapper client-Layout-column-first"><div class="partner-info grid-layout-column">',
@@ -98,6 +112,10 @@ class CreateClientForm extends FormBase {
       '#attributes' => [
         'autocomplete' => 'off'
       ],
+      '#ajax' => [
+        'callback' => '::validateClientajax',
+        'event' => 'change',
+      ],
     ];
 
     $form['contact_email'] = [
@@ -106,6 +124,10 @@ class CreateClientForm extends FormBase {
       '#required' => TRUE,
       '#attributes' => [
         'autocomplete' => 'off'
+      ],
+      '#ajax' => [
+        'callback' => '::validateClientajax',
+        'event' => 'change',
       ],
       '#suffix' => '</div>', // Closes the wrapper
     ];
@@ -259,11 +281,6 @@ class CreateClientForm extends FormBase {
       '#suffix' => '</div></div>',
     ];
 
-
-
-
-
-
     $form['api_agreement_covers'] = [
       '#type' => 'fieldset',
       '#title' => 'APIs Agreement Covers',
@@ -310,12 +327,164 @@ class CreateClientForm extends FormBase {
         '#type' => 'submit',
         '#value' => $this->t('Invite Client'),
       ],
+      '#attributes' => [
+        'class' => ['zcs-submit'],
+      ]
     ];
 
     $form['#attached']['library'][] = 'zcs_client_management/client-view-page';
 
     return $form;
   }
+
+
+
+  public function validateClientajax(array &$form, FormStateInterface $form_state) {
+    $response = new AjaxResponse();
+    $values = $form_state->getValues();
+    $client_name = $values['partner_name'];
+    $contact_email = $values['contact_email'];
+    $contact_name = $values['contact_name'];
+    $message = '';
+    if(!empty($client_name)) {
+      $query = \Drupal::entityQuery('group')
+        ->condition('label', $client_name)
+        ->accessCheck(FALSE);
+      $gids = $query->execute();   
+      if ($gids) {
+        $message = 'This Client Name is already registered or has an active invitation. Please verify their details and try again...!';
+          // Disable the submit button
+          $response->addCommand(new InvokeCommand(
+            '[data-drupal-selector="edit-submit"]',
+            'prop',
+            ['disabled', true]
+          ));
+          $response->addCommand(new InvokeCommand(
+            '[data-drupal-selector="edit-submit"]',
+            'addClass',
+            ['is-disabled']
+          )); 
+
+
+        $response->addCommand(new InvokeCommand(
+          '#client_validation_message',
+          'addClass',
+          ['message']
+        ));
+      }
+      else {  
+        $response->addCommand(new InvokeCommand(
+          '#client_validation_message',
+          'removeClass',
+          ['message']
+        ));
+        // Disable the submit button
+        $response->addCommand(new InvokeCommand(
+          '[data-drupal-selector="edit-submit"]',
+          'prop',
+          ['disabled', false]
+        ));
+        $response->addCommand(new InvokeCommand(
+          '[data-drupal-selector="edit-submit"]',
+          'removeClass',
+          ['is-disabled']
+        ));
+      }
+    }
+    if(!empty($contact_email)) {
+      $users = \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['mail' => $contact_email]);      
+      if ($users) {
+        $message = 'This Contact Email is already registered or has an active invitation. Please verify their details and try again..!';
+        // Disable the submit button
+        $response->addCommand(new InvokeCommand(
+          '[data-drupal-selector="edit-submit"]',
+          'prop',
+          ['disabled', true]
+        ));
+        $response->addCommand(new InvokeCommand(
+          '[data-drupal-selector="edit-submit"]',
+          'addClass',
+          ['is-disabled']
+        )); 
+        $response->addCommand(new InvokeCommand(
+          '#client_validation_message',
+          'addClass',
+          ['message']
+        ));
+      }
+      else {  
+        // Disable the submit button
+        $response->addCommand(new InvokeCommand(
+          '[data-drupal-selector="edit-submit"]',
+          'prop',
+          ['disabled', false]
+        ));
+        $response->addCommand(new InvokeCommand(
+          '[data-drupal-selector="edit-submit"]',
+          'removeClass',
+          ['is-disabled']
+        ));
+        $response->addCommand(new InvokeCommand(
+          '#client_validation_message',
+          'removeClass',
+          ['message']
+        ));
+      }
+    }
+
+    if(!empty($contact_name)) {
+      $users = \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['name' => $contact_name]);     
+      if ($users) {
+        $message = 'This Contact Name is already registered or has an active invitation. Please verify their details and try again...!';
+        // Disable the submit button
+        $response->addCommand(new InvokeCommand(
+          '[data-drupal-selector="edit-submit"]',
+          'prop',
+          ['disabled', true]
+        ));
+        $response->addCommand(new InvokeCommand(
+          '[data-drupal-selector="edit-submit"]',
+          'addClass',
+          ['is-disabled']
+        )); 
+        $response->addCommand(new InvokeCommand(
+          '#client_validation_message',
+          'addClass',
+          ['message']
+        ));
+      }
+      else {  
+        // Disable the submit button
+        $response->addCommand(new InvokeCommand(
+          '[data-drupal-selector="edit-submit"]',
+          'prop',
+          ['disabled', false]
+        ));
+        $response->addCommand(new InvokeCommand(
+          '[data-drupal-selector="edit-submit"]',
+          'removeClass',
+          ['is-disabled']
+        ));
+        $response->addCommand(new InvokeCommand(
+          '#client_validation_message',
+          'removeClass',
+          ['message']
+        ));
+      }
+    }
+    
+
+     
+
+
+      // Update the message container dynamically
+    $response->addCommand(new HtmlCommand('#client_validation_message', $message));
+  
+    return $response;
+  }
+
+
+
 
   /**
    * {@inheritdoc}
@@ -356,6 +525,7 @@ class CreateClientForm extends FormBase {
     $client_point_of_contact = $form_state->getValue('client_point_of_contact');
     $agreement_effective_date = $form_state->getValue('agreement_effective_date');
     $industry = $form_state->getValue('industry');
+    $pricing_type = $form_state->getValue('pricing_type');
     $prepayment_amount = $form_state->getValue('prepayment_amount');
     $prepayment_balance_left = $form_state->getValue('prepayment_balance_left');
     $prepayment_balance_used= $form_state->getValue('prepayment_balance_used');
@@ -398,6 +568,7 @@ class CreateClientForm extends FormBase {
               'field_prepayment_balance_used' => $prepayment_balance_used,
               'field_currency' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
               'field_industry' => $industry,
+              'field_pricing_type' => $pricing_type,
               'field_apis_agreement_covers' => $encoded_data,
               'user_id' => \Drupal::currentUser()->id(),
               'created' => \Drupal::time()->getRequestTime(),
@@ -478,6 +649,7 @@ class CreateClientForm extends FormBase {
         'field_prepayment_balance_used' => $prepayment_balance_used,
         'field_currency' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
         'field_industry' => $industry,
+        'field_pricing_type' => $pricing_type,
         'field_apis_agreement_covers' => $encoded_data,
         'user_id' => \Drupal::currentUser()->id(),
         'created' => \Drupal::time()->getRequestTime(),
