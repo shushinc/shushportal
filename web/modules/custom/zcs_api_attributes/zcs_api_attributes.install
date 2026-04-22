@@ -646,111 +646,258 @@ function zcs_api_attributes_update_9011() {
  * Adding new tables to add the new client/ratesheet structure.
  */
 function zcs_api_attributes_update_9012() {
+  $tables = [];
 
-  $tables['client_ratesheet'] = [
-    'description' => 'Table for storing information about client rate sheet.',
+  /**
+   * Rate Sheet
+   */
+  $tables['rate_sheet'] = [
+    'description' => 'Stores rate sheets.',
     'fields' => [
       'id' => [
         'type' => 'serial',
         'not null' => TRUE,
-        'description' => 'Primary Key: Unique aggregator static ID.',
       ],
-      'submit_by' => [
-        'description' => 'Submitter User ID.',
-        'type' => 'int',
-        'default' => 0,
-        'not null' => TRUE,
-      ],
-      'currency_locale' => [
+      'name' => [
         'type' => 'varchar',
-        'length' => 15,
+        'length' => 255,
         'not null' => TRUE,
         'default' => '',
-        'description' => 'Currency of the attributes page.',
       ],
-      'rate_sheet_data' => [
-        'type' => 'blob',
-        'size' => 'big',
+      'currency' => [
+        'type' => 'varchar',
+        'length' => 45,
         'not null' => FALSE,
-        'description' => 'Rate sheet API Attributes data.',
+        'default' => '',
+      ],
+      'effective_date' => [
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => FALSE,
+        'default' => '',
+      ],
+      'markup_retail' => [
+        'type' => 'float',
+        'not null' => FALSE,
+        'default' => 0,
+      ],
+      'created_by' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'created_date' => [
+        'type' => 'varchar',
+        'length' => 19,
+        'not null' => FALSE,
+        'default' => '',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'created_by' => ['created_by'],
+    ],
+    'foreign keys' => [
+      'rate_sheet_author' => [
+        'table' => 'users',
+        'columns' => [
+          'created_by' => 'uid',
+        ],
+      ],
+    ],
+  ];
+
+  /**
+   * Rate Sheet Item
+   * api_attribute_id references node.nid
+   * content type: api_attributes
+   */
+  $tables['rate_sheet_item'] = [
+    'description' => 'Stores rate sheet items.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+      ],
+      'rate_sheet_item' => [
+        'type' => 'text',
+        'size' => 'big',
+        'serialize' => TRUE,
+        'not null' => FALSE,
+      ],
+      'rate_sheet_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'api_attribute_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Reference to node.nid where bundle = api_attributes.',
+      ],
+      'from_range' => [
+        'type' => 'float',
+        'default' => 0,
+      ],
+      'to_range' => [
+        'type' => 'float',
+        'default' => 0,
+      ],
+      'success_rate' => [
+        'type' => 'float',
+        'default' => 0,
+      ],
+      'partial_range' => [
+        'type' => 'float',
+        'default' => 0,
+      ],
+      'tiered_calculation' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'rate_sheet_id' => ['rate_sheet_id'],
+      'api_attribute_id' => ['api_attribute_id'],
+    ],
+    'foreign keys' => [
+      'rate_sheet_ref' => [
+        'table' => 'rate_sheet',
+        'columns' => [
+          'rate_sheet_id' => 'id',
+        ],
+      ],
+      'api_attribute_node_ref' => [
+        'table' => 'node',
+        'columns' => [
+          'api_attribute_id' => 'nid',
+        ],
+      ],
+    ],
+  ];
+
+  /**
+   * Client Rate Sheet
+   * client_id references groups.id
+   */
+  $tables['client_rate_sheet'] = [
+    'description' => 'Relationship between clients and rate sheets.',
+    'fields' => [
+      'rate_sheet_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
       ],
       'client_id' => [
-        'type' => 'varchar',
-        'length' => 15,
+        'type' => 'int',
+        'unsigned' => TRUE,
         'not null' => TRUE,
-        'default' => '',
-        'description' => 'Client id.',
       ],
-      'client_name' => [
-        'type' => 'varchar',
-        'length' => 15,
+      'created_by' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
         'not null' => TRUE,
-        'default' => '',
-        'description' => 'Client Name.',
       ],
-      'created' => [
-        'description' => 'Rate Sheet Created date.',
+      'created_date' => [
         'type' => 'varchar',
-        'length' => 15,
-        'not null' => TRUE,
+        'length' => 19,
         'default' => '',
       ],
-      'updated' => [
-        'description' => 'Rate Sheet Updated date.',
-        'type' => 'varchar',
-        'length' => 15,
-        'not null' => TRUE,
-        'default' => '',
+      'active' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'default' => 0,
       ],
     ],
-    'primary key' => ['id'],
+    'primary key' => ['rate_sheet_id', 'client_id'],
+    'indexes' => [
+      'client_id' => ['client_id'],
+      'created_by' => ['created_by'],
+    ],
+    'foreign keys' => [
+      'rate_sheet_ref' => [
+        'table' => 'rate_sheet',
+        'columns' => [
+          'rate_sheet_id' => 'id',
+        ],
+      ],
+
+      'partner_group_ref' => [
+        'table' => 'groups',
+        'columns' => [
+          'client_id' => 'id',
+        ],
+      ],
+
+      'author_ref' => [
+        'table' => 'users',
+        'columns' => [
+          'created_by' => 'uid',
+        ],
+      ],
+    ],
   ];
 
-  $tables['client_ratesheet_action_log'] = [
-    'description' => 'Table for storing information about client rate sheet.',
+  /**
+   * Action Log
+   */
+  $tables['action_log'] = [
+    'description' => 'Stores audit/action logs.',
     'fields' => [
       'id' => [
         'type' => 'serial',
         'not null' => TRUE,
-        'description' => 'Primary Key: Unique aggregator static ID.',
       ],
-      'user_id' => [
-        'description' => 'Submitter User ID.',
+      'action_type' => [
+        'type' => 'varchar',
+        'length' => 45,
+        'default' => '',
+      ],
+      'entity_target_type' => [
+        'type' => 'varchar',
+        'length' => 45,
+        'default' => '',
+      ],
+      'entity_target_id' => [
         'type' => 'int',
         'default' => 0,
-        'not null' => TRUE,
       ],
-      'client_ratesheet_id' => [
-        'type' => 'varchar',
-        'length' => 15,
+      'created_by' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
         'not null' => TRUE,
-        'default' => '',
-        'description' => 'Client rate sheet id.',
+        'default' => 0,
       ],
-      'status' => [
+      'created_date' => [
         'type' => 'varchar',
-        'length' => 15,
-        'not null' => TRUE,
+        'length' => 19,
         'default' => '',
-        'description' => 'Action Status name.',
       ],
-      'created' => [
-        'description' => 'Rate Sheet created date.',
-        'type' => 'varchar',
-        'length' => 15,
-        'not null' => TRUE,
-        'default' => '',
+      'log_data' => [
+        'type' => 'text',
+        'size' => 'big',
+        'serialize' => TRUE,
       ],
     ],
     'primary key' => ['id'],
+    'indexes' => [
+      'created_by' => ['created_by'],
+    ],
   ];
 
-  $database = \Drupal::database()->schema();
+  $schema = \Drupal::database()->schema();
+
   foreach ($tables as $table_name => $table) {
-  
-    if (!$database->tableExists($table_name)) {
-      $database->createTable($table_name, $table);
+    if (!$schema->tableExists($table_name)) {
+      $schema->createTable($table_name, $table);
     }
   }
-
 }
