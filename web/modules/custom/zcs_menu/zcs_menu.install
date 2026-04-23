@@ -266,8 +266,8 @@ function zcs_menu_install() {
   $pricing_menu_child_link4->save();
 
   $pricing_menu_child_link5 = MenuLinkContent::create([
-    'title' => 'Client Rate Sheet',
-    'link' => ['uri' => 'internal:/pricing/client-rate-sheet'],
+    'title' => 'Rate Sheet',
+    'link' => ['uri' => 'internal:/pricing/rate-sheet-list'],
     'menu_name' => $menu_name,
     'parent' => $pricing_parent_id, // Set the parent ID.
     'weight' => 14,

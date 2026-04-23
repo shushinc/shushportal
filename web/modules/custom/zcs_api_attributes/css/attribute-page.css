@@ -2,6 +2,11 @@
   width: 100%;
 }
 
+.pricing-rate-sheet-list
+#block-shush-primary-admin-actions
+  nav
+  li
+  a,
 .network_authentication_pricing_over_time
   #block-shush-primary-admin-actions
   nav
@@ -14,6 +19,11 @@
   padding: 10px 15px;
 }
 
+.pricing-rate-sheet-list
+#block-shush-primary-admin-actions
+  nav
+  li
+  a:hover,
 .network_authentication_pricing_over_time
   #block-shush-primary-admin-actions
   nav
@@ -22,6 +32,11 @@
   background: #fff;
   color: #118df0;
 }
+
+.pricing-rate-sheet-list
+#block-shush-primary-admin-actions
+  nav
+  li,
 .network_authentication_pricing_over_time
   #block-shush-primary-admin-actions
   nav
@@ -46,17 +61,28 @@ table.attributes-table tr td {
 .demand_partner_discounts_or_different_pricing table.attributes-table thead th {
   text-align: center;
 }
+.pricing-rate-sheet-list table.attributes-table thead th,
 .network_authentication_pricing_over_time table.attributes-table thead th {
   line-height: 20px;
   text-align: center;
   vertical-align: top;
 }
+
+.pricing-rate-sheet-list
+table.attributes-table
+thead
+th:first-child,
 .network_authentication_pricing_over_time
   table.attributes-table
   thead
   th:first-child {
   text-align: left;
 }
+
+.pricing-rate-sheet-list
+table.attributes-table
+  thead
+  th:nth-child(2),
 .network_authentication_pricing_over_time
   table.attributes-table
   thead
@@ -64,6 +90,11 @@ table.attributes-table tr td {
   width: 40%;
   text-align: left;
 }
+
+.pricing-rate-sheet-list
+table.attributes-table
+  tbody
+  td:nth-child(2),
 .network_authentication_pricing_over_time
   table.attributes-table
   tbody
@@ -97,11 +128,15 @@ table.attributes-table th:nth-child(4) {
 .network_authentication_pricing_over_time
   table.attributes-table
   tr
+  td:nth-child(1),
+  .pricing-rate-sheet-list table.attributes-table
+  tr
   td:nth-child(1) {
   text-align: left;
   font-weight: 300;
   width: 1%;
 }
+.pricing-rate-sheet-list table.attributes-table tr td,
 .network_authentication_pricing_over_time table.attributes-table tr td {
   text-align: center;
   padding: 10px 20px;
@@ -165,7 +200,8 @@ table.attributes-table tr td:first-child {
 .api-attribute-status table thead tr td,
 .change-network-authentication-pricing table thead tr td,
 .network_authentication_pricing_over_time table thead tr td,
-.demand_partner_discounts_or_different_pricing table thead tr td {
+.demand_partner_discounts_or_different_pricing table thead tr td,
+.pricing-rate-sheet-list table thead tr td {
   font-weight: 700 !important;
   padding: 10px;
   text-align: center;

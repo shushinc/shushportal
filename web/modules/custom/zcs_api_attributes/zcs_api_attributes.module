@@ -40,6 +40,12 @@ function zcs_api_attributes_theme() {
       ],
       'template' => 'network_authentication_pricing_over_time',
     ],
+    'rate_sheet_list' => [
+      'variables' => [
+        'content' => NULL,
+      ],
+      'template' => 'rate_sheet_list',
+    ],
     'demand_partner_discounts_or_different_pricing' => [
       'variables' => [
         'content' => NULL,
