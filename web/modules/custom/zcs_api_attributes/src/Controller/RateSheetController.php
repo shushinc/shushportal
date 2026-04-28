@@ -52,13 +52,11 @@ class RateSheetController extends ControllerBase {
    *
    */
   public function rateSheetList() {
-    $final = [
-        1, 2, 3
-    ];
     $limit = 10;
     $allResultSet = $this->database->select('rate_sheet', 'rs');
     $resultTotal = $allResultSet->countQuery()->execute()->fetchField();
     $pager = $this->pagerManager->createPager($resultTotal, $limit);
+    $final = [];
 
     $resultSet = $this->database->select('rate_sheet', 'rs')
       ->fields('rs', ['id', 'name', 'effective_date', 'currency', 'markup_retail', 'created_date']);
@@ -83,6 +81,15 @@ class RateSheetController extends ControllerBase {
     $classes = ['button', 'button--primary', 'use-ajax'];
     if (!$access->isAllowed()) {
       $classes[] = 'disable-link';
+    }
+
+    foreach($resultSet as $result) {
+      $final[] = [
+        'name' => $result->name,
+        'currency' => $result->currency,
+        'effective_date' => date('M d, Y', $result->effective_date),
+        'markup_retail' => $result->markup_retail,
+      ];
     }
 
     $url->setOptions([

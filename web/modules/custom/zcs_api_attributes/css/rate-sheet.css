@@ -49,6 +49,10 @@
   padding: 10px;
 }
 
+.pricing-rate-sheet-list .rate-sheet-filter {
+  grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
+}
+
 .ui-dialog .rate-sheet-filter {
   margin: 0;
 }

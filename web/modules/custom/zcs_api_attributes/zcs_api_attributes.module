@@ -56,6 +56,10 @@ function zcs_api_attributes_theme() {
       'render element' => 'form',
       'template' => 'rate_sheet',
     ],
+    'create_rate_sheet' => [
+      'render element' => 'form',
+      'template' => 'create_rate_sheet',
+    ],
     'rate_sheet_approval' => [
       'variables' => [
         'content' => NULL,
