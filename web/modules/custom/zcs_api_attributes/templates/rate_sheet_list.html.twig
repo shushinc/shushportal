@@ -1,32 +1,36 @@
-<div>
-  <div class="user-management-view api-attribute-status-header">
-    <header>
-      {{ content.link|merge({'#attributes': {'class': ['btn-primary']}}) }}
-    </header>
-  </div>
-  <table class="attributes-table">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Name</th>
-        <th>Currency</th>
-        <th>Effec. Date</th>
-        <th>Markup Retail(%)</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% set counter = 1 %}
-      {% for sheet_info in content.final %}
+  <div>
+    <div class="user-management-view api-attribute-status-header">
+      <header>
+        {{ content.link|merge({'#attributes': {'class': ['btn-primary']}}) }}
+      </header>
+    </div>
+    <table class="attributes-table">
+      <thead>
         <tr>
-          <td>{{ counter }}</td>
-          <td>{{ sheet_info.name }}</td>
-          <td>{{ sheet_info.currency }}</td>
-          <td>{{ sheet_info.effective_date }}</td>
-          <td>{{ sheet_info.markup_retail }}</td>
+          <th>#</th>
+          <th>Name</th>
+          <th>Currency</th>
+          <th>Effec. Date</th>
+          <th>Markup Retail(%)</th>
+          <th>Approvers</th>
+          <th>Status</th>
         </tr>
-        {% set counter = counter + 1 %}
-      {% endfor %}
+      </thead>
+      <tbody>
+        {% set counter = 1 %}
+        {% for sheet_info in content.final %}
+          <tr>
+            <td>{{ counter }}</td>
+            <td>{{ sheet_info.name }}</td>
+            <td>{{ sheet_info.currency }}</td>
+            <td>{{ sheet_info.effective_date }}</td>
+            <td>{{ sheet_info.markup_retail }}</td>
+            <td>{{ sheet_info.approvals|raw }}</td>
+            <td class="{{ sheet_info.status|lower }}" >{{ sheet_info.status }}</td>
+          </tr>
+          {% set counter = counter + 1 %}
+        {% endfor %}
 
-    </tbody>
-  </table>
-</div>
+      </tbody>
+    </table>
+  </div>

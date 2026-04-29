@@ -9,3 +9,6 @@ services:
   zcs_api_attributes.discount_sheet:
     class: Drupal\zcs_api_attributes\Services\DiscountPriceSheet
     arguments: ['@database']
+  zcs_api_attributes.rate_sheet:
+    class: Drupal\zcs_api_attributes\Services\RateSheetService
+    arguments: ['@database']

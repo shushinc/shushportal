@@ -2,7 +2,6 @@
 
 namespace Drupal\zcs_api_attributes\Controller;
 
-use Drupal\Component\Serialization\Json;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
@@ -13,6 +12,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Drupal\zcs_api_attributes\Services\RateSheetService;
 
 /**
  *
@@ -29,13 +29,19 @@ class RateSheetController extends ControllerBase {
    * Pager Variable.
    */
   protected $pagerManager;
+  
+  /**
+   * Rate Sheet service.
+   */
+  protected $rateSheetService;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(Connection $connection, PagerManagerInterface $pager_manager) {
+  public function __construct(Connection $connection, PagerManagerInterface $pager_manager, RateSheetService $rate_sheet_service) {
     $this->database = $connection;
     $this->pagerManager = $pager_manager;
+    $this->rateSheetService = $rate_sheet_service;
   }
 
   /**
@@ -44,7 +50,8 @@ class RateSheetController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('database'),
-      $container->get('pager.manager')
+      $container->get('pager.manager'),
+      $container->get('zcs_api_attributes.rate_sheet')
     );
   }
 
@@ -89,6 +96,8 @@ class RateSheetController extends ControllerBase {
         'currency' => $result->currency,
         'effective_date' => date('M d, Y', $result->effective_date),
         'markup_retail' => $result->markup_retail,
+        'approvals' => $this->rateSheetService->getRateSheetApprovers($result->id),
+        'status' => $this->rateSheetService->getRateSheetStatus($result->id),
       ];
     }
 
@@ -111,26 +120,11 @@ class RateSheetController extends ControllerBase {
       '#theme' => 'rate_sheet_list',
       '#content' => $data,
       '#attached' => [
-        'library' => ['zcs_api_attributes/attributes-page'],
+        'library' => ['zcs_api_attributes/attributes-page', 'zcs_api_attributes/rate-sheet-approval'],
       ],
     ];
   }
 
-  /**
-   *
-   */
-  private function getAttributeValue($attributeValue) {
-    if ($attributeValue == 'yes') {
-      return Markup::create("<span class='attrib_yes'>Yes</span>");
-    }
-    elseif ($attributeValue == 'no') {
-      return Markup::create("<span class='attrib_no'>No</span>");
-    }
-    else {
-      return '';
-    }
-
-  }
 
   /**
    * Display the Attributes Approval Page.

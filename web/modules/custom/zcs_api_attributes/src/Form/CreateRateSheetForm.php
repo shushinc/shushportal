@@ -164,23 +164,6 @@ class CreateRateSheetForm extends FormBase {
       '#value' => implode(",", $nids),
     ];
 
-    // $existing = $this->database->select('attributes_page_data', 'apd')
-    //   ->fields('apd', ['id', 'submit_by'])
-    //   ->condition('attribute_status', '1')
-    //   ->execute()->fetchObject();
-
-    // if ($existing) {
-    //   $form['message'] = [
-    //     '#type' => 'markup',
-    //     '#markup' => "There is one edit made by <b>" . $this->entityTypeManager->getStorage('user')->load($existing->submit_by)->mail->value . "</b> that is awaiting approval or rejection, so editing is not possible.",
-    //   ];
-    //   $hide = TRUE;
-    // }
-    // $hide = $hide ?? FALSE;
-
-    // if ($this->checkExistingProposedPricingDates()) {
-    //   $hide = TRUE;
-    // }
     $form['#theme'] = 'create_rate_sheet';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
     $form['submit'] = [
@@ -209,7 +192,7 @@ class CreateRateSheetForm extends FormBase {
     $transaction = $this->database->startTransaction();
     
     try {
-    
+
       $new_rate_sheet_id = $this->database->insert('rate_sheet')
         ->fields([
           'name',
@@ -228,44 +211,76 @@ class CreateRateSheetForm extends FormBase {
           strtotime($values['attribute_date']),
         ])
         ->execute();
+      
+      // Creating the default status
+      $this->database->insert('rate_sheet_status')
+        ->fields([
+          'rate_sheet_id',
+          'status_name',
+          'date',
+          'created_by'
+        ])->values([
+          $new_rate_sheet_id,
+          'Pending',
+          \Drupal::time()->getRequestTime(),
+          $this->currentUser()->id(),
+        ])
+        ->execute();
+      
+      // Logging the action
+      $this->database->insert('action_log')
+        ->fields([
+          'action_type',
+          'entity_target_type',
+          'entity_target_id',
+          'created_by',
+          'created_date',
+          'log_data',
+        ])->values([
+          'CREATING',
+          'RATE_SHEET',
+          $new_rate_sheet_id,
+          $this->currentUser()->id(),
+          \Drupal::time()->getRequestTime(),
+          '',
+        ])
+        ->execute();
+      
+      foreach ($nids as $nid) {
+        $from_range = $values["from_range_{$nid}"] ?? 0;
+        $to_range = $values["to_range_{$nid}"] ?? 0;
+        $partial_range = $values["partial_range_{$nid}"] ?? 0;
+        $success_rate = $values["success_rate_{$nid}"] ?? 0;
+        $tiered_calculation = $values["tiered_calculation_{$nid}"] ?? 0;
 
-        foreach ($nids as $nid) {
-          $from_range = $values["from_range_{$nid}"] ?? 0;
-          $to_range = $values["to_range_{$nid}"] ?? 0;
-          $partial_range = $values["partial_range_{$nid}"] ?? 0;
-          $success_rate = $values["success_rate_{$nid}"] ?? 0;
-          $tiered_calculation = $values["tiered_calculation_{$nid}"] ?? 0;
-
-          $this->database->insert('rate_sheet_item')
-            ->fields([
-              'rate_sheet_id',
-              'api_attribute_id',
-              'from_range',
-              'to_range',
-              'success_rate',
-              'partial_range',
-              'tiered_calculation',
-            ])
-            ->values([
-              $new_rate_sheet_id,
-              $nid,
-              $from_range,
-              $to_range,
-              $success_rate,
-              $partial_range,
-              $tiered_calculation,
-            ])
-            ->execute();
-        }
+        $this->database->insert('rate_sheet_item')
+          ->fields([
+            'rate_sheet_id',
+            'api_attribute_id',
+            'from_range',
+            'to_range',
+            'success_rate',
+            'partial_range',
+            'tiered_calculation',
+          ])
+          ->values([
+            $new_rate_sheet_id,
+            $nid,
+            $from_range,
+            $to_range,
+            $success_rate,
+            $partial_range,
+            $tiered_calculation,
+          ])
+          ->execute();
+      }
     }
     catch (\Exception $e) {
       $transaction->rollBack();
     }
+
     // Commit the transaction by unsetting the $transaction variable.
     unset($transaction);
-
-    
     $form_state->setRedirect('zcs_api_attributes.rate_sheet_list');
   }
-
 }
