@@ -1,0 +1,17 @@
+<?php
+
+
+/**
+ * Update entity updates.
+ */
+
+function analytics_update_9001() {
+  $manager = \Drupal::entityDefinitionUpdateManager();
+  $storage = \Drupal\field\Entity\FieldStorageConfig::loadByName(
+    'node',
+    'field_est_revenue'
+  );
+  if ($storage) {
+    $manager->updateFieldStorageDefinition($storage);
+  }
+}
