@@ -167,4 +167,26 @@ class RateSheetService {
 
         return implode('<br>', $output);
     }
+    /**
+     * Inserts a new status for a rate sheet.
+     *
+     * @param int $rate_sheet_id
+     *   The Rate Sheet ID.
+     * @param int $status
+     *   The status to insert (2 for Approve, 3 for Reject).
+     * @param int $user_id
+     *   The ID of the user submitting the status.
+     */
+    public function insertRateSheetStatus(int $rate_sheet_id, int $status, int $user_id) {
+        $status_name = $status === 2 ? 'Approved' : 'Denied';
+
+        $this->database->insert('rate_sheet_status')
+            ->fields([
+                'rate_sheet_id' => $rate_sheet_id,
+                'status_name' => $status_name,
+                'created_by' => $user_id,
+                'date' => \Drupal::time()->getRequestTime(),
+            ])
+            ->execute();
+    }
 }
