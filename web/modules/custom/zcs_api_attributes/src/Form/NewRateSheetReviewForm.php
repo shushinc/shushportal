@@ -116,15 +116,34 @@ class NewRateSheetReviewForm extends FormBase {
     $aprovers_roles = ['financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
     $user_roles = $this->currentUser()->getRoles();
   
-    $form['status'] = [
-      '#type' => 'select',
-      '#options' => [2 => 'Approve', 3 => 'Reject'],
-      '#required' => TRUE,
-    ];
-    $form['approve'] = [
-      '#type' => 'submit',
-      '#value' => 'Save',
-    ];
+    // Check user roles
+    $user_roles = $this->currentUser()->getRoles();
+    $allowed_roles = ['financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
+
+    // Check rate sheet status
+    $rateSheetService = \Drupal::service('zcs_api_attributes.rate_sheet_service');
+    $rateSheetStatus = $rateSheetService->getRateSheetStatus($id);
+
+    // Check if the user has already approved or denied
+    $user_id = $this->currentUser()->id();
+    $user_has_acted = $this->database->select('rate_sheet_status', 'rss')
+      ->condition('rate_sheet_id', $id)
+      ->condition('created_by', $user_id)
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+
+    if (array_intersect($allowed_roles, $user_roles) && $rateSheetStatus === 'Pending' && !$user_has_acted) {
+      $form['status'] = [
+        '#type' => 'select',
+        '#options' => [2 => 'Approve', 3 => 'Reject'],
+        '#required' => TRUE,
+      ];
+      $form['approve'] = [
+        '#type' => 'submit',
+        '#value' => 'Save',
+      ];
+    }
 
     return $form;
   }
