@@ -99,6 +99,17 @@ class NewRateSheetReviewForm extends FormBase {
       '#disabled' => TRUE,
     ];
 
+    // Fetch rate_sheet_item data
+    $rateSheetItems = $this->database->select('rate_sheet_item', 'rsi')
+      ->fields('rsi', ['id', 'title', 'from_range', 'to_range', 'partial_range', 'success_rate', 'tiered_calculation'])
+      ->condition('rate_sheet_id', $id)
+      ->execute()->fetchAll();
+
+    $form['rate_sheet_items'] = [
+      '#type' => 'value',
+      '#value' => $rateSheetItems,
+    ];
+
     $form['#theme'] = 'new_rate_sheet_review';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
     
