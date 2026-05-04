@@ -178,15 +178,24 @@ class RateSheetService {
      *   The ID of the user submitting the status.
      */
     public function insertRateSheetStatus(int $rate_sheet_id, int $status, int $user_id) {
-        $status_name = $status === 2 ? 'Approved' : 'Rejected';
+        $transaction = $this->database->startTransaction();
 
-        $this->database->insert('rate_sheet_status')
-            ->fields([
-                'rate_sheet_id' => $rate_sheet_id,
-                'status_name' => $status_name,
-                'created_by' => $user_id,
-                'date' => \Drupal::time()->getRequestTime(),
-            ])
-            ->execute();
+        try {
+            $status_name = $status === 2 ? 'Approved' : 'Rejected';
+
+            $this->database->insert('rate_sheet_status')
+                ->fields([
+                    'rate_sheet_id' => $rate_sheet_id,
+                    'status_name' => $status_name,
+                    'created_by' => $user_id,
+                    'date' => \Drupal::time()->getRequestTime(),
+                ])
+                ->execute();
+        }
+        catch (\Exception $e) {
+            $transaction->rollBack();
+            \Drupal::logger('zcs_api_attributes')->error('Failed to insert rate sheet status: @message', ['@message' => $e->getMessage()]);
+            throw $e;
+        }
     }
 }
