@@ -7,10 +7,7 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Link;
-use Drupal\Core\Render\Markup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\group\Entity\Group;
 
 /**
  *
@@ -121,7 +118,7 @@ class NewRateSheetReviewForm extends FormBase {
     $allowed_roles = ['financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
 
     // Check rate sheet status
-    $rateSheetService = \Drupal::service('zcs_api_attributes.rate_sheet_service');
+    $rateSheetService = \Drupal::service('zcs_api_attributes.rate_sheet');
     $rateSheetStatus = $rateSheetService->getRateSheetStatus($id);
 
     // Check if the user has already approved or denied
@@ -144,6 +141,9 @@ class NewRateSheetReviewForm extends FormBase {
         '#value' => 'Save',
       ];
     }
+
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-review';
+    $form['#attached']['library'][] = 'zcs_api_attributes/discount-sheet';
 
     return $form;
   }
