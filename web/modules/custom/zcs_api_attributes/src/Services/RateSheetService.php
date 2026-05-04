@@ -208,7 +208,7 @@ class RateSheetService {
                     $rate_sheet_id,
                     $user_id,
                     \Drupal::time()->getRequestTime(),
-                    '',
+                    "User {$user_id} changed the status of rate sheet {$rate_sheet_id} to {$status_name}.",
                 ])
                 ->execute();
         }
