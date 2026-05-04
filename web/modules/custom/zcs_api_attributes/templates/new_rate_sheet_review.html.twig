@@ -32,10 +32,10 @@
         <tr>
           <th>#</th>
           <th>API Attributes</th>
-          <th>From range</th>
-          <th>To range</th>
-          <th>Partial range</th>
-          <th>Success rate</th>
+          <th>$ From range</th>
+          <th>$ To range</th>
+          <th>$ Partial range</th>
+          <th>$ Success rate</th>
           <th>Tiered calculation</th>
         </tr>
       </thead>
@@ -45,10 +45,10 @@
             <tr>
               <td>{{ counter }}</td>
               <td>{{ item.title }}</td>
-              <td>{{ item.from_range }}</td>
-              <td>{{ item.to_range }}</td>
-              <td>{{ item.partial_range }}</td>
-              <td>{{ item.success_rate }}</td>
+              <td>{{ '$ ' ~ item.from_range }}</td>
+              <td>{{ '$ ' ~ item.to_range }}</td>
+              <td>{{ '$ ' ~ item.partial_range }}</td>
+              <td>{{ '$ ' ~ item.success_rate }}</td>
               <td>{{ item.tiered_calculation }}</td>
             </tr>
           {% set counter = counter + 1 %}
