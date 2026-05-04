@@ -101,7 +101,7 @@ class NewRateSheetReviewForm extends FormBase {
 
     // Fetch rate_sheet_item data
     $rateSheetItems = $this->database->select('rate_sheet_item', 'rsi')
-      ->fields('rsi', ['id', 'title', 'from_range', 'to_range', 'partial_range', 'success_rate', 'tiered_calculation'])
+      ->fields('rsi', ['id', 'attribute_name', 'from_range', 'to_range', 'partial_range', 'success_rate', 'tiered_calculation'])
       ->condition('rate_sheet_id', $id)
       ->execute()->fetchAll();
 
@@ -112,7 +112,20 @@ class NewRateSheetReviewForm extends FormBase {
 
     $form['#theme'] = 'new_rate_sheet_review';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
-    
+
+    $aprovers_roles = ['financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
+    $user_roles = $this->currentUser()->getRoles();
+  
+    $form['status'] = [
+      '#type' => 'select',
+      '#options' => [2 => 'Approve', 3 => 'Reject'],
+      '#required' => TRUE,
+    ];
+    $form['approve'] = [
+      '#type' => 'submit',
+      '#value' => 'Save',
+    ];
+
     return $form;
   }
 
