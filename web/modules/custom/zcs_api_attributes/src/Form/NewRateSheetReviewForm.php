@@ -159,7 +159,45 @@ class NewRateSheetReviewForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    
+    $user_id = $this->currentUser()->id();
+    $rate_sheet_id = $form_state->getValue('rate_sheet_id');
+    $status = $form_state->getValue('status');
+
+    // Check user roles
+    $allowed_roles = ['financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
+    $user_roles = $this->currentUser()->getRoles();
+
+    if (!array_intersect($allowed_roles, $user_roles)) {
+      \Drupal::messenger()->addError($this->t('You do not have permission to approve or reject this rate sheet.'));
+      return;
+    }
+
+    // Check if the user has already submitted a status
+    $user_has_acted = $this->database->select('rate_sheet_status', 'rss')
+      ->condition('rate_sheet_id', $rate_sheet_id)
+      ->condition('created_by', $user_id)
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+
+    if ($user_has_acted) {
+      \Drupal::messenger()->addError($this->t('You have already submitted a status for this rate sheet.'));
+      return;
+    }
+
+    // Use the RateSheetService to insert the new status
+    $rateSheetService = \Drupal::service('zcs_api_attributes.rate_sheet_service');
+    $rateSheetService->insertRateSheetStatus($rate_sheet_id, $status, $user_id);
+
+    // Log the action
+    \Drupal::logger('zcs_api_attributes')->notice('User @user_id submitted status @status for rate sheet @rate_sheet_id.', [
+      '@user_id' => $user_id,
+      '@status' => $status,
+      '@rate_sheet_id' => $rate_sheet_id,
+    ]);
+
+    // Redirect to the rate sheet list
+    $form_state->setRedirect('zcs_api_attributes.rate_sheet_list');
   }
 
 }
