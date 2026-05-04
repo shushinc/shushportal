@@ -178,7 +178,7 @@ class RateSheetService {
      *   The ID of the user submitting the status.
      */
     public function insertRateSheetStatus(int $rate_sheet_id, int $status, int $user_id) {
-        $status_name = $status === 2 ? 'Approved' : 'Denied';
+        $status_name = $status === 2 ? 'Approved' : 'Rejected';
 
         $this->database->insert('rate_sheet_status')
             ->fields([
