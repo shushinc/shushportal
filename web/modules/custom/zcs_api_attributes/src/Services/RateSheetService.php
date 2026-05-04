@@ -53,6 +53,25 @@ class RateSheetService {
 
         if (empty($statuses)) {
             return 'Pending';
+            // Log the action
+            $this->database->insert('action_log')
+                ->fields([
+                    'action_type',
+                    'entity_target_type',
+                    'entity_target_id',
+                    'created_by',
+                    'created_date',
+                    'log_data',
+                ])
+                ->values([
+                    'STATUS_UPDATE',
+                    'RATE_SHEET',
+                    $rate_sheet_id,
+                    $user_id,
+                    \Drupal::time()->getRequestTime(),
+                    '',
+                ])
+                ->execute();
         }
 
         // Only one status (initial state)
