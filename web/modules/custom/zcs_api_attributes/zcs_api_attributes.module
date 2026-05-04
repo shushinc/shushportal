@@ -104,6 +104,10 @@ function zcs_api_attributes_theme() {
       'render element' => 'form',
       'template' => 'discount_sheet_review',
     ],
+    'new_rate_sheet_review' => [
+      'render element' => 'form',
+      'template' => 'new_rate_sheet_review',
+    ],
   ];
 }
 

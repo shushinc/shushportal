@@ -61,10 +61,17 @@ class NewRateSheetReviewForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, $id = 0) {
 
     $data = $this->database->select('rate_sheet', 'rs')
-      ->fields('rs', ['id', 'name', 'currency', 'markup_retail'])
+      ->fields('rs', ['id', 'name', 'currency', 'markup_retail', 'effective_date'])
       ->condition('id', $id)
       ->execute()->fetchObject();
     
+    $form['rate_sheet_id'] = [
+      '#type' => 'hidden',
+      '#default_value' => $id,
+      '#description' => $this->t('The rate sheet id.'),
+      '#disabled' => TRUE,
+    ];
+
     $form['name'] = [
       '#type' => 'textfield',
       '#default_value' => $data->name,
@@ -144,7 +151,6 @@ class NewRateSheetReviewForm extends FormBase {
 
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-review';
     $form['#attached']['library'][] = 'zcs_api_attributes/discount-sheet';
-
     return $form;
   }
 
@@ -186,8 +192,8 @@ class NewRateSheetReviewForm extends FormBase {
     }
 
     // Use the RateSheetService to insert the new status
-    $rateSheetService = \Drupal::service('zcs_api_attributes.rate_sheet_service');
-    $rateSheetService->insertRateSheetStatus($rate_sheet_id, $status, $user_id);
+    $rateSheetService = \Drupal::service('zcs_api_attributes.rate_sheet');
+    $rateSheetService->insertRateSheetStatus(intval($rate_sheet_id), $status, $user_id);
 
     // Log the action
     \Drupal::logger('zcs_api_attributes')->notice('User @user_id submitted status @status for rate sheet @rate_sheet_id.', [

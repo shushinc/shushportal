@@ -103,38 +103,39 @@ class RateSheetService {
             ->fields('rss', ['status_name', 'created_by'])
             ->condition('rate_sheet_id', $rate_sheet_id)
             ->orderBy('date', 'ASC');
+
         $rows = $query->execute()->fetchAll();
 
         if (empty($rows)) {
-            return '<span class="pending">Pending</span><br><span class="pending">Pending</span>';
+            return '<span class="pending">Pending</span><span class="pending">Pending</span>';
         }
 
+        // Only creation record
         if (count($rows) === 1 && strtoupper($rows[0]->status_name) === 'PENDING') {
-            return '<span class="pending">Pending</span><br><span class="pending">Pending</span>';
+            return '<span class="pending">Pending</span><span class="pending">Pending</span>';
         }
 
-        // Remove first pending if it's the creation record
+        // Remove initial PENDING
         if (strtoupper($rows[0]->status_name) === 'PENDING') {
             array_shift($rows);
         }
 
-        // Now take last 2 relevant statuses
+        // Last two relevant
         $rows = array_slice(array_reverse($rows), 0, 2);
 
         $statuses = [];
 
         foreach ($rows as $row) {
             $statuses[] = [
-                'status' => strtoupper($row->status_name),
-                'uid' => $row->created_by,
+            'status' => strtoupper($row->status_name),
+            'uid' => $row->created_by,
             ];
         }
 
-        // Ensure always 2 slots
         while (count($statuses) < 2) {
             $statuses[] = [
-                'status' => 'PENDING',
-                'uid' => NULL,
+            'status' => 'PENDING',
+            'uid' => NULL,
             ];
         }
 
@@ -147,7 +148,7 @@ class RateSheetService {
             $email = '';
 
             if ($status !== 'PENDING' && !empty($uid)) {
-                $user = \Drupal\user\Entity\User::load($uid);
+            $user = \Drupal\user\Entity\User::load($uid);
                 if ($user) {
                     $email = $user->getEmail();
                 }
@@ -156,17 +157,24 @@ class RateSheetService {
             $line = '';
 
             if ($email) {
-                $line .= $email . '<br>';
+            $line .= $email;
             }
 
             $class = strtolower($status);
-            $line .= '<span class="' . $class . '">' . ucfirst(strtolower($status)) . '</span>';
+
+            // 🔥 KEY CHANGE HERE
+            if ($status === 'PENDING') {
+            $line .= '<span class="pending">Pending</span>';
+            }
+            else {
+            $line .= '<span class="' . $class . '"></span>';
+            }
 
             $output[] = $line;
         }
 
         return implode('<br>', $output);
-    }
+        }
     /**
      * Inserts a new status for a rate sheet.
      *

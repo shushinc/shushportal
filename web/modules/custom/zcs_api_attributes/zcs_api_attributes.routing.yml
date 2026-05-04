@@ -52,6 +52,21 @@ zcs_api_attributes.rate_sheet_list:
     _custom_access: '\Drupal\zcs_api_attributes\Controller\RateSheetController::access'
   options:
     no_cache: true
+
+zcs_api_attributes.new_rate_sheet.review:
+  path: "/pricing/new-rate-sheet/review/{id}"
+  defaults:
+    _form: '\Drupal\zcs_api_attributes\Form\NewRateSheetReviewForm'
+    _title: "Rate Sheet Review"
+    id: 0
+  requirements:
+    _permission: 'access content'
+    _role: "finance_admin + administrator + financial_rate_sheet_approval_level_1 + financial_rate_sheet_approval_level_2"
+    id: \d+
+  options:
+    no_cache: "TRUE"
+    _admin_route: TRUE
+
 zcs_api_attributes.create_rate_sheet:
   path: "/create-rate-sheet"
   defaults:

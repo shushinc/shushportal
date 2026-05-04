@@ -85,7 +85,10 @@ th:first-child,
 .pricing-rate-sheet-list
 table.attributes-table
   thead
-  th:nth-child(2),
+  th:nth-last-child(1) {
+  width: 17%;
+  text-align: left;
+}
 .network_authentication_pricing_over_time
   table.attributes-table
   thead

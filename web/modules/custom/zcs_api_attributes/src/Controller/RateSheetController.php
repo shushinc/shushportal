@@ -7,7 +7,6 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Link;
 use Drupal\Core\Pager\PagerManagerInterface;
-use Drupal\Core\Render\Markup;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -32,6 +31,8 @@ class RateSheetController extends ControllerBase {
   
   /**
    * Rate Sheet service.
+   * 
+   * Drupal\zcs_api_attributes\Services\RateSheetService
    */
   protected $rateSheetService;
 
@@ -66,7 +67,7 @@ class RateSheetController extends ControllerBase {
     $final = [];
 
     $resultSet = $this->database->select('rate_sheet', 'rs')
-      ->fields('rs', ['id', 'name', 'effective_date', 'currency', 'markup_retail', 'created_date']);
+      ->fields('rs', ['id', 'name', 'effective_date', 'currency', 'markup_retail', 'created_date', 'created_by']);
     $resultSet->range($pager->getCurrentPage() * $limit, $limit);
     $resultSet->orderBy('effective_date', 'DESC');
     $resultSet = $resultSet->execute()->fetchAll();
@@ -91,13 +92,33 @@ class RateSheetController extends ControllerBase {
     }
 
     foreach($resultSet as $result) {
+
+      $is_current_user_owner = ($result->created_by == \Drupal::currentUser()->id());
+
+      $actions = [];
+      
+      $actions = [
+        [
+          'title' => 'Review',
+          'url' => Url::fromRoute(
+            'zcs_api_attributes.new_rate_sheet.review',
+            ['id' => $result->id]
+          )->toString(),
+          'ajax' => TRUE,
+          'disabled' => $is_current_user_owner,
+          'class' => $is_current_user_owner ? 'disabled-action' : '',
+        ],
+      ];
+      
       $final[] = [
+        'id' => $result->id,
         'name' => $result->name,
         'currency' => $result->currency,
         'effective_date' => date('M d, Y', $result->effective_date),
         'markup_retail' => $result->markup_retail,
         'approvals' => $this->rateSheetService->getRateSheetApprovers($result->id),
         'status' => $this->rateSheetService->getRateSheetStatus($result->id),
+        'actions' => $actions,
       ];
     }
 
@@ -120,7 +141,7 @@ class RateSheetController extends ControllerBase {
       '#theme' => 'rate_sheet_list',
       '#content' => $data,
       '#attached' => [
-        'library' => ['zcs_api_attributes/attributes-page', 'zcs_api_attributes/rate-sheet-approval'],
+        'library' => ['zcs_api_attributes/attributes-page', 'zcs_api_attributes/rate-sheet-approval',],
       ],
     ];
   }

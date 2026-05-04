@@ -964,3 +964,20 @@ function zcs_api_attributes_update_9021() {
     }
   }
 }
+
+function zcs_api_attributes_update_9022() {
+  $schema = \Drupal::database()->schema();
+
+  $table = 'rate_sheet_item';
+  $field = 'attribute_name';
+
+  if (!$schema->fieldExists($table, $field)) {
+    $schema->addField($table, $field, [
+      'type' => 'varchar',
+      'length' => 255,
+      'not null' => FALSE,
+      'default' => '',
+      'description' => 'Attribute name.',
+    ]);
+  }
+}

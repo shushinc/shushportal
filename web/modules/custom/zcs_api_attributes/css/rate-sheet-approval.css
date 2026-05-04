@@ -56,17 +56,22 @@ table.rate-sheet-approval tbody td span.pending {
 table.rate-sheet-approval tbody td span.approved::before,
 table.rate-sheet-approval tbody td span.rejected::before,
 table.attributes-table tbody td span.pending::before,
-table.rate-sheet-approval tbody td span.pending::before {
+table.rate-sheet-approval tbody td span.pending::before,
+table.attributes-table tbody td span.approved::before {
   content: "";
   height: 12px;
   width: 12px;
   background: url("/themes/custom/shush/images/active-bg.svg") no-repeat;
   display: block;
   position: absolute;
-  left: 0;
+  left: 5px;
   top: 50%;
   background-size: cover;
-  margin-top: -11px;
+  margin-top: -6px;
+}
+
+table.attributes-table tbody td span {
+  position: relative;
 }
 
 table.rate-sheet-approval tbody td span.rejected::before {
@@ -123,3 +128,5 @@ table.rate-sheet-approval .btn-primary:hover {
 .rate-sheet-approval .ajax-progress-throbber {
   display: none;
 }
+
+.attributes-table {}

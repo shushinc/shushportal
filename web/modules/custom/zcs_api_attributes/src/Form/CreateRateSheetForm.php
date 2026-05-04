@@ -2,13 +2,11 @@
 
 namespace Drupal\zcs_api_attributes\Form;
 
-use Drupal\Component\Serialization\Json;
+use Drupal\node\Entity\Node;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Link;
-use Drupal\Core\Render\Markup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -99,14 +97,6 @@ class CreateRateSheetForm extends FormBase {
       '#attributes' => [
         'min' => date('Y-m-d'), // disables previous dates
       ],
-      // '#ajax' => [
-      //   'callback' => '::validateDateAjax',
-      //   'event' => 'change',
-      //   // 'progress' => [
-      //   //   'type' => 'throbber',
-      //   //   'message' => t('Checking date...'),
-      //   // ],
-      // ],
     ];
 
     // Markup retail
@@ -253,6 +243,8 @@ class CreateRateSheetForm extends FormBase {
         $success_rate = $values["success_rate_{$nid}"] ?? 0;
         $tiered_calculation = $values["tiered_calculation_{$nid}"] ?? 0;
 
+        $node = Node::load($nid);
+
         $this->database->insert('rate_sheet_item')
           ->fields([
             'rate_sheet_id',
@@ -262,6 +254,7 @@ class CreateRateSheetForm extends FormBase {
             'success_rate',
             'partial_range',
             'tiered_calculation',
+            'attribute_name',
           ])
           ->values([
             $new_rate_sheet_id,
@@ -271,6 +264,7 @@ class CreateRateSheetForm extends FormBase {
             $success_rate,
             $partial_range,
             $tiered_calculation,
+            $node->getTitle(),
           ])
           ->execute();
       }

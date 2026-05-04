@@ -43,8 +43,15 @@
   margin-right: 20px;
 }
 
+.new-rate-sheet-review .form-type-select .form-select {
+  width: auto;
+  min-width: 280px;
+  margin: 20px auto 0 auto;
+}
+
 .ui-dialog .attribute-review .form-submit,
-.ui-dialog .api-attribute-review .form-submit {
+.ui-dialog .api-attribute-review .form-submit,
+.new-rate-sheet-review .form-submit {
   display: flex;
   justify-content: center;
   margin: 0 auto;

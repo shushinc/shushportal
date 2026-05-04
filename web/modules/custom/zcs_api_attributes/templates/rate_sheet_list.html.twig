@@ -1,3 +1,4 @@
+{{ attach_library('core/drupal.dialog.ajax') }}
   <div>
     <div class="user-management-view api-attribute-status-header">
       <header>
@@ -14,6 +15,7 @@
           <th>Markup Retail(%)</th>
           <th>Approvers</th>
           <th>Status</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
@@ -27,6 +29,30 @@
             <td>{{ sheet_info.markup_retail }}</td>
             <td>{{ sheet_info.approvals|raw }}</td>
             <td class="{{ sheet_info.status|lower }}" >{{ sheet_info.status }}</td>
+            <td>
+              <div class="dropdown">
+                <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                  Actions
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end">
+                  {% for action in sheet_info.actions %}
+                    <li>
+                      <a
+                        href="{{ action.disabled ? 'javascript:void(0)' : action.url }}"
+                        class="dropdown-item {{ action.class }} {% if action.ajax %}use-ajax{% endif %}"
+                        {% if action.ajax %}
+                          data-dialog-type="modal"
+                          data-dialog-options='{"width":1000,"title":"Rate Sheet Review","dialogClass":"api-popup-width-resize api-table-fixed"}'
+                        {% endif %}
+                      >
+                        {{ action.title }}
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </td>
           </tr>
           {% set counter = counter + 1 %}
         {% endfor %}
