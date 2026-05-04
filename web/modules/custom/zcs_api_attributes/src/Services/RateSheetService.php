@@ -4,6 +4,9 @@ namespace Drupal\zcs_api_attributes\Services;
 
 use Drupal\Core\Database\Connection;
 use \Drupal\user\Entity\User;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
 
 class RateSheetService {
 
@@ -99,31 +102,39 @@ class RateSheetService {
         $query = $this->database->select('rate_sheet_status', 'rss')
             ->fields('rss', ['status_name', 'created_by'])
             ->condition('rate_sheet_id', $rate_sheet_id)
-            ->orderBy('date', 'DESC')
-            ->range(0, 2);
-
+            ->orderBy('date', 'ASC');
         $rows = $query->execute()->fetchAll();
 
-        if (
-            count($rows) === 1 &&
-            strtoupper($rows[0]->status_name) === 'Pending'
-        ) {
+        if (empty($rows)) {
             return '<span class="pending">Pending</span><br><span class="pending">Pending</span>';
         }
+
+        if (count($rows) === 1 && strtoupper($rows[0]->status_name) === 'PENDING') {
+            return '<span class="pending">Pending</span><br><span class="pending">Pending</span>';
+        }
+
+        // Remove first pending if it's the creation record
+        if (strtoupper($rows[0]->status_name) === 'PENDING') {
+            array_shift($rows);
+        }
+
+        // Now take last 2 relevant statuses
+        $rows = array_slice(array_reverse($rows), 0, 2);
 
         $statuses = [];
 
         foreach ($rows as $row) {
             $statuses[] = [
-            'status' => strtoupper($row->status_name),
-            'uid' => $row->created_by,
+                'status' => strtoupper($row->status_name),
+                'uid' => $row->created_by,
             ];
         }
 
+        // Ensure always 2 slots
         while (count($statuses) < 2) {
             $statuses[] = [
-            'status' => 'PENDING',
-            'uid' => NULL,
+                'status' => 'PENDING',
+                'uid' => NULL,
             ];
         }
 
@@ -136,16 +147,16 @@ class RateSheetService {
             $email = '';
 
             if ($status !== 'PENDING' && !empty($uid)) {
-            $user = \Drupal\user\Entity\User::load($uid);
-            if ($user) {
-                $email = $user->getEmail();
-            }
+                $user = \Drupal\user\Entity\User::load($uid);
+                if ($user) {
+                    $email = $user->getEmail();
+                }
             }
 
             $line = '';
 
             if ($email) {
-            $line .= $email . '<br>';
+                $line .= $email . '<br>';
             }
 
             $class = strtolower($status);
