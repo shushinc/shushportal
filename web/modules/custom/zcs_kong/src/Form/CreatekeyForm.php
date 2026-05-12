@@ -94,7 +94,7 @@ final class CreateKeyForm extends FormBase {
     ];
 
     $form['redirect_uri'] = [ 
-      '#type' => 'url',
+      '#type' => 'textfield',
       '#title' => $this->t('Redirect URIs'),
       '#description' => $this->t('Limit upto 15 characters.'),
       '#required' => TRUE,
