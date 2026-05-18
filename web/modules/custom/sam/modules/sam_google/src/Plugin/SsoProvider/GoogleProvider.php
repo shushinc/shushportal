@@ -65,7 +65,7 @@ final class GoogleProvider extends AbstractOidcProvider {
    * {@inheritdoc}
    */
   protected function getCallbackUri(SsoAppInterface $app): string {
-    return (string) $app->getSetting('callback_url');
+    return (string) ($app->getSetting('callback_uri') ?: $app->getSetting('callback_url'));
   }
 
   /**
