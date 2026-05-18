@@ -1,0 +1,8 @@
+name: 'SAM Microsoft Entra Consumer'
+type: module
+description: 'Provides Microsoft Entra Consumer OpenID Connect SSO provider integration for SAM.'
+package: SAM
+core_version_requirement: ^10
+dependencies:
+  - sam:sam
+  - sam_oidc:sam_oidc
