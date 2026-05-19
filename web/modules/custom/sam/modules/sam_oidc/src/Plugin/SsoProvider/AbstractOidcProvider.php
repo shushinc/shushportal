@@ -142,7 +142,7 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
     $issuer = $this->getIssuer($app);
     $discovery = $this->discovery->discover($issuer);
 
-    $clientId = $app->getSetting('client_id');
+    $clientId = $this->getClientId($app);
     $redirectUri = $this->normalizeCallbackUri($this->getCallbackUri($app), $request);
 
     \Drupal::logger('SSO Authentication Manager')->info('Client ID: @nid', [
