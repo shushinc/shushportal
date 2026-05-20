@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a53cee29617c094b0b3f17dc8d0304f5",
+    "content-hash": "ca98a0da5bdd7b33bcf7d67822ebcade",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2722,6 +2722,76 @@
             }
         },
         {
+            "name": "drupal/encrypt",
+            "version": "3.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/encrypt.git",
+                "reference": "8.x-3.2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/encrypt-8.x-3.2.zip",
+                "reference": "8.x-3.2",
+                "shasum": "32a700eeb59aac51f6ce4651718243a1641d5ef0"
+            },
+            "require": {
+                "drupal/core": "^8 || ^9 || ^10 || ^11",
+                "drupal/key": "^1"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-3.2",
+                    "datestamp": "1727640040",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                },
+                "drush": {
+                    "services": {
+                        "drush.services.yml": "^9 || ^10 || ^11"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "alexpott",
+                    "homepage": "https://www.drupal.org/user/157725"
+                },
+                {
+                    "name": "greggles",
+                    "homepage": "https://www.drupal.org/user/36762"
+                },
+                {
+                    "name": "nerdstein",
+                    "homepage": "https://www.drupal.org/user/1557710"
+                },
+                {
+                    "name": "rlhawk",
+                    "homepage": "https://www.drupal.org/user/352283"
+                },
+                {
+                    "name": "theunraveler",
+                    "homepage": "https://www.drupal.org/user/71548"
+                },
+                {
+                    "name": "zzolo",
+                    "homepage": "https://www.drupal.org/user/147331"
+                }
+            ],
+            "description": "Provides an API for two-way encryption.",
+            "homepage": "https://www.drupal.org/project/encrypt",
+            "support": {
+                "source": "https://git.drupalcode.org/project/encrypt"
+            }
+        },
+        {
             "name": "drupal/entity",
             "version": "1.6.0",
             "source": {
@@ -2980,6 +3050,148 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/group",
                 "issues": "https://drupal.org/project/issues/group"
+            }
+        },
+        {
+            "name": "drupal/json_field",
+            "version": "1.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/json_field.git",
+                "reference": "8.x-1.7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/json_field-8.x-1.7.zip",
+                "reference": "8.x-1.7",
+                "shasum": "4243b6adc2dd9d44a8a243cede59f7935a0c9b65"
+            },
+            "require": {
+                "drupal/core": "^10.3 || ^11",
+                "ext-json": "*"
+            },
+            "require-dev": {
+                "drupal/diff": "^1",
+                "drupal/feeds": "dev-3.x@dev",
+                "swaggest/json-schema": "^0"
+            },
+            "suggest": {
+                "drupal/diff": "^0",
+                "swaggest/json-schema": "^0"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-1.7",
+                    "datestamp": "1759661334",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "See contributors",
+                    "homepage": "https://www.drupal.org/node/2653746/committers",
+                    "role": "Developer"
+                },
+                {
+                    "name": "dawehner",
+                    "homepage": "https://www.drupal.org/user/99340"
+                },
+                {
+                    "name": "Jaesin",
+                    "homepage": "https://www.drupal.org/user/841054"
+                }
+            ],
+            "description": "Provides a JSON field, formatter and views integration",
+            "homepage": "https://www.drupal.org/project/json_field",
+            "keywords": [
+                "Drupal"
+            ],
+            "support": {
+                "source": "http://cgit.drupalcode.org/json_field",
+                "issues": "https://www.drupal.org/project/issues/json_field"
+            }
+        },
+        {
+            "name": "drupal/key",
+            "version": "1.22.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/key.git",
+                "reference": "8.x-1.22"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/key-8.x-1.22.zip",
+                "reference": "8.x-1.22",
+                "shasum": "14b4b8ce1917dcbcf2d67955564b8b484f30cdda"
+            },
+            "require": {
+                "drupal/core": "^9.1 || ^10 || ^11"
+            },
+            "require-dev": {
+                "drush/drush": ">=9"
+            },
+            "suggest": {
+                "drush/drush": ">=11"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-1.22",
+                    "datestamp": "1768921252",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                },
+                "drush": {
+                    "services": {
+                        "drush.services.yml": ">=9"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "cellar door",
+                    "homepage": "https://www.drupal.org/user/658076"
+                },
+                {
+                    "name": "crashtest_",
+                    "homepage": "https://www.drupal.org/user/261457"
+                },
+                {
+                    "name": "japerry",
+                    "homepage": "https://www.drupal.org/user/45640"
+                },
+                {
+                    "name": "nerdstein",
+                    "homepage": "https://www.drupal.org/user/1557710"
+                },
+                {
+                    "name": "rlhawk",
+                    "homepage": "https://www.drupal.org/user/352283"
+                }
+            ],
+            "description": "Provides the ability to manage site-wide keys",
+            "homepage": "http://drupal.org/project/key",
+            "keywords": [
+                "Drupal"
+            ],
+            "support": {
+                "source": "https://git.drupalcode.org/project/key",
+                "issues": "http://drupal.org/project/key"
             }
         },
         {
@@ -3530,6 +3742,132 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/smtp",
                 "issues": "https://www.drupal.org/project/issues/smtp"
+            }
+        },
+        {
+            "name": "drupal/swagger_ui_formatter",
+            "version": "4.4.3",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/swagger_ui_formatter.git",
+                "reference": "4.4.3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/swagger_ui_formatter-4.4.3.zip",
+                "reference": "4.4.3",
+                "shasum": "67dfe7c90b9e4a8462e4b6c1f75f4d670c4c439f"
+            },
+            "require": {
+                "drupal/core": "^10.5.6 || ^11.2.10",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
+            },
+            "require-dev": {
+                "composer/installers": "^2.2.0",
+                "drupal/devel": "^5.2.1",
+                "league/container": "<4.0.0 || >=4.2.2",
+                "mglaman/phpstan-drupal": "^1.3.9 || ^2.0.13",
+                "npm-asset/swagger-ui-dist": "^5.29.2",
+                "phpstan/phpstan-deprecation-rules": "^1.2.1 || ^2.0.4"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "4.4.3",
+                    "datestamp": "1775731683",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                },
+                "branch-alias": {
+                    "dev-master": "4.x-dev"
+                },
+                "composer-exit-on-patch-failure": true,
+                "composer-normalize": {
+                    "indent-size": 4,
+                    "indent-style": "space"
+                },
+                "drupal-scaffold": {
+                    "file-mapping": {
+                        "[web-root]/libraries/swagger-ui/dist/oauth2-redirect.html": "vendor/npm-asset/swagger-ui-dist/oauth2-redirect.html",
+                        "[web-root]/libraries/swagger-ui/dist/oauth2-redirect.js": "vendor/npm-asset/swagger-ui-dist/oauth2-redirect.js",
+                        "[web-root]/libraries/swagger-ui/dist/swagger-ui-bundle.js": "vendor/npm-asset/swagger-ui-dist/swagger-ui-bundle.js",
+                        "[web-root]/libraries/swagger-ui/dist/swagger-ui-standalone-preset.js": "vendor/npm-asset/swagger-ui-dist/swagger-ui-standalone-preset.js",
+                        "[web-root]/libraries/swagger-ui/dist/swagger-ui.css": "vendor/npm-asset/swagger-ui-dist/swagger-ui.css",
+                        "[web-root]/libraries/swagger-ui/package.json": "vendor/npm-asset/swagger-ui-dist/package.json",
+                        "[project-root]/.gitattributes": false
+                    }
+                },
+                "enable-patching": true,
+                "patchLevel": {
+                    "drupal/core": "-p2"
+                },
+                "patches-ignore": {
+                    "pronovix/drupal-qa": {
+                        "drupal/core": {
+                            "copy() can fail in FunctionalTestSetupTrait::prepareSettings() because of a race condition  [#3191369]": "https://git.drupalcode.org/project/drupal/-/merge_requests/218.diff"
+                        }
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Drupal\\swagger_ui_formatter\\": "./src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Drupal\\Tests\\swagger_ui_formatter\\": "./tests/src",
+                    "Drupal\\swagger_ui_formatter_test\\": "./tests/modules/swagger_ui_formatter_test/src"
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "ajay_reddy",
+                    "homepage": "https://www.drupal.org/user/3261994"
+                },
+                {
+                    "name": "balazswmann",
+                    "homepage": "https://www.drupal.org/user/2204810"
+                },
+                {
+                    "name": "drupal.dinesh",
+                    "homepage": "https://www.drupal.org/user/3378060"
+                },
+                {
+                    "name": "dsudheesh",
+                    "homepage": "https://www.drupal.org/user/956506"
+                },
+                {
+                    "name": "lizlynch",
+                    "homepage": "https://www.drupal.org/user/3569234"
+                },
+                {
+                    "name": "mxr576",
+                    "homepage": "https://www.drupal.org/user/315522"
+                },
+                {
+                    "name": "pronovix",
+                    "homepage": "https://www.drupal.org/user/3834019"
+                }
+            ],
+            "description": "Provides a Swagger UI field formatter for File and Link fields.",
+            "homepage": "https://www.drupal.org/project/swagger_ui_formatter",
+            "keywords": [
+                "API docs",
+                "Drupal",
+                "OpenAPI",
+                "Swagger"
+            ],
+            "support": {
+                "source": "https://github.com/Pronovix/swagger_ui_formatter",
+                "issues": "https://github.com/Pronovix/swagger_ui_formatter/issues",
+                "docs": "https://www.drupal.org/docs/8/modules/swagger-ui-field-formatter"
             }
         },
         {
@@ -9207,5 +9545,5 @@
         "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }

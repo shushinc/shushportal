@@ -6,6 +6,15 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\sam\SsoAppInterface;
 use Drupal\sam_oidc\Plugin\SsoProvider\AbstractOidcProvider;
+use Drupal\key\KeyRepositoryInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Drupal\sam\Security\SamStateTokenService;
+use Drupal\sam_oidc\Service\OidcDiscoveryService;
+use Drupal\sam_oidc\Service\OidcTokenService;
 
 /**
  * Microsoft Entra Consumer OpenID Connect SSO provider.
@@ -17,7 +26,66 @@ use Drupal\sam_oidc\Plugin\SsoProvider\AbstractOidcProvider;
  *   description = @Translation("Microsoft OpenID Connect authentication provider to users with outlook.com, hotmail.com, and live.com accounts."),
  * )
  */
-final class EntraConsumerProvider extends AbstractOidcProvider {
+final class EntraConsumerProvider extends AbstractOidcProvider implements ContainerFactoryPluginInterface {
+
+
+  /**
+   * The Drupal Key repository service.
+   *
+   * @var \Drupal\key\KeyRepositoryInterface
+   */
+  protected KeyRepositoryInterface $keyRepository;
+  /**
+    * {@inheritdoc}
+    */
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    ConfigFactoryInterface $config_factory,
+    OidcDiscoveryService $discovery,
+    SessionInterface $session,
+    SamStateTokenService $state_token,
+    OidcTokenService $token_service,
+    EntityTypeManagerInterface $entity_type_manager,
+    KeyRepositoryInterface $key_repository,
+  ) {
+    parent::__construct(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $config_factory,
+      $discovery,
+      $session,
+      $state_token,
+      $token_service,
+      $entity_type_manager,
+    );
+    $this->keyRepository = $key_repository;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(
+    ContainerInterface $container,
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+  ): self {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('config.factory'),
+      $container->get('sam_oidc.discovery'),
+      $container->get('session'),
+      $container->get('sam.state_token'),
+      $container->get('sam_oidc.token_service'),
+      $container->get('entity_type.manager'),
+      $container->get('key.repository'),
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -64,18 +132,68 @@ final class EntraConsumerProvider extends AbstractOidcProvider {
    * {@inheritdoc}
    */
   protected function getClientId(SsoAppInterface $app): string {
-    $environment_variable_name = $this->getClientIdEnvironmentVariableName($app);
 
-    return $this->getRequiredEnvironmentVariable($environment_variable_name, 'Microsoft Entra Consumer Client ID');
+    $key_name = trim((string) $app->getSetting('client_id_env_var'));
+
+    if ($key_name === '') {
+      throw new \RuntimeException(
+        'Client ID Key name is not configured.'
+      );
+    }
+
+    $key = $this->keyRepository->getKey($key_name);
+
+    if ($key === NULL) {
+      throw new \RuntimeException(sprintf(
+        'Drupal Key "%s" was not found.',
+        $key_name
+      ));
+    }
+
+    $value = trim((string) $key->getKeyValue());
+
+    if ($value === '') {
+      throw new \RuntimeException(sprintf(
+        'Drupal Key "%s" is empty.',
+        $key_name
+      ));
+    }
+
+    return $value;
   }
 
   /**
    * {@inheritdoc}
    */
   protected function getClientSecret(SsoAppInterface $app): string {
-    $environment_variable_name = $this->getClientSecretEnvironmentVariableName($app);
 
-    return $this->getRequiredEnvironmentVariable($environment_variable_name, 'Microsoft Entra Consumer Client Secret');
+    $key_name = trim((string) $app->getSetting('client_secret_env_var'));
+
+    if ($key_name === '') {
+      throw new \RuntimeException(
+        'Client Secret Key name is not configured.'
+      );
+    }
+
+    $key = $this->keyRepository->getKey($key_name);
+
+    if ($key === NULL) {
+      throw new \RuntimeException(sprintf(
+        'Drupal Key "%s" was not found.',
+        $key_name
+      ));
+    }
+
+    $value = trim((string) $key->getKeyValue());
+
+    if ($value === '') {
+      throw new \RuntimeException(sprintf(
+        'Drupal Key "%s" is empty.',
+        $key_name
+      ));
+    }
+
+    return $value;
   }
 
   /**
@@ -143,15 +261,15 @@ final class EntraConsumerProvider extends AbstractOidcProvider {
     return [
       'client_id_env_var' => [
         '#type' => 'textfield',
-        '#title' => $this->t('Client ID environment variable name'),
-        '#description' => $this->t('The name of the environment variable that contains the Microsoft Entra Client ID. The credential value itself is not stored in Drupal configuration.'),
+        '#title' => $this->t('Drupal Key ID'),
+        '#description' => $this->t('The Drupal Key entity ID that stores the Microsoft Entra Client ID.'),
         '#default_value' => $settings['client_id_env_var'] ?? '',
         '#required' => TRUE,
       ],
       'client_secret_env_var' => [
         '#type' => 'textfield',
-        '#title' => $this->t('Client Secret environment variable name'),
-        '#description' => $this->t('The name of the environment variable that contains the Microsoft Entra Client Secret. The credential value itself is not stored in Drupal configuration.'),
+        '#title' => $this->t('Drupal Key ID'),
+        '#description' => $this->t('The Drupal Key entity ID that stores the Microsoft Entra Client Secret.'),
         '#default_value' => $settings['client_secret_env_var'] ?? '',
         '#required' => TRUE,
       ],
@@ -441,19 +559,6 @@ final class EntraConsumerProvider extends AbstractOidcProvider {
   }
 
   /**
-   * Gets the configured Client ID environment variable name.
-   *
-   * @param \Drupal\sam\SsoAppInterface $app
-   *   The SSO app.
-   *
-   * @return string
-   *   The configured environment variable name.
-   */
-  private function getClientIdEnvironmentVariableName(SsoAppInterface $app): string {
-    return $this->getRequiredEnvironmentVariableNameSetting($app, 'client_id_env_var', 'Client ID environment variable name');
-  }
-
-  /**
    * Gets the configured Client Secret environment variable name.
    *
    * @param \Drupal\sam\SsoAppInterface $app
@@ -546,96 +651,5 @@ final class EntraConsumerProvider extends AbstractOidcProvider {
       $form_state->setErrorByName('settings][details][' . $field_name, $this->t($required_message));
       return;
     }
-
-    if (!$this->isValidEnvironmentVariableName($value)) {
-      $form_state->setErrorByName('settings][details][' . $field_name, $this->t($invalid_message));
-      return;
-    }
-
-    if (!$this->hasEnvironmentVariable($value)) {
-      $form_state->setErrorByName('settings][details][' . $field_name, $this->t($missing_environment_message, [
-        '@env_var' => $value,
-      ]));
-    }
   }
-
-  /**
-   * Checks whether an environment variable name is valid.
-   *
-   * @param string $name
-   *   The environment variable name.
-   *
-   * @return bool
-   *   TRUE when the name is valid.
-   */
-  private function isValidEnvironmentVariableName(string $name): bool {
-    return (bool) preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $name);
-  }
-
-  /**
-   * Checks whether an environment variable is available and non-empty.
-   *
-   * @param string $name
-   *   The environment variable name.
-   *
-   * @return bool
-   *   TRUE when the environment variable exists and is non-empty.
-   */
-  private function hasEnvironmentVariable(string $name): bool {
-    return $this->getEnvironmentVariable($name) !== NULL;
-  }
-
-  /**
-   * Gets a required environment variable.
-   *
-   * @param string $name
-   *   The environment variable name.
-   * @param string $label
-   *   The human-readable label used in exception messages.
-   *
-   * @return string
-   *   The environment variable value.
-   *
-   * @throws \InvalidArgumentException
-   *   Thrown when the environment variable is missing or empty.
-   */
-  private function getRequiredEnvironmentVariable(string $name, string $label): string {
-    $value = $this->getEnvironmentVariable($name);
-
-    if ($value === NULL) {
-      throw new \InvalidArgumentException(sprintf('%s environment variable %s is required.', $label, $name));
-    }
-
-    return $value;
-  }
-
-  /**
-   * Gets an environment variable from the current PHP runtime.
-   *
-   * @param string $name
-   *   The environment variable name.
-   *
-   * @return string|null
-   *   The trimmed environment variable value, or NULL when missing or empty.
-   */
-  private function getEnvironmentVariable(string $name): ?string {
-    $value = getenv($name);
-
-    if ($value === FALSE && isset($_ENV[$name])) {
-      $value = $_ENV[$name];
-    }
-
-    if ($value === FALSE && isset($_SERVER[$name])) {
-      $value = $_SERVER[$name];
-    }
-
-    if (!is_string($value)) {
-      return NULL;
-    }
-
-    $value = trim($value);
-
-    return $value !== '' ? $value : NULL;
-  }
-
 }

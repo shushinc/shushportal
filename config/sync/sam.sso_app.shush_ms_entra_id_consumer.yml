@@ -1,0 +1,16 @@
+uuid: 8d641b4d-8784-4159-9658-34375dccee78
+langcode: en
+status: true
+dependencies: {  }
+id: shush_ms_entra_id_consumer
+label: 'Shush MS Entra ID Consumer'
+domain: hotmail.com
+provider: entra_consumer
+settings:
+  details:
+    client_id_env_var: sam_entra_consumer_client_id
+    client_secret_env_var: sam_entra_consumer_client_secret
+    authority_alias: consumers
+    login_base_url: 'https://login.microsoftonline.com'
+    login_host: login.microsoftonline.com
+    callback_uri: /sso/callback/entra_consumer

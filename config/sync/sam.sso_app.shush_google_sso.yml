@@ -1,0 +1,14 @@
+uuid: df54ac74-f20a-411e-b28d-94d878fc6cd4
+langcode: en
+status: true
+dependencies: {  }
+id: shush_google_sso
+label: 'Shush Google SSO'
+domain: shush.pw
+provider: google
+settings:
+  details:
+    issuer_url: 'https://accounts.google.com'
+    client_id: google_sso_app_client_id
+    client_secret: google_sso_app_client_secret
+    callback_uri: /sso/callback/google
