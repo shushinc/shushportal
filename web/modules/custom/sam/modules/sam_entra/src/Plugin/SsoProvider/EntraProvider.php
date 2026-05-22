@@ -265,22 +265,22 @@ final class EntraProvider extends AbstractOidcProvider implements ContainerFacto
     return [
       'tenant_id_env_var' => [
         '#type' => 'textfield',
-        '#title' => $this->t('Drupal Key ID'),
+        '#title' => $this->t('Drupal Key ID for Tenant Entra ID'),
         '#description' => $this->t('The Drupal Key entity ID that stores the Tenant Entra ID.'),
         '#default_value' => $settings['tenant_id_env_var'] ?? '',
         '#required' => TRUE,
       ],
       'client_id_env_var' => [
         '#type' => 'textfield',
-        '#title' => $this->t('Drupal Key ID'),
+        '#title' => $this->t('Drupal Key ID for Microsoft Entra Client ID'),
         '#description' => $this->t('The Drupal Key entity ID that stores the Microsoft Entra Client ID.'),
         '#default_value' => $settings['client_id_env_var'] ?? '',
         '#required' => TRUE,
       ],
       'client_secret_env_var' => [
         '#type' => 'textfield',
-        '#title' => $this->t('Drupal Key ID'),
-        '#description' => $this->t('The name of the environment variable that contains the Microsoft Entra ID Client Secret. The credential value itself is not stored in Drupal configuration.'),
+        '#title' => $this->t('Drupal Key ID for Microsoft Entra Client Secret'),
+        '#description' => $this->t('The name of the environment variable that contains the Microsoft Entra Client Secret. The credential value itself is not stored in Drupal configuration.'),
         '#default_value' => $settings['client_secret_env_var'] ?? '',
         '#required' => TRUE,
       ],

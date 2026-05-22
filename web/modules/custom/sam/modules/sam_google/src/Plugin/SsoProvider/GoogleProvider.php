@@ -218,13 +218,13 @@ final class GoogleProvider extends AbstractOidcProvider implements ContainerFact
       ],
       'client_id' => [
         '#type' => 'textfield',
-        '#title' => $this->t('Client ID Drupal Key ID'),
+        '#title' => $this->t('Client ID Drupal Key ID for Google Client ID'),
         '#description' => $this->t('The Drupal Key entity ID that stores the Google Client ID.'),
         '#default_value' => $settings['client_id'] ?? '',
       ],
       'client_secret' => [
         '#type' => 'textfield',
-        '#title' => $this->t('Client Secret Drupal Key ID'),
+        '#title' => $this->t('Client Secret Drupal Key ID for Google Client Secret'),
         '#description' => $this->t('The Drupal Key entity ID that stores the Google Client Secret.'),
         '#default_value' => $settings['client_secret'] ?? '',
       ],

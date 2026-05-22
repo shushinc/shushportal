@@ -261,14 +261,14 @@ final class EntraConsumerProvider extends AbstractOidcProvider implements Contai
     return [
       'client_id_env_var' => [
         '#type' => 'textfield',
-        '#title' => $this->t('Drupal Key ID'),
+        '#title' => $this->t('Drupal Key ID for Microsoft Entra Client ID'),
         '#description' => $this->t('The Drupal Key entity ID that stores the Microsoft Entra Client ID.'),
         '#default_value' => $settings['client_id_env_var'] ?? '',
         '#required' => TRUE,
       ],
       'client_secret_env_var' => [
         '#type' => 'textfield',
-        '#title' => $this->t('Drupal Key ID'),
+        '#title' => $this->t('Drupal Key ID for Microsoft Entra Client Secret'),
         '#description' => $this->t('The Drupal Key entity ID that stores the Microsoft Entra Client Secret.'),
         '#default_value' => $settings['client_secret_env_var'] ?? '',
         '#required' => TRUE,
