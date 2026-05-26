@@ -1,6 +1,10 @@
+{{ attach_library('zcs_api_attributes/rate-sheet-ux') }}
+
 {{ form.form_build_id }}
 {{ form.form_token }}
 {{ form.form_id }}
+{{ form.nodes }}
+{{ form.range_currency_symbol }}
 
 {% if form.message %}
   <p class="message">{{ form.message }}</p>
@@ -20,14 +24,22 @@
   </div>
 
   <div class="rate-sheet-markup-retail-percentage">
-    <span class="attributes-label">Markup Retail {{ '%'}}</span>
+    <span class="attributes-label">Markup Retail {{ '%' }}</span>
     <span class="attribute-inputs">{{ form.retail_markup_percentage }}</span>
   </div>
 </div>
+
 <div>
   <span class="attribute-inputs">
     {% set attributes = fetch_attributes() %}
-    <table class="attributes-table">
+    {% set currency_symbol = form.range_currency_symbol['#value']|default('') %}
+
+    <div class="api-attribute-filter">
+      <label for="rate-sheet-attribute-filter">Filter API Attributes</label>
+      <input type="search" id="rate-sheet-attribute-filter" data-rate-sheet-attribute-filter placeholder="Type attribute name">
+    </div>
+
+    <table class="attributes-table rate-sheet-ranges-table" data-rate-sheet-ranges data-currency-symbol="{{ currency_symbol|e('html_attr') }}">
       <thead>
         <tr>
           <th>#</th>
@@ -37,20 +49,47 @@
           <th>Partial range</th>
           <th>Success rate</th>
           <th>Tiered calculation</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         {% set counter = 1 %}
-          {% for id, title in attributes.titles %}
-            <tr>
-              <td>{{ counter }}</td>
-              <td>{{ title }}</td>
-              <td>{{ form['from_range_' ~ id] }}</td>
-              <td>{{ form['to_range_' ~ id] }}</td>
-              <td>{{ form['partial_range_' ~ id] }}</td>
-              <td>{{ form['success_rate_' ~ id] }}</td>
-              <td>{{ form['tiered_calculation_' ~ id] }}</td>
-            </tr>
+        {% for id, title in attributes.titles %}
+          {% set ranges_for_attribute = attribute(form.rate_sheet_item_ranges, id) %}
+          {% set first_range = attribute(ranges_for_attribute, 0) %}
+
+          <tr class="rate-sheet-attribute-row" data-rate-sheet-attribute-row data-attribute-id="{{ id }}" data-attribute-name="{{ title|lower|e('html_attr') }}" data-rate-sheet-collapsed="false">
+            <td>{{ counter }}</td>
+            <td colspan="4" class="rate-sheet-attribute-title">{{ title }}</td>
+            <td class="rate-sheet-parent-range-placeholder">
+              Ranges are listed below this attribute.
+            </td>
+            <td>{{ form['tiered_calculation_' ~ id] }}</td>
+            <td class="rate-sheet-actions">
+              <button type="button" class="button button--small rate-sheet-add-range" data-rate-sheet-add-range data-attribute-id="{{ id }}">
+                Add Range
+              </button>
+            </td>
+          </tr>
+
+          <tr class="rate-sheet-range-row rate-sheet-range-row--initial" data-rate-sheet-range-row data-rate-sheet-initial-range-row data-attribute-id="{{ id }}" data-range-index="0">
+            <td></td>
+            <td class="rate-sheet-range-label">
+              <span class="rate-sheet-range-label-text">Range 1</span>
+            </td>
+            <td>{{ first_range.from_range }}</td>
+            <td>{{ first_range.to_range }}</td>
+            <td>{{ first_range.partial_range }}</td>
+            <td>{{ first_range.success_rate }}</td>
+            <td></td>
+            <td class="rate-sheet-range-actions">
+              <button type="button" class="rate-sheet-toggle-ranges" data-rate-sheet-toggle-ranges data-attribute-id="{{ id }}" aria-expanded="true" aria-label="Collapse ranges" title="Collapse ranges" hidden>
+                <span data-rate-sheet-toggle-icon aria-hidden="true">-</span>
+              </button>
+              <span class="rate-sheet-range-summary" data-rate-sheet-range-summary hidden></span>
+            </td>
+          </tr>
+
           {% set counter = counter + 1 %}
         {% endfor %}
       </tbody>
@@ -58,5 +97,10 @@
   </span>
 </div>
 
+<div class="rate-sheet-submit-wrapper" data-rate-sheet-submit-wrapper>
+  {{ form.submit }}
+</div>
 
-{{ form.submit }}
+<button type="button" class="button button--primary rate-sheet-floating-submit" data-rate-sheet-floating-submit hidden>
+  Save Rate Sheet
+</button>

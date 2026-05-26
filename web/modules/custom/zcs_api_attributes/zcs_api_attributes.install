@@ -720,11 +720,12 @@ function zcs_api_attributes_update_9012() {
         'type' => 'serial',
         'not null' => TRUE,
       ],
-      'rate_sheet_item' => [
-        'type' => 'text',
-        'size' => 'big',
-        'serialize' => TRUE,
+      'attribute_name' => [
+        'type' => 'varchar',
+        'length' => 255,
         'not null' => FALSE,
+        'default' => '',
+        'description' => 'Attribute name.',
       ],
       'rate_sheet_id' => [
         'type' => 'int',
@@ -738,22 +739,6 @@ function zcs_api_attributes_update_9012() {
         'not null' => TRUE,
         'default' => 0,
         'description' => 'Reference to node.nid where bundle = api_attributes.',
-      ],
-      'from_range' => [
-        'type' => 'float',
-        'default' => 0,
-      ],
-      'to_range' => [
-        'type' => 'float',
-        'default' => 0,
-      ],
-      'success_rate' => [
-        'type' => 'float',
-        'default' => 0,
-      ],
-      'partial_range' => [
-        'type' => 'float',
-        'default' => 0,
       ],
       'tiered_calculation' => [
         'type' => 'int',
@@ -778,6 +763,50 @@ function zcs_api_attributes_update_9012() {
         'table' => 'node',
         'columns' => [
           'api_attribute_id' => 'nid',
+        ],
+      ],
+    ],
+  ];
+
+  $tables['rate_sheet_item_range'] = [
+    'description' => 'Stores rate sheet items ranges.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+      ],
+      'rate_sheet_item_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'from_range' => [
+        'type' => 'float',
+        'default' => 0,
+      ],
+      'to_range' => [
+        'type' => 'float',
+        'default' => 0,
+      ],
+      'success_rate' => [
+        'type' => 'float',
+        'default' => 0,
+      ],
+      'partial_range' => [
+        'type' => 'float',
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'rate_sheet_item_id' => ['rate_sheet_item_id'],
+    ],
+    'foreign keys' => [
+      'rate_sheet_item_ref' => [
+        'table' => 'rate_sheet_item',
+        'columns' => [
+          'rate_sheet_item_id' => 'id',
         ],
       ],
     ],
@@ -893,24 +922,6 @@ function zcs_api_attributes_update_9012() {
     ],
   ];
 
-  $schema = \Drupal::database()->schema();
-
-  foreach ($tables as $table_name => $table) {
-    if (!$schema->tableExists($table_name)) {
-      $schema->createTable($table_name, $table);
-    }
-  }
-}
-
-/**
- * Adding new tables to add the new ratesheet/status relation.
- */
-function zcs_api_attributes_update_9021() {
-  $tables = [];
-  
-  /**
-   * Rate Sheet Status table
-   */
   $tables['rate_sheet_status'] = [
     'description' => 'Relationship between rate sheets and statuses.',
     'fields' => [
@@ -962,22 +973,5 @@ function zcs_api_attributes_update_9021() {
     if (!$schema->tableExists($table_name)) {
       $schema->createTable($table_name, $table);
     }
-  }
-}
-
-function zcs_api_attributes_update_9022() {
-  $schema = \Drupal::database()->schema();
-
-  $table = 'rate_sheet_item';
-  $field = 'attribute_name';
-
-  if (!$schema->fieldExists($table, $field)) {
-    $schema->addField($table, $field, [
-      'type' => 'varchar',
-      'length' => 255,
-      'not null' => FALSE,
-      'default' => '',
-      'description' => 'Attribute name.',
-    ]);
   }
 }

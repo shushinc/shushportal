@@ -1,5 +1,5 @@
 .pricing-rate-sheet-list .api-popup-width-resize {
-  width: 1260px!important;
+  width: 1460px!important;
 }
 .attributes-table {
   width: 100%;
@@ -146,6 +146,11 @@ table.attributes-table th:nth-child(4) {
 .network_authentication_pricing_over_time table.attributes-table tr td {
   text-align: center;
   padding: 10px 20px;
+}
+
+.pricing-rate-sheet-list table.attributes-table tr td.rate-sheet-actions,
+.pricing-rate-sheet-list table.attributes-table tr td.rate-sheet-range-actions {
+  text-align: left!important;
 }
 
 table.attributes-table tr td:first-child {
@@ -517,3 +522,49 @@ table.attributes-table tr td:first-child {
   margin-top: -14px;
   background-size: cover;
 }
+
+.api-attribute-filter {
+    margin: 0 0 1rem;
+    max-width: 360px;
+    padding: 10px;
+  }
+
+  .api-attribute-filter label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .api-attribute-filter input {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+    transition: all 0.3s ease-in-out;
+    box-shadow: none;
+    height: 38px;
+    margin-bottom: 0.5rem;
+    font-size: 13px;
+    padding: 3px 10px;
+  }
+
+  .rate-sheet-floating-submit {
+    bottom: 24px;
+    opacity: 0;
+    pointer-events: none;
+    position: fixed;
+    right: 24px;
+    transition: opacity 0.25s ease;
+    z-index: 1000;
+  }
+
+  .rate-sheet-floating-submit.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rate-sheet-floating-submit {
+      transition: none;
+    }
+  }

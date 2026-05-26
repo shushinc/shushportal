@@ -1152,6 +1152,9 @@ form .js-form-item textarea {
   font-size: 13px;
   padding: 3px 10px;
 }
+form .js-form-item input.form-checkbox {
+  width: 10%!important;
+}
 form .js-form-item input:focus-visible,
 form .js-form-item .form-file:focus-visible,
 form .js-form-item select:focus-visible,

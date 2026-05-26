@@ -57,6 +57,10 @@
   margin: 0;
 }
 
+.ui-dialog .rate-sheet-submit-wrapper {
+  margin: 40px 0;
+}
+
 .rate-sheet-filter .rate-sheet-filter-currencies,
 .rate-sheet-filter .rate-sheet-filter-effective {
   flex: 0 0 49%;
@@ -148,7 +152,8 @@
   margin: 20px auto;
 }
 
-.ui-dialog .rate-sheet .form-submit:not(.is-disabled) {
+.ui-dialog .rate-sheet .form-submit:not(.is-disabled),
+.ui-dialog .rate-sheet .button--primary:not(.is-disabled) {
   background: #118df0;
   color: #fff;
   border-radius: 10px;

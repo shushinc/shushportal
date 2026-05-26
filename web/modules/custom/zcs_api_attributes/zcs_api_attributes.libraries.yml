@@ -9,6 +9,26 @@ rate-sheet:
       css/rate-sheet.css: {}
   js:
     js/rate-sheet.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+
+rate-sheet-ranges:
+  css:
+    theme:
+      css/rate-sheet-ranges.css: {}
+  js:
+    js/rate-sheet-ranges.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+rate-sheet-ux:
+  js:
+    js/rate-sheet-ux.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
 
 rate-sheet-approval:
   css:
@@ -27,5 +47,4 @@ discount-sheet:
     js/discount-sheet.js: {}
   css:
     theme:
-      css/discount-sheet.css: {}  
-
+      css/discount-sheet.css: {}

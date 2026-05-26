@@ -2,15 +2,15 @@
 
 namespace Drupal\zcs_api_attributes\Form;
 
-use Drupal\node\Entity\Node;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- *
+ * Provides the create rate sheet form.
  */
 class CreateRateSheetForm extends FormBase {
 
@@ -72,7 +72,7 @@ class CreateRateSheetForm extends FormBase {
       }
     }
 
-    // Rate sheet name
+    // Rate sheet name.
     $form['name'] = [
       '#type' => 'textfield',
       '#default_value' => '',
@@ -80,7 +80,7 @@ class CreateRateSheetForm extends FormBase {
       '#required' => TRUE,
     ];
 
-    // Currencies form select
+    // Currencies form select.
     $form['currencies'] = [
       '#type' => 'select',
       '#options' => $currencies,
@@ -89,60 +89,91 @@ class CreateRateSheetForm extends FormBase {
       '#weight' => 0,
     ];
 
-    // Effective date
+    // Effective date.
     $form['attribute_date'] = [
       '#type' => 'date',
       '#default_value' => date('Y-m-d'),
       '#weight' => 1,
       '#attributes' => [
-        'min' => date('Y-m-d'), // disables previous dates
+        'min' => date('Y-m-d'),
       ],
     ];
 
-    // Markup retail
+    // Markup retail.
     $form['retail_markup_percentage'] = [
       '#type' => 'number',
-      '#min' => 1,      
+      '#min' => 1,
       '#step' => 1,
       '#required' => TRUE,
     ];
 
     $nids = [];
 
-    // Load api attributes
+    $form['rate_sheet_item_ranges'] = [
+      '#type' => 'container',
+      '#tree' => TRUE,
+    ];
+
+    // Load api attributes.
     $contents = $this->entityTypeManager->getStorage('node')->loadByProperties(['type' => 'api_attributes']);
     if (!empty($contents)) {
       foreach ($contents as $content) {
-        $nids[] = $content->id();
-        $form['from_range_' . $content->id()] = [
+        $attribute_id = $content->id();
+        $nids[] = $attribute_id;
+
+        $form['rate_sheet_item_ranges'][$attribute_id][0]['from_range'] = [
           '#type' => 'number',
           '#min' => 0,
           '#default_value' => 0.000,
           '#step' => 0.001,
           '#field_prefix' => $symbol,
+          '#attributes' => [
+            'data-rate-sheet-range-field' => 'from_range',
+            'data-attribute-id' => $attribute_id,
+            'data-range-index' => 0,
+          ],
         ];
-        $form['to_range_' . $content->id()] = [
+
+        $form['rate_sheet_item_ranges'][$attribute_id][0]['to_range'] = [
           '#type' => 'number',
           '#min' => 0,
           '#default_value' => 0.000,
           '#step' => 0.001,
           '#field_prefix' => $symbol,
+          '#attributes' => [
+            'data-rate-sheet-range-field' => 'to_range',
+            'data-attribute-id' => $attribute_id,
+            'data-range-index' => 0,
+          ],
         ];
-        $form['partial_range_' . $content->id()] = [
+
+        $form['rate_sheet_item_ranges'][$attribute_id][0]['partial_range'] = [
           '#type' => 'number',
           '#min' => 0,
           '#default_value' => 0.000,
           '#step' => 0.001,
           '#field_prefix' => $symbol,
+          '#attributes' => [
+            'data-rate-sheet-range-field' => 'partial_range',
+            'data-attribute-id' => $attribute_id,
+            'data-range-index' => 0,
+          ],
         ];
-        $form['success_rate_' . $content->id()] = [
+
+        $form['rate_sheet_item_ranges'][$attribute_id][0]['success_rate'] = [
           '#type' => 'number',
           '#min' => 0,
           '#default_value' => 0.000,
           '#step' => 0.001,
           '#field_prefix' => $symbol,
+          '#attributes' => [
+            'data-rate-sheet-range-field' => 'success_rate',
+            'data-attribute-id' => $attribute_id,
+            'data-range-index' => 0,
+          ],
         ];
-        $form['tiered_calculation_' . $content->id()] = [
+
+        $form['tiered_calculation_' . $attribute_id] = [
           '#type' => 'checkbox',
           '#default_value' => FALSE,
         ];
@@ -151,19 +182,25 @@ class CreateRateSheetForm extends FormBase {
 
     $form['nodes'] = [
       '#type' => 'hidden',
-      '#value' => implode(",", $nids),
+      '#value' => implode(',', $nids),
+    ];
+
+    $form['range_currency_symbol'] = [
+      '#type' => 'hidden',
+      '#value' => $symbol,
     ];
 
     $form['#theme'] = 'create_rate_sheet';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-ranges';
+
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => 'Save Rate Sheet',
+      '#value' => $this->t('Save Rate Sheet'),
     ];
 
     return $form;
   }
-
 
   /**
    * {@inheritdoc}
@@ -178,9 +215,9 @@ class CreateRateSheetForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
 
     $values = $form_state->getValues();
-    $nids = explode(",", $values['nodes']);
+    $nids = array_filter(explode(',', $values['nodes'] ?? ''));
     $transaction = $this->database->startTransaction();
-    
+
     try {
 
       $new_rate_sheet_id = $this->database->insert('rate_sheet')
@@ -193,22 +230,22 @@ class CreateRateSheetForm extends FormBase {
           'effective_date',
         ])
         ->values([
-          $values['name'], // currency_locale
-          $values['currencies'], // effective_date
-          $this->currentUser()->id(), // created_by
+          $values['name'],
+          $values['currencies'],
+          $this->currentUser()->id(),
           $values['retail_markup_percentage'],
-          \Drupal::time()->getRequestTime(), // created
+          \Drupal::time()->getRequestTime(),
           strtotime($values['attribute_date']),
         ])
         ->execute();
-      
-      // Creating the default status
+
+      // Creating the default status.
       $this->database->insert('rate_sheet_status')
         ->fields([
           'rate_sheet_id',
           'status_name',
           'date',
-          'created_by'
+          'created_by',
         ])->values([
           $new_rate_sheet_id,
           'Pending',
@@ -216,8 +253,8 @@ class CreateRateSheetForm extends FormBase {
           $this->currentUser()->id(),
         ])
         ->execute();
-      
-      // Logging the action
+
+      // Logging the action.
       $this->database->insert('action_log')
         ->fields([
           'action_type',
@@ -235,38 +272,59 @@ class CreateRateSheetForm extends FormBase {
           '',
         ])
         ->execute();
-      
+
       foreach ($nids as $nid) {
-        $from_range = $values["from_range_{$nid}"] ?? 0;
-        $to_range = $values["to_range_{$nid}"] ?? 0;
-        $partial_range = $values["partial_range_{$nid}"] ?? 0;
-        $success_rate = $values["success_rate_{$nid}"] ?? 0;
+        $range_items = $values['rate_sheet_item_ranges'][$nid] ?? [];
+        $range_values = $range_items[0] ?? [];
+
+        $from_range = $range_values['from_range'] ?? 0;
+        $to_range = $range_values['to_range'] ?? 0;
+        $partial_range = $range_values['partial_range'] ?? 0;
+        $success_rate = $range_values['success_rate'] ?? 0;
         $tiered_calculation = $values["tiered_calculation_{$nid}"] ?? 0;
 
         $node = Node::load($nid);
+        if (!$node) {
+          continue;
+        }
 
-        $this->database->insert('rate_sheet_item')
+        $rate_sheet_item_id = $this->database->insert('rate_sheet_item')
           ->fields([
             'rate_sheet_id',
             'api_attribute_id',
-            'from_range',
-            'to_range',
-            'success_rate',
-            'partial_range',
             'tiered_calculation',
             'attribute_name',
           ])
           ->values([
             $new_rate_sheet_id,
             $nid,
-            $from_range,
-            $to_range,
-            $success_rate,
-            $partial_range,
             $tiered_calculation,
             $node->getTitle(),
           ])
           ->execute();
+
+        foreach ($range_items as $range_item) {
+          if (!is_array($range_item)) {
+            continue;
+          }
+
+          $this->database->insert('rate_sheet_item_range')
+            ->fields([
+              'rate_sheet_item_id',
+              'from_range',
+              'to_range',
+              'success_rate',
+              'partial_range',
+            ])
+            ->values([
+              $rate_sheet_item_id,
+              $range_item['from_range'] ?? 0,
+              $range_item['to_range'] ?? 0,
+              $range_item['success_rate'] ?? 0,
+              $range_item['partial_range'] ?? 0,
+            ])
+            ->execute();
+        }
       }
     }
     catch (\Exception $e) {
@@ -277,4 +335,5 @@ class CreateRateSheetForm extends FormBase {
     unset($transaction);
     $form_state->setRedirect('zcs_api_attributes.rate_sheet_list');
   }
+
 }
