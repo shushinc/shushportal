@@ -107,12 +107,12 @@ class RateSheetService {
         $rows = $query->execute()->fetchAll();
 
         if (empty($rows)) {
-            return '<span class="pending">Pending</span><span class="pending">Pending</span>';
+            return '<span class="pending">Pending</span><br><span class="pending">Pending</span>';
         }
 
         // Only creation record
         if (count($rows) === 1 && strtoupper($rows[0]->status_name) === 'PENDING') {
-            return '<span class="pending">Pending</span><span class="pending">Pending</span>';
+            return '<span class="pending">Pending</span><br><span class="pending">Pending</span>';
         }
 
         // Remove initial PENDING

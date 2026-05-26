@@ -1,6 +1,6 @@
 .ui-dialog .rate-sheet-filter {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+  grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
   gap: 20px; /* spacing between columns */
   align-items: start;
   padding: 10px;

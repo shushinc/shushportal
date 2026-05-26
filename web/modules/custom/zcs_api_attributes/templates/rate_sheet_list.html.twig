@@ -21,6 +21,9 @@
       <tbody>
         {% set counter = 1 %}
         {% for sheet_info in content.final %}
+
+          {% set rate_sheet_status = sheet_info.status|lower %}
+
           <tr>
             <td>{{ counter }}</td>
             <td>{{ sheet_info.name }}</td>
@@ -28,7 +31,7 @@
             <td>{{ sheet_info.effective_date }}</td>
             <td>{{ sheet_info.markup_retail }}</td>
             <td>{{ sheet_info.approvals|raw }}</td>
-            <td class="{{ sheet_info.status|lower }}" >{{ sheet_info.status }}</td>
+            <td class="{{ rate_sheet_status }}">{{ sheet_info.status }}</td>
             <td>
               <div class="dropdown">
                 <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">

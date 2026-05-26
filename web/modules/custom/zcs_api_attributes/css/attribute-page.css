@@ -153,6 +153,11 @@ table.attributes-table th:nth-child(4) {
   text-align: left!important;
 }
 
+.pricing-rate-sheet-list table.attributes-table tr td.status {
+  display: flex;
+  flex-direction: column;
+}
+
 table.attributes-table tr td:first-child {
   width: 16%;
 }

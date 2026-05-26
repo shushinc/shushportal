@@ -1,10 +1,12 @@
 {{ form.form_build_id }}
 {{ form.form_token }}
 {{ form.form_id }}
+{{ form.rate_sheet_id }}
 
 {% if form.message %}
   <p class="message">{{ form.message }}</p>
 {% endif %}
+
 <div class="rate-sheet-filter">
   <div class="rate-sheet-filter-name">
     <span class="attributes-label">Rate Sheet Name</span>
@@ -20,39 +22,77 @@
   </div>
 
   <div class="rate-sheet-markup-retail-percentage">
-    <span class="attributes-label">Markup Retail {{ '%'}}</span>
+    <span class="attributes-label">Markup Retail {{ '%' }}</span>
     <span class="attribute-inputs">{{ form.retail_markup_percentage }}</span>
   </div>
 </div>
+
 <div>
   <span class="attribute-inputs">
-    {% set attributes = fetch_attributes() %}
-    <table class="attributes-table">
+    <div class="api-attribute-filter">
+      <label for="rate-sheet-attribute-filter">Filter API Attributes</label>
+      <input type="search" id="rate-sheet-attribute-filter" data-rate-sheet-attribute-filter placeholder="Type attribute name">
+    </div>
+
+    <table class="attributes-table rate-sheet-ranges-table" data-rate-sheet-ranges data-rate-sheet-review-ranges>
       <thead>
         <tr>
           <th>#</th>
           <th>API Attributes</th>
-          <th>$ From range</th>
-          <th>$ To range</th>
-          <th>$ Partial range</th>
-          <th>$ Success rate</th>
+          <th>From range</th>
+          <th>To range</th>
+          <th>Partial range</th>
+          <th>Success rate</th>
           <th>Tiered calculation</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         {% set counter = 1 %}
-          {% for item in form.rate_sheet_items['#value'] %}
-            <tr>
-              <td>{{ counter }}</td>
-              <td>{{ item.title }}</td>
-              <td>{{ '$ ' ~ item.from_range }}</td>
-              <td>{{ '$ ' ~ item.to_range }}</td>
-              <td>{{ '$ ' ~ item.partial_range }}</td>
-              <td>{{ '$ ' ~ item.success_rate }}</td>
-              <td>{{ item.tiered_calculation == 1 ? 'Yes' : 'No' }}</td>
+        {% for item in form.rate_sheet_items['#value'] %}
+          <tr class="rate-sheet-attribute-row" data-rate-sheet-attribute-row data-attribute-id="{{ item.id }}" data-attribute-name="{{ item.attribute_name|lower|e('html_attr') }}" data-rate-sheet-collapsed="false">
+            <td>{{ counter }}</td>
+            <td colspan="4" class="rate-sheet-attribute-title">{{ item.attribute_name }}</td>
+            <td class="rate-sheet-parent-range-placeholder"></td>
+            <td>{{ item.tiered_calculation == 1 ? 'Yes' : 'No' }}</td>
+            <td class="rate-sheet-actions"></td>
+          </tr>
+
+          {% if item.ranges is not empty %}
+            {% for range in item.ranges %}
+              <tr class="rate-sheet-range-row{{ loop.first ? ' rate-sheet-range-row--initial' : '' }}" data-rate-sheet-range-row {% if loop.first %}data-rate-sheet-initial-range-row{% endif %} data-attribute-id="{{ item.id }}" data-range-index="{{ loop.index0 }}">
+                <td></td>
+                <td class="rate-sheet-range-label">
+                  <span class="rate-sheet-range-label-text">Range {{ loop.index }}</span>
+                </td>
+                <td>{{ range.from_range }}</td>
+                <td>{{ range.to_range }}</td>
+                <td>{{ range.partial_range }}</td>
+                <td>{{ range.success_rate }}</td>
+                <td></td>
+                <td class="rate-sheet-range-actions">
+                  {% if loop.first %}
+                    <button type="button" class="rate-sheet-toggle-ranges" data-rate-sheet-review-toggle-ranges data-attribute-id="{{ item.id }}" aria-expanded="true" aria-label="Collapse ranges" title="Collapse ranges" hidden>
+                      <span data-rate-sheet-review-toggle-icon aria-hidden="true">-</span>
+                    </button>
+                    <span class="rate-sheet-range-summary" data-rate-sheet-review-range-summary hidden></span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr class="rate-sheet-range-row rate-sheet-range-row--initial" data-rate-sheet-range-row data-rate-sheet-initial-range-row data-attribute-id="{{ item.id }}" data-range-index="0">
+              <td></td>
+              <td colspan="5" class="rate-sheet-range-label">
+                No ranges configured.
+              </td>
+              <td></td>
+              <td class="rate-sheet-range-actions"></td>
             </tr>
+          {% endif %}
+
           {% set counter = counter + 1 %}
-          {% endfor %}
+        {% endfor %}
       </tbody>
     </table>
   </span>

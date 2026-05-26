@@ -36,6 +36,11 @@ rate-sheet-approval:
       css/rate-sheet-approval.css: {}
   js:
     js/rate-sheet-approval.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/once
+    - core/drupalSettings
 
 rate-sheet-review:
   css:

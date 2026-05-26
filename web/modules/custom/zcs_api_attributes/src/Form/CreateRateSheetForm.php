@@ -190,6 +190,14 @@ class CreateRateSheetForm extends FormBase {
       '#value' => $symbol,
     ];
 
+    $form['rate_sheet_item_ranges_payload'] = [
+      '#type' => 'hidden',
+      '#default_value' => '',
+      '#attributes' => [
+        'data-rate-sheet-ranges-payload' => '',
+      ],
+    ];
+
     $form['#theme'] = 'create_rate_sheet';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-ranges';
@@ -215,6 +223,18 @@ class CreateRateSheetForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
 
     $values = $form_state->getValues();
+    $user_input = $form_state->getUserInput();
+    $submitted_ranges = $user_input['rate_sheet_item_ranges'] ?? $values['rate_sheet_item_ranges'] ?? [];
+    $payload = $values['rate_sheet_item_ranges_payload'] ?? $user_input['rate_sheet_item_ranges_payload'] ?? '';
+
+    if (!empty($payload)) {
+      $decoded_payload = json_decode($payload, TRUE);
+
+      if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_payload) && !empty($decoded_payload)) {
+        $submitted_ranges = $decoded_payload;
+      }
+    }
+
     $nids = array_filter(explode(',', $values['nodes'] ?? ''));
     $transaction = $this->database->startTransaction();
 
@@ -274,13 +294,7 @@ class CreateRateSheetForm extends FormBase {
         ->execute();
 
       foreach ($nids as $nid) {
-        $range_items = $values['rate_sheet_item_ranges'][$nid] ?? [];
-        $range_values = $range_items[0] ?? [];
-
-        $from_range = $range_values['from_range'] ?? 0;
-        $to_range = $range_values['to_range'] ?? 0;
-        $partial_range = $range_values['partial_range'] ?? 0;
-        $success_rate = $range_values['success_rate'] ?? 0;
+        $range_items = $submitted_ranges[$nid] ?? [];
         $tiered_calculation = $values["tiered_calculation_{$nid}"] ?? 0;
 
         $node = Node::load($nid);
@@ -302,6 +316,8 @@ class CreateRateSheetForm extends FormBase {
             $node->getTitle(),
           ])
           ->execute();
+
+        ksort($range_items, SORT_NUMERIC);
 
         foreach ($range_items as $range_item) {
           if (!is_array($range_item)) {

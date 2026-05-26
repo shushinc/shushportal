@@ -2,7 +2,6 @@
 
 namespace Drupal\zcs_api_attributes\Form;
 
-use Drupal\Component\Serialization\Json;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
@@ -63,13 +62,20 @@ class NewRateSheetReviewForm extends FormBase {
     $data = $this->database->select('rate_sheet', 'rs')
       ->fields('rs', ['id', 'name', 'currency', 'markup_retail', 'effective_date'])
       ->condition('id', $id)
-      ->execute()->fetchObject();
-    
+      ->execute()
+      ->fetchObject();
+
+    if (!$data) {
+      $form['message'] = [
+        '#markup' => $this->t('Rate sheet not found.'),
+      ];
+      $form['#theme'] = 'new_rate_sheet_review';
+      return $form;
+    }
+
     $form['rate_sheet_id'] = [
       '#type' => 'hidden',
-      '#default_value' => $id,
-      '#description' => $this->t('The rate sheet id.'),
-      '#disabled' => TRUE,
+      '#value' => $id,
     ];
 
     $form['name'] = [
@@ -79,16 +85,15 @@ class NewRateSheetReviewForm extends FormBase {
       '#disabled' => TRUE,
     ];
 
-    // Currencies form select
+    // Currencies form select.
     $form['currencies'] = [
       '#type' => 'textfield',
-      '#options' => $data->currency,
-      '#default_value' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
+      '#default_value' => $data->currency,
       '#disabled' => TRUE,
       '#weight' => 0,
     ];
 
-    // Effective date
+    // Effective date.
     $form['attribute_date'] = [
       '#type' => 'textfield',
       '#default_value' => date('M d, Y', $data->effective_date),
@@ -96,39 +101,64 @@ class NewRateSheetReviewForm extends FormBase {
       '#disabled' => TRUE,
     ];
 
-    // Markup retail
+    // Markup retail.
     $form['retail_markup_percentage'] = [
       '#type' => 'number',
       '#default_value' => $data->markup_retail,
       '#disabled' => TRUE,
     ];
 
-    // Fetch rate_sheet_item data
-    $rateSheetItems = $this->database->select('rate_sheet_item', 'rsi')
-      ->fields('rsi', ['id', 'attribute_name', 'from_range', 'to_range', 'partial_range', 'success_rate', 'tiered_calculation'])
+    $rate_sheet_items = $this->database->select('rate_sheet_item', 'rsi')
+      ->fields('rsi', ['id', 'attribute_name', 'tiered_calculation'])
       ->condition('rate_sheet_id', $id)
-      ->execute()->fetchAll();
+      ->orderBy('id', 'ASC')
+      ->execute()
+      ->fetchAll(\PDO::FETCH_ASSOC);
+
+    $ranges_by_item_id = [];
+    $rate_sheet_item_ids = array_column($rate_sheet_items, 'id');
+
+    if (!empty($rate_sheet_item_ids)) {
+      $rate_sheet_item_ranges = $this->database->select('rate_sheet_item_range', 'rsir')
+        ->fields('rsir', [
+          'id',
+          'rate_sheet_item_id',
+          'from_range',
+          'to_range',
+          'partial_range',
+          'success_rate',
+        ])
+        ->condition('rate_sheet_item_id', $rate_sheet_item_ids, 'IN')
+        ->orderBy('rate_sheet_item_id', 'ASC')
+        ->orderBy('id', 'ASC')
+        ->execute()
+        ->fetchAll(\PDO::FETCH_ASSOC);
+
+      foreach ($rate_sheet_item_ranges as $range) {
+        $ranges_by_item_id[$range['rate_sheet_item_id']][] = $range;
+      }
+    }
+
+    foreach ($rate_sheet_items as &$rate_sheet_item) {
+      $rate_sheet_item['ranges'] = $ranges_by_item_id[$rate_sheet_item['id']] ?? [];
+    }
+    unset($rate_sheet_item);
 
     $form['rate_sheet_items'] = [
       '#type' => 'value',
-      '#value' => $rateSheetItems,
+      '#value' => $rate_sheet_items,
     ];
 
     $form['#theme'] = 'new_rate_sheet_review';
-    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
 
-    $aprovers_roles = ['financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
-    $user_roles = $this->currentUser()->getRoles();
-  
-    // Check user roles
     $user_roles = $this->currentUser()->getRoles();
     $allowed_roles = ['financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
 
-    // Check rate sheet status
+    // Check rate sheet status.
     $rateSheetService = \Drupal::service('zcs_api_attributes.rate_sheet');
     $rateSheetStatus = $rateSheetService->getRateSheetStatus($id);
 
-    // Check if the user has already approved or denied
+    // Check if the user has already approved or denied.
     $user_id = $this->currentUser()->id();
     $user_has_acted = $this->database->select('rate_sheet_status', 'rss')
       ->condition('rate_sheet_id', $id)
@@ -149,8 +179,12 @@ class NewRateSheetReviewForm extends FormBase {
       ];
     }
 
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-ranges';
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-ux';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-review';
     $form['#attached']['library'][] = 'zcs_api_attributes/discount-sheet';
+
     return $form;
   }
 
@@ -169,7 +203,7 @@ class NewRateSheetReviewForm extends FormBase {
     $rate_sheet_id = $form_state->getValue('rate_sheet_id');
     $status = $form_state->getValue('status');
 
-    // Check user roles
+    // Check user roles.
     $allowed_roles = ['financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
     $user_roles = $this->currentUser()->getRoles();
 
@@ -178,7 +212,7 @@ class NewRateSheetReviewForm extends FormBase {
       return;
     }
 
-    // Check if the user has already submitted a status
+    // Check if the user has already submitted a status.
     $user_has_acted = $this->database->select('rate_sheet_status', 'rss')
       ->condition('rate_sheet_id', $rate_sheet_id)
       ->condition('created_by', $user_id)
@@ -191,18 +225,18 @@ class NewRateSheetReviewForm extends FormBase {
       return;
     }
 
-    // Use the RateSheetService to insert the new status
+    // Use the RateSheetService to insert the new status.
     $rateSheetService = \Drupal::service('zcs_api_attributes.rate_sheet');
     $rateSheetService->insertRateSheetStatus(intval($rate_sheet_id), $status, $user_id);
 
-    // Log the action
+    // Log the action.
     \Drupal::logger('zcs_api_attributes')->notice('User @user_id submitted status @status for rate sheet @rate_sheet_id.', [
       '@user_id' => $user_id,
       '@status' => $status,
       '@rate_sheet_id' => $rate_sheet_id,
     ]);
 
-    // Redirect to the rate sheet list
+    // Redirect to the rate sheet list.
     $form_state->setRedirect('zcs_api_attributes.rate_sheet_list');
   }
 

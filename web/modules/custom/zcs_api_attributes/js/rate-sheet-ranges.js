@@ -10,6 +10,54 @@
     );
   }
 
+  function updateRangesPayload(table) {
+    var form = table.closest('form');
+    var payloadInput = form ? form.querySelector('[data-rate-sheet-ranges-payload]') : null;
+
+    if (!payloadInput || !table.tBodies.length) {
+      return;
+    }
+
+    var tbody = table.tBodies[0];
+    var payload = {};
+
+    Array.prototype.forEach.call(tbody.querySelectorAll('[data-rate-sheet-attribute-row]'), function (attributeRow) {
+      var attributeId = attributeRow.getAttribute('data-attribute-id');
+
+      if (!attributeId) {
+        return;
+      }
+
+      payload[attributeId] = {};
+
+      getRangeRows(tbody, attributeId).forEach(function (rangeRow) {
+        var rangeIndex = rangeRow.getAttribute('data-range-index');
+        var inputs = rangeRow.querySelectorAll('[data-rate-sheet-range-field]');
+
+        if (!rangeIndex || !inputs.length) {
+          return;
+        }
+
+        payload[attributeId][rangeIndex] = {
+          from_range: '0',
+          to_range: '0',
+          partial_range: '0',
+          success_rate: '0'
+        };
+
+        Array.prototype.forEach.call(inputs, function (input) {
+          var fieldName = input.getAttribute('data-rate-sheet-range-field');
+
+          if (fieldName) {
+            payload[attributeId][rangeIndex][fieldName] = input.value || '0';
+          }
+        });
+      });
+    });
+
+    payloadInput.value = JSON.stringify(payload);
+  }
+
   function updateRangeControls(tbody, attributeId) {
     var rows = getRangeRows(tbody, attributeId);
     var initialRow = null;
@@ -73,6 +121,7 @@
         }
 
         var tbody = table.tBodies[0];
+        var form = table.closest('form');
 
         Array.prototype.forEach.call(tbody.querySelectorAll('[data-rate-sheet-attribute-row]'), function (attributeRow) {
           var attributeId = attributeRow.getAttribute('data-attribute-id');
@@ -81,6 +130,22 @@
             updateRangeControls(tbody, attributeId);
           }
         });
+
+        updateRangesPayload(table);
+
+        table.addEventListener('input', function () {
+          updateRangesPayload(table);
+        });
+
+        table.addEventListener('change', function () {
+          updateRangesPayload(table);
+        });
+
+        if (form) {
+          form.addEventListener('submit', function () {
+            updateRangesPayload(table);
+          }, true);
+        }
 
         table.addEventListener('click', function (event) {
           var addButton = event.target.closest('[data-rate-sheet-add-range]');
@@ -109,7 +174,6 @@
             });
 
             var rangeIndex = maxIndex + 1;
-            var currencySymbol = table.getAttribute('data-currency-symbol') || '';
             var row = document.createElement('tr');
 
             row.className = 'rate-sheet-range-row rate-sheet-range-row--dynamic';
@@ -134,14 +198,6 @@
               var input = document.createElement('input');
 
               wrapper.className = 'rate-sheet-dynamic-number-field';
-
-              if (currencySymbol) {
-                var prefix = document.createElement('span');
-
-                prefix.className = 'field-prefix rate-sheet-dynamic-field-prefix';
-                prefix.textContent = currencySymbol;
-                wrapper.appendChild(prefix);
-              }
 
               input.type = 'number';
               input.name = 'rate_sheet_item_ranges[' + attributeId + '][' + rangeIndex + '][' + fieldName + ']';
@@ -183,6 +239,7 @@
             }
 
             updateRangeControls(tbody, attributeId);
+            updateRangesPayload(table);
 
             window.requestAnimationFrame(function () {
               var fromRangeInput = row.querySelector('[data-rate-sheet-range-field="from_range"]');
@@ -212,6 +269,8 @@
             if (removedAttributeId) {
               updateRangeControls(tbody, removedAttributeId);
             }
+
+            updateRangesPayload(table);
 
             return;
           }

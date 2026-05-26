@@ -5,6 +5,7 @@
 {{ form.form_id }}
 {{ form.nodes }}
 {{ form.range_currency_symbol }}
+{{ form.rate_sheet_item_ranges_payload }}
 
 {% if form.message %}
   <p class="message">{{ form.message }}</p>
@@ -39,7 +40,7 @@
       <input type="search" id="rate-sheet-attribute-filter" data-rate-sheet-attribute-filter placeholder="Type attribute name">
     </div>
 
-    <table class="attributes-table rate-sheet-ranges-table" data-rate-sheet-ranges data-currency-symbol="{{ currency_symbol|e('html_attr') }}">
+    <table class="attributes-table rate-sheet-ranges-table" data-rate-sheet-ranges>
       <thead>
         <tr>
           <th>#</th>
@@ -61,9 +62,7 @@
           <tr class="rate-sheet-attribute-row" data-rate-sheet-attribute-row data-attribute-id="{{ id }}" data-attribute-name="{{ title|lower|e('html_attr') }}" data-rate-sheet-collapsed="false">
             <td>{{ counter }}</td>
             <td colspan="4" class="rate-sheet-attribute-title">{{ title }}</td>
-            <td class="rate-sheet-parent-range-placeholder">
-              Ranges are listed below this attribute.
-            </td>
+            <td class="rate-sheet-parent-range-placeholder"></td>
             <td>{{ form['tiered_calculation_' ~ id] }}</td>
             <td class="rate-sheet-actions">
               <button type="button" class="button button--small rate-sheet-add-range" data-rate-sheet-add-range data-attribute-id="{{ id }}">
@@ -101,6 +100,6 @@
   {{ form.submit }}
 </div>
 
-<button type="button" class="button button--primary rate-sheet-floating-submit" data-rate-sheet-floating-submit hidden>
+<button type="button" class="button button--success rate-sheet-floating-submit" data-rate-sheet-floating-submit hidden>
   Save Rate Sheet
 </button>

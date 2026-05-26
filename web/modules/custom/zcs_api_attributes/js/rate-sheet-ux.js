@@ -81,15 +81,15 @@
       return submitRect.top < containerRect.bottom && submitRect.bottom > containerRect.top;
     }
 
-    function positionFloatingButton() {
-      var containerRect = getContainerRect();
-      var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-      var viewportWidth = window.innerWidth || document.documentElement.clientWidth;
-      var spacing = 14;
+    // function positionFloatingButton() {
+    //   var containerRect = getContainerRect();
+    //   var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    //   var viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+    //   var spacing = 14;
 
-      floatingButton.style.bottom = (Math.max(spacing, viewportHeight - containerRect.bottom + spacing) -50) + 'px';
-      floatingButton.style.right = (Math.max(spacing, viewportWidth - containerRect.right + spacing) - 50) + 'px';
-    }
+    //   floatingButton.style.bottom = (Math.max(spacing, viewportHeight - containerRect.bottom + spacing) -50) + 'px';
+    //   floatingButton.style.right = (Math.max(spacing, viewportWidth - containerRect.right + spacing) - 50) + 'px';
+    // }
 
     function hideFloatingButton() {
       floatingButton.classList.remove('is-visible');
@@ -102,7 +102,7 @@
     }
 
     function showFloatingButton() {
-      positionFloatingButton();
+      // positionFloatingButton();
       floatingButton.hidden = false;
 
       window.requestAnimationFrame(function () {
