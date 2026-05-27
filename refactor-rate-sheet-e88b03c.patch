@@ -1,0 +1,1028 @@
+diff --git a/web/modules/custom/zcs_api_attributes/src/Controller/RateSheetController.php b/web/modules/custom/zcs_api_attributes/src/Controller/RateSheetController.php
+index 1234567..abcdefg 100644
+--- a/web/modules/custom/zcs_api_attributes/src/Controller/RateSheetController.php
++++ b/web/modules/custom/zcs_api_attributes/src/Controller/RateSheetController.php
+@@ -44,7 +44,7 @@ class RateSheetController extends ControllerBase {
+   public static function create(ContainerInterface $container) {
+     return new static(
+       $container->get('database'),
+       $container->get('pager.manager'),
+-      $container->get('zcs_api_attributes.rate_sheet')
++      $container->get('zcs_api_attributes.rate_sheet_service')
+     );
+   }
+ 
+@@ -165,17 +165,25 @@ class RateSheetController extends ControllerBase {
+   }
+ 
+   /**
+-   *
++   * Checks access for rate sheet routes.
++   *
++   * @param \Drupal\Core\Session\AccountInterface $account
++   *   The user account.
++   *
++   * @return \Drupal\Core\Access\AccessResultInterface
++   *   The access result.
+    */
+-  public function access(AccountInterface $account) {
++  public static function access(AccountInterface $account) {
+     $allowed_roles = ['administrator', 'carrier_admin', 'finance_admin', 'financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
+-    $user_roles = \Drupal::currentUser()->getRoles();
++    $user_roles = $account->getRoles();
+ 
+     if (array_intersect($allowed_roles, $user_roles)) {
+       return AccessResult::allowed();
+     }
+     else {
+-      $memberships = \Drupal::service('group.membership_loader')->loadByUser(\Drupal::currentUser());
++      $memberships = \Drupal::service('group.membership_loader')->loadByUser($account);
+       if (isset($memberships)) {
+         return AccessResult::forbidden();
+       }
+diff --git a/web/modules/custom/zcs_api_attributes/src/Form/CreateRateSheetForm.php b/web/modules/custom/zcs_api_attributes/src/Form/CreateRateSheetForm.php
+index 2345678..bcdefgh 100644
+--- a/web/modules/custom/zcs_api_attributes/src/Form/CreateRateSheetForm.php
++++ b/web/modules/custom/zcs_api_attributes/src/Form/CreateRateSheetForm.php
+@@ -2,11 +2,13 @@
+ 
+ namespace Drupal\zcs_api_attributes\Form;
+ 
+-use Drupal\Core\Database\Connection;
++use Drupal\Core\Config\ConfigFactoryInterface;
++use Drupal\Core\Datetime\DateFormatterInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Form\FormBase;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\node\Entity\Node;
++use Drupal\Core\Messenger\MessengerInterface;
++use Drupal\zcs_api_attributes\Service\RateSheetService;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+@@ -15,26 +17,62 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ class CreateRateSheetForm extends FormBase {
+ 
+   /**
+-   * EntityTypeManager $entityTypeManager.
++   * The entity type manager.
++   *
++   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+    */
+   protected $entityTypeManager;
+ 
+   /**
+-   * Array $list.
++   * The currency list.
++   *
++   * @var array
+    */
+   protected $list;
+ 
+   /**
+-   * Connection $connection.
++   * The config factory.
++   *
++   * @var \Drupal\Core\Config\ConfigFactoryInterface
+    */
+-  protected $database;
++  protected $configFactory;
++
++  /**
++   * The date formatter.
++   *
++   * @var \Drupal\Core\Datetime\DateFormatterInterface
++   */
++  protected $dateFormatter;
++
++  /**
++   * The rate sheet service.
++   *
++   * @var \Drupal\zcs_api_attributes\Service\RateSheetService
++   */
++  protected $rateSheetService;
++
++  /**
++   * The messenger service.
++   *
++   * @var \Drupal\Core\Messenger\MessengerInterface
++   */
++  protected $messenger;
+ 
+   /**
+-   * {@inheritdoc}
++   * Constructs a CreateRateSheetForm object.
++   *
++   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
++   *   The entity type manager.
++   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
++   *   The config factory.
++   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
++   *   The date formatter.
++   * @param \Drupal\zcs_api_attributes\Service\RateSheetService $rate_sheet_service
++   *   The rate sheet service.
++   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
++   *   The messenger service.
+    */
+-  public function __construct(EntityTypeManagerInterface $entity_type_manager, Connection $connection) {
++  public function __construct(
++    EntityTypeManagerInterface $entity_type_manager,
++    ConfigFactoryInterface $config_factory,
++    DateFormatterInterface $date_formatter,
++    RateSheetService $rate_sheet_service,
++    MessengerInterface $messenger
++  ) {
+     $this->list = require __DIR__ . '/../../resources/currencies.php';
+     $this->entityTypeManager = $entity_type_manager;
+-    $this->database = $connection;
++    $this->configFactory = $config_factory;
++    $this->dateFormatter = $date_formatter;
++    $this->rateSheetService = $rate_sheet_service;
++    $this->messenger = $messenger;
+   }
+ 
+   /**
+@@ -42,8 +80,11 @@ class CreateRateSheetForm extends FormBase {
+    */
+   public static function create(ContainerInterface $container) {
+     return new static(
+       $container->get('entity_type.manager'),
+-      $container->get('database')
++      $container->get('config.factory'),
++      $container->get('date.formatter'),
++      $container->get('zcs_api_attributes.rate_sheet_service'),
++      $container->get('messenger')
+     );
+   }
+ 
+@@ -56,9 +97,10 @@ class CreateRateSheetForm extends FormBase {
+   /**
+    * {@inheritdoc}
+    */
+   public function buildForm(array $form, FormStateInterface $form_state) {
+-
+-    $defaultCurrency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
++    $config = $this->configFactory->get('zcs_custom.settings');
++    $defaultCurrency = $config->get('currency') ?? 'en_US';
+     $number = new \NumberFormatter($defaultCurrency, \NumberFormatter::CURRENCY);
+     $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
+ 
+@@ -78,7 +120,7 @@ class CreateRateSheetForm extends FormBase {
+     // Currencies form select.
+     $form['currencies'] = [
+       '#type' => 'select',
+       '#options' => $currencies,
+-      '#default_value' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
++      '#default_value' => $config->get('currency') ?? 'en_US',
+       '#disabled' => TRUE,
+       '#weight' => 0,
+     ];
+@@ -180,7 +222,68 @@ class CreateRateSheetForm extends FormBase {
+   /**
+    * {@inheritdoc}
+    */
+   public function validateForm(array &$form, FormStateInterface $form_state) {
++    $values = $form_state->getValues();
++
++    // Validate rate sheet name.
++    if (empty(trim($values['name']))) {
++      $form_state->setErrorByName('name', $this->t('Rate sheet name is required.'));
++    }
++
++    // Validate markup percentage.
++    $markup = $values['retail_markup_percentage'] ?? NULL;
++    if (!is_numeric($markup) || $markup < 1) {
++      $form_state->setErrorByName('retail_markup_percentage', $this->t('Markup percentage must be at least 1.'));
++    }
++
++    // Validate effective date.
++    $effective_date = $values['attribute_date'] ?? NULL;
++    if (empty($effective_date)) {
++      $form_state->setErrorByName('attribute_date', $this->t('Effective date is required.'));
++    }
++    else {
++      $date_timestamp = strtotime($effective_date);
++      $today = strtotime(date('Y-m-d'));
++      if ($date_timestamp < $today) {
++        $form_state->setErrorByName('attribute_date', $this->t('Effective date cannot be in the past.'));
++      }
++    }
+ 
++    // Validate JSON payload.
++    $payload = $values['rate_sheet_item_ranges_payload'] ?? '';
++    if (!empty($payload)) {
++      $decoded = json_decode($payload, TRUE);
++      if (json_last_error() !== JSON_ERROR_NONE) {
++        $form_state->setErrorByName('rate_sheet_item_ranges_payload', $this->t('Invalid range data format.'));
++      }
++      elseif (!is_array($decoded)) {
++        $form_state->setErrorByName('rate_sheet_item_ranges_payload', $this->t('Range data must be an array.'));
++      }
++      else {
++        // Validate range values.
++        foreach ($decoded as $attribute_id => $ranges) {
++          if (!is_array($ranges)) {
++            continue;
++          }
++          foreach ($ranges as $range_index => $range) {
++            if (!is_array($range)) {
++              continue;
++            }
++
++            $from = $range['from_range'] ?? NULL;
++            $to = $range['to_range'] ?? NULL;
++
++            if (!is_numeric($from) || $from < 0) {
++              $form_state->setError($form, $this->t('Invalid "from" range value for attribute @id.', ['@id' => $attribute_id]));
++            }
++
++            if ($to != -1 && (!is_numeric($to) || $to < $from)) {
++              $form_state->setError($form, $this->t('Invalid "to" range value for attribute @id. Must be greater than "from" or -1 for unbounded.', ['@id' => $attribute_id]));
++            }
++          }
++        }
++      }
++    }
+   }
+ 
+   /**
+@@ -188,125 +291,40 @@ class CreateRateSheetForm extends FormBase {
+    */
+   public function submitForm(array &$form, FormStateInterface $form_state) {
+-
+     $values = $form_state->getValues();
+-    $user_input = $form_state->getUserInput();
+-    $submitted_ranges = $user_input['rate_sheet_item_ranges'] ?? $values['rate_sheet_item_ranges'] ?? [];
+-    $payload = $values['rate_sheet_item_ranges_payload'] ?? $user_input['rate_sheet_item_ranges_payload'] ?? '';
++    $payload = $values['rate_sheet_item_ranges_payload'] ?? '';
++    $submitted_ranges = [];
+ 
++    // Parse the JSON payload.
+     if (!empty($payload)) {
+       $decoded_payload = json_decode($payload, TRUE);
+-
+-      if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_payload) && !empty($decoded_payload)) {
++      if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_payload)) {
+         $submitted_ranges = $decoded_payload;
+       }
+     }
+ 
++    // Fallback to form values if payload is empty.
++    if (empty($submitted_ranges)) {
++      $submitted_ranges = $values['rate_sheet_item_ranges'] ?? [];
++    }
++
+     $nids = array_filter(explode(',', $values['nodes'] ?? ''));
+-    $transaction = $this->database->startTransaction();
+ 
+     try {
+-
+-      $new_rate_sheet_id = $this->database->insert('rate_sheet')
+-        ->fields([
+-          'name',
+-          'currency',
+-          'created_by',
+-          'markup_retail',
+-          'created_date',
+-          'effective_date',
+-        ])
+-        ->values([
+-          $values['name'],
+-          $values['currencies'],
+-          $this->currentUser()->id(),
+-          $values['retail_markup_percentage'],
+-          \Drupal::time()->getRequestTime(),
+-          strtotime($values['attribute_date']),
+-        ])
+-        ->execute();
+-
+-      // Creating the default status.
+-      $this->database->insert('rate_sheet_status')
+-        ->fields([
+-          'rate_sheet_id',
+-          'status_name',
+-          'date',
+-          'created_by',
+-        ])->values([
+-          $new_rate_sheet_id,
+-          'Pending',
+-          \Drupal::time()->getRequestTime(),
+-          $this->currentUser()->id(),
+-        ])
+-        ->execute();
+-
+-      // Logging the action.
+-      $this->database->insert('action_log')
+-        ->fields([
+-          'action_type',
+-          'entity_target_type',
+-          'entity_target_id',
+-          'created_by',
+-          'created_date',
+-          'log_data',
+-        ])->values([
+-          'CREATING',
+-          'RATE_SHEET',
+-          $new_rate_sheet_id,
+-          $this->currentUser()->id(),
+-          \Drupal::time()->getRequestTime(),
+-          '',
+-        ])
+-        ->execute();
+-
+-      foreach ($nids as $nid) {
+-        $range_items = $submitted_ranges[$nid] ?? [];
+-
+-        if (!is_array($range_items)) {
+-          $range_items = [];
+-        }
+-
+-        $range_items = array_filter($range_items, 'is_array');
+-        ksort($range_items, SORT_NUMERIC);
+-
+-        $tiered_calculation = count($range_items) > 1 ? 1 : 0;
+-
+-        $node = Node::load($nid);
+-        if (!$node) {
+-          continue;
+-        }
+-
+-        $rate_sheet_item_id = $this->database->insert('rate_sheet_item')
+-          ->fields([
+-            'rate_sheet_id',
+-            'api_attribute_id',
+-            'tiered_calculation',
+-            'attribute_name',
+-          ])
+-          ->values([
+-            $new_rate_sheet_id,
+-            $nid,
+-            $tiered_calculation,
+-            $node->getTitle(),
+-          ])
+-          ->execute();
+-
+-        $last_range_key = !empty($range_items) ? array_key_last($range_items) : NULL;
+-
+-        foreach ($range_items as $range_index => $range_item) {
+-          if (!is_array($range_item)) {
+-            continue;
+-          }
+-
+-          $to_range = ((string) $range_index === (string) $last_range_key) ? -1 : ($range_item['to_range'] ?? 0);
+-
+-          $this->database->insert('rate_sheet_item_range')
+-            ->fields([
+-              'rate_sheet_item_id',
+-              'from_range',
+-              'to_range',
+-              'success_rate',
+-              'partial_range',
+-            ])
+-            ->values([
+-              $rate_sheet_item_id,
+-              $range_item['from_range'] ?? 0,
+-              $to_range,
+-              $range_item['success_rate'] ?? 0,
+-              $range_item['partial_range'] ?? 0,
+-            ])
+-            ->execute();
+-        }
++      $rate_sheet_id = $this->rateSheetService->createRateSheet([
++        'name' => $values['name'],
++        'currency' => $values['currencies'],
++        'markup_retail' => $values['retail_markup_percentage'],
++        'effective_date' => strtotime($values['attribute_date']),
++        'attribute_ids' => $nids,
++        'ranges' => $submitted_ranges,
++      ]);
++
++      if ($rate_sheet_id) {
++        $this->messenger->addStatus($this->t('Rate sheet "@name" has been created successfully.', [
++          '@name' => $values['name'],
++        ]));
++        $form_state->setRedirect('zcs_api_attributes.rate_sheet_list');
++      }
++      else {
++        $this->messenger->addError($this->t('Failed to create rate sheet. Please try again.'));
+       }
+     }
+     catch (\Exception $e) {
+-      $transaction->rollBack();
++      $this->messenger->addError($this->t('An error occurred while creating the rate sheet: @message', [
++        '@message' => $e->getMessage(),
++      ]));
+     }
+-
+-    // Commit the transaction by unsetting the $transaction variable.
+-    unset($transaction);
+-    $form_state->setRedirect('zcs_api_attributes.rate_sheet_list');
+   }
+ 
+ }
+diff --git a/web/modules/custom/zcs_api_attributes/src/Service/RateSheetService.php b/web/modules/custom/zcs_api_attributes/src/Service/RateSheetService.php
+new file mode 100644
+index 0000000..1234567
+--- /dev/null
++++ b/web/modules/custom/zcs_api_attributes/src/Service/RateSheetService.php
+@@ -0,0 +1,244 @@
++<?php
++
++namespace Drupal\zcs_api_attributes\Service;
++
++use Drupal\Core\Database\Connection;
++use Drupal\Core\Entity\EntityTypeManagerInterface;
++use Drupal\Core\Session\AccountProxyInterface;
++use Drupal\node\Entity\Node;
++use Psr\Log\LoggerInterface;
++
++/**
++ * Service for managing rate sheets.
++ */
++class RateSheetService {
++
++  /**
++   * The database connection.
++   *
++   * @var \Drupal\Core\Database\Connection
++   */
++  protected $database;
++
++  /**
++   * The entity type manager.
++   *
++   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
++   */
++  protected $entityTypeManager;
++
++  /**
++   * The current user.
++   *
++   * @var \Drupal\Core\Session\AccountProxyInterface
++   */
++  protected $currentUser;
++
++  /**
++   * The logger.
++   *
++   * @var \Psr\Log\LoggerInterface
++   */
++  protected $logger;
++
++  /**
++   * Constructs a RateSheetService object.
++   *
++   * @param \Drupal\Core\Database\Connection $database
++   *   The database connection.
++   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
++   *   The entity type manager.
++   * @param \Drupal\Core\Session\AccountProxyInterface $current_user
++   *   The current user.
++   * @param \Psr\Log\LoggerInterface $logger
++   *   The logger.
++   */
++  public function __construct(
++    Connection $database,
++    EntityTypeManagerInterface $entity_type_manager,
++    AccountProxyInterface $current_user,
++    LoggerInterface $logger
++  ) {
++    $this->database = $database;
++    $this->entityTypeManager = $entity_type_manager;
++    $this->currentUser = $current_user;
++    $this->logger = $logger;
++  }
++
++  /**
++   * Gets the approvers for a rate sheet.
++   *
++   * @param int $rate_sheet_id
++   *   The rate sheet ID.
++   *
++   * @return array
++   *   Array of approver information.
++   */
++  public function getRateSheetApprovers($rate_sheet_id) {
++    // Query to get approvers from rate_sheet_approval table or similar.
++    // This is a placeholder - adjust based on your actual schema.
++    $query = $this->database->select('rate_sheet_approval', 'rsa')
++      ->fields('rsa')
++      ->condition('rsa.rate_sheet_id', $rate_sheet_id)
++      ->execute();
++
++    $approvers = [];
++    foreach ($query as $row) {
++      $approvers[] = [
++        'uid' => $row->approver_uid ?? NULL,
++        'status' => $row->status ?? NULL,
++        'date' => $row->approval_date ?? NULL,
++      ];
++    }
++
++    return $approvers;
++  }
++
++  /**
++   * Gets the current status of a rate sheet.
++   *
++   * @param int $rate_sheet_id
++   *   The rate sheet ID.
++   *
++   * @return string
++   *   The status name.
++   */
++  public function getRateSheetStatus($rate_sheet_id) {
++    $status = $this->database->select('rate_sheet_status', 'rss')
++      ->fields('rss', ['status_name'])
++      ->condition('rss.rate_sheet_id', $rate_sheet_id)
++      ->orderBy('rss.date', 'DESC')
++      ->range(0, 1)
++      ->execute()
++      ->fetchField();
++
++    return $status ?: 'Unknown';
++  }
++
++  /**
++   * Creates a new rate sheet with items and ranges.
++   *
++   * @param array $data
++   *   The rate sheet data containing:
++   *   - name: The rate sheet name.
++   *   - currency: The currency locale.
++   *   - markup_retail: The retail markup percentage.
++   *   - effective_date: The effective date timestamp.
++   *   - attribute_ids: Array of attribute node IDs.
++   *   - ranges: Array of ranges keyed by attribute ID.
++   *
++   * @return int|false
++   *   The new rate sheet ID or FALSE on failure.
++   *
++   * @throws \Exception
++   */
++  public function createRateSheet(array $data) {
++    $transaction = $this->database->startTransaction();
++
++    try {
++      // Insert the rate sheet.
++      $new_rate_sheet_id = $this->database->insert('rate_sheet')
++        ->fields([
++          'name',
++          'currency',
++          'created_by',
++          'markup_retail',
++          'created_date',
++          'effective_date',
++        ])
++        ->values([
++          $data['name'],
++          $data['currency'],
++          $this->currentUser->id(),
++          $data['markup_retail'],
++          \Drupal::time()->getRequestTime(),
++          $data['effective_date'],
++        ])
++        ->execute();
++
++      // Create the default status.
++      $this->database->insert('rate_sheet_status')
++        ->fields([
++          'rate_sheet_id',
++          'status_name',
++          'date',
++          'created_by',
++        ])
++        ->values([
++          $new_rate_sheet_id,
++          'Pending',
++          \Drupal::time()->getRequestTime(),
++          $this->currentUser->id(),
++        ])
++        ->execute();
++
++      // Log the action.
++      $this->database->insert('action_log')
++        ->fields([
++          'action_type',
++          'entity_target_type',
++          'entity_target_id',
++          'created_by',
++          'created_date',
++          'log_data',
++        ])
++        ->values([
++          'CREATING',
++          'RATE_SHEET',
++          $new_rate_sheet_id,
++          $this->currentUser->id(),
++          \Drupal::time()->getRequestTime(),
++          '',
++        ])
++        ->execute();
++
++      // Create rate sheet items and ranges.
++      foreach ($data['attribute_ids'] as $nid) {
++        $range_items = $data['ranges'][$nid] ?? [];
++
++        if (!is_array($range_items)) {
++          continue;
++        }
++
++        $range_items = array_filter($range_items, 'is_array');
++        ksort($range_items, SORT_NUMERIC);
++
++        $tiered_calculation = count($range_items) > 1 ? 1 : 0;
++
++        $node = Node::load($nid);
++        if (!$node) {
++          $this->logger->warning('Rate sheet creation: API attribute node @nid not found', ['@nid' => $nid]);
++          continue;
++        }
++
++        $rate_sheet_item_id = $this->database->insert('rate_sheet_item')
++          ->fields([
++            'rate_sheet_id',
++            'api_attribute_id',
++            'tiered_calculation',
++            'attribute_name',
++          ])
++          ->values([
++            $new_rate_sheet_id,
++            $nid,
++            $tiered_calculation,
++            $node->getTitle(),
++          ])
++          ->execute();
++
++        $last_range_key = !empty($range_items) ? array_key_last($range_items) : NULL;
++
++        foreach ($range_items as $range_index => $range_item) {
++          if (!is_array($range_item)) {
++            continue;
++          }
++
++          $to_range = ((string) $range_index === (string) $last_range_key) ? -1 : ($range_item['to_range'] ?? 0);
++
++          $this->database->insert('rate_sheet_item_range')
++            ->fields([
++              'rate_sheet_item_id',
++              'from_range',
++              'to_range',
++              'success_rate',
++              'partial_range',
++            ])
++            ->values([
++              $rate_sheet_item_id,
++              $range_item['from_range'] ?? 0,
++              $to_range,
++              $range_item['success_rate'] ?? 0,
++              $range_item['partial_range'] ?? 0,
++            ])
++            ->execute();
++        }
++      }
++
++      // Commit the transaction.
++      unset($transaction);
++
++      $this->logger->info('Rate sheet @id created successfully', ['@id' => $new_rate_sheet_id]);
++
++      return $new_rate_sheet_id;
++    }
++    catch (\Exception $e) {
++      if (isset($transaction)) {
++        $transaction->rollBack();
++      }
++
++      $this->logger->error('Failed to create rate sheet: @message', [
++        '@message' => $e->getMessage(),
++      ]);
++
++      throw $e;
++    }
++  }
++
++}
+diff --git a/web/modules/custom/zcs_api_attributes/zcs_api_attributes.services.yml b/web/modules/custom/zcs_api_attributes/zcs_api_attributes.services.yml
+index 3456789..cdefghi 100644
+--- a/web/modules/custom/zcs_api_attributes/zcs_api_attributes.services.yml
++++ b/web/modules/custom/zcs_api_attributes/zcs_api_attributes.services.yml
+@@ -9,6 +9,11 @@ services:
+   zcs_api_attributes.discount_sheet:
+     class: Drupal\zcs_api_attributes\Services\DiscountPriceSheet
+     arguments: ['@database']
+-  zcs_api_attributes.rate_sheet:
+-    class: Drupal\zcs_api_attributes\Services\RateSheetService
+-    arguments: ['@database']
++  logger.channel.zcs_api_attributes:
++    parent: logger.channel_base
++    arguments: ['zcs_api_attributes']
++  zcs_api_attributes.rate_sheet_service:
++    class: Drupal\zcs_api_attributes\Service\RateSheetService
++    arguments:
++      - '@database'
++      - '@entity_type.manager'
++      - '@current_user'
++      - '@logger.channel.zcs_api_attributes'
+diff --git a/web/modules/custom/zcs_api_attributes/js/rate-sheet-ranges.js b/web/modules/custom/zcs_api_attributes/js/rate-sheet-ranges.js
+index 4567890..defghij 100644
+--- a/web/modules/custom/zcs_api_attributes/js/rate-sheet-ranges.js
++++ b/web/modules/custom/zcs_api_attributes/js/rate-sheet-ranges.js
+@@ -1,8 +1,48 @@
+ (function (Drupal, once) {
+   'use strict';
+ 
++  /**
++   * Debounce function to limit how often a function is called.
++   *
++   * @param {Function} func
++   *   The function to debounce.
++   * @param {number} wait
++   *   The delay in milliseconds.
++   *
++   * @return {Function}
++   *   The debounced function.
++   */
++  function debounce(func, wait) {
++    var timeout;
++    return function executedFunction() {
++      var context = this;
++      var args = arguments;
++      var later = function () {
++        timeout = null;
++        func.apply(context, args);
++      };
++      clearTimeout(timeout);
++      timeout = setTimeout(later, wait);
++    };
++  }
++
++  /**
++   * Gets all attribute items within a container.
++   *
++   * @param {HTMLElement} container
++   *   The container element.
++   *
++   * @return {Array}
++   *   Array of attribute item elements.
++   */
+   function getAttributeItems(container) {
++    if (!container) {
++      return [];
++    }
+     return Array.prototype.slice.call(container.querySelectorAll('[data-rate-sheet-attribute-item]'));
+   }
+ 
++  /**
++   * Gets all range rows for an attribute item.
++   *
++   * @param {HTMLElement} attributeItem
++   *   The attribute item element.
++   *
++   * @return {Array}
++   *   Array of range row elements.
++   */
+   function getRangeRows(attributeItem) {
++    if (!attributeItem) {
++      return [];
++    }
+     return Array.prototype.slice.call(attributeItem.querySelectorAll('[data-rate-sheet-range-row]'));
+   }
+ 
++  /**
++   * Gets a specific attribute item by ID.
++   *
++   * @param {HTMLElement} container
++   *   The container element.
++   * @param {string} attributeId
++   *   The attribute ID.
++   *
++   * @return {HTMLElement|null}
++   *   The attribute item element or null.
++   */
+   function getAttributeItem(container, attributeId) {
++    if (!container || !attributeId) {
++      return null;
++    }
+     return container.querySelector('[data-rate-sheet-attribute-item][data-attribute-id="' + attributeId + '"]');
+   }
+ 
++  /**
++   * Gets the range table for an attribute item.
++   *
++   * @param {HTMLElement} attributeItem
++   *   The attribute item element.
++   *
++   * @return {HTMLElement|null}
++   *   The table element or null.
++   */
+   function getRangeTable(attributeItem) {
+     return attributeItem ? attributeItem.querySelector('[data-rate-sheet-range-table]') : null;
+   }
+ 
++  /**
++   * Gets the table body for an attribute item's range table.
++   *
++   * @param {HTMLElement} attributeItem
++   *   The attribute item element.
++   *
++   * @return {HTMLElement|null}
++   *   The tbody element or null.
++   */
+   function getRangeTableBody(attributeItem) {
+     var table = getRangeTable(attributeItem);
+ 
+@@ -13,10 +53,30 @@
+     return table.tBodies[0];
+   }
+ 
++  /**
++   * Gets a specific range input field.
++   *
++   * @param {HTMLElement} rangeRow
++   *   The range row element.
++   * @param {string} fieldName
++   *   The field name.
++   *
++   * @return {HTMLElement|null}
++   *   The input element or null.
++   */
+   function getRangeInput(rangeRow, fieldName) {
+     return rangeRow ? rangeRow.querySelector('[data-rate-sheet-range-field="' + fieldName + '"]') : null;
+   }
+ 
++  /**
++   * Gets numeric value from an input with fallback.
++   *
++   * @param {HTMLElement} input
++   *   The input element.
++   * @param {number} fallback
++   *   The fallback value.
++   *
++   * @return {number}
++   *   The parsed value or fallback.
++   */
+   function getNumericInputValue(input, fallback) {
+     var parsed = input ? parseFloat(input.value) : NaN;
+ 
+@@ -27,6 +87,15 @@
+     return parsed;
+   }
+ 
++  /**
++   * Formats a range value to 3 decimal places.
++   *
++   * @param {number} value
++   *   The value to format.
++   *
++   * @return {string}
++   *   The formatted value.
++   */
+   function formatRangeValue(value) {
+     var rounded = Math.round(value * 1000) / 1000;
+ 
+@@ -134,8 +203,18 @@
+     });
+   }
+ 
++  /**
++   * Updates the hidden JSON payload with current range data.
++   *
++   * @param {HTMLElement} container
++   *   The container element.
++   */
+   function updateRangesPayload(container) {
++    if (!container) {
++      return;
++    }
++
+     var form = container.closest('form');
+     var payloadInput = form ? form.querySelector('[data-rate-sheet-ranges-payload]') : null;
+ 
+@@ -145,6 +224,7 @@
+ 
+     var payload = {};
+ 
++    try {
+     getAttributeItems(container).forEach(function (attributeItem) {
+       var attributeId = attributeItem.getAttribute('data-attribute-id');
+ 
+@@ -177,10 +257,24 @@
+       });
+     });
+ 
+     payloadInput.value = JSON.stringify(payload);
++    }
++    catch (error) {
++      console.error('Error updating ranges payload:', error);
++    }
+   }
+ 
++  /**
++   * Sets the collapsed state of an accordion item.
++   *
++   * @param {HTMLElement} attributeItem
++   *   The attribute item element.
++   * @param {boolean} collapsed
++   *   Whether the accordion should be collapsed.
++   */
+   function setAccordionCollapsed(attributeItem, collapsed) {
++    if (!attributeItem) {
++      return;
++    }
++
+     var toggleButton = attributeItem.querySelector('[data-rate-sheet-accordion-toggle]');
+     var toggleIcon = attributeItem.querySelector('[data-rate-sheet-accordion-icon]');
+     var panel = attributeItem.querySelector('[data-rate-sheet-accordion-panel]');
+@@ -191,14 +285,32 @@
+ 
+     if (panel) {
+       panel.hidden = collapsed;
++      panel.setAttribute('aria-hidden', collapsed ? 'true' : 'false');
++
++      // Ensure panel has proper ARIA role.
++      if (!panel.getAttribute('role')) {
++        panel.setAttribute('role', 'region');
++      }
++
++      // Link panel to toggle button.
++      if (toggleButton && !panel.getAttribute('aria-labelledby')) {
++        var buttonId = toggleButton.id || 'accordion-toggle-' + Math.random().toString(36).substr(2, 9);
++        toggleButton.id = buttonId;
++        panel.setAttribute('aria-labelledby', buttonId);
++      }
+     }
+ 
+     if (toggleButton) {
+       toggleButton.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
++
++      // Ensure button has proper ARIA role.
++      if (!toggleButton.getAttribute('role')) {
++        toggleButton.setAttribute('role', 'button');
++      }
+     }
+ 
+     if (toggleIcon) {
+       toggleIcon.textContent = collapsed ? '+' : '−';
++      toggleIcon.setAttribute('aria-hidden', 'true');
+     }
+   }
+ 
+@@ -419,12 +531,16 @@
+         initializeAccordion(container);
+         updateRangesPayload(container);
+ 
+-        container.addEventListener('input', function () {
++        // Debounce payload updates to avoid excessive JSON serialization.
++        var debouncedUpdate = debounce(function () {
+           updateRangesPayload(container);
+-        });
++        }, 300);
++
++        container.addEventListener('input', debouncedUpdate);
+ 
+         container.addEventListener('change', function () {
+           updateRangesPayload(container);
+         });
+ 
+diff --git a/web/modules/custom/zcs_api_attributes/js/rate-sheet-ux.js b/web/modules/custom/zcs_api_attributes/js/rate-sheet-ux.js
+index 5678901..efghijk 100644
+--- a/web/modules/custom/zcs_api_attributes/js/rate-sheet-ux.js
++++ b/web/modules/custom/zcs_api_attributes/js/rate-sheet-ux.js
+@@ -44,11 +44,21 @@
+     function getMatchedAttributeItems(attributeItems) {
+       if (!query) {
+         return attributeItems;
+       }
+ 
+-      return attributeItems.filter(function (item) {
++      // Use a Set for O(1) lookup performance.
++      var matchedSet = new Set();
++
++      attributeItems.forEach(function (item) {
+         var attributeName = item.getAttribute('data-attribute-name') || '';
+ 
+-        return attributeName.indexOf(query) !== -1;
++        if (attributeName.indexOf(query) !== -1) {
++          matchedSet.add(item);
++        }
++      });
++
++      return attributeItems.filter(function (item) {
++        return matchedSet.has(item);
+       });
+     }
+ 
+@@ -104,10 +114,11 @@
+       }
+ 
+       var matchedItems = getMatchedAttributeItems(attributeItems);
++      var matchedSet = new Set(matchedItems);
+       var visibleCount = 0;
+ 
+       attributeItems.forEach(function (item) {
+-        var matched = matchedItems.indexOf(item) !== -1;
++        var matched = matchedSet.has(item);
+         var shouldShow = false;
+ 
+         if (matched) {
