@@ -9,6 +9,13 @@ services:
   zcs_api_attributes.discount_sheet:
     class: Drupal\zcs_api_attributes\Services\DiscountPriceSheet
     arguments: ['@database']
-  zcs_api_attributes.rate_sheet:
-    class: Drupal\zcs_api_attributes\Services\RateSheetService
-    arguments: ['@database']
+  logger.channel.zcs_api_attributes:
+    parent: logger.channel_base
+    arguments: ['zcs_api_attributes']
+  zcs_api_attributes.rate_sheet_service:
+    class: Drupal\zcs_api_attributes\Service\RateSheetService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.zcs_api_attributes'

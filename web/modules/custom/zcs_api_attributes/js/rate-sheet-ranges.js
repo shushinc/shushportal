@@ -1,22 +1,103 @@
 (function (Drupal, once) {
   'use strict';
 
+  /**
+   * Debounce function to limit how often a function is called.
+   *
+   * @param {Function} func
+   *   The function to debounce.
+   * @param {number} wait
+   *   The delay in milliseconds.
+   *
+   * @return {Function}
+   *   The debounced function.
+   */
+  function debounce(func, wait) {
+    var timeout;
+    return function executedFunction() {
+      var context = this;
+      var args = arguments;
+      var later = function () {
+        timeout = null;
+        func.apply(context, args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+  /**
+   * Gets all attribute items within a container.
+   *
+   * @param {HTMLElement} container
+   *   The container element.
+   *
+   * @return {Array}
+   *   Array of attribute item elements.
+   */
   function getAttributeItems(container) {
+    if (!container) {
+      return [];
+    }
     return Array.prototype.slice.call(container.querySelectorAll('[data-rate-sheet-attribute-item]'));
   }
 
+  /**
+   * Gets all range rows for an attribute item.
+   *
+   * @param {HTMLElement} attributeItem
+   *   The attribute item element.
+   *
+   * @return {Array}
+   *   Array of range row elements.
+   */
   function getRangeRows(attributeItem) {
+    if (!attributeItem) {
+      return [];
+    }
     return Array.prototype.slice.call(attributeItem.querySelectorAll('[data-rate-sheet-range-row]'));
   }
 
+  /**
+   * Gets a specific attribute item by ID.
+   *
+   * @param {HTMLElement} container
+   *   The container element.
+   * @param {string} attributeId
+   *   The attribute ID.
+   *
+   * @return {HTMLElement|null}
+   *   The attribute item element or null.
+   */
   function getAttributeItem(container, attributeId) {
+    if (!container || !attributeId) {
+      return null;
+    }
     return container.querySelector('[data-rate-sheet-attribute-item][data-attribute-id="' + attributeId + '"]');
   }
 
+  /**
+   * Gets the range table for an attribute item.
+   *
+   * @param {HTMLElement} attributeItem
+   *   The attribute item element.
+   *
+   * @return {HTMLElement|null}
+   *   The table element or null.
+   */
   function getRangeTable(attributeItem) {
     return attributeItem ? attributeItem.querySelector('[data-rate-sheet-range-table]') : null;
   }
 
+  /**
+   * Gets the table body for an attribute item's range table.
+   *
+   * @param {HTMLElement} attributeItem
+   *   The attribute item element.
+   *
+   * @return {HTMLElement|null}
+   *   The tbody element or null.
+   */
   function getRangeTableBody(attributeItem) {
     var table = getRangeTable(attributeItem);
 
@@ -27,10 +108,32 @@
     return table.tBodies[0];
   }
 
+  /**
+   * Gets a specific range input field.
+   *
+   * @param {HTMLElement} rangeRow
+   *   The range row element.
+   * @param {string} fieldName
+   *   The field name.
+   *
+   * @return {HTMLElement|null}
+   *   The input element or null.
+   */
   function getRangeInput(rangeRow, fieldName) {
     return rangeRow ? rangeRow.querySelector('[data-rate-sheet-range-field="' + fieldName + '"]') : null;
   }
 
+  /**
+   * Gets numeric value from an input with fallback.
+   *
+   * @param {HTMLElement} input
+   *   The input element.
+   * @param {number} fallback
+   *   The fallback value.
+   *
+   * @return {number}
+   *   The parsed value or fallback.
+   */
   function getNumericInputValue(input, fallback) {
     var parsed = input ? parseFloat(input.value) : NaN;
 
@@ -41,6 +144,15 @@
     return parsed;
   }
 
+  /**
+   * Formats a range value to 3 decimal places.
+   *
+   * @param {number} value
+   *   The value to format.
+   *
+   * @return {string}
+   *   The formatted value.
+   */
   function formatRangeValue(value) {
     var rounded = Math.round(value * 1000) / 1000;
 
@@ -163,7 +275,17 @@
     });
   }
 
+  /**
+   * Updates the hidden JSON payload with current range data.
+   *
+   * @param {HTMLElement} container
+   *   The container element.
+   */
   function updateRangesPayload(container) {
+    if (!container) {
+      return;
+    }
+
     var form = container.closest('form');
     var payloadInput = form ? form.querySelector('[data-rate-sheet-ranges-payload]') : null;
 
@@ -173,7 +295,8 @@
 
     var payload = {};
 
-    getAttributeItems(container).forEach(function (attributeItem) {
+    try {
+      getAttributeItems(container).forEach(function (attributeItem) {
       var attributeId = attributeItem.getAttribute('data-attribute-id');
 
       if (!attributeId) {
@@ -207,12 +330,28 @@
           }
         });
       });
-    });
+      });
 
-    payloadInput.value = JSON.stringify(payload);
+      payloadInput.value = JSON.stringify(payload);
+    }
+    catch (error) {
+      console.error('Error updating ranges payload:', error);
+    }
   }
 
+  /**
+   * Sets the collapsed state of an accordion item.
+   *
+   * @param {HTMLElement} attributeItem
+   *   The attribute item element.
+   * @param {boolean} collapsed
+   *   Whether the accordion should be collapsed.
+   */
   function setAccordionCollapsed(attributeItem, collapsed) {
+    if (!attributeItem) {
+      return;
+    }
+
     var toggleButton = attributeItem.querySelector('[data-rate-sheet-accordion-toggle]');
     var toggleIcon = attributeItem.querySelector('[data-rate-sheet-accordion-icon]');
     var panel = attributeItem.querySelector('[data-rate-sheet-accordion-panel]');
@@ -223,14 +362,33 @@
 
     if (panel) {
       panel.hidden = collapsed;
+      panel.setAttribute('aria-hidden', collapsed ? 'true' : 'false');
+
+      // Ensure panel has proper ARIA role.
+      if (!panel.getAttribute('role')) {
+        panel.setAttribute('role', 'region');
+      }
+
+      // Link panel to toggle button.
+      if (toggleButton && !panel.getAttribute('aria-labelledby')) {
+        var buttonId = toggleButton.id || 'accordion-toggle-' + Math.random().toString(36).substr(2, 9);
+        toggleButton.id = buttonId;
+        panel.setAttribute('aria-labelledby', buttonId);
+      }
     }
 
     if (toggleButton) {
       toggleButton.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+
+      // Ensure button has proper ARIA role.
+      if (!toggleButton.getAttribute('role')) {
+        toggleButton.setAttribute('role', 'button');
+      }
     }
 
     if (toggleIcon) {
       toggleIcon.textContent = collapsed ? '+' : '−';
+      toggleIcon.setAttribute('aria-hidden', 'true');
     }
   }
 
@@ -348,9 +506,12 @@
         initializeAccordion(container);
         updateRangesPayload(container);
 
-        container.addEventListener('input', function () {
+        // Debounce payload updates to avoid excessive JSON serialization.
+        var debouncedUpdate = debounce(function () {
           updateRangesPayload(container);
-        });
+        }, 300);
+
+        container.addEventListener('input', debouncedUpdate);
 
         container.addEventListener('change', function () {
           updateRangesPayload(container);

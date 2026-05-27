@@ -55,10 +55,19 @@
         return attributeItems;
       }
 
-      return attributeItems.filter(function (item) {
+      // Use a Set for O(1) lookup performance.
+      var matchedSet = new Set();
+
+      attributeItems.forEach(function (item) {
         var attributeName = item.getAttribute('data-attribute-name') || '';
 
-        return attributeName.indexOf(query) !== -1;
+        if (attributeName.indexOf(query) !== -1) {
+          matchedSet.add(item);
+        }
+      });
+
+      return attributeItems.filter(function (item) {
+        return matchedSet.has(item);
       });
     }
 
@@ -103,10 +112,11 @@
       }
 
       var matchedItems = getMatchedAttributeItems(attributeItems);
+      var matchedSet = new Set(matchedItems);
       var visibleCount = 0;
 
       attributeItems.forEach(function (item) {
-        var matched = matchedItems.indexOf(item) !== -1;
+        var matched = matchedSet.has(item);
         var shouldShow = false;
 
         if (matched) {

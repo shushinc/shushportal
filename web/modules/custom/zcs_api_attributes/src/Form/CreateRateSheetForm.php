@@ -2,11 +2,13 @@
 
 namespace Drupal\zcs_api_attributes\Form;
 
-use Drupal\Core\Database\Connection;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\node\Entity\Node;
+use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\zcs_api_attributes\Service\RateSheetService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -15,27 +17,74 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class CreateRateSheetForm extends FormBase {
 
   /**
-   * EntityTypeManager $entityTypeManager.
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
-   * Array $list.
+   * The currency list.
+   *
+   * @var array
    */
   protected $list;
 
   /**
-   * Connection $connection.
+   * The config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
-  protected $database;
+  protected $configFactory;
 
   /**
-   * {@inheritdoc}
+   * The date formatter.
+   *
+   * @var \Drupal\Core\Datetime\DateFormatterInterface
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, Connection $connection) {
+  protected $dateFormatter;
+
+  /**
+   * The rate sheet service.
+   *
+   * @var \Drupal\zcs_api_attributes\Service\RateSheetService
+   */
+  protected $rateSheetService;
+
+  /**
+   * The messenger service.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
+   * Constructs a CreateRateSheetForm object.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
+   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
+   *   The date formatter.
+   * @param \Drupal\zcs_api_attributes\Service\RateSheetService $rate_sheet_service
+   *   The rate sheet service.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   The messenger service.
+   */
+  public function __construct(
+    EntityTypeManagerInterface $entity_type_manager,
+    ConfigFactoryInterface $config_factory,
+    DateFormatterInterface $date_formatter,
+    RateSheetService $rate_sheet_service,
+    MessengerInterface $messenger
+  ) {
     $this->list = require __DIR__ . '/../../resources/currencies.php';
     $this->entityTypeManager = $entity_type_manager;
-    $this->database = $connection;
+    $this->configFactory = $config_factory;
+    $this->dateFormatter = $date_formatter;
+    $this->rateSheetService = $rate_sheet_service;
+    $this->messenger = $messenger;
   }
 
   /**
@@ -44,7 +93,10 @@ class CreateRateSheetForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity_type.manager'),
-      $container->get('database')
+      $container->get('config.factory'),
+      $container->get('date.formatter'),
+      $container->get('zcs_api_attributes.rate_sheet_service'),
+      $container->get('messenger')
     );
   }
 
@@ -59,8 +111,8 @@ class CreateRateSheetForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-
-    $defaultCurrency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
+    $config = $this->configFactory->get('zcs_custom.settings');
+    $defaultCurrency = $config->get('currency') ?? 'en_US';
     $number = new \NumberFormatter($defaultCurrency, \NumberFormatter::CURRENCY);
     $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
 
@@ -84,7 +136,7 @@ class CreateRateSheetForm extends FormBase {
     $form['currencies'] = [
       '#type' => 'select',
       '#options' => $currencies,
-      '#default_value' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
+      '#default_value' => $config->get('currency') ?? 'en_US',
       '#disabled' => TRUE,
       '#weight' => 0,
     ];
@@ -214,152 +266,117 @@ class CreateRateSheetForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
+    $values = $form_state->getValues();
 
+    // Validate rate sheet name.
+    if (empty(trim($values['name']))) {
+      $form_state->setErrorByName('name', $this->t('Rate sheet name is required.'));
+    }
+
+    // Validate markup percentage.
+    $markup = $values['retail_markup_percentage'] ?? NULL;
+    if (!is_numeric($markup) || $markup < 1) {
+      $form_state->setErrorByName('retail_markup_percentage', $this->t('Markup percentage must be at least 1.'));
+    }
+
+    // Validate effective date.
+    $effective_date = $values['attribute_date'] ?? NULL;
+    if (empty($effective_date)) {
+      $form_state->setErrorByName('attribute_date', $this->t('Effective date is required.'));
+    }
+    else {
+      $date_timestamp = strtotime($effective_date);
+      $today = strtotime(date('Y-m-d'));
+      if ($date_timestamp < $today) {
+        $form_state->setErrorByName('attribute_date', $this->t('Effective date cannot be in the past.'));
+      }
+    }
+
+    // Validate JSON payload.
+    $payload = $values['rate_sheet_item_ranges_payload'] ?? '';
+    if (!empty($payload)) {
+      $decoded = json_decode($payload, TRUE);
+      if (json_last_error() !== JSON_ERROR_NONE) {
+        $form_state->setErrorByName('rate_sheet_item_ranges_payload', $this->t('Invalid range data format.'));
+      }
+      elseif (!is_array($decoded)) {
+        $form_state->setErrorByName('rate_sheet_item_ranges_payload', $this->t('Range data must be an array.'));
+      }
+      else {
+        // Validate range values.
+        foreach ($decoded as $attribute_id => $ranges) {
+          if (!is_array($ranges)) {
+            continue;
+          }
+          foreach ($ranges as $range_index => $range) {
+            if (!is_array($range)) {
+              continue;
+            }
+
+            $from = $range['from_range'] ?? NULL;
+            $to = $range['to_range'] ?? NULL;
+
+            if (!is_numeric($from) || $from < 0) {
+              $form_state->setError($form, $this->t('Invalid "from" range value for attribute @id.', ['@id' => $attribute_id]));
+            }
+
+            if ($to != -1 && (!is_numeric($to) || $to < $from)) {
+              $form_state->setError($form, $this->t('Invalid "to" range value for attribute @id. Must be greater than "from" or -1 for unbounded.', ['@id' => $attribute_id]));
+            }
+          }
+        }
+      }
+    }
   }
 
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-
     $values = $form_state->getValues();
-    $user_input = $form_state->getUserInput();
-    $submitted_ranges = $user_input['rate_sheet_item_ranges'] ?? $values['rate_sheet_item_ranges'] ?? [];
-    $payload = $values['rate_sheet_item_ranges_payload'] ?? $user_input['rate_sheet_item_ranges_payload'] ?? '';
+    $payload = $values['rate_sheet_item_ranges_payload'] ?? '';
+    $submitted_ranges = [];
 
+    // Parse the JSON payload.
     if (!empty($payload)) {
       $decoded_payload = json_decode($payload, TRUE);
-
-      if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_payload) && !empty($decoded_payload)) {
+      if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_payload)) {
         $submitted_ranges = $decoded_payload;
       }
     }
 
+    // Fallback to form values if payload is empty.
+    if (empty($submitted_ranges)) {
+      $submitted_ranges = $values['rate_sheet_item_ranges'] ?? [];
+    }
+
     $nids = array_filter(explode(',', $values['nodes'] ?? ''));
-    $transaction = $this->database->startTransaction();
 
     try {
+      $rate_sheet_id = $this->rateSheetService->createRateSheet([
+        'name' => $values['name'],
+        'currency' => $values['currencies'],
+        'markup_retail' => $values['retail_markup_percentage'],
+        'effective_date' => strtotime($values['attribute_date']),
+        'attribute_ids' => $nids,
+        'ranges' => $submitted_ranges,
+      ]);
 
-      $new_rate_sheet_id = $this->database->insert('rate_sheet')
-        ->fields([
-          'name',
-          'currency',
-          'created_by',
-          'markup_retail',
-          'created_date',
-          'effective_date',
-        ])
-        ->values([
-          $values['name'],
-          $values['currencies'],
-          $this->currentUser()->id(),
-          $values['retail_markup_percentage'],
-          \Drupal::time()->getRequestTime(),
-          strtotime($values['attribute_date']),
-        ])
-        ->execute();
-
-      // Creating the default status.
-      $this->database->insert('rate_sheet_status')
-        ->fields([
-          'rate_sheet_id',
-          'status_name',
-          'date',
-          'created_by',
-        ])->values([
-          $new_rate_sheet_id,
-          'Pending',
-          \Drupal::time()->getRequestTime(),
-          $this->currentUser()->id(),
-        ])
-        ->execute();
-
-      // Logging the action.
-      $this->database->insert('action_log')
-        ->fields([
-          'action_type',
-          'entity_target_type',
-          'entity_target_id',
-          'created_by',
-          'created_date',
-          'log_data',
-        ])->values([
-          'CREATING',
-          'RATE_SHEET',
-          $new_rate_sheet_id,
-          $this->currentUser()->id(),
-          \Drupal::time()->getRequestTime(),
-          '',
-        ])
-        ->execute();
-
-      foreach ($nids as $nid) {
-        $range_items = $submitted_ranges[$nid] ?? [];
-
-        if (!is_array($range_items)) {
-          $range_items = [];
-        }
-
-        $range_items = array_filter($range_items, 'is_array');
-        ksort($range_items, SORT_NUMERIC);
-
-        $tiered_calculation = count($range_items) > 1 ? 1 : 0;
-
-        $node = Node::load($nid);
-        if (!$node) {
-          continue;
-        }
-
-        $rate_sheet_item_id = $this->database->insert('rate_sheet_item')
-          ->fields([
-            'rate_sheet_id',
-            'api_attribute_id',
-            'tiered_calculation',
-            'attribute_name',
-          ])
-          ->values([
-            $new_rate_sheet_id,
-            $nid,
-            $tiered_calculation,
-            $node->getTitle(),
-          ])
-          ->execute();
-
-        $last_range_key = !empty($range_items) ? array_key_last($range_items) : NULL;
-
-        foreach ($range_items as $range_index => $range_item) {
-          if (!is_array($range_item)) {
-            continue;
-          }
-
-          $to_range = ((string) $range_index === (string) $last_range_key) ? -1 : ($range_item['to_range'] ?? 0);
-
-          $this->database->insert('rate_sheet_item_range')
-            ->fields([
-              'rate_sheet_item_id',
-              'from_range',
-              'to_range',
-              'success_rate',
-              'partial_range',
-            ])
-            ->values([
-              $rate_sheet_item_id,
-              $range_item['from_range'] ?? 0,
-              $to_range,
-              $range_item['success_rate'] ?? 0,
-              $range_item['partial_range'] ?? 0,
-            ])
-            ->execute();
-        }
+      if ($rate_sheet_id) {
+        $this->messenger->addStatus($this->t('Rate sheet "@name" has been created successfully.', [
+          '@name' => $values['name'],
+        ]));
+        $form_state->setRedirect('zcs_api_attributes.rate_sheet_list');
+      }
+      else {
+        $this->messenger->addError($this->t('Failed to create rate sheet. Please try again.'));
       }
     }
     catch (\Exception $e) {
-      $transaction->rollBack();
+      $this->messenger->addError($this->t('An error occurred while creating the rate sheet: @message', [
+        '@message' => $e->getMessage(),
+      ]));
     }
-
-    // Commit the transaction by unsetting the $transaction variable.
-    unset($transaction);
-    $form_state->setRedirect('zcs_api_attributes.rate_sheet_list');
   }
 
 }
