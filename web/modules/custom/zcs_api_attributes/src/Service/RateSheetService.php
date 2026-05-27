@@ -66,6 +66,56 @@ class RateSheetService {
   }
 
   /**
+   * Gets the approvers for a rate sheet.
+   *
+   * @param int $rate_sheet_id
+   *   The rate sheet ID.
+   *
+   * @return array
+   *   Array of approver information.
+   */
+  public function getRateSheetApprovers($rate_sheet_id) {
+    // Query to get approvers from rate_sheet_approval table or similar.
+    // This is a placeholder - adjust based on your actual schema.
+    $query = $this->database->select('rate_sheet_approval', 'rsa')
+      ->fields('rsa')
+      ->condition('rsa.rate_sheet_id', $rate_sheet_id)
+      ->execute();
+
+    $approvers = [];
+    foreach ($query as $row) {
+      $approvers[] = [
+        'uid' => $row->approver_uid ?? NULL,
+        'status' => $row->status ?? NULL,
+        'date' => $row->approval_date ?? NULL,
+      ];
+    }
+
+    return $approvers;
+  }
+
+  /**
+   * Gets the current status of a rate sheet.
+   *
+   * @param int $rate_sheet_id
+   *   The rate sheet ID.
+   *
+   * @return string
+   *   The status name.
+   */
+  public function getRateSheetStatus($rate_sheet_id) {
+    $status = $this->database->select('rate_sheet_status', 'rss')
+      ->fields('rss', ['status_name'])
+      ->condition('rss.rate_sheet_id', $rate_sheet_id)
+      ->orderBy('rss.date', 'DESC')
+      ->range(0, 1)
+      ->execute()
+      ->fetchField();
+
+    return $status ?: 'Unknown';
+  }
+
+  /**
    * Creates a new rate sheet with items and ranges.
    *
    * @param array $data

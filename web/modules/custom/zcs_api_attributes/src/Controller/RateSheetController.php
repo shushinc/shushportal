@@ -52,7 +52,7 @@ class RateSheetController extends ControllerBase {
     return new static(
       $container->get('database'),
       $container->get('pager.manager'),
-      $container->get('zcs_api_attributes.rate_sheet')
+      $container->get('zcs_api_attributes.rate_sheet_service')
     );
   }
 
@@ -214,17 +214,23 @@ class RateSheetController extends ControllerBase {
   }
 
   /**
+   * Checks access for rate sheet routes.
    *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user account.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
    */
-  public function access(AccountInterface $account) {
+  public static function access(AccountInterface $account) {
     $allowed_roles = ['administrator', 'carrier_admin', 'finance_admin', 'financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
-    $user_roles = \Drupal::currentUser()->getRoles();
+    $user_roles = $account->getRoles();
 
     if (array_intersect($allowed_roles, $user_roles)) {
       return AccessResult::allowed();
     }
     else {
-      $memberships = \Drupal::service('group.membership_loader')->loadByUser(\Drupal::currentUser());
+      $memberships = \Drupal::service('group.membership_loader')->loadByUser($account);
       if (isset($memberships)) {
         return AccessResult::forbidden();
       }
