@@ -86,7 +86,7 @@ class RateSheetController extends ControllerBase {
     );
 
     // Build class list dynamically.
-    $classes = ['button', 'button--primary', 'use-ajax'];
+    $classes = ['button', 'button--primary',];
     if (!$access->isAllowed()) {
       $classes[] = 'disable-link';
     }
@@ -125,11 +125,6 @@ class RateSheetController extends ControllerBase {
     $url->setOptions([
       'attributes' => [
         'class' => $classes,
-        'data-dialog-type' => 'modal',
-        'data-dialog-options' => json_encode([
-          'width' => 1000,
-          'dialogClass' => 'api-popup-width-resize',
-        ]),
       ],
     ]);
     $pricing_api_link = Link::fromTextAndUrl($this->t('Create Rate Sheet'), $url)->toRenderable();
