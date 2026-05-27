@@ -136,8 +136,8 @@ class CreateRateSheetForm extends FormBase {
 
         $form['rate_sheet_item_ranges'][$attribute_id][0]['to_range'] = [
           '#type' => 'number',
-          '#min' => 0,
-          '#default_value' => 0.000,
+          '#min' => -1,
+          '#default_value' => -1,
           '#step' => 0.001,
           '#field_prefix' => $symbol,
           '#attributes' => [
@@ -295,7 +295,15 @@ class CreateRateSheetForm extends FormBase {
 
       foreach ($nids as $nid) {
         $range_items = $submitted_ranges[$nid] ?? [];
-        $tiered_calculation = $values["tiered_calculation_{$nid}"] ?? 0;
+
+        if (!is_array($range_items)) {
+          $range_items = [];
+        }
+
+        $range_items = array_filter($range_items, 'is_array');
+        ksort($range_items, SORT_NUMERIC);
+
+        $tiered_calculation = count($range_items) > 1 ? 1 : 0;
 
         $node = Node::load($nid);
         if (!$node) {
@@ -317,12 +325,14 @@ class CreateRateSheetForm extends FormBase {
           ])
           ->execute();
 
-        ksort($range_items, SORT_NUMERIC);
+        $last_range_key = !empty($range_items) ? array_key_last($range_items) : NULL;
 
-        foreach ($range_items as $range_item) {
+        foreach ($range_items as $range_index => $range_item) {
           if (!is_array($range_item)) {
             continue;
           }
+
+          $to_range = ((string) $range_index === (string) $last_range_key) ? -1 : ($range_item['to_range'] ?? 0);
 
           $this->database->insert('rate_sheet_item_range')
             ->fields([
@@ -335,7 +345,7 @@ class CreateRateSheetForm extends FormBase {
             ->values([
               $rate_sheet_item_id,
               $range_item['from_range'] ?? 0,
-              $range_item['to_range'] ?? 0,
+              $to_range,
               $range_item['success_rate'] ?? 0,
               $range_item['partial_range'] ?? 0,
             ])
