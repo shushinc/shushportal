@@ -5,10 +5,8 @@ dependencies:
     - field.field.node.apis.body
     - field.field.node.apis.field_image
     - field.field.node.apis.field_link
-    - field.field.node.apis.field_swagger
     - node.type.apis
   module:
-    - swagger_ui_formatter
     - text
     - user
 _core:
@@ -24,26 +22,6 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 0
-    region: content
-  field_swagger:
-    type: swagger_ui_file
-    label: hidden
-    settings:
-      validator: default
-      validator_url: ''
-      doc_expansion: list
-      show_top_bar: false
-      sort_tags_by_name: false
-      supported_submit_methods:
-        get: get
-        put: put
-        post: post
-        delete: delete
-        options: options
-        head: head
-        patch: patch
-    third_party_settings: {  }
-    weight: 1
     region: content
 hidden:
   field_image: true

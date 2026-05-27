@@ -128,9 +128,6 @@
             ],
             "web/themes/custom/{$name}": [
                 "type:drupal-custom-theme"
-            ],
-            "web/libraries/swagger_ui": [
-                "bower-asset/swagger-ui"
             ]
         },
         "merge-plugin": {
