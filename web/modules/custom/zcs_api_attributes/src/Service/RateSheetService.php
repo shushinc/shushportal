@@ -66,54 +66,155 @@ class RateSheetService {
   }
 
   /**
-   * Gets the approvers for a rate sheet.
-   *
-   * @param int $rate_sheet_id
-   *   The rate sheet ID.
-   *
-   * @return array
-   *   Array of approver information.
-   */
-  public function getRateSheetApprovers($rate_sheet_id) {
-    // Query to get approvers from rate_sheet_approval table or similar.
-    // This is a placeholder - adjust based on your actual schema.
-    $query = $this->database->select('rate_sheet_approval', 'rsa')
-      ->fields('rsa')
-      ->condition('rsa.rate_sheet_id', $rate_sheet_id)
-      ->execute();
+     * Returns approvers HTML for a Rate Sheet.
+     *
+     * Output format:
+     * - Always 2 lines (2 approvers)
+     * - Shows email when action already taken
+     * - Shows status label (approved, denied, pending)
+     *
+     * Rules:
+     * - No records or only 1 pending > both pending
+     * - One decision + one pending > show decision + pending
+     * - Two equal decisions > show both
+     * - Approved + Denied > both shown
+     *
+     * @param int $rate_sheet_id
+     *   The Rate Sheet ID.
+     *
+     * @return string
+     *   HTML markup.
+     */
+    public function getRateSheetApprovers(int $rate_sheet_id): string {
 
-    $approvers = [];
-    foreach ($query as $row) {
-      $approvers[] = [
-        'uid' => $row->approver_uid ?? NULL,
-        'status' => $row->status ?? NULL,
-        'date' => $row->approval_date ?? NULL,
-      ];
+      $query = $this->database->select('rate_sheet_status', 'rss')
+        ->fields('rss', ['status_name', 'created_by'])
+        ->condition('rate_sheet_id', $rate_sheet_id)
+        ->orderBy('date', 'ASC');
+
+      $rows = $query->execute()->fetchAll();
+
+      if (empty($rows)) {
+        return '<span class="pending">Pending</span><br><span class="pending">Pending</span>';
+      }
+
+      // Only creation record
+      if (count($rows) === 1 && strtoupper($rows[0]->status_name) === 'PENDING') {
+        return '<span class="pending">Pending</span><br><span class="pending">Pending</span>';
+      }
+
+      // Remove initial PENDING
+      if (strtoupper($rows[0]->status_name) === 'PENDING') {
+        array_shift($rows);
+      }
+
+      // Last two relevant
+      $rows = array_slice(array_reverse($rows), 0, 2);
+
+      $statuses = [];
+
+      foreach ($rows as $row) {
+        $statuses[] = [
+          'status' => strtoupper($row->status_name),
+          'uid' => $row->created_by,
+        ];
+      }
+
+      while (count($statuses) < 2) {
+        $statuses[] = [
+          'status' => 'PENDING',
+          'uid' => NULL,
+        ];
+      }
+
+        $output = [];
+
+        foreach ($statuses as $item) {
+            $status = $item['status'];
+            $uid = $item['uid'];
+
+            $email = '';
+
+            if ($status !== 'PENDING' && !empty($uid)) {
+            $user = \Drupal\user\Entity\User::load($uid);
+                if ($user) {
+                    $email = $user->getEmail();
+                }
+            }
+
+            $line = '';
+
+            if ($email) {
+            $line .= $email;
+            }
+
+            $class = strtolower($status);
+
+            // 🔥 KEY CHANGE HERE
+            if ($status === 'PENDING') {
+            $line .= '<span class="pending">Pending</span>';
+            }
+            else {
+            $line .= '<span class="' . $class . '"></span>';
+            }
+
+            $output[] = $line;
+        }
+
+        return implode('<br>', $output);
     }
 
-    return $approvers;
-  }
-
   /**
-   * Gets the current status of a rate sheet.
-   *
-   * @param int $rate_sheet_id
-   *   The rate sheet ID.
-   *
-   * @return string
-   *   The status name.
-   */
-  public function getRateSheetStatus($rate_sheet_id) {
-    $status = $this->database->select('rate_sheet_status', 'rss')
-      ->fields('rss', ['status_name'])
-      ->condition('rss.rate_sheet_id', $rate_sheet_id)
-      ->orderBy('rss.date', 'DESC')
-      ->range(0, 1)
-      ->execute()
-      ->fetchField();
+     * Returns the current Rate Sheet status based on the last two records.
+     *
+     * Rules:
+     * - 2 APPROVED > APPROVED
+     * - 2 DENIED > DENIED
+     * - APPROVED + DENIED > PENDING
+     * - Any PENDING > PENDING
+     * - Only one record (initial state) > PENDING
+     *
+     * @param int $rate_sheet_id
+     *   The Rate Sheet ID.
+     *
+     * @return string
+     *   One of: 'PENDING', 'APPROVED', or 'DENIED'.
+     */
+    public function getRateSheetStatus(int $rate_sheet_id): string {
 
-    return $status ?: 'Unknown';
-  }
+        $query = $this->database->select('rate_sheet_status', 'rss')
+            ->fields('rss', ['status_name'])
+            ->condition('rate_sheet_id', $rate_sheet_id)
+            ->orderBy('date', 'DESC')
+            ->range(0, 2);
+
+        $statuses = $query->execute()->fetchCol();
+
+        if (empty($statuses)) {
+            return 'Pending';
+        }
+
+        // Only one status (initial state)
+        if (count($statuses) === 1) {
+            return 'Pending';
+        }
+
+        $first = $statuses[0];
+        $second = $statuses[1];
+
+        // If any is pending > still pending
+        if ($first === 'Pending' || $second === 'Pending') {
+            return 'Pending';
+        }
+
+        // Both equal > final decision
+        if ($first === $second) {
+            return $first; // APPROVED or DENIED
+        }
+
+        // Conflict (APPROVED vs DENIED)
+        return 'Pending';
+    }
 
   /**
    * Creates a new rate sheet with items and ranges.
@@ -273,5 +374,57 @@ class RateSheetService {
       throw $e;
     }
   }
+
+  /**
+     * Inserts a new status for a rate sheet.
+     *
+     * @param int $rate_sheet_id
+     *   The Rate Sheet ID.
+     * @param int $status
+     *   The status to insert (2 for Approve, 3 for Reject).
+     * @param int $user_id
+     *   The ID of the user submitting the status.
+     */
+    public function insertRateSheetStatus(int $rate_sheet_id, int $status, int $user_id) {
+        $transaction = $this->database->startTransaction();
+
+        try {
+            $status_name = $status === 2 ? 'Approved' : 'Rejected';
+
+            $this->database->insert('rate_sheet_status')
+                ->fields([
+                    'rate_sheet_id' => $rate_sheet_id,
+                    'status_name' => $status_name,
+                    'created_by' => $user_id,
+                    'date' => \Drupal::time()->getRequestTime(),
+                ])
+                ->execute();
+
+            // Log the action
+            $this->database->insert('action_log')
+                ->fields([
+                    'action_type',
+                    'entity_target_type',
+                    'entity_target_id',
+                    'created_by',
+                    'created_date',
+                    'log_data',
+                ])
+                ->values([
+                    'STATUS_UPDATE',
+                    'RATE_SHEET',
+                    $rate_sheet_id,
+                    $user_id,
+                    \Drupal::time()->getRequestTime(),
+                    "User {$user_id} changed the status of rate sheet {$rate_sheet_id} to {$status_name}.",
+                ])
+                ->execute();
+        }
+        catch (\Exception $e) {
+            $transaction->rollBack();
+            \Drupal::logger('zcs_api_attributes')->error('Failed to insert rate sheet status: @message', ['@message' => $e->getMessage()]);
+            throw $e;
+        }
+    }
 
 }

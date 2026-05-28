@@ -8,7 +8,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\zcs_api_attributes\Service\RateSheetService;
+use Drupal\zcs_api_attributes\Services\RateSheetService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -47,7 +47,7 @@ class CreateRateSheetForm extends FormBase {
   /**
    * The rate sheet service.
    *
-   * @var \Drupal\zcs_api_attributes\Service\RateSheetService
+   * @var \Drupal\zcs_api_attributes\Services\RateSheetService
    */
   protected $rateSheetService;
 
@@ -67,7 +67,7 @@ class CreateRateSheetForm extends FormBase {
    *   The config factory.
    * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
    *   The date formatter.
-   * @param \Drupal\zcs_api_attributes\Service\RateSheetService $rate_sheet_service
+   * @param \Drupal\zcs_api_attributes\Services\RateSheetService $rate_sheet_service
    *   The rate sheet service.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   The messenger service.
@@ -178,7 +178,6 @@ class CreateRateSheetForm extends FormBase {
           '#min' => 0,
           '#default_value' => 0.000,
           '#step' => 0.001,
-          '#field_prefix' => $symbol,
           '#attributes' => [
             'data-rate-sheet-range-field' => 'from_range',
             'data-attribute-id' => $attribute_id,
@@ -191,7 +190,6 @@ class CreateRateSheetForm extends FormBase {
           '#min' => -1,
           '#default_value' => -1,
           '#step' => 0.001,
-          '#field_prefix' => $symbol,
           '#attributes' => [
             'data-rate-sheet-range-field' => 'to_range',
             'data-attribute-id' => $attribute_id,

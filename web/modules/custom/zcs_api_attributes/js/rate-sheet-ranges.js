@@ -145,38 +145,104 @@
   }
 
   /**
-   * Formats a range value to 3 decimal places.
+   * Gets the number of decimal places typed by the user.
    *
-   * @param {number} value
+   * @param {HTMLElement} input
+   *   The input element.
+   *
+   * @return {number}
+   *   The decimal precision, capped at 3 because range fields use step 0.001.
+   */
+  function getInputDecimalPlaces(input) {
+    if (!input || typeof input.value === 'undefined') {
+      return 0;
+    }
+
+    var value = String(input.value).trim();
+    var decimalIndex = value.indexOf('.');
+
+    if (!value || decimalIndex === -1) {
+      return 0;
+    }
+
+    return Math.min(3, value.length - decimalIndex - 1);
+  }
+
+  /**
+   * Gets the increment to use for the next range based on entered precision.
+   *
+   * @param {HTMLElement} input
+   *   The input element.
+   *
+   * @return {number}
+   *   The increment value.
+   */
+  function getRangeIncrement(input) {
+    var decimalPlaces = getInputDecimalPlaces(input);
+
+    if (decimalPlaces <= 0) {
+      return 1;
+    }
+
+    return 1 / Math.pow(10, decimalPlaces);
+  }
+
+  /**
+   * Formats a range value without unnecessary trailing zeroes.
+   *
+   * @param {number|string} value
    *   The value to format.
    *
    * @return {string}
    *   The formatted value.
    */
   function formatRangeValue(value) {
-    var rounded = Math.round(value * 1000) / 1000;
+    var numericValue = parseFloat(value);
 
-    return rounded.toFixed(3);
+    if (Number.isNaN(numericValue)) {
+      return '0';
+    }
+
+    var rounded = Math.round((numericValue + Number.EPSILON) * 1000) / 1000;
+
+    if (Math.abs(rounded) < 0.0005) {
+      rounded = 0;
+    }
+
+    return rounded.toFixed(3).replace(/\.?0+$/, '');
   }
 
-  function getNextFromRangeValue(attributeItem) {
+  function getNextRangeProgression(attributeItem) {
     var rows = getRangeRows(attributeItem);
     var lastRow = rows.length ? rows[rows.length - 1] : null;
 
     if (!lastRow) {
-      return '0.000';
+      return {
+        fromRangeValue: '0',
+        previousToRangeValue: null
+      };
     }
 
     var lastFromRangeInput = getRangeInput(lastRow, 'from_range');
     var lastToRangeInput = getRangeInput(lastRow, 'to_range');
     var lastFromRangeValue = getNumericInputValue(lastFromRangeInput, 0);
     var lastToRangeValue = getNumericInputValue(lastToRangeInput, -1);
+    var sourceInput = lastFromRangeInput;
+    var sourceValue = lastFromRangeValue;
 
     if (lastToRangeValue >= lastFromRangeValue) {
-      return formatRangeValue(lastToRangeValue + 1);
+      sourceInput = lastToRangeInput;
+      sourceValue = lastToRangeValue;
     }
 
-    return formatRangeValue(lastFromRangeValue + 1);
+    var increment = getRangeIncrement(sourceInput);
+    var previousToRangeValue = sourceValue + increment;
+    var nextFromRangeValue = previousToRangeValue + increment;
+
+    return {
+      fromRangeValue: formatRangeValue(nextFromRangeValue),
+      previousToRangeValue: formatRangeValue(previousToRangeValue)
+    };
   }
 
   function setFiniteToRangeValue(rangeRow, value) {
@@ -186,7 +252,7 @@
       return;
     }
 
-    toRangeInput.value = formatRangeValue(Math.max(0, value));
+    toRangeInput.value = formatRangeValue(Math.max(0, parseFloat(value)));
     toRangeInput.tabIndex = 0;
     toRangeInput.setAttribute('aria-hidden', 'false');
   }
@@ -297,39 +363,39 @@
 
     try {
       getAttributeItems(container).forEach(function (attributeItem) {
-      var attributeId = attributeItem.getAttribute('data-attribute-id');
+        var attributeId = attributeItem.getAttribute('data-attribute-id');
 
-      if (!attributeId) {
-        return;
-      }
-
-      updateAttributeRangeMode(attributeItem);
-
-      payload[attributeId] = {};
-
-      getRangeRows(attributeItem).forEach(function (rangeRow) {
-        var rangeIndex = rangeRow.getAttribute('data-range-index');
-        var inputs = rangeRow.querySelectorAll('[data-rate-sheet-range-field]');
-
-        if (rangeIndex === null || !inputs.length) {
+        if (!attributeId) {
           return;
         }
 
-        payload[attributeId][rangeIndex] = {
-          from_range: '0',
-          to_range: '0',
-          partial_range: '0',
-          success_rate: '0'
-        };
+        updateAttributeRangeMode(attributeItem);
 
-        Array.prototype.forEach.call(inputs, function (input) {
-          var fieldName = input.getAttribute('data-rate-sheet-range-field');
+        payload[attributeId] = {};
 
-          if (fieldName) {
-            payload[attributeId][rangeIndex][fieldName] = input.value || '0';
+        getRangeRows(attributeItem).forEach(function (rangeRow) {
+          var rangeIndex = rangeRow.getAttribute('data-range-index');
+          var inputs = rangeRow.querySelectorAll('[data-rate-sheet-range-field]');
+
+          if (rangeIndex === null || !inputs.length) {
+            return;
           }
+
+          payload[attributeId][rangeIndex] = {
+            from_range: '0',
+            to_range: '0',
+            partial_range: '0',
+            success_rate: '0'
+          };
+
+          Array.prototype.forEach.call(inputs, function (input) {
+            var fieldName = input.getAttribute('data-rate-sheet-range-field');
+
+            if (fieldName) {
+              payload[attributeId][rangeIndex][fieldName] = input.value || '0';
+            }
+          });
         });
-      });
       });
 
       payloadInput.value = JSON.stringify(payload);
@@ -413,7 +479,7 @@
     input.id = 'edit-rate-sheet-item-ranges-' + attributeId + '-' + rangeIndex + '-' + fieldName.replace(/_/g, '-');
     input.min = fieldName === 'to_range' ? '-1' : '0';
     input.step = '0.001';
-    input.value = defaultValue || '0.000';
+    input.value = defaultValue || '0';
     input.className = 'form-number rate-sheet-range-input';
     input.setAttribute('data-rate-sheet-range-field', fieldName);
     input.setAttribute('data-attribute-id', attributeId);
@@ -469,7 +535,7 @@
     row.appendChild(labelCell);
 
     var fromRangeCell = document.createElement('td');
-    fromRangeCell.appendChild(createRangeInput(attributeId, rangeIndex, 'from_range', fromRangeValue || '0.000'));
+    fromRangeCell.appendChild(createRangeInput(attributeId, rangeIndex, 'from_range', fromRangeValue || '0'));
     row.appendChild(fromRangeCell);
 
     row.appendChild(createToRangeCell(attributeId, rangeIndex));
@@ -477,7 +543,7 @@
     ['partial_range', 'success_rate'].forEach(function (fieldName) {
       var cell = document.createElement('td');
 
-      cell.appendChild(createRangeInput(attributeId, rangeIndex, fieldName, '0.000'));
+      cell.appendChild(createRangeInput(attributeId, rangeIndex, fieldName, '0'));
       row.appendChild(cell);
     });
 
@@ -542,8 +608,8 @@
             var existingRows = getRangeRows(attributeItem);
             var previousLastRow = existingRows.length ? existingRows[existingRows.length - 1] : null;
             var maxIndex = -1;
-            var fromRangeValue = getNextFromRangeValue(attributeItem);
-            var numericFromRangeValue = parseFloat(fromRangeValue);
+            var nextRangeProgression = getNextRangeProgression(attributeItem);
+            var fromRangeValue = nextRangeProgression.fromRangeValue;
 
             existingRows.forEach(function (row) {
               var currentIndex = parseInt(row.getAttribute('data-range-index'), 10);
@@ -556,8 +622,8 @@
             var rangeIndex = maxIndex + 1;
             var row = createRangeRow(attributeId, rangeIndex, fromRangeValue);
 
-            if (previousLastRow && !Number.isNaN(numericFromRangeValue)) {
-              setFiniteToRangeValue(previousLastRow, numericFromRangeValue - 1);
+            if (previousLastRow && nextRangeProgression.previousToRangeValue !== null) {
+              setFiniteToRangeValue(previousLastRow, nextRangeProgression.previousToRangeValue);
             }
 
             tbody.appendChild(row);

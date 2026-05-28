@@ -1,10 +1,301 @@
+.rate-sheet-attributes {
+  margin-top: 1.5rem;
+}
+
+.api-attribute-filter {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.api-attribute-filter-control {
+  align-items: flex-start;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.api-attribute-filter-actions {
+  align-items: flex-end;
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+.api-attribute-filter label {
+  color: #2b3674;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.api-attribute-filter input[type="search"] {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: none;
+  font-size: 14px;
+  min-height: 42px;
+  padding: 8px 12px;
+  width: min(100%, 420px);
+}
+
+.api-attribute-filter input[type="search"]:focus {
+  border-color: #118df0;
+  box-shadow: 0 0 0 2px rgba(17, 141, 240, 0.12);
+  outline: none;
+}
+
+.api-attribute-filter-actions .form-submit,
+.rate-sheet-price .rate-sheet .api-attribute-filter-actions #edit-submit,
+.ui-dialog .rate-sheet .api-attribute-filter-actions .form-submit:not(.is-disabled) {
+  align-items: center;
+  background: #118df0;
+  border: 2px solid #118df0;
+  border-radius: 10px;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  justify-content: center;
+  line-height: 1;
+  margin: 0;
+  max-width: none;
+  min-height: 42px;
+  min-width: 160px;
+  padding: 10px 18px;
+  text-decoration: none;
+  text-transform: capitalize;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+  width: auto;
+}
+
+.api-attribute-filter-actions .form-submit:hover,
+.api-attribute-filter-actions .form-submit:focus,
+.rate-sheet-price .rate-sheet .api-attribute-filter-actions #edit-submit:hover,
+.rate-sheet-price .rate-sheet .api-attribute-filter-actions #edit-submit:focus,
+.ui-dialog .rate-sheet .api-attribute-filter-actions .form-submit:not(.is-disabled):hover,
+.ui-dialog .rate-sheet .api-attribute-filter-actions .form-submit:not(.is-disabled):focus {
+  background: #0d7ed8;
+  border-color: #0d7ed8;
+  box-shadow: 0 4px 10px rgba(17, 141, 240, 0.25);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.api-attribute-filter-actions .form-submit:focus-visible,
+.rate-sheet-price .rate-sheet .api-attribute-filter-actions #edit-submit:focus-visible,
+.ui-dialog .rate-sheet .api-attribute-filter-actions .form-submit:not(.is-disabled):focus-visible {
+  outline: 3px solid rgba(17, 141, 240, 0.28);
+  outline-offset: 2px;
+}
+
+.api-attribute-filter-actions .form-submit:active,
+.rate-sheet-price .rate-sheet .api-attribute-filter-actions #edit-submit:active,
+.ui-dialog .rate-sheet .api-attribute-filter-actions .form-submit:not(.is-disabled):active {
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
+  transform: translateY(0);
+}
+
+.rate-sheet-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  width: 100%;
+}
+
+.rate-sheet-accordion-item {
+  background: #ffffff;
+  border: 1px solid rgba(17, 141, 240, 0.18);
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.rate-sheet-accordion-item.is-expanded {
+  border-color: rgba(17, 141, 240, 0.42);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.rate-sheet-accordion-header {
+  align-items: center;
+  background: #ffffff;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.rate-sheet-accordion-toggle {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: #2b3674;
+  cursor: pointer;
+  display: flex;
+  flex: 1 1 auto;
+  font-family: "Montserrat", sans-serif;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.rate-sheet-accordion-toggle:hover,
+.rate-sheet-accordion-toggle:focus {
+  color: #118df0;
+  outline: none;
+}
+
+.rate-sheet-accordion-toggle:focus-visible {
+  outline: 3px solid rgba(17, 141, 240, 0.28);
+  outline-offset: 4px;
+}
+
+.rate-sheet-accordion-icon {
+  align-items: center;
+  background: #118df0;
+  border-radius: 999px;
+  color: #ffffff;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 1rem;
+  font-weight: 800;
+  height: 1.75rem;
+  justify-content: center;
+  line-height: 1;
+  width: 1.75rem;
+}
+
+.rate-sheet-accordion-index {
+  align-items: center;
+  background: rgba(17, 141, 240, 0.1);
+  border-radius: 999px;
+  color: #118df0;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 0.75rem;
+  font-weight: 800;
+  height: 1.625rem;
+  justify-content: center;
+  min-width: 1.625rem;
+  padding: 0 0.45rem;
+}
+
+.rate-sheet-accordion-title {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rate-sheet-accordion-controls {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 1rem;
+}
+
+.rate-sheet-tiered-calculation {
+  align-items: center;
+  color: #2b3674;
+  display: inline-flex;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  gap: 0.5rem;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.rate-sheet-tiered-calculation .form-item {
+  margin: 0;
+}
+
+.rate-sheet-tiered-calculation input.form-checkbox {
+  height: 18px;
+  margin: 0;
+  width: 18px;
+}
+
+.rate-sheet-tiered-calculation-field[hidden] {
+  display: none;
+}
+
+.rate-sheet-pricing-mode-badge {
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 800;
+  justify-content: center;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  min-height: 1.875rem;
+  min-width: 4.75rem;
+  padding: 0.5rem 0.75rem;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.rate-sheet-pricing-mode-badge--flat {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.rate-sheet-pricing-mode-badge--tiered {
+  background: #eef8ff;
+  border: 1px solid rgba(17, 141, 240, 0.35);
+  color: #118df0;
+}
+
+.rate-sheet-accordion-panel {
+  background: #f8fbff;
+  border-top: 1px solid rgba(17, 141, 240, 0.14);
+  padding: 1rem;
+}
+
 .rate-sheet-ranges-table {
+  background: #ffffff;
+  border-collapse: collapse;
+  margin: 0;
   width: 100%;
 }
 
 .rate-sheet-ranges-table th,
 .rate-sheet-ranges-table td {
+  text-align: center;
   vertical-align: middle;
+}
+
+.rate-sheet-ranges-table th:first-child,
+.rate-sheet-ranges-table td:first-child {
+  text-align: left;
+  width: 16%;
+}
+
+.rate-sheet-ranges-table th:last-child,
+.rate-sheet-ranges-table td:last-child {
+  width: 12rem;
 }
 
 .rate-sheet-attribute-row {
@@ -61,11 +352,51 @@
   align-items: center;
   display: flex;
   gap: 0.25rem;
+  justify-content: center;
 }
 
 .rate-sheet-dynamic-field-prefix {
   color: #4b5563;
   flex: 0 0 auto;
+}
+
+.rate-sheet-to-range-cell {
+  min-width: 9rem;
+}
+
+.rate-sheet-to-range-input-wrapper {
+  display: inline-flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.rate-sheet-to-range-input-wrapper[hidden],
+.rate-sheet-unbounded-badge[hidden] {
+  display: none;
+}
+
+.rate-sheet-unbounded-badge {
+  align-items: center;
+  background: #eef8ff;
+  border: 1px solid rgba(17, 141, 240, 0.28);
+  border-radius: 999px;
+  color: #1f4e79;
+  display: inline-flex;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  gap: 0.35rem;
+  justify-content: center;
+  line-height: 1;
+  padding: 0.45rem 0.75rem;
+  white-space: nowrap;
+}
+
+.rate-sheet-unbounded-badge span[aria-hidden="true"] {
+  color: #118df0;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .rate-sheet-range-input,
@@ -163,8 +494,7 @@
 }
 
 .rate-sheet-add-range:focus-visible,
-.rate-sheet-remove-range:focus-visible,
-.rate-sheet-toggle-ranges:focus-visible {
+.rate-sheet-remove-range:focus-visible {
   outline: 3px solid rgba(17, 141, 240, 0.28);
   outline-offset: 2px;
 }
@@ -179,57 +509,8 @@
   align-items: center;
   display: flex;
   gap: 0.5rem;
-  min-width: 7rem;
-}
-
-.rate-sheet-toggle-ranges {
-  align-items: center;
-  background: #118df0;
-  border: 1px solid #118df0;
-  border-radius: 999px;
-  color: #ffffff;
-  cursor: pointer;
-  display: inline-flex;
-  font-size: 1rem;
-  font-weight: 800;
-  height: 1.75rem;
   justify-content: center;
-  line-height: 1;
-  padding: 0;
-  transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    box-shadow 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
-  width: 1.75rem;
-}
-
-.rate-sheet-toggle-ranges:hover,
-.rate-sheet-toggle-ranges:focus {
-  background: #118df0;
-  border-color: #118df0;
-  box-shadow: 0 4px 10px rgba(17, 141, 240, 0.22);
-  color: #ffffff;
-  transform: translateY(-1px);
-}
-
-.rate-sheet-toggle-ranges.is-collapsed {
-  background: #118df0;
-  border-color: #118df0;
-  color: #ffffff;
-}
-
-.rate-sheet-toggle-ranges.is-collapsed:hover,
-.rate-sheet-toggle-ranges.is-collapsed:focus {
-  background: #118df0;
-  border-color: #118df0;
-  color: #ffffff;
-}
-
-.rate-sheet-toggle-ranges:active {
-  box-shadow: none;
-  transform: translateY(0);
+  min-width: 7rem;
 }
 
 .rate-sheet-range-summary {
@@ -248,4 +529,129 @@
 .rate-sheet-initial-range-note {
   color: #6b7280;
   font-size: 0.8125rem;
+}
+
+.rate-sheet-no-results-message {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+  color: #9a3412;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 1rem 0 0;
+  padding: 0.875rem 1rem;
+}
+
+.rate-sheet-load-more-wrapper {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+
+.rate-sheet-load-more-wrapper[hidden],
+.rate-sheet-no-results-message[hidden],
+.rate-sheet-load-more[hidden] {
+  display: none;
+}
+
+.rate-sheet-load-more {
+  align-items: center;
+  background: #ffffff;
+  border: 2px solid #118df0;
+  border-radius: 999px;
+  color: #118df0;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  justify-content: center;
+  min-height: 42px;
+  min-width: 210px;
+  padding: 10px 22px;
+  text-decoration: none;
+  text-transform: capitalize;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.rate-sheet-load-more:hover,
+.rate-sheet-load-more:focus {
+  background: #118df0;
+  border-color: #118df0;
+  box-shadow: 0 4px 10px rgba(17, 141, 240, 0.25);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.rate-sheet-load-more:focus-visible {
+  outline: 3px solid rgba(17, 141, 240, 0.28);
+  outline-offset: 2px;
+}
+
+.rate-sheet-load-more:active {
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
+  transform: translateY(0);
+}
+
+.rate-sheet-progressive-summary {
+  color: #6b7280;
+  font-family: "Montserrat", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .api-attribute-filter {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .api-attribute-filter-actions {
+    justify-content: flex-start;
+    margin-left: 0;
+  }
+
+  .api-attribute-filter-actions .form-submit,
+  .rate-sheet-price .rate-sheet .api-attribute-filter-actions #edit-submit,
+  .ui-dialog .rate-sheet .api-attribute-filter-actions .form-submit:not(.is-disabled) {
+    width: 100%;
+  }
+
+  .rate-sheet-accordion-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .rate-sheet-accordion-controls {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .rate-sheet-ranges-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .rate-sheet-load-more-wrapper {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .rate-sheet-load-more {
+    width: 100%;
+  }
+
+  .rate-sheet-progressive-summary {
+    text-align: center;
+  }
 }

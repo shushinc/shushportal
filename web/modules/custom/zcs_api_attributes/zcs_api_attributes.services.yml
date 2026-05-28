@@ -13,7 +13,7 @@ services:
     parent: logger.channel_base
     arguments: ['zcs_api_attributes']
   zcs_api_attributes.rate_sheet_service:
-    class: Drupal\zcs_api_attributes\Service\RateSheetService
+    class: Drupal\zcs_api_attributes\Services\RateSheetService
     arguments:
       - '@database'
       - '@entity_type.manager'
