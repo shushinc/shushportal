@@ -497,8 +497,6 @@ class kongService  {
   * {@inheritdoc}
   */
   public function updateSyncApp($node, $new_consumer_id, $jwt_response_body, $group) {
-    dump($new_consumer_id);
-    die;
     $jwt_response = Json::decode($jwt_response_body);
     $node->set('field_consumer_id', $new_consumer_id);
     $node->set('field_jwt', $jwt_response['id']);

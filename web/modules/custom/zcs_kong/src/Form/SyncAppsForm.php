@@ -170,8 +170,6 @@ public static function processGroup($gid, array &$context) {
                           "redirect_uris" => $node->field_redirect_url->value,
                         ];
                         $sync_apps_response = \Drupal::service('zcs_kong.kong_gateway')->syncAppByNewConsumerId($kong_app, $user_name);
-                        dump($sync_apps_response);
-                        die;
                         if($sync_apps_response != 'error') {
                             $status_code = $sync_apps_response->getStatusCode();
                             if ($status_code == '201') {
