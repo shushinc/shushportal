@@ -103,6 +103,27 @@ class kongService  {
     }
   }
 
+
+
+  public function getConsumer($customer_id) {
+    $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
+    $endpoint = $endpoint_url . '/consumers?custom_id=' . urlencode($customer_id);
+    try {
+      $response = $this->httpClient->request('GET', $endpoint, [
+        'headers' => [
+          'content-type' => 'application/json',
+        ],
+        'verify' => FALSE,
+      ]);
+      return $response;
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('kong')->info('Error in getting the  consumer in kong gateway : @message', ['@message' => $e->getMessage()]);
+      return "error";
+    }
+  }
+
+
    /**
    * {@inheritdoc}
    */
@@ -430,6 +451,62 @@ class kongService  {
 
   }
 
+ /**
+  * {@inheritdoc}
+  */
+  public function getContactEmailUsingConsumerId($client_id) {
+    $contact_email = ''; 
+      $groups = \Drupal::entityTypeManager()
+      ->getStorage('group')
+      ->loadByProperties([
+        'type' => 'partner',
+        'field_consumer_id' => $client_id,
+      ]);
+  
+      foreach ($groups as $group) {
+        if ($group->hasField('field_contact_email') && !$group->get('field_contact_email')->isEmpty()) {
+          $contact_email = $group->get('field_contact_email')->value;
+        }
+      }
+      return  $contact_email;
+    }
+
+  /**
+  * {@inheritdoc}
+  */
+  public function syncAppByNewConsumerId($kong_app, $user_name) { 
+    $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
+    $endpoint = $endpoint_url . '/consumers/' . $user_name . '/oauth2';
+    try {
+    $response = $this->httpClient->request('POST', $endpoint, [
+        'headers' => ['content-type' => 'application/json'],
+        'verify' => FALSE,
+        'body' => json_encode($kong_app),
+    ]);
+    return $response;
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('kong')->info('Error in syncing the kong app key : @message', ['@message' => $e->getMessage()]);
+      return "error";
+    }
+  }
+
+
+
+  /**
+  * {@inheritdoc}
+  */
+  public function updateSyncApp($node, $new_consumer_id, $jwt_response_body, $group) {
+    dump($new_consumer_id);
+    die;
+    $jwt_response = Json::decode($jwt_response_body);
+    $node->set('field_consumer_id', $new_consumer_id);
+    $node->set('field_jwt', $jwt_response['id']);
+    $node->save();
+    $group->set('field_consumer_id', $new_consumer_id);
+    $group->save();
+    return TRUE;
+  }
 
   /**
   * {@inheritdoc}
