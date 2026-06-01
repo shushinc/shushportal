@@ -1,0 +1,7 @@
+zcs_kong.manage_kong_sync:
+  title: Manage Kong Sync
+  description: Manage Kong Sync
+  parent: system.admin_structure
+  route_name: zcs_kong.kong_sync
+  weight: 10
+
