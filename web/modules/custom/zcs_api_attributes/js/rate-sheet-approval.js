@@ -1,6 +1,19 @@
 (function (Drupal, once) {
   'use strict';
 
+  /**
+   * Finds the closest ancestor element matching a selector.
+   *
+   * @param {HTMLElement} element
+   *   The starting element.
+   * @param {string} selector
+   *   The CSS selector to match.
+   * @param {HTMLElement} boundary
+   *   Optional boundary element to stop at.
+   *
+   * @return {HTMLElement|null}
+   *   The matching element or null.
+   */
   function closestElement(element, selector, boundary) {
     if (!element) {
       return null;
@@ -27,6 +40,17 @@
     return null;
   }
 
+  /**
+   * Gets all range rows for a specific attribute.
+   *
+   * @param {HTMLElement} tbody
+   *   The table body element.
+   * @param {string} attributeId
+   *   The attribute ID.
+   *
+   * @return {Array}
+   *   Array of range row elements.
+   */
   function getRangeRows(tbody, attributeId) {
     return Array.prototype.filter.call(
       tbody.querySelectorAll('[data-rate-sheet-range-row]'),
@@ -36,6 +60,14 @@
     );
   }
 
+  /**
+   * Updates the range controls for review mode.
+   *
+   * @param {HTMLElement} tbody
+   *   The table body element.
+   * @param {string} attributeId
+   *   The attribute ID.
+   */
   function updateReviewRangeControls(tbody, attributeId) {
     var rows = getRangeRows(tbody, attributeId);
     var initialRow = null;

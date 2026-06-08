@@ -1,6 +1,12 @@
 (function (Drupal, once) {
   'use strict';
 
+  /**
+   * Creates the reject modal DOM structure.
+   *
+   * @return {Object}
+   *   Object containing modal elements.
+   */
   function createRejectModal() {
     var overlay = document.createElement('div');
     overlay.className = 'rate-sheet-reject-modal-overlay';
@@ -84,18 +90,35 @@
     };
   }
 
+  /**
+   * Shows the reject modal and handles submission.
+   *
+   * @param {HTMLFormElement} form
+   *   The form element.
+   * @param {HTMLElement} submitButton
+   *   The submit button element.
+   */
   function showRejectModal(form, submitButton) {
     var modalElements = createRejectModal();
     document.body.appendChild(modalElements.overlay);
 
-    modalElements.textarea.focus();
+    // Use setTimeout to ensure modal is rendered before focusing
+    window.setTimeout(function () {
+      modalElements.textarea.focus();
+    }, 50);
 
+    /**
+     * Closes the modal and removes it from DOM.
+     */
     function closeModal() {
       if (modalElements.overlay.parentNode) {
         document.body.removeChild(modalElements.overlay);
       }
     }
 
+    /**
+     * Validates the comment and submits the form.
+     */
     function validateAndSubmit() {
       var comment = modalElements.textarea.value.trim();
 

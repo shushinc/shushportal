@@ -404,7 +404,7 @@ class EditRateSheetForm extends FormBase {
     // Always show actions container for the owner
     $form['actions'] = [
       '#type' => 'container',
-      '#attributes' => ['class' => ['form-actions']],
+      '#attributes' => ['class' => ['form-actions d-flex gap-2']],
     ];
 
     // Only show submit button if user can edit (has unresolved comments) and not cancelled

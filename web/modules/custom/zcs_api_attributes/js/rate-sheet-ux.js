@@ -1,6 +1,19 @@
 (function (Drupal, once) {
   'use strict';
 
+  /**
+   * Finds the closest ancestor element matching a selector.
+   *
+   * @param {HTMLElement} element
+   *   The starting element.
+   * @param {string} selector
+   *   The CSS selector to match.
+   * @param {HTMLElement} boundary
+   *   Optional boundary element to stop at.
+   *
+   * @return {HTMLElement|null}
+   *   The matching element or null.
+   */
   function closestElement(element, selector, boundary) {
     if (!element) {
       return null;
@@ -35,14 +48,43 @@
     return null;
   }
 
+  /**
+   * Gets all attribute items within a container.
+   *
+   * @param {HTMLElement} container
+   *   The container element.
+   *
+   * @return {Array}
+   *   Array of attribute item elements.
+   */
   function getAttributeItems(container) {
     return Array.prototype.slice.call(container.querySelectorAll('[data-rate-sheet-attribute-item]'));
   }
 
+  /**
+   * Gets the progressive wrapper element.
+   *
+   * @param {HTMLElement} container
+   *   The container element.
+   *
+   * @return {HTMLElement}
+   *   The wrapper element.
+   */
   function getProgressiveWrapper(container) {
     return container.closest('.rate-sheet-attributes') || container.parentElement || document;
   }
 
+  /**
+   * Parses and validates a positive integer.
+   *
+   * @param {string|number} value
+   *   The value to parse.
+   * @param {number} fallback
+   *   The fallback value if parsing fails.
+   *
+   * @return {number}
+   *   The parsed value or fallback.
+   */
   function getPositiveInteger(value, fallback) {
     var parsed = parseInt(value, 10);
 
