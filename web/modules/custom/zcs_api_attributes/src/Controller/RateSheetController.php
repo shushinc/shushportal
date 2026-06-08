@@ -116,19 +116,37 @@ class RateSheetController extends ControllerBase {
       
       // Show Edit or View action only if user is the owner
       if ($is_current_user_owner) {
+        $status = $this->rateSheetService->getRateSheetStatus($result->id);
+        $is_cancelled = strtolower($status) === 'cancelled';
+        
         // Check if there are unresolved reject comments
         $has_unresolved_comments = $this->rateSheetService->hasUnresolvedComments($result->id);
 
-        $actions[] = [
-          'title' => $has_unresolved_comments ? 'Edit' : 'View',
-          'url' => Url::fromRoute(
-            'zcs_api_attributes.rate_sheet.edit',
-            ['id' => $result->id]
-          )->toString(),
-          'ajax' => FALSE,
-          'disabled' => FALSE,
-          'class' => '',
-        ];
+        // If cancelled, always show as View only
+        if ($is_cancelled) {
+          $actions[] = [
+            'title' => 'View',
+            'url' => Url::fromRoute(
+              'zcs_api_attributes.rate_sheet.edit',
+              ['id' => $result->id]
+            )->toString(),
+            'ajax' => FALSE,
+            'disabled' => FALSE,
+            'class' => '',
+          ];
+        }
+        else {
+          $actions[] = [
+            'title' => $has_unresolved_comments ? 'Edit' : 'View',
+            'url' => Url::fromRoute(
+              'zcs_api_attributes.rate_sheet.edit',
+              ['id' => $result->id]
+            )->toString(),
+            'ajax' => FALSE,
+            'disabled' => FALSE,
+            'class' => '',
+          ];
+        }
       }
       
       $final[] = [

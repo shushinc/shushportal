@@ -991,3 +991,70 @@ function zcs_api_attributes_update_9012() {
     }
   }
 }
+
+/**
+ * Create rate_sheet_status_lookup table and add status field to rate_sheet.
+ */
+function zcs_api_attributes_update_9014() {
+  $schema = \Drupal::database()->schema();
+  $database = \Drupal::database();
+
+  // Create rate_sheet_status table if it doesn't exist.
+  if (!$schema->tableExists('rate_sheet_status_lookup')) {
+    $table = [
+      'description' => 'Lookup table for rate sheet statuses.',
+      'fields' => [
+        'id' => [
+          'type' => 'serial',
+          'not null' => TRUE,
+          'description' => 'Primary Key: Unique status ID.',
+        ],
+        'status_name' => [
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+          'default' => '',
+          'description' => 'Status name.',
+        ],
+      ],
+      'primary key' => ['id'],
+      'unique keys' => [
+        'status_name' => ['status_name'],
+      ],
+    ];
+    $schema->createTable('rate_sheet_status_lookup', $table);
+
+    // Pre-populate with default statuses.
+    $database->insert('rate_sheet_status_lookup')
+      ->fields(['status_name'])
+      ->values(['Pending'])
+      ->values(['Approved'])
+      ->values(['Draft'])
+      ->values(['Rejected'])
+      ->values(['Cancelled'])
+      ->execute();
+  }
+
+  // Add rate_sheet_status_id field to rate_sheet table if it doesn't exist.
+  if ($schema->tableExists('rate_sheet') && !$schema->fieldExists('rate_sheet', 'rate_sheet_status_id')) {
+    $spec = [
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+      'default' => NULL,
+      'description' => 'Foreign key to rate_sheet_status_lookup.id',
+    ];
+    $schema->addField('rate_sheet', 'rate_sheet_status_id', $spec);
+
+    // Add index for the foreign key.
+    $schema->addIndex('rate_sheet', 'rate_sheet_status_id', ['rate_sheet_status_id'], [
+      'fields' => [
+        'rate_sheet_status_id' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => FALSE,
+        ],
+      ],
+    ]);
+  }
+}

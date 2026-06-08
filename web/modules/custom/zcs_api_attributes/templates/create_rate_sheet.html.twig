@@ -15,7 +15,11 @@
   <p class="message">{{ form.message }}</p>
 {% endif %}
 
-{% if form.can_edit and form.can_edit['#value'] == false %}
+{% if form.is_cancelled and form.is_cancelled['#value'] == true %}
+  <div class="messages messages--error">
+    <strong>Cancelled:</strong> This rate sheet has been cancelled and cannot be edited.
+  </div>
+{% elseif form.can_edit and form.can_edit['#value'] == false %}
   <div class="messages messages--warning">
     <strong>View Only:</strong> This rate sheet is in view-only mode. To edit it, there must be unresolved reviewer comments.
   </div>
@@ -69,11 +73,14 @@
         <input type="search" id="rate-sheet-attribute-filter" data-rate-sheet-attribute-filter placeholder="Type attribute name">
       </div>
 
-      {% if form.submit %}
-        <div class="api-attribute-filter-actions">
+      <div class="api-attribute-filter-actions">
+        {% if form.actions %}
+          {{ form.actions }}
+        {% endif %}
+        {% if form.submit %}
           {{ form.submit }}
-        </div>
-      {% endif %}
+        {% endif %}
+      </div>
     </div>
 
     <div class="rate-sheet-accordion" data-rate-sheet-ranges data-rate-sheet-progressive data-rate-sheet-initial-visible="10" data-rate-sheet-load-step="10">

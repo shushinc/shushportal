@@ -57,6 +57,13 @@ rate-sheet-reject-modal:
     - core/drupal
     - core/once
 
+rate-sheet-cancel:
+  js:
+    js/rate-sheet-cancel.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
 discount-sheet:
   js:
     js/discount-sheet.js: {}

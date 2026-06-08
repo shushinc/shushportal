@@ -164,56 +164,56 @@ class RateSheetService {
   }
 
   /**
-     * Returns the current Rate Sheet status based on the last two records.
-     *
-     * Rules:
-     * - 2 APPROVED > APPROVED
-     * - 2 DENIED > DENIED
-     * - APPROVED + DENIED > PENDING
-     * - Any PENDING > PENDING
-     * - Only one record (initial state) > PENDING
-     *
-     * @param int $rate_sheet_id
-     *   The Rate Sheet ID.
-     *
-     * @return string
-     *   One of: 'PENDING', 'APPROVED', or 'DENIED'.
-     */
+   * Returns the current Rate Sheet status based on rate_sheet_status_id.
+   *
+   * @param int $rate_sheet_id
+   *   The Rate Sheet ID.
+   *
+   * @return string
+   *   The status name (e.g., 'Pending', 'Approved', 'Draft', 'Rejected').
+   */
   public function getRateSheetStatus(int $rate_sheet_id): string {
+    // Get the rate_sheet_status_id from the rate_sheet table.
+    $status_id = $this->database->select('rate_sheet', 'rs')
+      ->fields('rs', ['rate_sheet_status_id'])
+      ->condition('id', $rate_sheet_id)
+      ->execute()
+      ->fetchField();
 
-    $query = $this->database->select('rate_sheet_status', 'rss')
-      ->fields('rss', ['status_name'])
-      ->condition('rate_sheet_id', $rate_sheet_id)
-      ->orderBy('date', 'DESC')
-      ->range(0, 2);
-
-      $statuses = $query->execute()->fetchCol();
-
-      if (empty($statuses)) {
-        return 'Pending';
-      }
-
-        // Only one status (initial state)
-      if (count($statuses) === 1) {
-        return 'Pending';
-      }
-
-      $first = $statuses[0];
-      $second = $statuses[1];
-
-      // If any is pending > still pending
-      if ($first === 'Pending' || $second === 'Pending') {
-        return 'Pending';
-      }
-
-        // Both equal > final decision
-      if ($first === $second) {
-        return $first; // APPROVED or DENIED
-      }
-
-      // Conflict (APPROVED vs DENIED)
+    // If no status_id is set, return 'Pending' as default.
+    if (!$status_id) {
       return 'Pending';
     }
+
+    // Look up the status name from the lookup table.
+    $status_name = $this->database->select('rate_sheet_status_lookup', 'rssl')
+      ->fields('rssl', ['status_name'])
+      ->condition('id', $status_id)
+      ->execute()
+      ->fetchField();
+
+    // Return the status name, or 'Pending' if not found.
+    return $status_name ?: 'Pending';
+  }
+
+  /**
+   * Gets the rate sheet status ID by status name.
+   *
+   * @param string $status_name
+   *   The status name (e.g., 'Pending', 'Approved', 'Draft', 'Rejected').
+   *
+   * @return int|null
+   *   The status ID or NULL if not found.
+   */
+  public function getRateStatusId(string $status_name): ?int {
+    $status_id = $this->database->select('rate_sheet_status_lookup', 'rssl')
+      ->fields('rssl', ['id'])
+      ->condition('status_name', $status_name)
+      ->execute()
+      ->fetchField();
+
+    return $status_id !== FALSE ? (int) $status_id : NULL;
+  }
 
   /**
    * Creates a new rate sheet with items and ranges.
@@ -236,6 +236,9 @@ class RateSheetService {
     $transaction = $this->database->startTransaction();
 
     try {
+      // Fetch the "Pending" status ID from the lookup table.
+      $pending_status_id = $this->getRateStatusId('Pending');
+
       // Insert the rate sheet.
       $new_rate_sheet_id = $this->database->insert('rate_sheet')
         ->fields([
@@ -245,6 +248,7 @@ class RateSheetService {
           'markup_retail',
           'created_date',
           'effective_date',
+          'rate_sheet_status_id'
         ])
         ->values([
           $data['name'],
@@ -253,6 +257,7 @@ class RateSheetService {
           $data['markup_retail'],
           \Drupal::time()->getRequestTime(),
           $data['effective_date'],
+          $pending_status_id,
         ])
         ->execute();
 
@@ -432,81 +437,195 @@ class RateSheetService {
   }
 
   /**
-     * Inserts a new status for a rate sheet.
-     *
-     * @param int $rate_sheet_id
-     *   The Rate Sheet ID.
-     * @param int $status
-     *   The status to insert (2 for Approve, 3 for Reject).
-     * @param int $user_id
-     *   The ID of the user submitting the status.
-     * @param string|null $reject_comment
-     *   Optional comment when rejecting a rate sheet.
-     */
-    public function insertRateSheetStatus(int $rate_sheet_id, int $status, int $user_id, string $reject_comment = NULL) {
-        $transaction = $this->database->startTransaction();
+   * Inserts a new status for a rate sheet.
+   *
+   * @param int $rate_sheet_id
+   *   The Rate Sheet ID.
+   * @param int $status
+   *   The status to insert (2 for Approve, 3 for Reject).
+   * @param int $user_id
+   *   The ID of the user submitting the status.
+   * @param string|null $reject_comment
+   *   Optional comment when rejecting a rate sheet.
+   *
+   * @throws \Exception
+   */
+  public function insertRateSheetStatus(int $rate_sheet_id, int $status, int $user_id, string $reject_comment = NULL) {
+    $transaction = $this->database->startTransaction();
 
-        try {
-            $status_name = $status === 2 ? 'Approved' : 'Rejected';
+    try {
+      // Check if there are unresolved reject comments
+      if ($this->hasUnresolvedComments($rate_sheet_id)) {
+        throw new \Exception('Cannot change status while there are unresolved reject comments.');
+      }
 
-            $this->database->insert('rate_sheet_status')
-                ->fields([
-                    'rate_sheet_id' => $rate_sheet_id,
-                    'status_name' => $status_name,
-                    'created_by' => $user_id,
-                    'date' => \Drupal::time()->getRequestTime(),
-                ])
-                ->execute();
+      $status_name = $status === 2 ? 'Approved' : 'Rejected';
 
-            // Log the action
-            $this->database->insert('action_log')
-                ->fields([
-                    'action_type',
-                    'entity_target_type',
-                    'entity_target_id',
-                    'created_by',
-                    'created_date',
-                    'log_data',
-                ])
-                ->values([
-                    'STATUS_UPDATE',
-                    'RATE_SHEET',
-                    $rate_sheet_id,
-                    $user_id,
-                    \Drupal::time()->getRequestTime(),
-                    "User {$user_id} changed the status of rate sheet {$rate_sheet_id} to {$status_name}.",
-                ])
-                ->execute();
+      $this->database->insert('rate_sheet_status')
+        ->fields([
+          'rate_sheet_id' => $rate_sheet_id,
+          'status_name' => $status_name,
+          'created_by' => $user_id,
+          'date' => \Drupal::time()->getRequestTime(),
+        ])
+        ->execute();
 
-            // Insert reject comment if status is rejected and comment is provided.
-            if ($status === 3 && !empty($reject_comment)) {
-                $this->database->insert('action_log')
-                    ->fields([
-                        'action_type',
-                        'entity_target_type',
-                        'entity_target_id',
-                        'created_by',
-                        'created_date',
-                        'log_data',
-                        'solved',
-                    ])
-                    ->values([
-                        'REJECT_COMMENT',
-                        'RATE_SHEET',
-                        $rate_sheet_id,
-                        $user_id,
-                        \Drupal::time()->getRequestTime(),
-                        $reject_comment,
-                        0,
-                    ])
-                    ->execute();
-            }
+      // Determine the new rate_sheet_status_id
+      $new_status_id = NULL;
+
+      if ($status === 3) {
+        // Rejected - set to Rejected status
+        $new_status_id = $this->getRateStatusId('Rejected');
+      }
+      elseif ($status === 2) {
+        // Approved - check if this is the second approval
+        $approval_count = $this->database->select('rate_sheet_status', 'rss')
+          ->fields('rss', ['id'])
+          ->condition('rate_sheet_id', $rate_sheet_id)
+          ->condition('status_name', 'Approved')
+          ->countQuery()
+          ->execute()
+          ->fetchField();
+
+        if ($approval_count >= 2) {
+          // Second approval - set to Approved status
+          $new_status_id = $this->getRateStatusId('Approved');
         }
-        catch (\Exception $e) {
-            $transaction->rollBack();
-            \Drupal::logger('zcs_api_attributes')->error('Failed to insert rate sheet status: @message', ['@message' => $e->getMessage()]);
-            throw $e;
+        else {
+          // First approval - keep as Pending
+          $new_status_id = $this->getRateStatusId('Pending');
         }
+      }
+
+      // Update the rate_sheet_status_id
+      if ($new_status_id !== NULL) {
+        $this->database->update('rate_sheet')
+          ->fields(['rate_sheet_status_id' => $new_status_id])
+          ->condition('id', $rate_sheet_id)
+          ->execute();
+      }
+
+      // Log the action
+      $this->database->insert('action_log')
+        ->fields([
+          'action_type',
+          'entity_target_type',
+          'entity_target_id',
+          'created_by',
+          'created_date',
+          'log_data',
+        ])
+        ->values([
+          'STATUS_UPDATE',
+          'RATE_SHEET',
+          $rate_sheet_id,
+          $user_id,
+          \Drupal::time()->getRequestTime(),
+          "User {$user_id} changed the status of rate sheet {$rate_sheet_id} to {$status_name}.",
+        ])
+        ->execute();
+
+      // Insert reject comment if status is rejected and comment is provided.
+      if ($status === 3 && !empty($reject_comment)) {
+        $this->database->insert('action_log')
+          ->fields([
+            'action_type',
+            'entity_target_type',
+            'entity_target_id',
+            'created_by',
+            'created_date',
+            'log_data',
+            'solved',
+          ])
+          ->values([
+            'REJECT_COMMENT',
+            'RATE_SHEET',
+            $rate_sheet_id,
+            $user_id,
+            \Drupal::time()->getRequestTime(),
+            $reject_comment,
+            0,
+          ])
+          ->execute();
+      }
+
+      unset($transaction);
     }
+    catch (\Exception $e) {
+      if (isset($transaction)) {
+        $transaction->rollBack();
+      }
+      \Drupal::logger('zcs_api_attributes')->error('Failed to insert rate sheet status: @message', ['@message' => $e->getMessage()]);
+      throw $e;
+    }
+  }
+
+  /**
+   * Cancels a rate sheet by setting its status to Cancelled.
+   *
+   * @param int $rate_sheet_id
+   *   The Rate Sheet ID.
+   * @param int $user_id
+   *   The ID of the user cancelling the rate sheet.
+   *
+   * @throws \Exception
+   */
+  public function cancelRateSheet(int $rate_sheet_id, int $user_id) {
+    $transaction = $this->database->startTransaction();
+
+    try {
+      // Get the Cancelled status ID
+      $cancelled_status_id = $this->getRateStatusId('Cancelled');
+
+      if ($cancelled_status_id === NULL) {
+        throw new \Exception('Cancelled status not found in lookup table.');
+      }
+
+      // Update the rate_sheet_status_id to Cancelled
+      $this->database->update('rate_sheet')
+        ->fields(['rate_sheet_status_id' => $cancelled_status_id])
+        ->condition('id', $rate_sheet_id)
+        ->execute();
+
+      // Insert a status record
+      $this->database->insert('rate_sheet_status')
+        ->fields([
+          'rate_sheet_id' => $rate_sheet_id,
+          'status_name' => 'Cancelled',
+          'created_by' => $user_id,
+          'date' => \Drupal::time()->getRequestTime(),
+        ])
+        ->execute();
+
+      // Log the action
+      $this->database->insert('action_log')
+        ->fields([
+          'action_type',
+          'entity_target_type',
+          'entity_target_id',
+          'created_by',
+          'created_date',
+          'log_data',
+        ])
+        ->values([
+          'STATUS_UPDATE',
+          'RATE_SHEET',
+          $rate_sheet_id,
+          $user_id,
+          \Drupal::time()->getRequestTime(),
+          "User {$user_id} cancelled rate sheet {$rate_sheet_id}.",
+        ])
+        ->execute();
+
+      unset($transaction);
+    }
+    catch (\Exception $e) {
+      if (isset($transaction)) {
+        $transaction->rollBack();
+      }
+      \Drupal::logger('zcs_api_attributes')->error('Failed to cancel rate sheet: @message', ['@message' => $e->getMessage()]);
+      throw $e;
+    }
+  }
 
 }

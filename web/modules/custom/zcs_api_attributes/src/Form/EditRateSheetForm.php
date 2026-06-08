@@ -159,8 +159,16 @@ class EditRateSheetForm extends FormBase {
       return $form;
     }
 
+    // Check if rate sheet is cancelled
+    $status = $this->rateSheetService->getRateSheetStatus($id);
+    $is_cancelled = strtolower($status) === 'cancelled';
+
+    if ($is_cancelled) {
+      $this->messenger->addWarning($this->t('This rate sheet has been cancelled and cannot be edited.'));
+    }
+
     // Check if there are unresolved reject comments
-    $can_edit = $this->rateSheetService->hasUnresolvedComments($id);
+    $can_edit = !$is_cancelled && $this->rateSheetService->hasUnresolvedComments($id);
 
     $config = $this->configFactory->get('zcs_custom.settings');
     $defaultCurrency = $config->get('currency') ?? 'en_US';
@@ -388,18 +396,42 @@ class EditRateSheetForm extends FormBase {
       '#value' => $can_edit,
     ];
 
-    $form['#theme'] = 'create_rate_sheet';
-    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
-    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-ranges';
+    $form['is_cancelled'] = [
+      '#type' => 'value',
+      '#value' => $is_cancelled,
+    ];
 
-    // Only show submit button if user can edit (has unresolved comments)
-    if ($can_edit) {
-      $form['submit'] = [
+    // Always show actions container for the owner
+    $form['actions'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['form-actions']],
+    ];
+
+    // Only show submit button if user can edit (has unresolved comments) and not cancelled
+    if ($can_edit && !$is_cancelled) {
+      $form['actions']['submit'] = [
         '#type' => 'submit',
         '#value' => $this->t('Update Rate Sheet'),
       ];
     }
 
+    // Always show cancel button if not already cancelled
+    if (!$is_cancelled) {
+      $form['actions']['cancel'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Cancel Rate Sheet'),
+        '#submit' => ['::cancelRateSheet'],
+        '#attributes' => [
+          'class' => ['button', 'button--danger'],
+          'data-rate-sheet-cancel-button' => '',
+        ],
+      ];
+    }
+
+    $form['#theme'] = 'create_rate_sheet';
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-ranges';
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-cancel';
     return $form;
   }
 
@@ -608,6 +640,31 @@ class EditRateSheetForm extends FormBase {
       }
 
       $this->messenger->addError($this->t('An error occurred while updating the rate sheet: @message', [
+        '@message' => $e->getMessage(),
+      ]));
+    }
+  }
+
+  /**
+   * Form submission handler for cancelling a rate sheet.
+   *
+   * @param array $form
+   *   The form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   */
+  public function cancelRateSheet(array &$form, FormStateInterface $form_state) {
+    $rate_sheet_id = $form_state->getValue('rate_sheet_id');
+
+    try {
+      $this->rateSheetService->cancelRateSheet($rate_sheet_id, $this->currentUser->id());
+
+      $this->messenger->addStatus($this->t('Rate sheet has been cancelled successfully. This action cannot be undone.'));
+
+      $form_state->setRedirect('zcs_api_attributes.rate_sheet_list');
+    }
+    catch (\Exception $e) {
+      $this->messenger->addError($this->t('An error occurred while cancelling the rate sheet: @message', [
         '@message' => $e->getMessage(),
       ]));
     }

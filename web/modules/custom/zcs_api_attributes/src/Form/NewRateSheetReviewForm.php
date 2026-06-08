@@ -166,6 +166,11 @@ class NewRateSheetReviewForm extends FormBase {
     // Check rate sheet status.
     $rateSheetService = \Drupal::service('zcs_api_attributes.rate_sheet_service');
     $rateSheetStatus = $rateSheetService->getRateSheetStatus($id);
+    $is_cancelled = strtolower($rateSheetStatus) === 'cancelled';
+
+    if ($is_cancelled) {
+      $this->messenger()->addWarning($this->t('This rate sheet has been cancelled and cannot be reviewed.'));
+    }
 
     // Check if the user has already approved or denied.
     $user_id = $this->currentUser()->id();
@@ -176,7 +181,7 @@ class NewRateSheetReviewForm extends FormBase {
       ->execute()
       ->fetchField();
 
-    if (array_intersect($allowed_roles, $user_roles) && $rateSheetStatus === 'Pending' && !$user_has_acted) {
+    if (array_intersect($allowed_roles, $user_roles) && $rateSheetStatus === 'Pending' && !$user_has_acted && !$is_cancelled) {
       $form['status'] = [
         '#type' => 'select',
         '#options' => [2 => 'Approve', 3 => 'Reject'],
@@ -233,19 +238,6 @@ class NewRateSheetReviewForm extends FormBase {
 
     if (!array_intersect($allowed_roles, $user_roles)) {
       \Drupal::messenger()->addError($this->t('You do not have permission to approve or reject this rate sheet.'));
-      return;
-    }
-
-    // Check if the user has already submitted a status.
-    $user_has_acted = $this->database->select('rate_sheet_status', 'rss')
-      ->condition('rate_sheet_id', $rate_sheet_id)
-      ->condition('created_by', $user_id)
-      ->countQuery()
-      ->execute()
-      ->fetchField();
-
-    if ($user_has_acted) {
-      \Drupal::messenger()->addError($this->t('You have already submitted a status for this rate sheet.'));
       return;
     }
 

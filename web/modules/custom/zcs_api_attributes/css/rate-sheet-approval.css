@@ -113,7 +113,9 @@ table.rate-sheet-approval tbody td.rejected {
 }
 
 table.attributes-table tbody td.pending,
-table.rate-sheet-approval tbody td.pending {
+table.rate-sheet-approval tbody td.pending,
+table.attributes-table tbody td.cancelled,
+table.rate-sheet-approval tbody td.cancelled {
   color: #fcc418;
   font-weight: 700;
 }

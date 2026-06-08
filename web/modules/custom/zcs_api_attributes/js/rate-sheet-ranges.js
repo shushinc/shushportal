@@ -720,11 +720,12 @@
             var removedAttributeItem = removedAttributeId ? getAttributeItem(container, removedAttributeId) : null;
             var rows = removedAttributeItem ? getRangeRows(removedAttributeItem) : [];
             var isLastRow = rows.length > 0 && removableRow === rows[rows.length - 1];
+            var isInitialRow = removableRow && removableRow.hasAttribute('data-rate-sheet-initial-range-row');
 
             if (
               !removableRow ||
               !removedAttributeItem ||
-              !removableRow.classList.contains('rate-sheet-range-row--dynamic') ||
+              isInitialRow ||
               rows.length <= 1 ||
               !isLastRow
             ) {
