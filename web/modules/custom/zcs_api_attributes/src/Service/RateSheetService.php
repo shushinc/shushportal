@@ -85,84 +85,83 @@ class RateSheetService {
      * @return string
      *   HTML markup.
      */
-    public function getRateSheetApprovers(int $rate_sheet_id): string {
+  public function getRateSheetApprovers(int $rate_sheet_id): string {
 
-      $query = $this->database->select('rate_sheet_status', 'rss')
-        ->fields('rss', ['status_name', 'created_by'])
-        ->condition('rate_sheet_id', $rate_sheet_id)
-        ->orderBy('date', 'ASC');
+    $query = $this->database->select('rate_sheet_status', 'rss')
+      ->fields('rss', ['status_name', 'created_by'])
+      ->condition('rate_sheet_id', $rate_sheet_id)
+      ->orderBy('date', 'ASC');
 
-      $rows = $query->execute()->fetchAll();
+    $rows = $query->execute()->fetchAll();
 
-      if (empty($rows)) {
-        return '<span class="pending">Pending</span><br><span class="pending">Pending</span>';
-      }
-
-      // Only creation record
-      if (count($rows) === 1 && strtoupper($rows[0]->status_name) === 'PENDING') {
-        return '<span class="pending">Pending</span><br><span class="pending">Pending</span>';
-      }
-
-      // Remove initial PENDING
-      if (strtoupper($rows[0]->status_name) === 'PENDING') {
-        array_shift($rows);
-      }
-
-      // Last two relevant
-      $rows = array_slice(array_reverse($rows), 0, 2);
-
-      $statuses = [];
-
-      foreach ($rows as $row) {
-        $statuses[] = [
-          'status' => strtoupper($row->status_name),
-          'uid' => $row->created_by,
-        ];
-      }
-
-      while (count($statuses) < 2) {
-        $statuses[] = [
-          'status' => 'PENDING',
-          'uid' => NULL,
-        ];
-      }
-
-        $output = [];
-
-        foreach ($statuses as $item) {
-            $status = $item['status'];
-            $uid = $item['uid'];
-
-            $email = '';
-
-            if ($status !== 'PENDING' && !empty($uid)) {
-            $user = \Drupal\user\Entity\User::load($uid);
-                if ($user) {
-                    $email = $user->getEmail();
-                }
-            }
-
-            $line = '';
-
-            if ($email) {
-            $line .= $email;
-            }
-
-            $class = strtolower($status);
-
-            // 🔥 KEY CHANGE HERE
-            if ($status === 'PENDING') {
-            $line .= '<span class="pending">Pending</span>';
-            }
-            else {
-            $line .= '<span class="' . $class . '"></span>';
-            }
-
-            $output[] = $line;
-        }
-
-        return implode('<br>', $output);
+    if (empty($rows)) {
+      return '<span class="pending">Pending</span><br><span class="pending">Pending</span>';
     }
+
+    // Only creation record
+    if (count($rows) === 1 && strtoupper($rows[0]->status_name) === 'PENDING') {
+      return '<span class="pending">Pending</span><br><span class="pending">Pending</span>';
+    }
+
+    // Remove initial PENDING
+    if (strtoupper($rows[0]->status_name) === 'PENDING') {
+      array_shift($rows);
+    }
+
+    // Last two relevant
+    $rows = array_slice(array_reverse($rows), 0, 2);
+
+    $statuses = [];
+
+    foreach ($rows as $row) {
+      $statuses[] = [
+        'status' => strtoupper($row->status_name),
+        'uid' => $row->created_by,
+      ];
+    }
+
+    while (count($statuses) < 2) {
+      $statuses[] = [
+        'status' => 'PENDING',
+        'uid' => NULL,
+      ];
+    }
+
+    $output = [];
+
+    foreach ($statuses as $item) {
+      $status = $item['status'];
+      $uid = $item['uid'];
+
+      $email = '';
+
+      if ($status !== 'PENDING' && !empty($uid)) {
+        $user = \Drupal\user\Entity\User::load($uid);
+        if ($user) {
+          $email = $user->getEmail();
+        }
+      }
+
+      $line = '';
+
+      if ($email) {
+        $line .= $email;
+      }
+
+      $class = strtolower($status);
+
+      if ($status === 'PENDING') {
+        $line .= '<span class="pending">Pending</span>';
+      }
+      else {
+        $line .= '<span class="' . $class . '"></span>';
+      }
+
+      $output[] = $line;
+    }
+
+    return implode('<br>', $output);
+  }
 
   /**
      * Returns the current Rate Sheet status based on the last two records.
@@ -180,40 +179,40 @@ class RateSheetService {
      * @return string
      *   One of: 'PENDING', 'APPROVED', or 'DENIED'.
      */
-    public function getRateSheetStatus(int $rate_sheet_id): string {
+  public function getRateSheetStatus(int $rate_sheet_id): string {
 
-        $query = $this->database->select('rate_sheet_status', 'rss')
-            ->fields('rss', ['status_name'])
-            ->condition('rate_sheet_id', $rate_sheet_id)
-            ->orderBy('date', 'DESC')
-            ->range(0, 2);
+    $query = $this->database->select('rate_sheet_status', 'rss')
+      ->fields('rss', ['status_name'])
+      ->condition('rate_sheet_id', $rate_sheet_id)
+      ->orderBy('date', 'DESC')
+      ->range(0, 2);
 
-        $statuses = $query->execute()->fetchCol();
+      $statuses = $query->execute()->fetchCol();
 
-        if (empty($statuses)) {
-            return 'Pending';
-        }
+      if (empty($statuses)) {
+        return 'Pending';
+      }
 
         // Only one status (initial state)
-        if (count($statuses) === 1) {
-            return 'Pending';
-        }
+      if (count($statuses) === 1) {
+        return 'Pending';
+      }
 
-        $first = $statuses[0];
-        $second = $statuses[1];
+      $first = $statuses[0];
+      $second = $statuses[1];
 
-        // If any is pending > still pending
-        if ($first === 'Pending' || $second === 'Pending') {
-            return 'Pending';
-        }
+      // If any is pending > still pending
+      if ($first === 'Pending' || $second === 'Pending') {
+        return 'Pending';
+      }
 
         // Both equal > final decision
-        if ($first === $second) {
-            return $first; // APPROVED or DENIED
-        }
+      if ($first === $second) {
+        return $first; // APPROVED or DENIED
+      }
 
-        // Conflict (APPROVED vs DENIED)
-        return 'Pending';
+      // Conflict (APPROVED vs DENIED)
+      return 'Pending';
     }
 
   /**
@@ -373,6 +372,29 @@ class RateSheetService {
 
       throw $e;
     }
+  }
+
+  /**
+   * Checks if a rate sheet has unresolved reject comments.
+   *
+   * @param int $rate_sheet_id
+   *   The Rate Sheet ID.
+   *
+   * @return bool
+   *   TRUE if there are unresolved reject comments, FALSE otherwise.
+   */
+  public function hasUnresolvedComments(int $rate_sheet_id): bool {
+    $has_unresolved = $this->database->select('action_log', 'al')
+      ->fields('al', ['id'])
+      ->condition('action_type', 'REJECT_COMMENT')
+      ->condition('entity_target_type', 'RATE_SHEET')
+      ->condition('entity_target_id', $rate_sheet_id)
+      ->condition('solved', 0)
+      ->range(0, 1)
+      ->execute()
+      ->fetchField();
+
+    return (bool) $has_unresolved;
   }
 
   /**

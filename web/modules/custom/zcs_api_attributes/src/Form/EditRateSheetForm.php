@@ -153,10 +153,14 @@ class EditRateSheetForm extends FormBase {
     }
 
     // Check if current user is the owner.
-    if ($rate_sheet->created_by != $this->currentUser->id()) {
-      $this->messenger->addError($this->t('You do not have permission to edit this rate sheet.'));
+    $is_owner = $rate_sheet->created_by == $this->currentUser->id();
+    if (!$is_owner) {
+      $this->messenger->addError($this->t('You do not have permission to view this rate sheet.'));
       return $form;
     }
+
+    // Check if there are unresolved reject comments
+    $can_edit = $this->rateSheetService->hasUnresolvedComments($id);
 
     $config = $this->configFactory->get('zcs_custom.settings');
     $defaultCurrency = $config->get('currency') ?? 'en_US';
@@ -379,14 +383,22 @@ class EditRateSheetForm extends FormBase {
       '#value' => $reject_comments,
     ];
 
+    $form['can_edit'] = [
+      '#type' => 'value',
+      '#value' => $can_edit,
+    ];
+
     $form['#theme'] = 'create_rate_sheet';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-ranges';
 
-    $form['submit'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Update Rate Sheet'),
-    ];
+    // Only show submit button if user can edit (has unresolved comments)
+    if ($can_edit) {
+      $form['submit'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Update Rate Sheet'),
+      ];
+    }
 
     return $form;
   }

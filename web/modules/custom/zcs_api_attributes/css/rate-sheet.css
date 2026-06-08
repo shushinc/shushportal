@@ -221,7 +221,7 @@
 }
 
 /* Reject Comments Accordion */
-.rate-sheet-reject-comments {
+.rate-sheet-reject-comments, .messages.messages--warning {
   margin-bottom: 5rem;
   margin-top: 2.5rem;
   background: #fff;

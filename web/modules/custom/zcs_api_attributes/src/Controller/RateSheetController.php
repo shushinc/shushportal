@@ -114,10 +114,13 @@ class RateSheetController extends ControllerBase {
         ];
       }
       
-      // Show Edit action only if user is the owner
+      // Show Edit or View action only if user is the owner
       if ($is_current_user_owner) {
+        // Check if there are unresolved reject comments
+        $has_unresolved_comments = $this->rateSheetService->hasUnresolvedComments($result->id);
+
         $actions[] = [
-          'title' => 'Edit',
+          'title' => $has_unresolved_comments ? 'Edit' : 'View',
           'url' => Url::fromRoute(
             'zcs_api_attributes.rate_sheet.edit',
             ['id' => $result->id]

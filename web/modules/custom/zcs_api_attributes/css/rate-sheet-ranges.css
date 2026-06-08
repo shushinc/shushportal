@@ -480,7 +480,7 @@
 
 .rate-sheet-remove-range::before {
   background: #ffe4e6;
-  content: "×";
+  /* content: "×"; */
 }
 
 .rate-sheet-remove-range:hover,

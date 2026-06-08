@@ -15,6 +15,12 @@
   <p class="message">{{ form.message }}</p>
 {% endif %}
 
+{% if form.can_edit and form.can_edit['#value'] == false %}
+  <div class="messages messages--warning">
+    <strong>View Only:</strong> This rate sheet is in view-only mode. To edit it, there must be unresolved reviewer comments.
+  </div>
+{% endif %}
+
 {% if form.reject_comments_data %}
   {% set reject_comments = form.reject_comments_data['#value'] %}
   {% if reject_comments is not empty %}
@@ -63,9 +69,11 @@
         <input type="search" id="rate-sheet-attribute-filter" data-rate-sheet-attribute-filter placeholder="Type attribute name">
       </div>
 
-      <div class="api-attribute-filter-actions">
-        {{ form.submit }}
-      </div>
+      {% if form.submit %}
+        <div class="api-attribute-filter-actions">
+          {{ form.submit }}
+        </div>
+      {% endif %}
     </div>
 
     <div class="rate-sheet-accordion" data-rate-sheet-ranges data-rate-sheet-progressive data-rate-sheet-initial-visible="10" data-rate-sheet-load-step="10">
