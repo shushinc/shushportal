@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Rate Sheet Updated</title>
+</head>
+<body>
+    <h2>Rate Sheet Updated</h2>
+    <p>Hello,</p>
+    <p>A rate sheet has been updated by <strong>{{ user }}</strong>.</p>
+    <p><strong>Rate Sheet Name:</strong> {{ rate_sheet_name }}</p>
+    <p><strong>Effective Date:</strong> {{ effective_date }}</p>
+    <p>Please review the updated rate sheet at your earliest convenience.</p>
+    <p>{{ approval|raw }}</p>
+    <p>Thank you,<br>{{ site_name }}</p>
+</body>
+</html>

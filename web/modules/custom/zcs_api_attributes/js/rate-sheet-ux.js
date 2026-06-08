@@ -1,6 +1,40 @@
 (function (Drupal, once) {
   'use strict';
 
+  function closestElement(element, selector, boundary) {
+    if (!element) {
+      return null;
+    }
+
+    if (element.nodeType !== 1) {
+      element = element.parentElement;
+    }
+
+    if (!element) {
+      return null;
+    }
+
+    if (typeof element.closest === 'function') {
+      var closest = element.closest(selector);
+
+      if (!boundary || !closest || boundary.contains(closest)) {
+        return closest;
+      }
+
+      return null;
+    }
+
+    while (element && element !== boundary && element.nodeType === 1) {
+      if (typeof element.matches === 'function' && element.matches(selector)) {
+        return element;
+      }
+
+      element = element.parentElement;
+    }
+
+    return null;
+  }
+
   function getAttributeItems(container) {
     return Array.prototype.slice.call(container.querySelectorAll('[data-rate-sheet-attribute-item]'));
   }
@@ -55,7 +89,6 @@
         return attributeItems;
       }
 
-      // Use a Set for O(1) lookup performance.
       var matchedSet = new Set();
 
       attributeItems.forEach(function (item) {
@@ -296,10 +329,106 @@
     }, 100);
   }
 
+  function setAccordionCollapsed(attributeItem, collapsed) {
+    if (!attributeItem) {
+      return;
+    }
+
+    var toggleButton = attributeItem.querySelector('[data-rate-sheet-accordion-toggle]');
+    var toggleIcon = attributeItem.querySelector('[data-rate-sheet-accordion-icon]');
+    var toggleText = toggleButton ? toggleButton.querySelector('.rate-sheet-accordion-toggle-text') : null;
+    var panel = attributeItem.querySelector('[data-rate-sheet-accordion-panel]');
+
+    attributeItem.setAttribute('data-rate-sheet-collapsed', collapsed ? 'true' : 'false');
+    attributeItem.classList.toggle('is-collapsed', collapsed);
+    attributeItem.classList.toggle('is-expanded', !collapsed);
+
+    if (panel) {
+      panel.hidden = collapsed;
+      panel.setAttribute('aria-hidden', collapsed ? 'true' : 'false');
+    }
+
+    if (toggleButton) {
+      toggleButton.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+      toggleButton.classList.toggle('is-collapsed', collapsed);
+      toggleButton.classList.toggle('is-expanded', !collapsed);
+    }
+
+    if (toggleText) {
+      toggleText.textContent = collapsed ? 'Expand' : 'Collapse';
+    }
+
+    if (toggleIcon) {
+      toggleIcon.textContent = collapsed ? '+' : '−';
+    }
+  }
+
+  function getInitialAccordionCollapsed(attributeItem, index) {
+    var explicitState = attributeItem.getAttribute('data-rate-sheet-collapsed');
+
+    if (explicitState === 'true') {
+      return true;
+    }
+
+    if (explicitState === 'false') {
+      return false;
+    }
+
+    var toggleButton = attributeItem.querySelector('[data-rate-sheet-accordion-toggle]');
+
+    if (toggleButton) {
+      var ariaExpanded = toggleButton.getAttribute('aria-expanded');
+
+      if (ariaExpanded === 'true') {
+        return false;
+      }
+
+      if (ariaExpanded === 'false') {
+        return true;
+      }
+    }
+
+    var panel = attributeItem.querySelector('[data-rate-sheet-accordion-panel]');
+
+    if (panel && panel.hidden) {
+      return true;
+    }
+
+    return index !== 0;
+  }
+
+  function initAccordionToggles(container) {
+    var attributeItems = getAttributeItems(container);
+
+    attributeItems.forEach(function (item, index) {
+      setAccordionCollapsed(item, getInitialAccordionCollapsed(item, index));
+    });
+
+    container.addEventListener('click', function (event) {
+      var toggleButton = closestElement(event.target, '[data-rate-sheet-accordion-toggle]', container);
+
+      if (!toggleButton || toggleButton.disabled) {
+        return;
+      }
+
+      var attributeItem = closestElement(toggleButton, '[data-rate-sheet-attribute-item]', container);
+
+      if (!attributeItem || !container.contains(attributeItem)) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      setAccordionCollapsed(attributeItem, attributeItem.getAttribute('data-rate-sheet-collapsed') !== 'true');
+    });
+  }
+
   Drupal.behaviors.rateSheetUx = {
     attach: function (context) {
       once('rate-sheet-attribute-filter', '[data-rate-sheet-ranges]', context).forEach(initAttributeFilter);
       once('rate-sheet-floating-submit', '[data-rate-sheet-floating-submit]', context).forEach(initFloatingSubmit);
+      once('rate-sheet-accordion-toggles', '[data-rate-sheet-ranges]', context).forEach(initAccordionToggles);
     }
   };
 

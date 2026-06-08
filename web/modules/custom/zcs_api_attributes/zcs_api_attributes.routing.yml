@@ -76,6 +76,18 @@ zcs_api_attributes.create_rate_sheet:
     _role: "finance_admin + administrator"
   options:
     no_cache: true
+
+zcs_api_attributes.rate_sheet.edit:
+  path: "/pricing/rate-sheet/edit/{id}"
+  defaults:
+    _form: '\Drupal\zcs_api_attributes\Form\EditRateSheetForm'
+    _title: "Edit Rate Sheet"
+    id: 0
+  requirements:
+    _permission: 'access content'
+    id: \d+
+  options:
+    no_cache: true
 zcs_api_attributes.demand_partner_discountes_or_different_pricing:
   path: "/demand_partner_discounts_or_different_pricing"
   defaults:

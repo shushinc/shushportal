@@ -142,24 +142,22 @@
 }
 
 .rate-sheet-accordion-toggle {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 8px;
   align-items: center;
-  background: transparent;
-  border: 0;
-  color: #2b3674;
-  cursor: pointer;
-  display: flex;
-  flex: 1 1 auto;
-  font-family: "Montserrat", sans-serif;
-  gap: 0.75rem;
-  min-width: 0;
-  padding: 0;
-  text-align: left;
-}
-
-.rate-sheet-accordion-toggle:hover,
-.rate-sheet-accordion-toggle:focus {
+  justify-content: center;
+  min-height: 38px;
+  padding: 8px 14px;
   color: #118df0;
-  outline: none;
+  background: #fff;
+  border: 1px solid #b9dcff;
+  border-radius: 999px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .rate-sheet-accordion-toggle:focus-visible {
@@ -176,10 +174,10 @@
   flex: 0 0 auto;
   font-size: 1rem;
   font-weight: 800;
-  height: 1.75rem;
   justify-content: center;
   line-height: 1;
-  width: 1.75rem;
+  width: 18px;
+  height: 18px;
 }
 
 .rate-sheet-accordion-index {

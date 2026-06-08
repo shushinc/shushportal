@@ -8,8 +8,10 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\zcs_api_attributes\Services\RateSheetService;
+use Drupal\zcs_api_attributes\Service\RateSheetService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Render\Markup;
 
 /**
  * Provides the create rate sheet form.
@@ -47,7 +49,7 @@ class CreateRateSheetForm extends FormBase {
   /**
    * The rate sheet service.
    *
-   * @var \Drupal\zcs_api_attributes\Services\RateSheetService
+   * @var \Drupal\zcs_api_attributes\Service\RateSheetService
    */
   protected $rateSheetService;
 
@@ -67,7 +69,7 @@ class CreateRateSheetForm extends FormBase {
    *   The config factory.
    * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
    *   The date formatter.
-   * @param \Drupal\zcs_api_attributes\Services\RateSheetService $rate_sheet_service
+   * @param \Drupal\zcs_api_attributes\Service\RateSheetService $rate_sheet_service
    *   The rate sheet service.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   The messenger service.
@@ -202,7 +204,7 @@ class CreateRateSheetForm extends FormBase {
           '#min' => 0,
           '#default_value' => 0.000,
           '#step' => 0.001,
-          '#field_prefix' => $symbol,
+          // '#field_prefix' => $symbol,
           '#attributes' => [
             'data-rate-sheet-range-field' => 'partial_range',
             'data-attribute-id' => $attribute_id,
@@ -215,7 +217,7 @@ class CreateRateSheetForm extends FormBase {
           '#min' => 0,
           '#default_value' => 0.000,
           '#step' => 0.001,
-          '#field_prefix' => $symbol,
+          // '#field_prefix' => $symbol,
           '#attributes' => [
             'data-rate-sheet-range-field' => 'success_rate',
             'data-attribute-id' => $attribute_id,
@@ -361,9 +363,43 @@ class CreateRateSheetForm extends FormBase {
       ]);
 
       if ($rate_sheet_id) {
-        $this->messenger->addStatus($this->t('Rate sheet "@name" has been created successfully.', [
+        $userMails = [];
+        $users = $this->entityTypeManager->getStorage('user')->loadByProperties(
+          ['roles' => [
+            'financial_rate_sheet_approval_level_1',
+            'financial_rate_sheet_approval_level_2',
+          ], 'status' => 1]
+        );
+        foreach ($users as $user) {
+          if ($user) {
+            $userMails[] = $user->mail->value;
+          }
+        }
+
+        $mailManager = \Drupal::service('plugin.manager.mail');
+
+        $modulePath = \Drupal::service('extension.path.resolver')->getPath('module', 'zcs_api_attributes');
+        $path = $modulePath . '/templates/rate_sheet_approval_mail.html.twig';
+
+        $rendered = \Drupal::service('twig')->load($path)->render([
+          'user' => $this->entityTypeManager->getStorage('user')->load($this->currentUser()->id())->mail->value,
+          'effective_date' => $values['attribute_date'],
+          'approval' => Link::createFromRoute('Approval', 'zcs_api_attributes.rate_sheet_list')->toString(),
+          'site_name' => $this->config('system.site')->get('name'),
+        ]);
+
+        $params['message'] = Markup::create(nl2br($rendered));
+        $langcode = \Drupal::currentUser()->getPreferredLangcode();
+        $send = TRUE;
+
+        foreach ($userMails as $mail) {
+          $emails[] = $mailManager->mail('zcs_api_attributes', 'rate_sheet', $mail, $langcode, $params, NULL, $send);
+        }
+
+        $this->messenger->addStatus($this->t('Rate sheet "@name" has been created successfully. An email notification has been sent.', [
           '@name' => $values['name'],
         ]));
+
         $form_state->setRedirect('zcs_api_attributes.rate_sheet_list');
       }
       else {

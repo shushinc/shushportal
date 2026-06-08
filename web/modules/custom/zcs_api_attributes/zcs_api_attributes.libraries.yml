@@ -47,6 +47,16 @@ rate-sheet-review:
     theme:
       css/rate-sheet-review.css: {}
 
+rate-sheet-reject-modal:
+  js:
+    js/rate-sheet-reject-modal.js: {}
+  css:
+    theme:
+      css/rate-sheet-reject-modal.css: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
 discount-sheet:
   js:
     js/discount-sheet.js: {}

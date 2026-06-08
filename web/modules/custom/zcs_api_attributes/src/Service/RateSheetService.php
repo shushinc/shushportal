@@ -376,6 +376,40 @@ class RateSheetService {
   }
 
   /**
+   * Gets reject comments for a rate sheet.
+   *
+   * @param int $rate_sheet_id
+   *   The Rate Sheet ID.
+   *
+   * @return array
+   *   Array of reject comments with id, log_data, created_by, created_date, and solved status.
+   */
+  public function getRateSheetRejectComments(int $rate_sheet_id): array {
+    $query = $this->database->select('action_log', 'al')
+      ->fields('al', ['id', 'log_data', 'created_by', 'created_date', 'solved'])
+      ->condition('action_type', 'REJECT_COMMENT')
+      ->condition('entity_target_type', 'RATE_SHEET')
+      ->condition('entity_target_id', $rate_sheet_id)
+      ->orderBy('created_date', 'DESC');
+
+    $results = $query->execute()->fetchAll();
+
+    $comments = [];
+    foreach ($results as $result) {
+      $user = $this->entityTypeManager->getStorage('user')->load($result->created_by);
+      $comments[] = [
+        'id' => $result->id,
+        'comment' => $result->log_data,
+        'created_by' => $user ? $user->getEmail() : 'Unknown',
+        'created_date' => $result->created_date,
+        'solved' => (bool) $result->solved,
+      ];
+    }
+
+    return $comments;
+  }
+
+  /**
      * Inserts a new status for a rate sheet.
      *
      * @param int $rate_sheet_id
@@ -384,8 +418,10 @@ class RateSheetService {
      *   The status to insert (2 for Approve, 3 for Reject).
      * @param int $user_id
      *   The ID of the user submitting the status.
+     * @param string|null $reject_comment
+     *   Optional comment when rejecting a rate sheet.
      */
-    public function insertRateSheetStatus(int $rate_sheet_id, int $status, int $user_id) {
+    public function insertRateSheetStatus(int $rate_sheet_id, int $status, int $user_id, string $reject_comment = NULL) {
         $transaction = $this->database->startTransaction();
 
         try {
@@ -419,6 +455,30 @@ class RateSheetService {
                     "User {$user_id} changed the status of rate sheet {$rate_sheet_id} to {$status_name}.",
                 ])
                 ->execute();
+
+            // Insert reject comment if status is rejected and comment is provided.
+            if ($status === 3 && !empty($reject_comment)) {
+                $this->database->insert('action_log')
+                    ->fields([
+                        'action_type',
+                        'entity_target_type',
+                        'entity_target_id',
+                        'created_by',
+                        'created_date',
+                        'log_data',
+                        'solved',
+                    ])
+                    ->values([
+                        'REJECT_COMMENT',
+                        'RATE_SHEET',
+                        $rate_sheet_id,
+                        $user_id,
+                        \Drupal::time()->getRequestTime(),
+                        $reject_comment,
+                        0,
+                    ])
+                    ->execute();
+            }
         }
         catch (\Exception $e) {
             $transaction->rollBack();

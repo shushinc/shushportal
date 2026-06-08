@@ -74,9 +74,18 @@ table.attributes-table tbody td span {
   position: relative;
 }
 
+table.attributes-table tbody td span.rejected::before,
 table.rate-sheet-approval tbody td span.rejected::before {
   background: url("/themes/custom/shush/images/error-bg.svg") no-repeat;
   background-size: cover;
+  content: "";
+  height: 12px;
+  width: 12px;
+  display: block;
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  margin-top: -6px;
 }
 
 table.attributes-table tbody td span.pending::before,

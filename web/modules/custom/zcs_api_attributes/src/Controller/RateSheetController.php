@@ -11,7 +11,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Drupal\zcs_api_attributes\Services\RateSheetService;
+use Drupal\zcs_api_attributes\Service\RateSheetService;
 
 /**
  *
@@ -32,7 +32,7 @@ class RateSheetController extends ControllerBase {
   /**
    * Rate Sheet service.
    * 
-   * Drupal\zcs_api_attributes\Services\RateSheetService
+   * Drupal\zcs_api_attributes\Service\RateSheetService
    */
   protected $rateSheetService;
 
@@ -94,21 +94,39 @@ class RateSheetController extends ControllerBase {
     foreach($resultSet as $result) {
 
       $is_current_user_owner = ($result->created_by == \Drupal::currentUser()->id());
+      $current_user_roles = \Drupal::currentUser()->getRoles();
+      $approval_roles = ['financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
+      $has_approval_role = !empty(array_intersect($approval_roles, $current_user_roles));
 
       $actions = [];
       
-      $actions = [
-        [
+      // Show Review action only if user is not owner AND has approval roles
+      if (!$is_current_user_owner && $has_approval_role) {
+        $actions[] = [
           'title' => 'Review',
           'url' => Url::fromRoute(
             'zcs_api_attributes.new_rate_sheet.review',
             ['id' => $result->id]
           )->toString(),
-          'ajax' => TRUE,
-          'disabled' => $is_current_user_owner,
-          'class' => $is_current_user_owner ? 'disabled-action' : '',
-        ],
-      ];
+          'ajax' => FALSE,
+          'disabled' => FALSE,
+          'class' => '',
+        ];
+      }
+      
+      // Show Edit action only if user is the owner
+      if ($is_current_user_owner) {
+        $actions[] = [
+          'title' => 'Edit',
+          'url' => Url::fromRoute(
+            'zcs_api_attributes.rate_sheet.edit',
+            ['id' => $result->id]
+          )->toString(),
+          'ajax' => FALSE,
+          'disabled' => FALSE,
+          'class' => '',
+        ];
+      }
       
       $final[] = [
         'id' => $result->id,

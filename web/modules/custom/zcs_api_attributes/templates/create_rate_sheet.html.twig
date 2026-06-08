@@ -7,8 +7,29 @@
 {{ form.range_currency_symbol }}
 {{ form.rate_sheet_item_ranges_payload }}
 
+{% if form.rate_sheet_id %}
+  {{ form.rate_sheet_id }}
+{% endif %}
+
 {% if form.message %}
   <p class="message">{{ form.message }}</p>
+{% endif %}
+
+{% if form.reject_comments_data %}
+  {% set reject_comments = form.reject_comments_data['#value'] %}
+  {% if reject_comments is not empty %}
+    <div class="rate-sheet-reject-comments">
+      <h3>Reviewer Comments</h3>
+      <p class="reject-comments-description">Please review and mark comments as resolved:</p>
+      <div class="reject-comments-list">
+        {% for comment_data in reject_comments %}
+          <div class="reject-comment-item {% if comment_data.solved %}reject-comment-item--solved{% endif %}">
+            {{ form.reject_comments[comment_data.id] }}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
 {% endif %}
 
 <div class="rate-sheet-filter">
@@ -57,17 +78,17 @@
 
         <div class="rate-sheet-accordion-item" data-rate-sheet-attribute-item data-attribute-id="{{ id }}" data-attribute-name="{{ title|lower|e('html_attr') }}" data-rate-sheet-collapsed="{{ is_first_item ? 'false' : 'true' }}">
           <div class="rate-sheet-accordion-header">
-            <button type="button" class="rate-sheet-accordion-toggle" data-rate-sheet-accordion-toggle data-attribute-id="{{ id }}" aria-expanded="{{ is_first_item ? 'true' : 'false' }}" aria-controls="{{ panel_id }}">
-              <span class="rate-sheet-accordion-icon" data-rate-sheet-accordion-icon aria-hidden="true">{{ is_first_item ? '−' : '+' }}</span>
-              <span class="rate-sheet-accordion-index">{{ counter }}</span>
-              <span class="rate-sheet-accordion-title">{{ title }}</span>
-            </button>
+            <div class="rate-sheet-attribute-heading">
+              <span class="rate-sheet-attribute-number">{{ counter }}</span>
+              <div class="rate-sheet-attribute-title-group">
+                <h3 class="rate-sheet-attribute-title">{{ title }}</h3>
+                <span class="rate-sheet-pricing-mode-badge rate-sheet-pricing-mode-badge--flat" data-rate-sheet-tiered-badge data-rate-sheet-mode="flat">
+                  Flat
+                </span>
+              </div>
+            </div>
 
             <div class="rate-sheet-accordion-controls">
-              <span class="rate-sheet-pricing-mode-badge rate-sheet-pricing-mode-badge--flat" data-rate-sheet-tiered-badge data-rate-sheet-mode="flat">
-                Flat
-              </span>
-
               <span class="rate-sheet-tiered-calculation-field" hidden aria-hidden="true">
                 {{ form['tiered_calculation_' ~ id] }}
               </span>
@@ -75,10 +96,15 @@
               <button type="button" class="button button--small rate-sheet-add-range" data-rate-sheet-add-range data-attribute-id="{{ id }}">
                 Add Range
               </button>
+
+              <button type="button" class="rate-sheet-accordion-toggle" data-rate-sheet-accordion-toggle aria-expanded="{{ is_first_item ? 'true' : 'false' }}" aria-controls="{{ panel_id }}">
+                <span class="rate-sheet-accordion-toggle-text">{{ is_first_item ? 'Collapse' : 'Expand' }}</span>
+                <span class="rate-sheet-accordion-icon" data-rate-sheet-accordion-icon aria-hidden="true">{{ is_first_item ? '−' : '+' }}</span>
+              </button>
             </div>
           </div>
 
-          <div id="{{ panel_id }}" class="rate-sheet-accordion-panel" data-rate-sheet-accordion-panel {% if not is_first_item %}hidden{% endif %}>
+          <div id="{{ panel_id }}" class="rate-sheet-accordion-panel" data-rate-sheet-accordion-panel aria-hidden="{{ is_first_item ? 'false' : 'true' }}"{{ is_first_item ? '' : ' hidden' }}>
             <table class="attributes-table rate-sheet-ranges-table" data-rate-sheet-range-table>
               <thead>
                 <tr>
@@ -91,25 +117,105 @@
                 </tr>
               </thead>
               <tbody>
-                <tr class="rate-sheet-range-row rate-sheet-range-row--initial" data-rate-sheet-range-row data-rate-sheet-initial-range-row data-attribute-id="{{ id }}" data-range-index="0">
-                  <td class="rate-sheet-range-label">
-                    <span class="rate-sheet-range-label-text">Range 1</span>
-                  </td>
-                  <td>{{ first_range.from_range }}</td>
-                  <td class="rate-sheet-to-range-cell" data-rate-sheet-to-range-cell>
-                    <span class="rate-sheet-to-range-input-wrapper" data-rate-sheet-to-range-input-wrapper hidden>
-                      {{ first_range.to_range }}
-                    </span>
-                    <span class="rate-sheet-unbounded-badge" data-rate-sheet-unbounded-badge>
-                      <span aria-hidden="true">∞</span> Unbounded
-                    </span>
-                  </td>
-                  <td>{{ first_range.partial_range }}</td>
-                  <td>{{ first_range.success_rate }}</td>
-                  <td class="rate-sheet-range-actions">
-                    <span class="rate-sheet-initial-range-note">Default range</span>
-                  </td>
-                </tr>
+                {% if ranges_for_attribute %}
+                  {% set numeric_ranges = {} %}
+                  {% for range_index, range_data in ranges_for_attribute %}
+                    {% if range_index matches '/^\\d+$/' %}
+                      {% set numeric_ranges = numeric_ranges|merge({(range_index): range_data}) %}
+                    {% endif %}
+                  {% endfor %}
+                  {% if numeric_ranges is not empty %}
+                    {% for range_index, range_data in numeric_ranges %}
+                      {% set is_first_range = range_index == 0 %}
+                      {% set is_last_range = loop.last %}
+                      {% set to_range_value = range_data.to_range['#default_value']|default(0) %}
+                      {% set is_unbounded = to_range_value == -1 %}
+                    <tr class="rate-sheet-range-row {% if is_first_range %}rate-sheet-range-row--initial{% endif %}" data-rate-sheet-range-row {% if is_first_range %}data-rate-sheet-initial-range-row{% endif %} data-attribute-id="{{ id }}" data-range-index="{{ range_index }}">
+                      <td class="rate-sheet-range-label">
+                        <span class="rate-sheet-range-label-text">Range {{ loop.index }}</span>
+                      </td>
+                      <td>
+                        {% if range_data.from_range %}
+                          {% set from_range_element = range_data.from_range %}
+                          {% set from_range_element = from_range_element|merge({'#attributes': {'readonly': 'readonly', 'tabindex': '-1'}}) %}
+                          {{ from_range_element }}
+                        {% endif %}
+                      </td>
+                      <td class="rate-sheet-to-range-cell" data-rate-sheet-to-range-cell>
+                        <span class="rate-sheet-to-range-input-wrapper" data-rate-sheet-to-range-input-wrapper {% if is_unbounded %}hidden{% endif %}>
+                          {{ range_data.to_range }}
+                        </span>
+                        <span class="rate-sheet-unbounded-badge" data-rate-sheet-unbounded-badge {% if not is_unbounded %}hidden{% endif %}>
+                          <span aria-hidden="true">∞</span> Unbounded
+                        </span>
+                      </td>
+                      <td>{{ range_data.partial_range }}</td>
+                      <td>{{ range_data.success_rate }}</td>
+                      <td class="rate-sheet-range-actions">
+                        {% if is_first_range %}
+                          <span class="rate-sheet-initial-range-note"></span>
+                        {% else %}
+                          <button type="button" class="button button--small button--danger rate-sheet-remove-range" data-rate-sheet-remove-range data-attribute-id="{{ id }}" data-range-index="{{ range_index }}">
+                            Remove
+                          </button>
+                        {% endif %}
+                      </td>
+                      </tr>
+                    {% endfor %}
+                  {% else %}
+                    <tr class="rate-sheet-range-row rate-sheet-range-row--initial" data-rate-sheet-range-row data-rate-sheet-initial-range-row data-attribute-id="{{ id }}" data-range-index="0">
+                      <td class="rate-sheet-range-label">
+                        <span class="rate-sheet-range-label-text">Range 1</span>
+                      </td>
+                      <td>
+                        {% if first_range.from_range %}
+                          {% set from_range_element = first_range.from_range %}
+                          {% set from_range_element = from_range_element|merge({'#attributes': {'readonly': 'readonly', 'tabindex': '-1'}}) %}
+                          {{ from_range_element }}
+                        {% endif %}
+                      </td>
+                      <td class="rate-sheet-to-range-cell" data-rate-sheet-to-range-cell>
+                        <span class="rate-sheet-to-range-input-wrapper" data-rate-sheet-to-range-input-wrapper hidden>
+                          {{ first_range.to_range }}
+                        </span>
+                        <span class="rate-sheet-unbounded-badge" data-rate-sheet-unbounded-badge>
+                          <span aria-hidden="true">∞</span> Unbounded
+                        </span>
+                      </td>
+                      <td>{{ first_range.partial_range }}</td>
+                      <td>{{ first_range.success_rate }}</td>
+                      <td class="rate-sheet-range-actions">
+                        <span class="rate-sheet-initial-range-note"></span>
+                      </td>
+                    </tr>
+                  {% endif %}
+                {% else %}
+                  <tr class="rate-sheet-range-row rate-sheet-range-row--initial" data-rate-sheet-range-row data-rate-sheet-initial-range-row data-attribute-id="{{ id }}" data-range-index="0">
+                    <td class="rate-sheet-range-label">
+                      <span class="rate-sheet-range-label-text">Range 1</span>
+                    </td>
+                    <td>
+                      {% if first_range.from_range %}
+                        {% set from_range_element = first_range.from_range %}
+                        {% set from_range_element = from_range_element|merge({'#attributes': {'readonly': 'readonly', 'tabindex': '-1'}}) %}
+                        {{ from_range_element }}
+                      {% endif %}
+                    </td>
+                    <td class="rate-sheet-to-range-cell" data-rate-sheet-to-range-cell>
+                      <span class="rate-sheet-to-range-input-wrapper" data-rate-sheet-to-range-input-wrapper hidden>
+                        {{ first_range.to_range }}
+                      </span>
+                      <span class="rate-sheet-unbounded-badge" data-rate-sheet-unbounded-badge>
+                        <span aria-hidden="true">∞</span> Unbounded
+                      </span>
+                    </td>
+                    <td>{{ first_range.partial_range }}</td>
+                    <td>{{ first_range.success_rate }}</td>
+                    <td class="rate-sheet-range-actions">
+                      <span class="rate-sheet-initial-range-note"></span>
+                    </td>
+                  </tr>
+                {% endif %}
               </tbody>
             </table>
           </div>

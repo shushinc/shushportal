@@ -485,6 +485,12 @@
     input.setAttribute('data-attribute-id', attributeId);
     input.setAttribute('data-range-index', rangeIndex);
 
+    // Make from_range readonly
+    if (fieldName === 'from_range') {
+      input.readOnly = true;
+      input.tabIndex = -1;
+    }
+
     wrapper.appendChild(input);
 
     return wrapper;
@@ -583,6 +589,66 @@
           updateRangesPayload(container);
         });
 
+        // Handle blur event on to_range inputs to update next row's from_range
+        container.addEventListener('blur', function (event) {
+          var input = event.target;
+
+          if (!input || input.nodeType !== 1 || input.tagName !== 'INPUT') {
+            return;
+          }
+
+          var fieldName = input.getAttribute('data-rate-sheet-range-field');
+
+          if (fieldName !== 'to_range') {
+            return;
+          }
+
+          var currentRow = input.closest('[data-rate-sheet-range-row]');
+
+          if (!currentRow) {
+            return;
+          }
+
+          var attributeId = currentRow.getAttribute('data-attribute-id');
+          var currentRangeIndex = parseInt(currentRow.getAttribute('data-range-index'), 10);
+
+          if (!attributeId || Number.isNaN(currentRangeIndex)) {
+            return;
+          }
+
+          var attributeItem = getAttributeItem(container, attributeId);
+
+          if (!attributeItem) {
+            return;
+          }
+
+          var rows = getRangeRows(attributeItem);
+          var nextRow = null;
+
+          // Find the next row
+          for (var i = 0; i < rows.length; i++) {
+            var rowIndex = parseInt(rows[i].getAttribute('data-range-index'), 10);
+            if (rowIndex === currentRangeIndex + 1) {
+              nextRow = rows[i];
+              break;
+            }
+          }
+
+          if (!nextRow) {
+            return;
+          }
+
+          var toRangeValue = getNumericInputValue(input, 0);
+          var nextFromRangeInput = getRangeInput(nextRow, 'from_range');
+
+          if (nextFromRangeInput && toRangeValue >= 0) {
+            var increment = getRangeIncrement(input);
+            var newFromValue = toRangeValue + increment;
+            nextFromRangeInput.value = formatRangeValue(newFromValue);
+            updateRangesPayload(container);
+          }
+        }, true);
+
         if (form) {
           form.addEventListener('submit', function () {
             updateRangesPayload(container);
@@ -633,12 +699,13 @@
             updateAttributeRangeMode(attributeItem);
             updateRangesPayload(container);
 
+            // Focus on the To range input of the previous (last) row
             window.requestAnimationFrame(function () {
-              var fromRangeInput = row.querySelector('[data-rate-sheet-range-field="from_range"]');
+              var toRangeInput = previousLastRow ? getRangeInput(previousLastRow, 'to_range') : null;
 
-              if (fromRangeInput) {
-                fromRangeInput.focus();
-                fromRangeInput.select();
+              if (toRangeInput) {
+                toRangeInput.focus();
+                toRangeInput.select();
               }
             });
 

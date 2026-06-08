@@ -643,6 +643,22 @@ function zcs_api_attributes_update_9011() {
 }
 
 /**
+ * Add solved field to action_log table.
+ */
+function zcs_api_attributes_update_9013() {
+  $spec = [
+    'type' => 'int',
+    'size' => 'tiny',
+    'description' => "Whether the action has been resolved",
+    'default' => 0,
+  ];
+  $schema = \Drupal::database()->schema();
+  if (!$schema->fieldExists('action_log', 'solved')) {
+    $schema->addField('action_log', 'solved', $spec);
+  }
+}
+
+/**
  * Adding new tables to add the new client/ratesheet structure.
  */
 function zcs_api_attributes_update_9012() {
