@@ -172,16 +172,16 @@ class NewRateSheetReviewForm extends FormBase {
       $this->messenger()->addWarning($this->t('This rate sheet has been cancelled and cannot be reviewed.'));
     }
 
-    // Check if the user has already approved or denied.
+    // Check if the user has unresolved comments for this rate sheet.
     $user_id = $this->currentUser()->id();
-    $user_has_acted = $this->database->select('rate_sheet_status', 'rss')
-      ->condition('rate_sheet_id', $id)
-      ->condition('created_by', $user_id)
-      ->countQuery()
-      ->execute()
-      ->fetchField();
+    $user_has_unresolved_comments = $rateSheetService->userHasUnresolvedComments($id, $user_id);
 
-    if (array_intersect($allowed_roles, $user_roles) && $rateSheetStatus === 'Pending' && !$user_has_acted && !$is_cancelled) {
+    // User can review if:
+    // 1. They have an allowed role
+    // 2. Rate sheet is Pending
+    // 3. They don't have unresolved comments (waiting for creator to resolve)
+    // 4. Rate sheet is not cancelled
+    if (array_intersect($allowed_roles, $user_roles) && $rateSheetStatus === 'Pending' && !$user_has_unresolved_comments && !$is_cancelled) {
       $form['status'] = [
         '#type' => 'select',
         '#options' => [2 => 'Approve', 3 => 'Reject'],

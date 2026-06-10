@@ -78,6 +78,7 @@ class RateSheetService {
      * - One decision + one pending > show decision + pending
      * - Two equal decisions > show both
      * - Approved + Denied > both shown
+     * - Rejected statuses with resolved comments are filtered out
      *
      * @param int $rate_sheet_id
      *   The Rate Sheet ID.
@@ -88,11 +89,39 @@ class RateSheetService {
   public function getRateSheetApprovers(int $rate_sheet_id): string {
 
     $query = $this->database->select('rate_sheet_status', 'rss')
-      ->fields('rss', ['status_name', 'created_by'])
+      ->fields('rss', ['id', 'status_name', 'created_by', 'action_log_id'])
       ->condition('rate_sheet_id', $rate_sheet_id)
       ->orderBy('date', 'ASC');
 
     $rows = $query->execute()->fetchAll();
+
+    if (empty($rows)) {
+      return '<span class="pending">Pending</span><br><span class="pending">Pending</span>';
+    }
+
+    // Filter out rejected statuses where the associated comment has been resolved
+    $filtered_rows = [];
+    foreach ($rows as $row) {
+      // If it's a rejected status with an action_log_id, check if the comment is resolved
+      if (strtoupper($row->status_name) === 'REJECTED' && !empty($row->action_log_id)) {
+        // Check if the associated action_log comment is resolved
+        $comment_solved = $this->database->select('action_log', 'al')
+          ->fields('al', ['solved'])
+          ->condition('id', $row->action_log_id)
+          ->execute()
+          ->fetchField();
+        
+        // Skip this rejected status if the comment has been resolved
+        if ($comment_solved == 1) {
+          continue;
+        }
+      }
+      
+      $filtered_rows[] = $row;
+    }
+
+    // Use filtered rows from here on
+    $rows = $filtered_rows;
 
     if (empty($rows)) {
       return '<span class="pending">Pending</span><br><span class="pending">Pending</span>';
@@ -403,6 +432,32 @@ class RateSheetService {
   }
 
   /**
+   * Checks if a specific user has unresolved reject comments for a rate sheet.
+   *
+   * @param int $rate_sheet_id
+   *   The Rate Sheet ID.
+   * @param int $user_id
+   *   The user ID.
+   *
+   * @return bool
+   *   TRUE if the user has unresolved reject comments, FALSE otherwise.
+   */
+  public function userHasUnresolvedComments(int $rate_sheet_id, int $user_id): bool {
+    $has_unresolved = $this->database->select('action_log', 'al')
+      ->fields('al', ['id'])
+      ->condition('action_type', 'REJECT_COMMENT')
+      ->condition('entity_target_type', 'RATE_SHEET')
+      ->condition('entity_target_id', $rate_sheet_id)
+      ->condition('created_by', $user_id)
+      ->condition('solved', 0)
+      ->range(0, 1)
+      ->execute()
+      ->fetchField();
+
+    return (bool) $has_unresolved;
+  }
+
+  /**
    * Gets reject comments for a rate sheet.
    *
    * @param int $rate_sheet_id
@@ -461,7 +516,7 @@ class RateSheetService {
 
       $status_name = $status === 2 ? 'Approved' : 'Rejected';
 
-      $this->database->insert('rate_sheet_status')
+      $new_rate_sheet_status = $this->database->insert('rate_sheet_status')
         ->fields([
           'rate_sheet_id' => $rate_sheet_id,
           'status_name' => $status_name,
@@ -514,6 +569,7 @@ class RateSheetService {
           'created_by',
           'created_date',
           'log_data',
+          'solved',
         ])
         ->values([
           'STATUS_UPDATE',
@@ -522,12 +578,14 @@ class RateSheetService {
           $user_id,
           \Drupal::time()->getRequestTime(),
           "User {$user_id} changed the status of rate sheet {$rate_sheet_id} to {$status_name}.",
+          0,
         ])
         ->execute();
 
       // Insert reject comment if status is rejected and comment is provided.
       if ($status === 3 && !empty($reject_comment)) {
-        $this->database->insert('action_log')
+        
+        $new_action_log = $this->database->insert('action_log')
           ->fields([
             'action_type',
             'entity_target_type',
@@ -547,6 +605,13 @@ class RateSheetService {
             0,
           ])
           ->execute();
+          
+          $this->database->update('rate_sheet_status')
+            ->fields([
+              'action_log_id' => $new_action_log
+            ])
+            ->condition('id', $new_rate_sheet_status, '=')
+            ->execute();
       }
 
       unset($transaction);
@@ -606,6 +671,7 @@ class RateSheetService {
           'created_by',
           'created_date',
           'log_data',
+          'solved',
         ])
         ->values([
           'STATUS_UPDATE',
@@ -614,6 +680,7 @@ class RateSheetService {
           $user_id,
           \Drupal::time()->getRequestTime(),
           "User {$user_id} cancelled rate sheet {$rate_sheet_id}.",
+          0,
         ])
         ->execute();
 

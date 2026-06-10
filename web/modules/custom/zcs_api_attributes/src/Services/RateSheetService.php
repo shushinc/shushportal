@@ -246,6 +246,7 @@ class RateSheetService {
                     'created_by',
                     'created_date',
                     'log_data',
+                    'solved',
                 ])
                 ->values([
                     'STATUS_UPDATE',
@@ -254,6 +255,7 @@ class RateSheetService {
                     $user_id,
                     \Drupal::time()->getRequestTime(),
                     "User {$user_id} changed the status of rate sheet {$rate_sheet_id} to {$status_name}.",
+                    0,
                 ])
                 ->execute();
         }

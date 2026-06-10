@@ -64,6 +64,13 @@ rate-sheet-cancel:
     - core/drupal
     - core/once
 
+rate-sheet-reject-comments:
+  js:
+    js/rate-sheet-reject-comments.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
 discount-sheet:
   js:
     js/discount-sheet.js: {}

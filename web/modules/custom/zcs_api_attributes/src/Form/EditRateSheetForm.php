@@ -375,7 +375,7 @@ class EditRateSheetForm extends FormBase {
     ];
 
     foreach ($reject_comments as $comment) {
-      $form['reject_comments'][$comment['id']] = [
+      $checkbox = [
         '#type' => 'checkbox',
         '#title' => $this->t('@email (@date): @comment', [
           '@email' => $comment['created_by'],
@@ -384,6 +384,16 @@ class EditRateSheetForm extends FormBase {
         ]),
         '#default_value' => $comment['solved'],
       ];
+
+      // If the comment is already solved, make it readonly
+      if ($comment['solved']) {
+        $checkbox['#disabled'] = TRUE;
+        $checkbox['#attributes']['class'][] = 'reject-comment-solved';
+        $checkbox['#attributes']['onclick'] = 'return false;';
+        $checkbox['#attributes']['readonly'] = 'readonly';
+      }
+
+      $form['reject_comments'][$comment['id']] = $checkbox;
     }
 
     $form['reject_comments_data'] = [
@@ -432,6 +442,7 @@ class EditRateSheetForm extends FormBase {
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-ranges';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-cancel';
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-reject-comments';
     return $form;
   }
 
@@ -595,12 +606,85 @@ class EditRateSheetForm extends FormBase {
       }
 
       // Update solved status for reject comments.
+      // Only allow marking as solved, not unsolved (once solved, always solved).
       $reject_comments_values = $values['reject_comments'] ?? [];
+      $reject_comments_data = $values['reject_comments_data'] ?? [];
+      $any_comment_resolved = false;
+      
       foreach ($reject_comments_values as $comment_id => $solved) {
-        $this->database->update('action_log')
-          ->fields(['solved' => $solved ? 1 : 0])
-          ->condition('id', $comment_id)
-          ->execute();
+        // Find the original comment data
+        $original_comment = null;
+        foreach ($reject_comments_data as $comment) {
+          if ($comment['id'] == $comment_id) {
+            $original_comment = $comment;
+            break;
+          }
+        }
+        
+        // Only update if:
+        // 1. The comment was not previously solved, OR
+        // 2. We're marking it as solved (can't unsolve)
+        if ($original_comment && (!$original_comment['solved'] || $solved)) {
+          $this->database->update('action_log')
+            ->fields(['solved' => $solved ? 1 : 0])
+            ->condition('id', $comment_id)
+            ->execute();
+          
+          // Track if we resolved a previously unresolved comment
+          if (!$original_comment['solved'] && $solved) {
+            $any_comment_resolved = true;
+          }
+        }
+      }
+
+      // If any comments were resolved, check if all comments are now resolved
+      // and update the rate sheet status back to Pending
+      if ($any_comment_resolved) {
+        $still_has_unresolved = $this->rateSheetService->hasUnresolvedComments($rate_sheet_id);
+        
+        if (!$still_has_unresolved) {
+          // All comments resolved - set status back to Pending
+          $pending_status_id = $this->rateSheetService->getRateStatusId('Pending');
+          
+          if ($pending_status_id !== NULL) {
+            $this->database->update('rate_sheet')
+              ->fields(['rate_sheet_status_id' => $pending_status_id])
+              ->condition('id', $rate_sheet_id)
+              ->execute();
+
+            // Insert a status record
+            $this->database->insert('rate_sheet_status')
+              ->fields([
+                'rate_sheet_id' => $rate_sheet_id,
+                'status_name' => 'Pending',
+                'created_by' => $this->currentUser->id(),
+                'date' => \Drupal::time()->getRequestTime(),
+              ])
+              ->execute();
+
+            // Log the action
+            $this->database->insert('action_log')
+              ->fields([
+                'action_type',
+                'entity_target_type',
+                'entity_target_id',
+                'created_by',
+                'created_date',
+                'log_data',
+                'solved',
+              ])
+              ->values([
+                'STATUS_UPDATE',
+                'RATE_SHEET',
+                $rate_sheet_id,
+                $this->currentUser->id(),
+                \Drupal::time()->getRequestTime(),
+                "User {$this->currentUser->id()} resolved all comments and rate sheet {$rate_sheet_id} returned to Pending status.",
+                0,
+              ])
+              ->execute();
+          }
+        }
       }
 
       // Log the action.
@@ -612,6 +696,7 @@ class EditRateSheetForm extends FormBase {
           'created_by',
           'created_date',
           'log_data',
+          'solved',
         ])
         ->values([
           'STATUS_UPDATE',
@@ -620,6 +705,7 @@ class EditRateSheetForm extends FormBase {
           $this->currentUser->id(),
           \Drupal::time()->getRequestTime(),
           "User {$this->currentUser->id()} updated rate sheet {$rate_sheet_id}.",
+          0,
         ])
         ->execute();
 

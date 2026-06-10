@@ -1058,3 +1058,25 @@ function zcs_api_attributes_update_9014() {
     ]);
   }
 }
+
+/**
+ * Update the action_log rate_sheet_status, adding the 'action_log_id' field.
+ */
+function zcs_api_attributes_update_9016() {
+  $schema = \Drupal::database()->schema();
+
+  if (
+    $schema->tableExists('rate_sheet_status') &&
+    !$schema->fieldExists('rate_sheet_status', 'action_log_id')
+  ) {
+
+    $spec = [
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+      'description' => 'References the action_log record associated with this status.',
+    ];
+
+    $schema->addField('rate_sheet_status', 'action_log_id', $spec);
+  }
+}

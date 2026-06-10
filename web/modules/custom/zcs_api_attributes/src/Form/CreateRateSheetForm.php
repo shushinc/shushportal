@@ -353,9 +353,14 @@ class CreateRateSheetForm extends FormBase {
     $nids = array_filter(explode(',', $values['nodes'] ?? ''));
 
     try {
+
+      $currency = array_filter($this->list, function ($currency) use ($values) {
+        return $currency['locale'] === $values['currencies'];
+      });
+
       $rate_sheet_id = $this->rateSheetService->createRateSheet([
         'name' => $values['name'],
-        'currency' => $values['currencies'],
+        'currency' => reset($currency)['alphabeticCode'],
         'markup_retail' => $values['retail_markup_percentage'],
         'effective_date' => strtotime($values['attribute_date']),
         'attribute_ids' => $nids,
