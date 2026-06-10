@@ -305,6 +305,15 @@ final class EditClientForm extends FormBase {
       '#suffix' => '</div></div>',
     ];
 
+    $form['selected_rate_sheets'] = [
+      '#type' => 'fieldset',
+      '#title' => 'Selected Rate Sheets',
+      '#attributes' => [
+        'class' => ['custom-fieldset'],
+      ],
+      '#prefix' => '<div class="selected-covers">',
+    ];
+
     $form['api_agreement_covers'] = [
       '#type' => 'fieldset',
       '#title' => 'APIs Agreement Covers',
@@ -347,6 +356,72 @@ final class EditClientForm extends FormBase {
       '#suffix' => '</div>',
     ];
 
+    $form['selected_rate_sheets'] = [
+      '#type' => 'fieldset',
+      '#title' => 'Selected Rate Sheets',
+      '#attributes' => [
+        'class' => ['custom-fieldset'],
+      ],
+      '#prefix' => '<div class="selected-rate-sheets">',
+    ];
+
+    // Get existing selected rate sheets
+    $selected_rate_sheets_array = [];
+    if (!empty($group->get('field_selected_rate_sheets')->value)) {
+      $selected_rate_sheets_array = json::decode($group->get('field_selected_rate_sheets')->value);
+    }
+
+    // Load approved rate sheets from the database
+    $database = \Drupal::database();
+    $rate_sheet_status_lookup = $database->select('rate_sheet_status_lookup', 'rssl')
+      ->fields('rssl', ['id'])
+      ->condition('status_name', 'Approved')
+      ->execute()
+      ->fetchField();
+
+    if ($rate_sheet_status_lookup) {
+      $rate_sheets_query = $database->select('rate_sheet', 'rs')
+        ->fields('rs', ['id', 'name', 'effective_date'])
+        ->condition('rate_sheet_status_id', $rate_sheet_status_lookup)
+        ->orderBy('effective_date', 'DESC');
+      $rate_sheets = $rate_sheets_query->execute()->fetchAll();
+
+      if (!empty($rate_sheets)) {
+        $rate_sheet_no = 1;
+        $rate_sheet_ids = [];
+        foreach ($rate_sheets as $rate_sheet) {
+          $rate_sheet_ids[] = $rate_sheet->id;
+          $effective_date = date('M d, Y', intval($rate_sheet->effective_date));
+          $form['selected_rate_sheets']['rate_sheet_' . $rate_sheet->id] = [
+            '#type' => 'checkbox',
+            '#title' => Markup::create("<span class='attribute-no'>$rate_sheet_no. </span>") . $rate_sheet->name . ' (' . $effective_date . ')',
+            '#default_value' => $selected_rate_sheets_array[$rate_sheet->id] ?? 0,
+            '#attributes' => [
+              'class' => ['toggle-checkbox'],
+            ],
+          ];
+          $rate_sheet_no++;
+        }
+
+        $form['selected_rate_sheets']['rate_sheet_nodes'] = [
+          '#type' => 'hidden',
+          '#value' => implode(",", $rate_sheet_ids),
+        ];
+      }
+      else {
+        $form['selected_rate_sheets']['no_rate_sheets'] = [
+          '#markup' => '<p>No approved rate sheets available.</p>',
+        ];
+      }
+    }
+    else {
+      $form['selected_rate_sheets']['no_status'] = [
+        '#markup' => '<p>Approved status not found in the system.</p>',
+      ];
+    }
+
+    $form['selected_rate_sheets']['#suffix'] = '</div>';
+
     $form['actions'] = [
       '#type' => 'actions',
       'submit' => [
@@ -386,6 +461,16 @@ final class EditClientForm extends FormBase {
 
     $encoded_data = Json::encode($json);
 
+    // Process selected rate sheets
+    $rate_sheet_json = [];
+    if (!empty($values['rate_sheet_nodes'])) {
+      $rate_sheet_ids = explode(",", $values['rate_sheet_nodes']);
+      foreach ($rate_sheet_ids as $rate_sheet_id) {
+        $rate_sheet_json[$rate_sheet_id] = $values['rate_sheet_' . $rate_sheet_id] ?? 0;
+      }
+    }
+    $encoded_rate_sheets = Json::encode($rate_sheet_json);
+
     $partner_name = $form_state->getValue('partner_name');
     $contact_name = $form_state->getValue('contact_name');
     $contact_email = $form_state->getValue('contact_email');
@@ -424,6 +509,7 @@ final class EditClientForm extends FormBase {
     $group->set('field_currency', $currency);
     $group->set('field_industry', $industry);
     $group->set('field_apis_agreement_covers', $encoded_data);
+    $group->set('field_selected_rate_sheets', $encoded_rate_sheets);
 
     // Address details.
     $country_code = $form_state->getValue('address')['country_code'];

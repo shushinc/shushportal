@@ -1,0 +1,19 @@
+uuid: 20121ad6-8ac4-4c63-be3d-be9da7dea3c4
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.group.field_selected_rate_sheets
+    - group.type.partner
+id: group.partner.field_selected_rate_sheets
+field_name: field_selected_rate_sheets
+entity_type: group
+bundle: partner
+label: 'Selected Rate Sheets'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

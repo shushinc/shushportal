@@ -2657,7 +2657,8 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
 }
 
 #edit-api-agreement-covers legend,
-[id^=edit-api-agreement-covers--] legend {
+[id^=edit-api-agreement-covers--] legend,
+[id^=edit-selected-rate-sheets--] legend {
   font-family: "DM Sans", sans-serif;
   font-size: 16px;
   font-weight: 700;
@@ -2666,13 +2667,15 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   border-bottom: 1px solid #000;
 }
 #edit-api-agreement-covers .fieldset-wrapper,
-[id^=edit-api-agreement-covers--] .fieldset-wrapper {
+[id^=edit-api-agreement-covers--] .fieldset-wrapper,
+[id^=edit-selected-rate-sheets--] .fieldset-wrapper {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
 }
 #edit-api-agreement-covers .fieldset-wrapper .js-form-item,
-[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item {
+[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item,
+[id^=edit-selected-rate-sheets--] .fieldset-wrapper .js-form-item {
   display: flex;
   flex: 0 0 50%;
   align-items: center;
@@ -2682,12 +2685,14 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   padding-right: 12px;
 }
 #edit-api-agreement-covers .fieldset-wrapper .js-form-item label,
-[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item label {
+[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item label,
+[id^=edit-selected-rate-sheets--] .fieldset-wrapper .js-form-item label {
   position: relative;
   padding-left: 40px;
 }
 #edit-api-agreement-covers .fieldset-wrapper .js-form-item label::after,
-[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item label::after {
+[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item label::after,
+[id^=edit-selected-rate-sheets--] .fieldset-wrapper .js-form-item label::after {
   content: "";
   width: 32px;
   height: 20px;
@@ -2699,7 +2704,8 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   left: 0;
 }
 #edit-api-agreement-covers .fieldset-wrapper .js-form-item label::before,
-[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item label::before {
+[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item label::before,
+[id^=edit-selected-rate-sheets--] .fieldset-wrapper .js-form-item label::before {
   content: "";
   transform: translateX(0px);
   transition: all 0.3s ease-in-out;
@@ -2715,14 +2721,16 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   opacity: 1;
 }
 #edit-api-agreement-covers .fieldset-wrapper .js-form-item input[type=checkbox],
-[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item input[type=checkbox] {
+[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item input[type=checkbox],
+[id^=edit-selected-rate-sheets--] .fieldset-wrapper .js-form-item input[type=checkbox] {
   opacity: 0;
   width: 0;
   height: 0;
   position: absolute;
 }
 #edit-api-agreement-covers .fieldset-wrapper .js-form-item input[type=checkbox]:checked + label::before,
-[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item input[type=checkbox]:checked + label::before {
+[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item input[type=checkbox]:checked + label::before,
+[id^=edit-selected-rate-sheets--] .fieldset-wrapper .js-form-item input[type=checkbox]:checked + label::before {
   transform: translateX(15px);
   border-radius: 50%;
   content: "";
@@ -2737,12 +2745,14 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   opacity: 1;
 }
 #edit-api-agreement-covers .fieldset-wrapper .js-form-item input[type=checkbox]:checked + label::after,
-[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item input[type=checkbox]:checked + label::after {
+[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item input[type=checkbox]:checked + label::after,
+[id^=edit-selected-rate-sheets--] .fieldset-wrapper .js-form-item input[type=checkbox]:checked + label::after {
   content: "";
   background-color: #06b487;
 }
 #edit-api-agreement-covers .fieldset-wrapper label,
-[id^=edit-api-agreement-covers--] .fieldset-wrapper label {
+[id^=edit-api-agreement-covers--] .fieldset-wrapper label,
+[id^=edit-selected-rate-sheets--] .fieldset-wrapper label {
   font-family: "DM Sans", sans-serif;
   font-size: 13px;
   font-weight: 500;

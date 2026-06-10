@@ -21,6 +21,7 @@ dependencies:
     - field.field.group.partner.field_prepayment_balance_left
     - field.field.group.partner.field_prepayment_balance_used
     - field.field.group.partner.field_pricing_type
+    - field.field.group.partner.field_selected_rate_sheets
     - group.type.partner
   module:
     - address
@@ -172,6 +173,13 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 20
+    region: content
+  field_selected_rate_sheets:
+    type: basic_string
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 22
     region: content
   label:
     type: string

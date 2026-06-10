@@ -36,6 +36,7 @@ function zcs_client_management_theme($existing, $type, $theme, $path) {
           'postal_code' => '',
           'agreement_covers' => '',
           'pricing_type' => '',
+          'selected_rate_sheets' => '',
         ],
         'template' => 'client-view',
       ],

@@ -1,0 +1,19 @@
+uuid: f22e4dc6-785b-4cad-80ee-b74a9091d877
+langcode: en
+status: true
+dependencies:
+  module:
+    - group
+id: group.field_selected_rate_sheets
+field_name: field_selected_rate_sheets
+entity_type: group
+type: string_long
+settings:
+  case_sensitive: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false
