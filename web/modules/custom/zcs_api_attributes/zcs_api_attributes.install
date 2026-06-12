@@ -1080,3 +1080,37 @@ function zcs_api_attributes_update_9016() {
     $schema->addField('rate_sheet_status', 'action_log_id', $spec);
   }
 }
+
+/**
+ * Add rate_sheet_client_status_id field to client_rate_sheet table.
+ */
+function zcs_api_attributes_update_9017() {
+  $schema = \Drupal::database()->schema();
+  
+  if ($schema->tableExists('client_rate_sheet') && 
+      !$schema->fieldExists('client_rate_sheet', 'rate_sheet_client_status_id')) {
+    
+    $spec = [
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+      'default' => NULL,
+      'description' => 'Foreign key to rate_sheet_status_lookup.id',
+    ];
+    
+    $schema->addField('client_rate_sheet', 'rate_sheet_client_status_id', $spec);
+    
+    // Add index for the foreign key.
+    $schema->addIndex('client_rate_sheet', 'rate_sheet_client_status_id', 
+      ['rate_sheet_client_status_id'], [
+        'fields' => [
+          'rate_sheet_client_status_id' => [
+            'type' => 'int',
+            'unsigned' => TRUE,
+            'not null' => FALSE,
+          ],
+        ],
+      ]
+    );
+  }
+}

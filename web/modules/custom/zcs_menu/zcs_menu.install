@@ -113,11 +113,11 @@ function zcs_menu_install() {
   ]);
   $client_parent_menu_link->save();
 
-   // Get the parent menu link ID.
-   $client_parent_id = 'menu_link_content:' . $client_parent_menu_link->uuid();
+  // Get the parent menu link ID.
+  $client_parent_id = 'menu_link_content:' . $client_parent_menu_link->uuid();
 
    // Create the child menu link.
-   $client_menu_child_link1 = MenuLinkContent::create([
+  $client_menu_child_link1 = MenuLinkContent::create([
      'title' => 'Client Management',
      'link' => ['uri' => 'internal:/client/client-management'], // Adjust path as needed.
      'menu_name' => $menu_name,
@@ -127,11 +127,11 @@ function zcs_menu_install() {
        'administrator',
        'carrier_admin',
      ],
-   ]);
-   $client_menu_child_link1->save();
+  ]);
+  $client_menu_child_link1->save();
 
-    // Create the child menu link.
-    $client_menu_child_link2 = MenuLinkContent::create([
+  // Create the child menu link.
+  $client_menu_child_link2 = MenuLinkContent::create([
     'title' => 'User Management',
     'link' => ['uri' => 'internal:/client/user-management'], // Adjust path as needed.
     'menu_name' => $menu_name,
@@ -142,43 +142,55 @@ function zcs_menu_install() {
         'carrier_admin',
         'client_admin',
     ],
+  ]);
+  $client_menu_child_link2->save();
+
+
+  if (\Drupal::moduleHandler()->moduleExists('zcs_kong')) {
+    // Create the child menu link.
+    $client_menu_child_link3 = MenuLinkContent::create([
+      'title' => 'Client Credentials',
+      'link' => ['uri' => 'internal:/client/apps'], // Adjust path as needed.
+      'menu_name' => $menu_name,
+      'parent' => $client_parent_id, // Set the parent ID.
+      'weight' => 8,
+      'menu_per_role__show_role' => [
+        'administrator',
+        'authenticated',
+      ],
     ]);
-    $client_menu_child_link2->save();
+    $client_menu_child_link3->save();   
+  }
+  if(\Drupal::moduleHandler()->moduleExists('zcs_aws')) {
+    // Create the child menu link.
+    $client_menu_child_link3 = MenuLinkContent::create([
+      'title' => 'Client Credentials',
+      'link' => ['uri' => 'internal:/client/aws-apps'], // Adjust path as needed.
+      'menu_name' => $menu_name,
+      'parent' => $client_parent_id, // Set the parent ID.
+      'weight' => 8,
+      'menu_per_role__show_role' => [
+        'administrator',
+        'authenticated',
+      ],
+    ]);
+    $client_menu_child_link3->save();
+  }
 
+  $client_rate_sheet_menu_link = MenuLinkContent::create([
+    'title' => 'Client Rate Sheet Approval',
+    'link' => ['uri' => 'internal:/client/rate-sheet-approval'], // Adjust path as needed.
+    'menu_name' => $menu_name,
+    'parent' => $client_parent_id, // Set the parent ID.
+    'weight' => 9,
+    'menu_per_role__show_role' => [
+      'administrator',
+      'authenticated',
+    ],
+  ]);
+  $client_rate_sheet_menu_link->save();
 
-    if (\Drupal::moduleHandler()->moduleExists('zcs_kong')) {
-      // Create the child menu link.
-      $client_menu_child_link3 = MenuLinkContent::create([
-        'title' => 'Client Credentials',
-        'link' => ['uri' => 'internal:/client/apps'], // Adjust path as needed.
-        'menu_name' => $menu_name,
-        'parent' => $client_parent_id, // Set the parent ID.
-        'weight' => 8,
-        'menu_per_role__show_role' => [
-          'administrator',
-          'authenticated',
-        ],
-      ]);
-      $client_menu_child_link3->save();   
-    }
-    if(\Drupal::moduleHandler()->moduleExists('zcs_aws')){
-      // Create the child menu link.
-      $client_menu_child_link3 = MenuLinkContent::create([
-        'title' => 'Client Credentials',
-        'link' => ['uri' => 'internal:/client/aws-apps'], // Adjust path as needed.
-        'menu_name' => $menu_name,
-        'parent' => $client_parent_id, // Set the parent ID.
-        'weight' => 8,
-        'menu_per_role__show_role' => [
-          'administrator',
-          'authenticated',
-        ],
-      ]);
-      $client_menu_child_link3->save();
-    }
-
-
-     // Create the parent menu link.
+  // Create the parent menu link.
   $price_parent_menu_link = MenuLinkContent::create([
     'title' => 'Pricing',
     'link' => ['uri' => 'route:<nolink>'],

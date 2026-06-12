@@ -2750,6 +2750,12 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   content: "";
   background-color: #06b487;
 }
+#edit-api-agreement-covers .fieldset-wrapper .js-form-item input[type=checkbox].pending-status:checked + label::after,
+[id^=edit-api-agreement-covers--] .fieldset-wrapper .js-form-item input[type=checkbox].pending-status:checked + label::after,
+[id^=edit-selected-rate-sheets--] .fieldset-wrapper .js-form-item input[type=checkbox].pending-status:checked + label::after {
+  content: "";
+  background-color: #fcc418;
+}
 #edit-api-agreement-covers .fieldset-wrapper label,
 [id^=edit-api-agreement-covers--] .fieldset-wrapper label,
 [id^=edit-selected-rate-sheets--] .fieldset-wrapper label {
@@ -2758,6 +2764,13 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
   font-weight: 500;
   line-height: normal;
   color: #2e3b8f;
+}
+#edit-api-agreement-covers .fieldset-wrapper label .pending-approval-text,
+[id^=edit-api-agreement-covers--] .fieldset-wrapper label .pending-approval-text,
+[id^=edit-selected-rate-sheets--] .fieldset-wrapper label .pending-approval-text {
+  color: #fcc418;
+  font-style: italic;
+  font-size: 12px;
 }
 
 .multiselect-native-select .multiselect {

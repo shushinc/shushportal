@@ -575,12 +575,17 @@ class CreateClientForm extends FormBase {
     }
     $encoded_data = Json::encode($json);
 
-    // Process selected rate sheets
+    // Process selected rate sheets - we'll handle client_rate_sheet table separately
     $rate_sheet_json = [];
+    $selected_rate_sheets = [];
     if (!empty($values['rate_sheet_nodes'])) {
       $rate_sheet_ids = explode(",", $values['rate_sheet_nodes']);
       foreach ($rate_sheet_ids as $rate_sheet_id) {
-        $rate_sheet_json[$rate_sheet_id] = $values['rate_sheet_' . $rate_sheet_id] ?? 0;
+        $is_selected = $values['rate_sheet_' . $rate_sheet_id] ?? 0;
+        $rate_sheet_json[$rate_sheet_id] = $is_selected;
+        if ($is_selected) {
+          $selected_rate_sheets[] = $rate_sheet_id;
+        }
       }
     }
     $encoded_rate_sheets = Json::encode($rate_sheet_json);
@@ -681,6 +686,10 @@ class CreateClientForm extends FormBase {
             $response = Json::decode($kong_response);
             $group->set('field_consumer_id', $response['id']);
             $group->save();
+            
+            // Handle client_rate_sheet relationships
+            $this->handleClientRateSheetRelationships($group->id(), $selected_rate_sheets);
+            
             $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
             $this->messenger()->addMessage($this->t('Client is invited successfully.'));
             $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
@@ -743,6 +752,10 @@ class CreateClientForm extends FormBase {
         "family_name" => $form_state->getValue('contact_name') ?? '',
       ]);
       $group->save();
+      
+      // Handle client_rate_sheet relationships
+      $this->handleClientRateSheetRelationships($group->id(), $selected_rate_sheets);
+      
       $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
       $uid = \Drupal::currentUser()->id();
       $user = User::load($uid);
@@ -879,6 +892,50 @@ class CreateClientForm extends FormBase {
       $username = $user->getAccountName();
     }
     return $username;
+  }
+
+  /**
+   * Handle client rate sheet relationships.
+   */
+  protected function handleClientRateSheetRelationships($client_id, array $selected_rate_sheets) {
+    if (empty($selected_rate_sheets)) {
+      return;
+    }
+
+    $database = \Drupal::database();
+    $current_user_id = \Drupal::currentUser()->id();
+    $current_date = date('Y-m-d H:i:s');
+
+    // Get Pending status ID
+    $pending_status_id = $database->select('rate_sheet_status_lookup', 'rssl')
+      ->fields('rssl', ['id'])
+      ->condition('status_name', 'Pending')
+      ->execute()
+      ->fetchField();
+
+    foreach ($selected_rate_sheets as $rate_sheet_id) {
+      // Check if relationship already exists
+      $exists = $database->select('client_rate_sheet', 'crs')
+        ->fields('crs', ['rate_sheet_id'])
+        ->condition('rate_sheet_id', $rate_sheet_id)
+        ->condition('client_id', $client_id)
+        ->execute()
+        ->fetchField();
+
+      if (!$exists) {
+        // Create new relationship with Pending status
+        $database->insert('client_rate_sheet')
+          ->fields([
+            'rate_sheet_id' => $rate_sheet_id,
+            'client_id' => $client_id,
+            'created_by' => $current_user_id,
+            'created_date' => $current_date,
+            'active' => 0,
+            'rate_sheet_client_status_id' => $pending_status_id,
+          ])
+          ->execute();
+      }
+    }
   }
 
 }
