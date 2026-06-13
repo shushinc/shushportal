@@ -104,6 +104,35 @@ class kongService  {
   }
 
 
+  public function createConsumerSync($username, $customer_id, $consumer_email) {
+
+    $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
+    $endpoint = $endpoint_url .'/consumers';
+
+    $body = [
+      'id' => $customer_id,
+      'username' => $username,
+      'custom_id' => $consumer_email,
+    ];
+  
+    $request_body = json::encode($body);
+    try {
+      $response = $this->httpClient->request('POST', $endpoint, [
+        'headers' => [
+        'content-type' => 'application/json',
+        ],
+        'verify' => FALSE,
+        'body' => $request_body,
+      ]);
+      return $response;
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('kong')->info('Error in creating consumer in kong gateway : @message', ['@message' => $e->getMessage()]);
+      return "error";
+    }
+  }
+
+
 
   public function getConsumer($customer_id) {
     $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
@@ -357,6 +386,54 @@ class kongService  {
   /**
   * {@inheritdoc}
   */
+  public function createJwtTokenSync($consumer_id, $jwt_id, $jwt_key, $jwt_secret, $tags) {
+    $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
+    $endpoint = $endpoint_url . '/consumers/' . $consumer_id . '/jwt';
+
+      $body = [
+        'id' => $jwt_id,
+        'key' => $jwt_key,
+        'secret' => $jwt_secret,
+        'algorithm' => 'HS256',
+        'tags' => $tags,
+      ];
+      // dump($body);
+      // die;
+
+    try {
+      $body = [
+        'id' => $jwt_id,
+        'key' => $jwt_key,
+        'secret' => $jwt_secret,
+        'algorithm' => 'HS256',
+        'tags' => $tags,
+      ];
+
+      $request_body = json::encode($body);
+      $response = $this->httpClient->request('POST', $endpoint, [
+        'headers' => [
+        'content-type' => 'application/json',
+        ],
+        'verify' => FALSE,
+        'timeout' => 400, 
+        'body' => $request_body,
+      ]);
+
+      return $response;
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('kong')->error(
+        'Error generating Kong JWT: @message',
+        ['@message' => $e->getMessage()]
+      );
+        return NULL;
+    }
+  }
+
+
+  /**
+  * {@inheritdoc}
+  */
   public function getAppList($consumer_id) {
     $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
     $endpoint = $endpoint_url .'/consumers/'. $consumer_id .'/key-auth';
@@ -592,6 +669,7 @@ class kongService  {
     $app = Json::decode($response);
     $jwt_response = Json::decode($jwt_response_body);
 
+
     // if ($ttl!= 'never_expires') {
     //   $expiry_time = $ttl + time();
     // }
@@ -608,9 +686,11 @@ class kongService  {
       'field_consumer_id' => $client_id,
       'field_client_id' => $app['client_id'],
       'field_client_secret' =>$app['client_secret'],
+      'field_redirect_url' => $app['redirect_uris'][0] ?? '',
       //'field_ttl' => $ttl,
       'field_app_status' => 'active',
       'field_jwt' => $jwt_response['id'],
+      'field_jwt_key' => $jwt_response['key'],
      // 'field_expiry_date' => $expiry_time ?? '',
       //'field_renewal_date' => '',
       'uid' => \Drupal::currentUser()->id(),

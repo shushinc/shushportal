@@ -24,13 +24,38 @@ class SyncAppsForm extends FormBase {
     $rows = [];
 
     $groups = Group::loadMultiple();
-
+    $kong_service = \Drupal::service('zcs_kong.kong_gateway');
     if (!empty($groups)) {
       foreach ($groups as $group) {
+        $status = 'N/A';
+        $consumer_id = $group->get('field_consumer_id')->value ?? '';
+        if (!empty($consumer_id)) {
+              $contact_email = $kong_service->getContactEmailUsingConsumerId($consumer_id);
+               if (!empty($contact_email)) {
+                 $response = $kong_service->getConsumer($contact_email);
+                       if ($response !== 'error') {
+                         $body = Json::decode($response->getBody()->getContents());
+                             if (!empty($body['data'])) {
+                                $status = [
+                                  'data' => [
+                                    '#type' => 'html_tag',
+                                    '#tag' => 'span',
+                                    '#value' => $this->t('Synced'),
+                                    '#attributes' => [
+                                      'class' => ['badge', 'badge--status'],
+                                      'style' => 'color:green;font-weight:bold;',
+                                    ],
+                                  ],
+                                ];
+                            }
+                       }
+               }
+        }
         $rows[$group->id()] = [
           'gid'   => $group->id(),
           'name'  => $group->label(),
           'type'  => $group->bundle(),
+          'sync_status' => $status,
         ];
       }
     }
@@ -41,6 +66,7 @@ class SyncAppsForm extends FormBase {
         'gid'  => $this->t('Group ID'),
         'name' => $this->t('Group Name'),
         'type' => $this->t('Group Type'),
+        'sync_status' => $this->t('Sync Status'),
       ],
       '#options' => $rows,
       '#empty'   => $this->t('No groups available.'),
@@ -129,6 +155,7 @@ class SyncAppsForm extends FormBase {
     }
     $consumer_id = $consumer_id_field[0]['value'];
 
+
     // ------------------------------------------------------------------ //
     // 3. Collect eligible app nodes (field_gateway is empty).
     // ------------------------------------------------------------------ //
@@ -188,6 +215,7 @@ class SyncAppsForm extends FormBase {
 
     $kong_response = $get_consumer_response->getBody()->getContents();
     $response      = Json::decode($kong_response);
+ 
 
     if (!empty($response['data'])) {
       // Consumer already exists in Kong.
@@ -195,7 +223,7 @@ class SyncAppsForm extends FormBase {
     }
     else {
       // Create a new consumer.
-      $create_consumer_response = $kong_service->createConsumer($user_name, $contact_email);
+      $create_consumer_response = $kong_service->createConsumerSync($user_name, $consumer_id, $contact_email);
 
       if (
         $create_consumer_response !== 'error' &&
@@ -257,12 +285,26 @@ class SyncAppsForm extends FormBase {
 
       $response_body = (string) $sync_apps_response->getBody();
 
-      $create_jwt_token_response = $kong_service->createJwtToken($user_name, $response_body);
+
+      $jwt_id = $node->field_jwt->value;
+      $jwt_key = $node->field_jwt_key->value;
+      $jwt_secret = 'strongpassword';
+      //$consumer_username = $node->getTitle();
+      $tags = !empty($node->field_tag->value) ? [$node->field_tag->value] : [];
+
+      $create_jwt_token_response = $kong_service->createJwtTokenSync($user_name, $jwt_id, $jwt_key, $jwt_secret, $tags);
 
       if (empty($create_jwt_token_response)) {
         \Drupal::logger('zcs_kong')->error(
           'createJwtToken() returned empty for app @nid.', ['@nid' => $node->id()]
         );
+        continue;
+      }
+
+      if($create_jwt_token_response != 'error') {
+        \Drupal::logger('zcs_kong')->error(
+                'createJwtToken() returned empty for app @nid.', ['@nid' => $node->id()]
+              );
         continue;
       }
 
@@ -278,7 +320,7 @@ class SyncAppsForm extends FormBase {
       $jwt_response_body = (string) $create_jwt_token_response->getBody();
 
       // FIX: log the result of updateSyncApp so failures are not silent.
-      $update_result = $kong_service->updateSyncApp($node, $consumer_id_to_use, $jwt_response_body, $group);
+     // $update_result = $kong_service->updateSyncApp($node, $consumer_id_to_use, $jwt_response_body, $group);
 
       if (empty($update_result)) {
         \Drupal::logger('zcs_kong')->error(
