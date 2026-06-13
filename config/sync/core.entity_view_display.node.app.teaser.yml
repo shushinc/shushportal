@@ -14,6 +14,8 @@ dependencies:
     - field.field.node.app.field_expiry_date
     - field.field.node.app.field_gateway
     - field.field.node.app.field_jwt
+    - field.field.node.app.field_jwt_key
+    - field.field.node.app.field_redirect_url
     - field.field.node.app.field_renewal_date
     - field.field.node.app.field_tag
     - field.field.node.app.field_ttl
@@ -51,6 +53,8 @@ hidden:
   field_expiry_date: true
   field_gateway: true
   field_jwt: true
+  field_jwt_key: true
+  field_redirect_url: true
   field_renewal_date: true
   field_tag: true
   field_ttl: true

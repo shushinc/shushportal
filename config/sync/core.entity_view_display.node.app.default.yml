@@ -13,6 +13,8 @@ dependencies:
     - field.field.node.app.field_expiry_date
     - field.field.node.app.field_gateway
     - field.field.node.app.field_jwt
+    - field.field.node.app.field_jwt_key
+    - field.field.node.app.field_redirect_url
     - field.field.node.app.field_renewal_date
     - field.field.node.app.field_tag
     - field.field.node.app.field_ttl
@@ -115,6 +117,21 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 116
+    region: content
+  field_jwt_key:
+    type: basic_string
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 118
+    region: content
+  field_redirect_url:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 117
     region: content
   field_renewal_date:
     type: timestamp

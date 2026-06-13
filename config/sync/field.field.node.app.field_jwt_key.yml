@@ -1,0 +1,19 @@
+uuid: 72ed855d-3744-4dd3-936d-becd70b00682
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_jwt_key
+    - node.type.app
+id: node.app.field_jwt_key
+field_name: field_jwt_key
+entity_type: node
+bundle: app
+label: 'JWT Key'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long
