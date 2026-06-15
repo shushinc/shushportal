@@ -27,7 +27,7 @@ class SyncAppsForm extends FormBase {
     $kong_service = \Drupal::service('zcs_kong.kong_gateway');
     if (!empty($groups)) {
       foreach ($groups as $group) {
-        $status = 'N/A';
+        $status = 'Not in Sync';
         $consumer_id = $group->get('field_consumer_id')->value ?? '';
         if (!empty($consumer_id)) {
               $contact_email = $kong_service->getContactEmailUsingConsumerId($consumer_id);
