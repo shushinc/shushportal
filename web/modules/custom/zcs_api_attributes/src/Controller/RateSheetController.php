@@ -252,29 +252,4 @@ class RateSheetController extends ControllerBase {
     return $output;
   }
 
-  /**
-   * Checks access for rate sheet routes.
-   *
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The user account.
-   *
-   * @return \Drupal\Core\Access\AccessResultInterface
-   *   The access result.
-   */
-  public static function access(AccountInterface $account) {
-    $allowed_roles = ['administrator', 'carrier_admin', 'finance_admin', 'financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
-    $user_roles = $account->getRoles();
-
-    if (array_intersect($allowed_roles, $user_roles)) {
-      return AccessResult::allowed();
-    }
-    else {
-      $memberships = \Drupal::service('group.membership_loader')->loadByUser($account);
-      if (isset($memberships)) {
-        return AccessResult::forbidden();
-      }
-    }
-    return AccessResult::forbidden();
-  }
-
 }

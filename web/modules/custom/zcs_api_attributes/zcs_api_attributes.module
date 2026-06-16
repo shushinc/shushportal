@@ -46,6 +46,12 @@ function zcs_api_attributes_theme() {
       ],
       'template' => 'rate_sheet_list',
     ],
+    'client_rate_sheet_approval' => [
+      'variables' => [
+        'content' => NULL,
+      ],
+      'template' => 'client_rate_sheet_approval',
+    ],
     'demand_partner_discounts_or_different_pricing' => [
       'variables' => [
         'content' => NULL,

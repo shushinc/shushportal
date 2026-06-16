@@ -119,23 +119,4 @@ class DiscountReviewLists extends ControllerBase {
     return $output;
   }
 
-  /**
-   *
-   */
-  public function access(AccountInterface $account) {
-    $allowed_roles = ['administrator', 'carrier_admin', 'finance_admin', 'financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
-    $user_roles = \Drupal::currentUser()->getRoles();
-
-    if (array_intersect($allowed_roles, $user_roles)) {
-      return AccessResult::allowed();
-    }
-    else {
-      $memberships = \Drupal::service('group.membership_loader')->loadByUser(\Drupal::currentUser());
-      if (isset($memberships)) {
-        return AccessResult::forbidden();
-      }
-    }
-    return AccessResult::forbidden();
-  }
-
 }
