@@ -22,50 +22,121 @@ class SyncAppsForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
 
     $rows = [];
-
+    $user_synced = FALSE;
     $groups = Group::loadMultiple();
     $kong_service = \Drupal::service('zcs_kong.kong_gateway');
     if (!empty($groups)) {
       foreach ($groups as $group) {
-        $status = 'Not in Sync';
         $consumer_id = $group->get('field_consumer_id')->value ?? '';
-        if (!empty($consumer_id)) {
-              $contact_email = $kong_service->getContactEmailUsingConsumerId($consumer_id);
-               if (!empty($contact_email)) {
-                 $response = $kong_service->getConsumer($contact_email);
-                       if ($response !== 'error') {
-                         $body = Json::decode($response->getBody()->getContents());
-                             if (!empty($body['data'])) {
-                                $status = [
-                                  'data' => [
-                                    '#type' => 'html_tag',
-                                    '#tag' => 'span',
-                                    '#value' => $this->t('Synced'),
-                                    '#attributes' => [
-                                      'class' => ['badge', 'badge--status'],
-                                      'style' => 'color:green;font-weight:bold;',
-                                    ],
-                                  ],
-                                ];
-                            }
-                       }
-               }
+        if (!empty($consumer_id)) {          
+          $contact_email = $kong_service->getContactEmailUsingConsumerId($consumer_id);
+          if (!empty($contact_email)) {
+            $response = $kong_service->getConsumer($contact_email);
+            if ($response !== 'error') {
+              $body = Json::decode($response->getBody()->getContents());
+              $status_color = 'red';
+              $user_synced = FALSE;
+              if (!empty($body['data'])) {
+                $user_synced = TRUE;
+              }
+            }
+            $app_count = 0;
+            $apps_synced = 0;
+            $jwt_count = 0;
+            $jwt_synced = 0;
+            $consumer_apps = $kong_service->getUsersAppList($consumer_id);
+            if($consumer_apps != 'error') {
+              $response = Json::decode($consumer_apps->getBody()->getContents());
+              $apps_synced = count($response['data'] ?? []);
+            }
+
+            $jwt_response = $kong_service->getJwtCredentials($consumer_id);
+            if ($jwt_response != 'error') {
+              $jwt_data = Json::decode($jwt_response->getBody()->getContents());
+              $jwt_synced = count($jwt_data['data'] ?? []);
+            }
+
+            $relationships = \Drupal::entityTypeManager()->getStorage('group_relationship')->loadByProperties(['gid' => $group->id()]);
+            foreach ($relationships as $relationship) {
+              $entity = $relationship->getEntity();
+              if ($entity && $entity->getEntityTypeId() === 'node' && $entity->bundle() === 'app'  && $entity->get('field_gateway')->isEmpty()) {
+                $app_count++;
+              }
+              if ($entity && $entity->getEntityTypeId() === 'node' && !$entity->get('field_jwt')->isEmpty() && !$entity->get('field_jwt_key')->isEmpty()) {
+                $jwt_count++;
+              }
+            }
+
+            if (!$user_synced) {
+              // Consumer not found in Kong.
+              $status_text = 'Not in Sync';
+              $status_color = 'red';
+
+            }
+            elseif ($app_count == 0) {
+              // Consumer exists and no apps to sync.
+              $status_text = 'Synced';
+              $status_color = 'green';
+
+            }
+            elseif ($apps_synced == 0) {
+              // Consumer synced but no apps synced.
+              $status_text = 'Not in Sync';
+              $status_color = 'red';
+            }
+            elseif ($apps_synced < $app_count) {
+              // Some apps synced.
+              $status_text = 'Partially Synced';
+              $status_color = 'orange';
+            }
+            // elseif ($jwt_synced < $jwt_count) {
+            //   $status_text = 'Partially Synced';
+            //   $status_color = 'orange';
+            // }
+            else {
+              // All apps synced.
+              $status_text = 'Synced';
+              $status_color = 'green';
+            }
+            $status = [
+              'data' => [
+                '#type' => 'html_tag',
+                '#tag' => 'span',
+                '#value' => $this->t($status_text),
+                '#attributes' => [
+                  'style' => "color:$status_color;font-weight:bold;",
+                ],
+              ],
+            ];
+            $rows[$group->id()] = [
+              'gid'          => $group->id(),
+              'name'         => $group->label(),
+              'email'        => $group->get('field_contact_email')->value,
+              'app_count'    => $app_count,
+              'apps_synced'  => $apps_synced,
+              //'jwt_count'    => $jwt_count,
+              //'jwt_synced'   => $jwt_synced,
+              'sync_status'  => $status,
+
+            ];
+          }
         }
-        $rows[$group->id()] = [
-          'gid'   => $group->id(),
-          'name'  => $group->label(),
-          'type'  => $group->bundle(),
-          'sync_status' => $status,
-        ];
+        else {
+         \Drupal::logger('zcs_kong_sync')->warning('Group @gid dont have consumer id', ['@gid' => $group->id()]);
+        }
       }
     }
 
     $form['groups'] = [
       '#type'    => 'tableselect',
       '#header'  => [
-        'gid'  => $this->t('Group ID'),
-        'name' => $this->t('Group Name'),
-        'type' => $this->t('Group Type'),
+        'gid'  => $this->t('ID'),
+        'name' => $this->t('Client Name'),
+        'email' => $this->t('Email'),
+        'app_count'    => $this->t('Total Apps'),
+        'apps_synced' => $this->t('Apps Synced'),
+        // 'jwt_count'    => $this->t('Total Jwt'),
+        // 'jwt_synced'   => $this->t('Jwt Synced'),
         'sync_status' => $this->t('Sync Status'),
       ],
       '#options' => $rows,
@@ -154,6 +225,51 @@ class SyncAppsForm extends FormBase {
       return;
     }
     $consumer_id = $consumer_id_field[0]['value'];
+
+
+    $kong_service  = \Drupal::service('zcs_kong.kong_gateway');
+
+    $contact_email = $kong_service->getContactEmailUsingConsumerId($consumer_id);
+    $user_name     = $kong_service->getContactNameUsingConsumerId($consumer_id);
+
+    if (empty($contact_email) || empty($user_name)) {
+      \Drupal::logger('zcs_kong')->error(
+        'Could not resolve contact info for consumer @id in group @gid.',
+        [
+          '@id' => $consumer_id,
+          '@gid' => $gid,
+        ]
+      );
+      return;
+    }
+
+  $get_consumer_response = $kong_service->getConsumer($contact_email);
+
+  if ($get_consumer_response !== 'error') {
+
+    $response = Json::decode(
+      $get_consumer_response->getBody()->getContents()
+    );
+
+    if (empty($response['data'])) {
+    $create_consumer_response = $kong_service->createConsumerSync(
+      $user_name,
+      $consumer_id,
+      $contact_email
+    );
+
+    if (
+      $create_consumer_response !== 'error' &&
+      $create_consumer_response->getStatusCode() == 201
+    ) {
+
+      \Drupal::logger('zcs_kong')->notice(
+        'Created consumer for @email',
+        ['@email' => $contact_email]
+      );
+    }
+    }
+  }
 
 
     // ------------------------------------------------------------------ //
