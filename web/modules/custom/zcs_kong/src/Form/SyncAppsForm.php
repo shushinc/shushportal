@@ -179,7 +179,7 @@ class SyncAppsForm extends FormBase {
     }
 
     $batch = [
-      'title'            => $this->t('Processing Groups'),
+      'title'            => $this->t('Processing Kong Sync'),
       'operations'       => $operations,
       'finished'         => [static::class, 'batchFinished'],
       'init_message'     => $this->t('Starting batch process...'),

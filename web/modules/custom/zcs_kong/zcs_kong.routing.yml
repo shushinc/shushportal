@@ -25,6 +25,6 @@ zcs_kong.kong_sync:
   path: '/admin/kong_sync'
   defaults:
     _form: '\Drupal\zcs_kong\Form\SyncAppsForm'
-    _title: 'Group Batch Process'
+    _title: 'Sync Kong data'
   requirements:
     _permission: 'administer site configuration'
