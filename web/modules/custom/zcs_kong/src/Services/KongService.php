@@ -133,6 +133,31 @@ class kongService  {
   }
 
 
+ public function getJwtCredentials($customer_id) {
+  $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
+
+  try {
+    $client = \Drupal::httpClient();
+    $response = $client->get($endpoint_url . '/consumers/' . $customer_id . '/jwt', [
+      'verify' => FALSE,
+      'headers' => [
+        'Accept' => 'application/json',
+      ],
+    ]);
+
+    // $data = json_decode($response->getBody()->getContents(), TRUE);
+
+    return $response;
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('zcs_kong')->error('Failed to fetch JWT credentials: @msg', [
+      '@msg' => $e->getMessage(),
+    ]);
+
+    return 'error';
+  }
+}
+
 
   public function getConsumer($customer_id) {
     $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
@@ -390,16 +415,13 @@ class kongService  {
     $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
     $endpoint = $endpoint_url . '/consumers/' . $consumer_id . '/jwt';
 
-      $body = [
+    $body = [
         'id' => $jwt_id,
         'key' => $jwt_key,
         'secret' => $jwt_secret,
         'algorithm' => 'HS256',
         'tags' => $tags,
       ];
-      // dump($body);
-      // die;
-
     try {
       $body = [
         'id' => $jwt_id,
@@ -429,6 +451,34 @@ class kongService  {
         return NULL;
     }
   }
+
+
+
+public function getUsersAppList($consumer_id) {
+    $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
+    $endpoint = $endpoint_url .'/consumers/'. $consumer_id .'/oauth2';
+    try {
+      $response = $this->httpClient->request('GET', $endpoint, [
+        'headers' => [
+        'content-type' => 'application/json',
+        ],
+        'verify' => FALSE,
+      ]);
+      return $response;
+    }
+    catch (\Exception $e) {
+      // Get the error message and error code
+      $error_code = $e->getCode();
+      if ($error_code == '404') {
+        //\Drupal::messenger()->addError('No API keys available or problem in fetching Details');
+      }
+      else {
+        \Drupal::messenger()->addError('Gateway connection failure to create App.Please contact the administrator for further assistance.');
+      }
+      return "error";
+    }
+  }
+
 
 
   /**
