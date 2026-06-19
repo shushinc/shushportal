@@ -71,3 +71,13 @@ function zcs_custom_update_9001(){
 
 
 }
+
+/**
+ * Remove swagger_ui_formatter schema reference.
+ */
+function zcs_custom_update_9002() {
+
+  \Drupal::keyValue('system.schema')
+    ->delete('swagger_ui_formatter');
+
+}
