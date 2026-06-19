@@ -65,13 +65,22 @@ table.attributes-table tr td {
   text-align: center;
 }
 .pricing-rate-sheet-list table.attributes-table thead th,
-.network_authentication_pricing_over_time table.attributes-table thead th {
+.network_authentication_pricing_over_time table.attributes-table thead th,
+.client-rate-sheet-approval table.attributes-table thead th {
   line-height: 20px;
   text-align: center;
   vertical-align: top;
 }
 
+.client-rate-sheet-approval table.attributes-table thead th:last-child {
+  width: 16%;
+}
+
 .pricing-rate-sheet-list
+table.attributes-table
+thead
+th:first-child,
+.client-rate-sheet-approval
 table.attributes-table
 thead
 th:first-child,
@@ -143,6 +152,7 @@ table.attributes-table th:nth-child(4) {
   width: 1%;
 }
 .pricing-rate-sheet-list table.attributes-table tr td,
+.client-rate-sheet-approval table.attributes-table tr td,
 .network_authentication_pricing_over_time table.attributes-table tr td {
   text-align: center;
   padding: 10px 20px;

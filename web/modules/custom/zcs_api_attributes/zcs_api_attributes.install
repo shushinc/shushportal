@@ -1114,3 +1114,110 @@ function zcs_api_attributes_update_9017() {
     );
   }
 }
+
+/**
+ * Add auto increment ID to client_rate_sheet table.
+ */
+function zcs_api_attributes_update_9018() {
+
+  $database = \Drupal::database();
+  $schema = $database->schema();
+
+  if ($schema->tableExists('client_rate_sheet') &&
+      !$schema->fieldExists('client_rate_sheet', 'id')) {
+    
+    $schema->addField('client_rate_sheet', 'id', [
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+      'description' => 'Primary key.',
+    ]);
+
+    $result = $database->query("
+      SELECT rate_sheet_id, client_id
+      FROM {client_rate_sheet}
+      ORDER BY created_date
+    ");
+
+    $counter = 1;
+
+    foreach ($result as $record) {
+      $database->update('client_rate_sheet')
+        ->fields([
+          'id' => $counter++,
+        ])
+        ->condition('rate_sheet_id', $record->rate_sheet_id)
+        ->condition('client_id', $record->client_id)
+        ->execute();
+    }
+
+    $database->query("
+      ALTER TABLE {client_rate_sheet}
+      MODIFY id INT UNSIGNED NOT NULL AUTO_INCREMENT
+    ");
+
+    $database->query("
+      ALTER TABLE {client_rate_sheet}
+      ADD PRIMARY KEY (id)
+    ");
+  }
+}
+
+/**
+ * Converts client_rate_sheet.id to an auto increment primary key.
+ */
+function zcs_api_attributes_update_9019() {
+  $database = \Drupal::database();
+
+  $column = $database->query("
+    SELECT EXTRA
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'client_rate_sheet'
+      AND COLUMN_NAME = 'id'
+  ")->fetchField();
+
+  if ($column === 'auto_increment') {
+    return t('The client_rate_sheet.id column is already AUTO_INCREMENT.');
+  }
+
+  $result = $database->query("
+    SELECT rate_sheet_id, client_id
+    FROM {client_rate_sheet}
+    WHERE id IS NULL
+    ORDER BY rate_sheet_id, client_id
+  ");
+
+  $max_id = (int) $database->query("
+    SELECT COALESCE(MAX(id), 0)
+    FROM {client_rate_sheet}
+  ")->fetchField();
+
+  foreach ($result as $record) {
+    $database->update('client_rate_sheet')
+      ->fields([
+        'id' => ++$max_id,
+      ])
+      ->condition('rate_sheet_id', $record->rate_sheet_id)
+      ->condition('client_id', $record->client_id)
+      ->execute();
+  }
+
+  $database->query("
+    ALTER TABLE {client_rate_sheet}
+    DROP PRIMARY KEY
+  ");
+
+  $database->query("
+    ALTER TABLE {client_rate_sheet}
+    MODIFY COLUMN id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    ADD PRIMARY KEY (id)
+  ");
+
+  $database->query("
+    ALTER TABLE {client_rate_sheet}
+    ADD UNIQUE KEY client_rate_sheet_unique (rate_sheet_id, client_id)
+  ");
+
+  return t('Converted client_rate_sheet.id to AUTO_INCREMENT primary key.');
+}

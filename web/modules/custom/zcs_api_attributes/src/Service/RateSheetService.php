@@ -492,6 +492,315 @@ class RateSheetService {
   }
 
   /**
+   * Gets all client rate sheets with their details.
+   *
+   * @return array
+   *   Array of client rate sheet data.
+   */
+  public function getClientRateSheets(): array {
+    $query = $this->database->select('client_rate_sheet', 'crs')
+      ->fields('crs', ['rate_sheet_id', 'client_id', 'created_by', 'created_date', 'active', 'rate_sheet_client_status_id']);
+    
+    $results = $query->execute()->fetchAll();
+
+    $client_rate_sheets = [];
+    foreach ($results as $result) {
+      // Get rate sheet details
+      $rate_sheet = $this->database->select('rate_sheet', 'rs')
+        ->fields('rs', ['name', 'currency', 'effective_date', 'markup_retail'])
+        ->condition('id', $result->rate_sheet_id)
+        ->execute()
+        ->fetchObject();
+
+      // Get client name
+      $client_name = $this->database->select('groups_field_data', 'gfd')
+        ->fields('gfd', ['label'])
+        ->condition('id', $result->client_id)
+        ->execute()
+        ->fetchField();
+
+      // Get status name
+      $status_name = $this->database->select('rate_sheet_status_lookup', 'rssl')
+        ->fields('rssl', ['status_name'])
+        ->condition('id', $result->rate_sheet_client_status_id)
+        ->execute()
+        ->fetchField();
+
+      // Get approvers info
+      $approvers = $this->getClientRateSheetApprovers($result->rate_sheet_id, $result->client_id);
+
+      $client_rate_sheets[] = [
+        'rate_sheet_id' => $result->rate_sheet_id,
+        'client_id' => $result->client_id,
+        'client_name' => $client_name ?: 'Unknown',
+        'rate_sheet_name' => $rate_sheet ? $rate_sheet->name : 'Unknown',
+        'currency' => $rate_sheet ? $rate_sheet->currency : '',
+        'effective_date' => $rate_sheet ? $rate_sheet->effective_date : 0,
+        'markup_retail' => $rate_sheet ? $rate_sheet->markup_retail : 0,
+        'status' => $status_name ?: 'Pending',
+        'approvers' => $approvers,
+        'created_date' => $result->created_date,
+      ];
+    }
+
+    return $client_rate_sheets;
+  }
+
+  /**
+   * Gets approvers HTML for a Client Rate Sheet.
+   *
+   * @param int $rate_sheet_id
+   *   The Rate Sheet ID.
+   * @param int $client_id
+   *   The Client ID.
+   *
+   * @return string
+   *   HTML markup showing approver status.
+   */
+  public function getClientRateSheetApprovers(int $rate_sheet_id, int $client_id): string {
+    $query = $this->database->select('action_log', 'al')
+      ->fields('al', ['action_type', 'created_by', 'created_date'])
+      ->condition('entity_target_type', 'CLIENT_RATE_SHEET')
+      ->condition('entity_target_id', $rate_sheet_id)
+      ->condition(
+        $this->database->condition('OR')
+          ->condition('action_type', 'STATUS_UPDATE_APPROVE')
+          ->condition('action_type', 'STATUS_UPDATE_REJECT')
+      )
+      ->orderBy('created_date', 'ASC');
+
+    $results = $query->execute()->fetchAll();
+
+    if (empty($results)) {
+      return '<span class="pending">Pending</span><br><span class="pending">Pending</span>';
+    }
+
+    // Get last two actions
+    $results = array_slice($results, -2);
+
+    $statuses = [];
+    foreach ($results as $result) {
+      $user = $this->entityTypeManager->getStorage('user')->load($result->created_by);
+      $email = $user ? $user->getEmail() : 'Unknown';
+      
+      $status = $result->action_type === 'STATUS_UPDATE_APPROVE' ? 'APPROVED' : 'REJECTED';
+      
+      $statuses[] = [
+        'status' => $status,
+        'email' => $email,
+      ];
+    }
+
+    // Fill with pending if less than 2
+    while (count($statuses) < 2) {
+      $statuses[] = [
+        'status' => 'PENDING',
+        'email' => '',
+      ];
+    }
+
+    $output = [];
+    foreach ($statuses as $item) {
+      $line = '';
+      if ($item['email']) {
+        $line .= $item['email'] . ' ';
+      }
+
+      $class = strtolower($item['status']);
+      if ($item['status'] === 'PENDING') {
+        $line .= '<span class="pending">Pending</span>';
+      }
+      else {
+        $line .= '<span class="' . $class . '"></span>';
+      }
+
+      $output[] = $line;
+    }
+
+    return implode('<br>', $output);
+  }
+
+  /**
+   * Approves a client rate sheet.
+   *
+   * @param int $rate_sheet_id
+   *   The Rate Sheet ID.
+   * @param int $client_id
+   *   The Client ID.
+   * @param int $user_id
+   *   The user ID performing the approval.
+   *
+   * @throws \Exception
+   */
+  public function approveClientRateSheet(int $rate_sheet_id, int $client_id, int $user_id) {
+    $transaction = $this->database->startTransaction();
+
+    try {
+      // Insert approval action log
+      $this->database->insert('action_log')
+        ->fields([
+          'action_type' => 'STATUS_UPDATE_APPROVE',
+          'entity_target_type' => 'CLIENT_RATE_SHEET',
+          'entity_target_id' => $rate_sheet_id,
+          'created_by' => $user_id,
+          'created_date' => \Drupal::time()->getRequestTime(),
+          'log_data' => "User {$user_id} approved client rate sheet {$rate_sheet_id} for client {$client_id}.",
+          'solved' => 0,
+        ])
+        ->execute();
+
+      // Check if this is the second approval
+      $approval_count = $this->database->select('action_log', 'al')
+        ->fields('al', ['id'])
+        ->condition('action_type', 'STATUS_UPDATE_APPROVE')
+        ->condition('entity_target_type', 'CLIENT_RATE_SHEET')
+        ->condition('entity_target_id', $rate_sheet_id)
+        ->countQuery()
+        ->execute()
+        ->fetchField();
+
+      if ($approval_count >= 2) {
+        // Update status to Approved
+        $approved_status_id = $this->getRateStatusId('Approved');
+        
+        $this->database->update('client_rate_sheet')
+          ->fields(['rate_sheet_client_status_id' => $approved_status_id])
+          ->condition('rate_sheet_id', $rate_sheet_id)
+          ->condition('client_id', $client_id)
+          ->execute();
+
+        // Update group field_selected_rate_sheets
+        $this->updateClientSelectedRateSheets($client_id, $rate_sheet_id, TRUE);
+      }
+
+      unset($transaction);
+    }
+    catch (\Exception $e) {
+      if (isset($transaction)) {
+        $transaction->rollBack();
+      }
+      $this->logger->error('Failed to approve client rate sheet: @message', ['@message' => $e->getMessage()]);
+      throw $e;
+    }
+  }
+
+  /**
+   * Rejects a client rate sheet.
+   *
+   * @param int $rate_sheet_id
+   *   The Rate Sheet ID.
+   * @param int $client_id
+   *   The Client ID.
+   * @param int $user_id
+   *   The user ID performing the rejection.
+   *
+   * @throws \Exception
+   */
+  public function rejectClientRateSheet(int $rate_sheet_id, int $client_id, int $user_id) {
+    $transaction = $this->database->startTransaction();
+
+    try {
+      // Insert rejection action log
+      $this->database->insert('action_log')
+        ->fields([
+          'action_type' => 'STATUS_UPDATE_REJECT',
+          'entity_target_type' => 'CLIENT_RATE_SHEET',
+          'entity_target_id' => $rate_sheet_id,
+          'created_by' => $user_id,
+          'created_date' => \Drupal::time()->getRequestTime(),
+          'log_data' => "User {$user_id} rejected client rate sheet {$rate_sheet_id} for client {$client_id}.",
+          'solved' => 0,
+        ])
+        ->execute();
+
+      // Update status to Rejected
+      $rejected_status_id = $this->getRateStatusId('Rejected');
+      
+      $this->database->update('client_rate_sheet')
+        ->fields(['rate_sheet_client_status_id' => $rejected_status_id])
+        ->condition('rate_sheet_id', $rate_sheet_id)
+        ->condition('client_id', $client_id)
+        ->execute();
+
+      unset($transaction);
+    }
+    catch (\Exception $e) {
+      if (isset($transaction)) {
+        $transaction->rollBack();
+      }
+      $this->logger->error('Failed to reject client rate sheet: @message', ['@message' => $e->getMessage()]);
+      throw $e;
+    }
+  }
+
+  /**
+   * Updates the client's selected rate sheets field.
+   *
+   * @param int $client_id
+   *   The Client (group) ID.
+   * @param int $rate_sheet_id
+   *   The Rate Sheet ID.
+   * @param bool $add
+   *   TRUE to add, FALSE to remove.
+   */
+  protected function updateClientSelectedRateSheets(int $client_id, int $rate_sheet_id, bool $add = TRUE) {
+    // Get current value
+    $current_value = $this->database->select('group__field_selected_rate_sheets', 'gfsr')
+      ->fields('gfsr', ['field_selected_rate_sheets_value'])
+      ->condition('entity_id', $client_id)
+      ->execute()
+      ->fetchField();
+
+    $rate_sheets = [];
+    if ($current_value) {
+      $rate_sheets = json_decode($current_value, TRUE) ?: [];
+    }
+
+    if ($add) {
+      $rate_sheets[(string) $rate_sheet_id] = 1;
+    }
+    else {
+      unset($rate_sheets[(string) $rate_sheet_id]);
+    }
+
+    $new_value = json_encode($rate_sheets);
+
+    // Check if record exists
+    $exists = $this->database->select('group__field_selected_rate_sheets', 'gfsr')
+      ->fields('gfsr', ['entity_id'])
+      ->condition('entity_id', $client_id)
+      ->execute()
+      ->fetchField();
+
+    if ($exists) {
+      $this->database->update('group__field_selected_rate_sheets')
+        ->fields(['field_selected_rate_sheets_value' => $new_value])
+        ->condition('entity_id', $client_id)
+        ->execute();
+    }
+    else {
+      // Get the latest revision_id for this group
+      $revision_id = $this->database->select('groups', 'g')
+        ->fields('g', ['revision_id'])
+        ->condition('id', $client_id)
+        ->execute()
+        ->fetchField();
+
+      $this->database->insert('group__field_selected_rate_sheets')
+        ->fields([
+          'bundle' => 'partner',
+          'deleted' => 0,
+          'entity_id' => $client_id,
+          'revision_id' => $revision_id,
+          'langcode' => 'en',
+          'delta' => 0,
+          'field_selected_rate_sheets_value' => $new_value,
+        ])
+        ->execute();
+    }
+  }
+
+  /**
    * Inserts a new status for a rate sheet.
    *
    * @param int $rate_sheet_id
