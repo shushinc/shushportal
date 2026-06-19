@@ -1,0 +1,15 @@
+uuid: b808734b-46d7-4713-b4e7-76fcf7bd3630
+langcode: en
+status: true
+dependencies: {  }
+id: moriarty_entra_sso
+label: 'Moriarty Entra SSO'
+domain: ericlmhgavhotmail.onmicrosoft.com
+provider: entra
+settings:
+  details:
+    tenant_id_env_var: sam_entra_tenant_id
+    client_id_env_var: sam_entra_client_id
+    client_secret_env_var: sam_entra_client_secret
+    login_base_url: 'https://login.microsoftonline.com'
+    callback_uri: /sso/callback/entra

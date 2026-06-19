@@ -142,12 +142,8 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
     $issuer = $this->getIssuer($app);
     $discovery = $this->discovery->discover($issuer);
 
-    $clientId = $app->getSetting('client_id');
-    $redirectUri = Url::fromRoute(
-      'sam.callback',
-      ['provider' => $app->getProvider()],
-      ['absolute' => TRUE]
-    )->toString();
+    $clientId = $this->getClientId($app);
+    $redirectUri = $this->normalizeCallbackUri($this->getCallbackUri($app), $request);
 
     \Drupal::logger('SSO Authentication Manager')->info('Client ID: @nid', [
       '@nid' => $clientId,
@@ -233,21 +229,33 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
     $tokens = $this->tokenService->exchangeCodeForTokens(
       $discovery,
       $code,
-      $request->getSchemeAndHttpHost() . $app->getSetting('callback_uri'),
+      $this->normalizeCallbackUri($this->getCallbackUri($app), $request),
       $this->getClientId($app),
       $this->getClientSecret($app),
     );
 
+    if (empty($tokens['id_token']) || !is_string($tokens['id_token'])) {
+      throw new \RuntimeException('OIDC token response does not contain an ID token.');
+    }
+
+    $this->tokenService->validateIdTokenSignature($tokens['id_token'], $discovery);
+
     $claims = $this->tokenService->decode($tokens['id_token']);
+
+    $expectedIssuer = $this->shouldValidateIssuerWithTokenService($app)
+      ? $this->getIssuer($app)
+      : (string) ($claims['iss'] ?? '');
   
     $this->tokenService->validateIdTokenClaims(
       claims: $claims,
-      expectedIssuer: $this->getIssuer($app),
+      expectedIssuer: $expectedIssuer,
       expectedAudience: $this->getClientId($app),
       expectedNonce: $this->session->get('sam_oidc_nonce'),
       expectedEmail: $auth_email,
       expectedHostedDomain: $this->getHostedDomain($app),
     );
+
+    $this->validateProviderSpecificClaims($claims, $app);
 
     return [
       'issuer' => $this->getIssuer($app),
@@ -293,5 +301,71 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
       ['absolute' => TRUE]
     )->toString();
   }
+
+  /**
+   * Normalizes a configured callback URI to an absolute URI.
+   *
+   * Microsoft Entra requires redirect_uri to be an absolute URI. Existing
+   * provider configuration may store only the route path, such as
+   * /sso/callback/entra_consumer, so this method resolves relative callback
+   * paths against the current request scheme and host.
+   *
+   * @param string $callback_uri
+   *   The configured callback URI.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current request.
+   *
+   * @return string
+   *   The absolute callback URI.
+   */
+  protected function normalizeCallbackUri(string $callback_uri, Request $request): string {
+    $callback_uri = trim($callback_uri);
+
+    if ($callback_uri === '') {
+      return '';
+    }
+
+    if (parse_url($callback_uri, PHP_URL_SCHEME) !== NULL) {
+      return $callback_uri;
+    }
+
+    if (str_starts_with($callback_uri, '//')) {
+      return $request->getScheme() . ':' . $callback_uri;
+    }
+
+    if ($callback_uri[0] !== '/') {
+      $callback_uri = '/' . $callback_uri;
+    }
+
+    return $request->getSchemeAndHttpHost() . $callback_uri;
+  }
+
+  /**
+   * Determines whether the shared token service should validate issuer strictly.
+   *
+   * Providers that use non-tenant-specific discovery but receive tenant-specific
+   * issuer claims can return FALSE and perform provider-specific issuer
+   * validation in validateProviderSpecificClaims().
+   *
+   * @param \Drupal\sam\SsoAppInterface $app
+   *   The SSO app.
+   *
+   * @return bool
+   *   TRUE when the shared token service should compare the issuer claim against
+   *   getIssuer().
+   */
+  protected function shouldValidateIssuerWithTokenService(SsoAppInterface $app): bool {
+    return TRUE;
+  }
+
+  /**
+   * Performs provider-specific claim validation after shared OIDC validation.
+   *
+   * @param array $claims
+   *   The decoded ID token claims.
+   * @param \Drupal\sam\SsoAppInterface $app
+   *   The SSO app.
+   */
+  protected function validateProviderSpecificClaims(array $claims, SsoAppInterface $app): void {}
 
 }

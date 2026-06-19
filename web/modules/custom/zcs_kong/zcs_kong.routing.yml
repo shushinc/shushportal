@@ -20,3 +20,11 @@ zcs_kong.delete_key:
     _controller: '\Drupal\zcs_kong\Controller\DeleteController::deleteKey'
   requirements:
      _custom_access: '\Drupal\zcs_kong\Controller\DeleteController::access' 
+
+zcs_kong.kong_sync:
+  path: '/admin/kong_sync'
+  defaults:
+    _form: '\Drupal\zcs_kong\Form\SyncAppsForm'
+    _title: 'Sync Kong data'
+  requirements:
+    _permission: 'administer site configuration'
