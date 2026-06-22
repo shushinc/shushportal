@@ -97,6 +97,9 @@
             "drupal/password_policy": {
                 "password_policy": "https://www.drupal.org/files/issues/2023-01-12/3332884-integrity-constraint-violation.patch",
                 "password_policy_argument": "https://www.drupal.org/files/issues/2023-03-01/integrity_constraint_violation_2.patch"
+            },
+            "drupal/config_ignore": {
+                "3574939 - PHP 8.4 Implicitly marking parameter $request as nullable is deprecated": "https://www.drupal.org/files/issues/2026-02-21/nullable-request-param-3574939-1.patch"
             }
         },
         "installer-paths": {
