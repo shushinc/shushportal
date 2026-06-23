@@ -4,57 +4,96 @@
     <header>
     </header>
   </div>
-  <table class="attributes-table">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Client Name</th>
-        <th>Rate Sheet Name</th>
-        <th>Currency</th>
-        <th>Effec. Date</th>
-        <th>Markup Retail(%)</th>
-        <th>Approvers</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% set counter = 1 %}
-      {% for sheet_info in content.final %}
-        {% set rate_sheet_status = sheet_info.status|lower %}
+
+  <form method="post" data-client-rate-sheet-batch-form>
+    <div class="client-rate-sheet-batch-controls">
+      <div class="client-rate-sheet-filter-wrapper">
+        <label for="rate-sheet-name-filter">Filter by Rate Sheet Name:</label>
+        <input 
+          type="text" 
+          id="rate-sheet-name-filter" 
+          name="rate_sheet_name" 
+          value="{{ content.rate_sheet_name_filter }}"
+          placeholder="Type to filter..."
+          data-rate-sheet-name-filter
+        />
+      </div>
+
+      <div class="client-rate-sheet-batch-actions">
+        <span class="client-rate-sheet-selected-count" data-selected-count hidden></span>
+        <button 
+          type="submit" 
+          name="batch_action" 
+          value="approve"
+          formaction="/pricing/client-rate-sheet/approve-batch"
+          class="button button--primary"
+          data-batch-approve
+          disabled
+        >
+          Approve Selected
+        </button>
+        <button 
+          type="submit" 
+          name="batch_action" 
+          value="reject"
+          formaction="/pricing/client-rate-sheet/reject-batch"
+          class="button button--danger"
+          data-batch-reject
+          disabled
+        >
+          Reject Selected
+        </button>
+      </div>
+    </div>
+
+    <table class="attributes-table client-rate-sheet-table">
+      <thead>
         <tr>
-          <td>{{ counter }}</td>
-          <td>{{ sheet_info.client_name }}</td>
-          <td>{{ sheet_info.rate_sheet_name }}</td>
-          <td>{{ sheet_info.currency }}</td>
-          <td>{{ sheet_info.effective_date }}</td>
-          <td>{{ sheet_info.markup_retail }}</td>
-          <td>{{ sheet_info.approvers|raw }}</td>
-          <td class="{{ rate_sheet_status }}">{{ sheet_info.status }}</td>
-          <td>
-            {% if sheet_info.actions is not empty %}
-              <div class="dropdown">
-                <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                  Actions
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  {% for action in sheet_info.actions %}
-                    <li>
-                      <a href="{{ action.url }}" class="dropdown-item {{ action.class }}">
-                        {{ action.title }}
-                      </a>
-                    </li>
-                  {% endfor %}
-                </ul>
-              </div>
-            {% else %}
-              <span class="text-muted">No actions</span>
-            {% endif %}
-          </td>
+          <th class="client-rate-sheet-checkbox-cell">
+            <input 
+              type="checkbox" 
+              data-select-all-checkbox
+              aria-label="Select all items"
+            />
+          </th>
+          <th>#</th>
+          <th>Client Name</th>
+          <th>Rate Sheet Name</th>
+          <th>Currency</th>
+          <th>Effec. Date</th>
+          <th>Markup Retail(%)</th>
+          <th>Approvers</th>
+          <th>Status</th>
         </tr>
-        {% set counter = counter + 1 %}
-      {% endfor %}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {% set counter = 1 %}
+        {% for sheet_info in content.final %}
+          {% set rate_sheet_status = sheet_info.status|lower %}
+          {% set item_value = sheet_info.rate_sheet_id ~ '_' ~ sheet_info.client_id %}
+          <tr>
+            <td class="client-rate-sheet-checkbox-cell">
+              <input 
+                type="checkbox" 
+                name="selected_items[]" 
+                value="{{ item_value }}"
+                data-item-checkbox
+                aria-label="Select {{ sheet_info.client_name }} - {{ sheet_info.rate_sheet_name }}"
+              />
+            </td>
+            <td>{{ counter }}</td>
+            <td>{{ sheet_info.client_name }}</td>
+            <td>{{ sheet_info.rate_sheet_name }}</td>
+            <td>{{ sheet_info.currency }}</td>
+            <td>{{ sheet_info.effective_date }}</td>
+            <td>{{ sheet_info.markup_retail }}</td>
+            <td>{{ sheet_info.approvers|raw }}</td>
+            <td class="{{ rate_sheet_status }}">{{ sheet_info.status }}</td>
+          </tr>
+          {% set counter = counter + 1 %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </form>
 </div>
 {{ pager }}

@@ -322,7 +322,7 @@ class RateSheetService {
             'client_id' => $client_id,
             'created_by' => $user_id,
             'created_date' => $current_time,
-            'active' => 0,
+            'active' => 1,
             'rate_sheet_client_status_id' => $pending_status_id,
           ])
           ->execute();
@@ -732,10 +732,18 @@ class RateSheetService {
    *   HTML markup showing approver status.
    */
   public function getClientRateSheetApprovers(int $rate_sheet_id, int $client_id): string {
+
+    $client_rate_sheet_id = $this->database->select('client_rate_sheet', 'crs')
+      ->fields('crs', ['id'])
+      ->condition('client_id', $client_id)
+      ->condition('rate_sheet_id', $rate_sheet_id)
+      ->execute()
+      ->fetchField();
+
     $query = $this->database->select('action_log', 'al')
       ->fields('al', ['action_type', 'created_by', 'created_date'])
       ->condition('entity_target_type', 'CLIENT_RATE_SHEET')
-      ->condition('entity_target_id', $rate_sheet_id)
+      ->condition('entity_target_id', $client_rate_sheet_id)
       ->condition(
         $this->database->condition('OR')
           ->condition('action_type', 'STATUS_UPDATE_APPROVE')
@@ -795,6 +803,41 @@ class RateSheetService {
   }
 
   /**
+   * Approves client rate sheets in batch.
+   *
+   * @param int $rate_sheet_id
+   *   The Rate Sheet ID.
+   * @param array $client_ids
+   *   Array of Client IDs.
+   * @param int $user_id
+   *   The user ID performing the approval.
+   *
+   * @throws \Exception
+   */
+  public function approveClientRateSheetBatch(int $rate_sheet_id, array $client_ids, int $user_id) {
+    if (empty($client_ids)) {
+      return;
+    }
+
+    $transaction = $this->database->startTransaction();
+
+    try {
+      foreach ($client_ids as $client_id) {
+        $this->approveClientRateSheet($rate_sheet_id, $client_id, $user_id);
+      }
+
+      unset($transaction);
+    }
+    catch (\Exception $e) {
+      if (isset($transaction)) {
+        $transaction->rollBack();
+      }
+      $this->logger->error('Failed to approve client rate sheets in batch: @message', ['@message' => $e->getMessage()]);
+      throw $e;
+    }
+  }
+
+  /**
    * Approves a client rate sheet.
    *
    * @param int $rate_sheet_id
@@ -809,42 +852,86 @@ class RateSheetService {
   public function approveClientRateSheet(int $rate_sheet_id, int $client_id, int $user_id) {
     $transaction = $this->database->startTransaction();
 
-    try {
-      // Insert approval action log
-      $this->database->insert('action_log')
-        ->fields([
-          'action_type' => 'STATUS_UPDATE_APPROVE',
-          'entity_target_type' => 'CLIENT_RATE_SHEET',
-          'entity_target_id' => $rate_sheet_id,
-          'created_by' => $user_id,
-          'created_date' => \Drupal::time()->getRequestTime(),
-          'log_data' => "User {$user_id} approved client rate sheet {$rate_sheet_id} for client {$client_id}.",
-          'solved' => 0,
-        ])
-        ->execute();
+    $client_rate_sheet_id = $this->database->select('client_rate_sheet', 'crs')
+      ->fields('crs', ['id'])
+      ->condition('client_id', $client_id)
+      ->condition('rate_sheet_id', $rate_sheet_id)
+      ->execute()
+      ->fetchField();
 
-      // Check if this is the second approval
-      $approval_count = $this->database->select('action_log', 'al')
-        ->fields('al', ['id'])
-        ->condition('action_type', 'STATUS_UPDATE_APPROVE')
-        ->condition('entity_target_type', 'CLIENT_RATE_SHEET')
-        ->condition('entity_target_id', $rate_sheet_id)
-        ->countQuery()
-        ->execute()
-        ->fetchField();
-
-      if ($approval_count >= 2) {
-        // Update status to Approved
-        $approved_status_id = $this->getRateStatusId('Approved');
-        
-        $this->database->update('client_rate_sheet')
-          ->fields(['rate_sheet_client_status_id' => $approved_status_id])
-          ->condition('rate_sheet_id', $rate_sheet_id)
-          ->condition('client_id', $client_id)
+    if ($client_rate_sheet_id) {
+      try {
+        // Insert approval action log
+        $this->database->insert('action_log')
+          ->fields([
+            'action_type' => 'STATUS_UPDATE_APPROVE',
+            'entity_target_type' => 'CLIENT_RATE_SHEET',
+            'entity_target_id' => $client_rate_sheet_id,
+            'created_by' => $user_id,
+            'created_date' => \Drupal::time()->getRequestTime(),
+            'log_data' => "User {$user_id} approved client rate sheet {$rate_sheet_id} for client {$client_id}.",
+            'solved' => 0,
+          ])
           ->execute();
 
-        // Update group field_selected_rate_sheets
-        $this->updateClientSelectedRateSheets($client_id, $rate_sheet_id, TRUE);
+        // Check if this is the second approval
+        $approval_count = $this->database->select('action_log', 'al')
+          ->fields('al', ['id'])
+          ->condition('action_type', 'STATUS_UPDATE_APPROVE')
+          ->condition('entity_target_type', 'CLIENT_RATE_SHEET')
+          ->condition('entity_target_id', $client_rate_sheet_id)
+          ->countQuery()
+          ->execute()
+          ->fetchField();
+
+        if ($approval_count >= 2) {
+          // Update status to Approved
+          $approved_status_id = $this->getRateStatusId('Approved');
+          
+          $this->database->update('client_rate_sheet')
+            ->fields(['rate_sheet_client_status_id' => $approved_status_id])
+            ->condition('rate_sheet_id', $rate_sheet_id)
+            ->condition('client_id', $client_id)
+            ->execute();
+
+          // Update group field_selected_rate_sheets
+          $this->updateClientSelectedRateSheets($client_id, $rate_sheet_id, TRUE);
+        }
+
+        unset($transaction);
+      }
+      catch (\Exception $e) {
+        if (isset($transaction)) {
+          $transaction->rollBack();
+        }
+        $this->logger->error('Failed to approve client rate sheet: @message', ['@message' => $e->getMessage()]);
+        throw $e;
+      }
+    }
+  }
+
+  /**
+   * Rejects client rate sheets in batch.
+   *
+   * @param int $rate_sheet_id
+   *   The Rate Sheet ID.
+   * @param array $client_ids
+   *   Array of Client IDs.
+   * @param int $user_id
+   *   The user ID performing the rejection.
+   *
+   * @throws \Exception
+   */
+  public function rejectClientRateSheetBatch(int $rate_sheet_id, array $client_ids, int $user_id) {
+    if (empty($client_ids)) {
+      return;
+    }
+
+    $transaction = $this->database->startTransaction();
+
+    try {
+      foreach ($client_ids as $client_id) {
+        $this->rejectClientRateSheet($rate_sheet_id, $client_id, $user_id);
       }
 
       unset($transaction);
@@ -853,7 +940,7 @@ class RateSheetService {
       if (isset($transaction)) {
         $transaction->rollBack();
       }
-      $this->logger->error('Failed to approve client rate sheet: @message', ['@message' => $e->getMessage()]);
+      $this->logger->error('Failed to reject client rate sheets in batch: @message', ['@message' => $e->getMessage()]);
       throw $e;
     }
   }
@@ -873,13 +960,20 @@ class RateSheetService {
   public function rejectClientRateSheet(int $rate_sheet_id, int $client_id, int $user_id) {
     $transaction = $this->database->startTransaction();
 
+    $client_rate_sheet_id = $this->database->select('client_rate_sheet', 'crs')
+      ->fields('crs', ['id'])
+      ->condition('client_id', $client_id)
+      ->condition('rate_sheet_id', $rate_sheet_id)
+      ->execute()
+      ->fetchField();
+
     try {
       // Insert rejection action log
       $this->database->insert('action_log')
         ->fields([
           'action_type' => 'STATUS_UPDATE_REJECT',
           'entity_target_type' => 'CLIENT_RATE_SHEET',
-          'entity_target_id' => $rate_sheet_id,
+          'entity_target_id' => $client_rate_sheet_id,
           'created_by' => $user_id,
           'created_date' => \Drupal::time()->getRequestTime(),
           'log_data' => "User {$user_id} rejected client rate sheet {$rate_sheet_id} for client {$client_id}.",

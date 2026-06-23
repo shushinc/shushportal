@@ -87,3 +87,13 @@ rate-sheet-clients:
   dependencies:
     - core/drupal
     - core/once
+
+client-rate-sheet-batch:
+  js:
+    js/client-rate-sheet-batch.js: {}
+  css:
+    theme:
+      css/client-rate-sheet-batch.css: {}
+  dependencies:
+    - core/drupal
+    - core/once

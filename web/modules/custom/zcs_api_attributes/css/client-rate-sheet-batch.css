@@ -1,0 +1,115 @@
+.client-rate-sheet-batch-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+}
+
+.client-rate-sheet-filter-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.client-rate-sheet-filter-wrapper label {
+  margin: 0;
+  font-weight: 500;
+}
+
+.client-rate-sheet-filter-wrapper input[type="text"] {
+  flex: 1;
+  max-width: 300px;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+
+.client-rate-sheet-batch-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.client-rate-sheet-selected-count {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.client-rate-sheet-batch-actions button {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+.client-rate-sheet-batch-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.client-rate-sheet-batch-actions button[data-batch-approve] {
+  background: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.client-rate-sheet-batch-actions button[data-batch-approve]:hover:not(:disabled) {
+  background: #059669;
+  border-color: #059669;
+}
+
+.client-rate-sheet-batch-actions button[data-batch-reject] {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: white;
+}
+
+.client-rate-sheet-batch-actions button[data-batch-reject]:hover:not(:disabled) {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+.client-rate-sheet-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.client-rate-sheet-table th,
+.client-rate-sheet-table td {
+  padding: 20px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.client-rate-sheet-table th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+}
+
+.client-rate-sheet-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.client-rate-sheet-checkbox-cell {
+  width: 40px;
+  text-align: center;
+}
+
+.client-rate-sheet-checkbox-cell input[type="checkbox"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.client-rate-sheet-table th.client-rate-sheet-checkbox-cell input[type="checkbox"]:indeterminate {
+  opacity: 0.7;
+}
