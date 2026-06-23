@@ -314,66 +314,6 @@ class CreateClientForm extends FormBase {
       }
     }
 
-    $form['selected_rate_sheets'] = [
-      '#type' => 'fieldset',
-      '#title' => 'Selected Rate Sheets',
-      '#attributes' => [
-        'class' => ['custom-fieldset'],
-      ],
-      '#prefix' => '<div class="selected-rate-sheets">',
-    ];
-
-    // Load approved rate sheets from the database
-    $database = \Drupal::database();
-    $rate_sheet_status_lookup = $database->select('rate_sheet_status_lookup', 'rssl')
-      ->fields('rssl', ['id'])
-      ->condition('status_name', 'Approved')
-      ->execute()
-      ->fetchField();
-
-    if ($rate_sheet_status_lookup) {
-      $rate_sheets_query = $database->select('rate_sheet', 'rs')
-        ->fields('rs', ['id', 'name', 'effective_date'])
-        ->condition('rate_sheet_status_id', $rate_sheet_status_lookup)
-        ->orderBy('effective_date', 'DESC');
-      $rate_sheets = $rate_sheets_query->execute()->fetchAll();
-
-      if (!empty($rate_sheets)) {
-        $rate_sheet_no = 1;
-        $rate_sheet_ids = [];
-        foreach ($rate_sheets as $rate_sheet) {
-          $rate_sheet_ids[] = $rate_sheet->id;
-          $effective_date = date('M d, Y', intval($rate_sheet->effective_date));
-          $form['selected_rate_sheets']['rate_sheet_' . $rate_sheet->id] = [
-            '#type' => 'checkbox',
-            '#title' => Markup::create("<span class='attribute-no'>$rate_sheet_no. </span>") . $rate_sheet->name . ' (' . $effective_date . ')',
-            '#default_value' => FALSE,
-            '#attributes' => [
-              'class' => ['toggle-checkbox'],
-            ],
-          ];
-          $rate_sheet_no++;
-        }
-
-        $form['selected_rate_sheets']['rate_sheet_nodes'] = [
-          '#type' => 'hidden',
-          '#value' => implode(",", $rate_sheet_ids),
-        ];
-      }
-      else {
-        $form['selected_rate_sheets']['no_rate_sheets'] = [
-          '#markup' => '<p>No approved rate sheets available.</p>',
-        ];
-      }
-    }
-    else {
-      $form['selected_rate_sheets']['no_status'] = [
-        '#markup' => '<p>Approved status not found in the system.</p>',
-      ];
-    }
-
-    $form['selected_rate_sheets']['#suffix'] = '</div>';
-
     $form['api_agreement_covers']['nodes'] = [
       '#type' => 'hidden',
       '#value' => implode(",", $nids),
@@ -576,19 +516,7 @@ class CreateClientForm extends FormBase {
     $encoded_data = Json::encode($json);
 
     // Process selected rate sheets - we'll handle client_rate_sheet table separately
-    $rate_sheet_json = [];
-    $selected_rate_sheets = [];
-    if (!empty($values['rate_sheet_nodes'])) {
-      $rate_sheet_ids = explode(",", $values['rate_sheet_nodes']);
-      foreach ($rate_sheet_ids as $rate_sheet_id) {
-        $is_selected = $values['rate_sheet_' . $rate_sheet_id] ?? 0;
-        $rate_sheet_json[$rate_sheet_id] = $is_selected;
-        if ($is_selected) {
-          $selected_rate_sheets[] = $rate_sheet_id;
-        }
-      }
-    }
-    $encoded_rate_sheets = Json::encode($rate_sheet_json);
+  
     $partner_name = $form_state->getValue('partner_name');
     $contact_name = $form_state->getValue('contact_name');
     $contact_email = $form_state->getValue('contact_email');
@@ -686,10 +614,7 @@ class CreateClientForm extends FormBase {
             $response = Json::decode($kong_response);
             $group->set('field_consumer_id', $response['id']);
             $group->save();
-            
-            // Handle client_rate_sheet relationships
-            $this->handleClientRateSheetRelationships($group->id(), $selected_rate_sheets);
-            
+
             $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
             $this->messenger()->addMessage($this->t('Client is invited successfully.'));
             $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
@@ -729,7 +654,6 @@ class CreateClientForm extends FormBase {
         'field_industry' => $industry,
         'field_pricing_type' => $pricing_type,
         'field_apis_agreement_covers' => $encoded_data,
-        'field_selected_rate_sheets' => $encoded_rate_sheets,
         'user_id' => \Drupal::currentUser()->id(),
         'created' => \Drupal::time()->getRequestTime(),
       ]);
@@ -752,10 +676,7 @@ class CreateClientForm extends FormBase {
         "family_name" => $form_state->getValue('contact_name') ?? '',
       ]);
       $group->save();
-      
-      // Handle client_rate_sheet relationships
-      $this->handleClientRateSheetRelationships($group->id(), $selected_rate_sheets);
-      
+
       $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
       $uid = \Drupal::currentUser()->id();
       $user = User::load($uid);
@@ -892,50 +813,6 @@ class CreateClientForm extends FormBase {
       $username = $user->getAccountName();
     }
     return $username;
-  }
-
-  /**
-   * Handle client rate sheet relationships.
-   */
-  protected function handleClientRateSheetRelationships($client_id, array $selected_rate_sheets) {
-    if (empty($selected_rate_sheets)) {
-      return;
-    }
-
-    $database = \Drupal::database();
-    $current_user_id = \Drupal::currentUser()->id();
-    $current_date = date('Y-m-d H:i:s');
-
-    // Get Pending status ID
-    $pending_status_id = $database->select('rate_sheet_status_lookup', 'rssl')
-      ->fields('rssl', ['id'])
-      ->condition('status_name', 'Pending')
-      ->execute()
-      ->fetchField();
-
-    foreach ($selected_rate_sheets as $rate_sheet_id) {
-      // Check if relationship already exists
-      $exists = $database->select('client_rate_sheet', 'crs')
-        ->fields('crs', ['rate_sheet_id'])
-        ->condition('rate_sheet_id', $rate_sheet_id)
-        ->condition('client_id', $client_id)
-        ->execute()
-        ->fetchField();
-
-      if (!$exists) {
-        // Create new relationship with Pending status
-        $database->insert('client_rate_sheet')
-          ->fields([
-            'rate_sheet_id' => $rate_sheet_id,
-            'client_id' => $client_id,
-            'created_by' => $current_user_id,
-            'created_date' => $current_date,
-            'active' => 0,
-            'rate_sheet_client_status_id' => $pending_status_id,
-          ])
-          ->execute();
-      }
-    }
   }
 
 }

@@ -2,7 +2,7 @@
   margin-top: 1.5rem;
 }
 
-.api-attribute-filter {
+.api-attribute-filter, .api-clients-filter {
   align-items: flex-end;
   display: flex;
   flex-direction: row;
@@ -11,7 +11,7 @@
   margin-bottom: 1rem;
 }
 
-.api-attribute-filter-control {
+.api-attribute-filter-control, .api-clients-control {
   align-items: flex-start;
   display: flex;
   flex: 1 1 auto;
@@ -419,6 +419,7 @@
 }
 
 .rate-sheet-add-range,
+.rate-sheet-add-client,
 .rate-sheet-remove-range {
   align-items: center;
   border: 0;
@@ -443,6 +444,7 @@
 }
 
 .rate-sheet-add-range::before,
+.rate-sheet-add-client::before,
 .rate-sheet-remove-range::before {
   align-items: center;
   border-radius: 50%;
@@ -455,18 +457,22 @@
   width: 1rem;
 }
 
-.rate-sheet-add-range {
+.rate-sheet-add-range,
+.rate-sheet-add-client {
   background: #118df0;
   color: #ffffff;
 }
 
-.rate-sheet-add-range::before {
+.rate-sheet-add-range::before,
+.rate-sheet-add-client::before {
   background: rgba(255, 255, 255, 0.22);
   content: "+";
 }
 
 .rate-sheet-add-range:hover,
-.rate-sheet-add-range:focus {
+.rate-sheet-add-range:focus,
+.rate-sheet-add-client:hover,
+.rate-sheet-add-client:focus {
   background: #118df0;
   box-shadow: 0 4px 10px rgba(17, 141, 240, 0.25);
   color: #ffffff;
@@ -492,12 +498,14 @@
 }
 
 .rate-sheet-add-range:focus-visible,
+.rate-sheet-add-client:focus-visible,
 .rate-sheet-remove-range:focus-visible {
   outline: 3px solid rgba(17, 141, 240, 0.28);
   outline-offset: 2px;
 }
 
 .rate-sheet-add-range:active,
+.rate-sheet-add-client:active,
 .rate-sheet-remove-range:active {
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
   transform: translateY(0);

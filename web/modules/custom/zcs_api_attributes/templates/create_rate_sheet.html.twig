@@ -6,6 +6,8 @@
 {{ form.nodes }}
 {{ form.range_currency_symbol }}
 {{ form.rate_sheet_item_ranges_payload }}
+{{ form.clients_data }}
+{{ form.selected_clients }}
 
 {% if form.rate_sheet_id %}
   {{ form.rate_sheet_id }}
@@ -67,22 +69,35 @@
     {% set attributes = fetch_attributes() %}
     {% set currency_symbol = form.range_currency_symbol['#value']|default('') %}
 
-    <div class="api-attribute-filter">
-      <div class="api-attribute-filter-control">
-        <label for="rate-sheet-attribute-filter">Filter API Attributes</label>
-        <input type="search" id="rate-sheet-attribute-filter" data-rate-sheet-attribute-filter placeholder="Type attribute name">
+    {% if form.is_approved and form.is_approved['#value'] == true %}
+      <div class="api-attribute-filter">
+        <div class="api-attribute-filter-control">
+          <button type="button" class="button button--small rate-sheet-add-client" data-rate-sheet-add-client="">
+            Add clients
+          </button>
+        </div>
       </div>
+    {% endif %}
 
-      <div class="api-attribute-filter-actions">
-        {% if form.actions %}
-          {{ form.actions }}
-        {% endif %}
-        {% if form.submit %}
-          {{ form.submit }}
-        {% endif %}
+    {% if not (form.can_edit_clients_only and form.can_edit_clients_only['#value'] == true) %}
+      <div class="api-attribute-filter">
+        <div class="api-attribute-filter-control">
+          <label for="rate-sheet-attribute-filter">Filter API Attributes</label>
+          <input type="search" id="rate-sheet-attribute-filter" data-rate-sheet-attribute-filter placeholder="Type attribute name">
+        </div>
+
+        <div class="api-attribute-filter-actions">
+          {% if form.actions %}
+            {{ form.actions }}
+          {% endif %}
+          {% if form.submit %}
+            {{ form.submit }}
+          {% endif %}
+        </div>
       </div>
-    </div>
+    {% endif %}
 
+    {% if not (form.can_edit_clients_only and form.can_edit_clients_only['#value'] == true) %}
     <div class="rate-sheet-accordion" data-rate-sheet-ranges data-rate-sheet-progressive data-rate-sheet-initial-visible="10" data-rate-sheet-load-step="10">
       {% set counter = 1 %}
       {% for id, title in attributes.titles %}
@@ -252,5 +267,19 @@
       </button>
       <span class="rate-sheet-progressive-summary" data-rate-sheet-progressive-summary aria-live="polite"></span>
     </div>
+    </div>
+    {% else %}
+      <div class="rate-sheet-clients-only-mode">
+        <p class="messages messages--status">
+          This rate sheet is approved. You can only add or remove clients using the button above.
+        </p>
+        
+        {% if form.actions %}
+          <div class="form-actions">
+            {{ form.actions }}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
   </span>
 </div>

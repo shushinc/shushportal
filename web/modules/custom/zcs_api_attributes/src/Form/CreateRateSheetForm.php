@@ -250,9 +250,34 @@ class CreateRateSheetForm extends FormBase {
       ],
     ];
 
+    // Client selection fields
+    $all_clients = $this->rateSheetService->getAllClients();
+    
+    $form['clients_data'] = [
+      '#type' => 'hidden',
+      '#value' => json_encode($all_clients),
+      '#attributes' => [
+        'data-rate-sheet-clients-data' => '',
+      ],
+    ];
+
+    $form['selected_clients'] = [
+      '#type' => 'hidden',
+      '#default_value' => '[]',
+      '#attributes' => [
+        'data-rate-sheet-selected-clients' => '',
+      ],
+    ];
+
+    $form['is_approved'] = [
+      '#type' => 'value',
+      '#value' => FALSE,
+    ];
+
     $form['#theme'] = 'create_rate_sheet';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-ranges';
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-clients';
 
     $form['submit'] = [
       '#type' => 'submit',

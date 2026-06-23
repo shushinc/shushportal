@@ -305,15 +305,6 @@ final class EditClientForm extends FormBase {
       '#suffix' => '</div></div>',
     ];
 
-    $form['selected_rate_sheets'] = [
-      '#type' => 'fieldset',
-      '#title' => 'Selected Rate Sheets',
-      '#attributes' => [
-        'class' => ['custom-fieldset'],
-      ],
-      '#prefix' => '<div class="selected-covers">',
-    ];
-
     $form['api_agreement_covers'] = [
       '#type' => 'fieldset',
       '#title' => 'APIs Agreement Covers',
@@ -356,117 +347,6 @@ final class EditClientForm extends FormBase {
       '#suffix' => '</div>',
     ];
 
-    $form['selected_rate_sheets'] = [
-      '#type' => 'fieldset',
-      '#title' => 'Selected Rate Sheets',
-      '#attributes' => [
-        'class' => ['custom-fieldset'],
-      ],
-      '#prefix' => '<div class="selected-rate-sheets">',
-    ];
-
-    // Get existing selected rate sheets
-    $selected_rate_sheets_array = [];
-    if (!empty($group->get('field_selected_rate_sheets')->value)) {
-      $selected_rate_sheets_array = json::decode($group->get('field_selected_rate_sheets')->value);
-    }
-
-    // Load approved rate sheets from the database
-    $database = \Drupal::database();
-    $rate_sheet_status_lookup = $database->select('rate_sheet_status_lookup', 'rssl')
-      ->fields('rssl', ['id'])
-      ->condition('status_name', 'Approved')
-      ->execute()
-      ->fetchField();
-
-    // Get status IDs for checking client_rate_sheet relationships
-    $pending_status_id = $database->select('rate_sheet_status_lookup', 'rssl')
-      ->fields('rssl', ['id'])
-      ->condition('status_name', 'Pending')
-      ->execute()
-      ->fetchField();
-
-    $approved_client_status_id = $database->select('rate_sheet_status_lookup', 'rssl')
-      ->fields('rssl', ['id'])
-      ->condition('status_name', 'Approved')
-      ->execute()
-      ->fetchField();
-
-    if ($rate_sheet_status_lookup) {
-      $rate_sheets_query = $database->select('rate_sheet', 'rs')
-        ->fields('rs', ['id', 'name', 'effective_date'])
-        ->condition('rate_sheet_status_id', $rate_sheet_status_lookup)
-        ->orderBy('effective_date', 'DESC');
-      $rate_sheets = $rate_sheets_query->execute()->fetchAll();
-
-      if (!empty($rate_sheets)) {
-        $rate_sheet_no = 1;
-        $rate_sheet_ids = [];
-        foreach ($rate_sheets as $rate_sheet) {
-          $rate_sheet_ids[] = $rate_sheet->id;
-          $effective_date = date('M d, Y', intval($rate_sheet->effective_date));
-          
-          // Check client_rate_sheet relationship status
-          $client_rate_sheet = $database->select('client_rate_sheet', 'crs')
-            ->fields('crs', ['rate_sheet_client_status_id'])
-            ->condition('rate_sheet_id', $rate_sheet->id)
-            ->condition('client_id', $gid)
-            ->execute()
-            ->fetchAssoc();
-
-          $title = "<span class='attribute-no'>$rate_sheet_no. </span>" . $rate_sheet->name . ' (' . $effective_date . ')';
-          $is_readonly = FALSE;
-          $is_checked = $selected_rate_sheets_array[$rate_sheet->id] ?? 0;
-          $checkbox_classes = ['toggle-checkbox'];
-
-          if ($client_rate_sheet) {
-            if ($client_rate_sheet['rate_sheet_client_status_id'] == $pending_status_id) {
-              $title .= ' <span class="pending-approval-text">-- Pending Approval</span>';
-              $is_readonly = TRUE;
-              $is_checked = TRUE;
-              $checkbox_classes[] = 'pending-status';
-            }
-            elseif ($client_rate_sheet['rate_sheet_client_status_id'] == $approved_client_status_id) {
-              $is_checked = TRUE;
-            }
-          }
-
-          $form['selected_rate_sheets']['rate_sheet_' . $rate_sheet->id] = [
-            '#type' => 'checkbox',
-            '#title' => Markup::create($title),
-            '#default_value' => $is_checked,
-            '#attributes' => [
-              'class' => $checkbox_classes,
-            ],
-          ];
-
-          if ($is_readonly) {
-            $form['selected_rate_sheets']['rate_sheet_' . $rate_sheet->id]['#attributes']['readonly'] = 'readonly';
-            $form['selected_rate_sheets']['rate_sheet_' . $rate_sheet->id]['#attributes']['disabled'] = 'disabled';
-          }
-
-          $rate_sheet_no++;
-        }
-
-        $form['selected_rate_sheets']['rate_sheet_nodes'] = [
-          '#type' => 'hidden',
-          '#value' => implode(",", $rate_sheet_ids),
-        ];
-      }
-      else {
-        $form['selected_rate_sheets']['no_rate_sheets'] = [
-          '#markup' => '<p>No approved rate sheets available.</p>',
-        ];
-      }
-    }
-    else {
-      $form['selected_rate_sheets']['no_status'] = [
-        '#markup' => '<p>Approved status not found in the system.</p>',
-      ];
-    }
-
-    $form['selected_rate_sheets']['#suffix'] = '</div>';
-
     $form['actions'] = [
       '#type' => 'actions',
       'submit' => [
@@ -506,21 +386,6 @@ final class EditClientForm extends FormBase {
 
     $encoded_data = Json::encode($json);
 
-    // Process selected rate sheets
-    $rate_sheet_json = [];
-    $selected_rate_sheets = [];
-    if (!empty($values['rate_sheet_nodes'])) {
-      $rate_sheet_ids = explode(",", $values['rate_sheet_nodes']);
-      foreach ($rate_sheet_ids as $rate_sheet_id) {
-        $is_selected = $values['rate_sheet_' . $rate_sheet_id] ?? 0;
-        $rate_sheet_json[$rate_sheet_id] = $is_selected;
-        if ($is_selected) {
-          $selected_rate_sheets[] = $rate_sheet_id;
-        }
-      }
-    }
-    $encoded_rate_sheets = Json::encode($rate_sheet_json);
-
     $partner_name = $form_state->getValue('partner_name');
     $contact_name = $form_state->getValue('contact_name');
     $contact_email = $form_state->getValue('contact_email');
@@ -559,7 +424,6 @@ final class EditClientForm extends FormBase {
     $group->set('field_currency', $currency);
     $group->set('field_industry', $industry);
     $group->set('field_apis_agreement_covers', $encoded_data);
-    $group->set('field_selected_rate_sheets', $encoded_rate_sheets);
 
     // Address details.
     $country_code = $form_state->getValue('address')['country_code'];
@@ -595,56 +459,9 @@ final class EditClientForm extends FormBase {
 
     $group->save();
     
-    // Handle client_rate_sheet relationships
-    $this->handleClientRateSheetRelationships($group->id(), $selected_rate_sheets);
-    
     $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
     $this->messenger()->addMessage($this->t('Client is updated successfully.'));
     $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
-  }
-
-  /**
-   * Handle client rate sheet relationships.
-   */
-  protected function handleClientRateSheetRelationships($client_id, array $selected_rate_sheets) {
-    if (empty($selected_rate_sheets)) {
-      return;
-    }
-
-    $database = \Drupal::database();
-    $current_user_id = \Drupal::currentUser()->id();
-    $current_date = date('Y-m-d H:i:s');
-
-    // Get Pending status ID
-    $pending_status_id = $database->select('rate_sheet_status_lookup', 'rssl')
-      ->fields('rssl', ['id'])
-      ->condition('status_name', 'Pending')
-      ->execute()
-      ->fetchField();
-
-    foreach ($selected_rate_sheets as $rate_sheet_id) {
-      // Check if relationship already exists
-      $exists = $database->select('client_rate_sheet', 'crs')
-        ->fields('crs', ['rate_sheet_id'])
-        ->condition('rate_sheet_id', $rate_sheet_id)
-        ->condition('client_id', $client_id)
-        ->execute()
-        ->fetchField();
-
-      if (!$exists) {
-        // Create new relationship with Pending status
-        $database->insert('client_rate_sheet')
-          ->fields([
-            'rate_sheet_id' => $rate_sheet_id,
-            'client_id' => $client_id,
-            'created_by' => $current_user_id,
-            'created_date' => $current_date,
-            'active' => 0,
-            'rate_sheet_client_status_id' => $pending_status_id,
-          ])
-          ->execute();
-      }
-    }
   }
 
   /**

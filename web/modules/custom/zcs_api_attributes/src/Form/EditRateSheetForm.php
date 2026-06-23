@@ -159,16 +159,24 @@ class EditRateSheetForm extends FormBase {
       return $form;
     }
 
-    // Check if rate sheet is cancelled
+    // Check if rate sheet is cancelled or approved
     $status = $this->rateSheetService->getRateSheetStatus($id);
     $is_cancelled = strtolower($status) === 'cancelled';
+    $is_approved = strtolower($status) === 'approved';
 
     if ($is_cancelled) {
       $this->messenger->addWarning($this->t('This rate sheet has been cancelled and cannot be edited.'));
     }
 
+    if ($is_approved) {
+      $this->messenger->addStatus($this->t('This rate sheet is approved. You can only add or remove clients.'));
+    }
+
     // Check if there are unresolved reject comments
     $can_edit = !$is_cancelled && $this->rateSheetService->hasUnresolvedComments($id);
+    
+    // If approved, allow editing only for client management
+    $can_edit_clients_only = $is_approved && !$is_cancelled;
 
     $config = $this->configFactory->get('zcs_custom.settings');
     $defaultCurrency = $config->get('currency') ?? 'en_US';
@@ -202,6 +210,7 @@ class EditRateSheetForm extends FormBase {
       '#default_value' => $rate_sheet->name,
       '#description' => $this->t('The rate sheet name.'),
       '#required' => TRUE,
+      '#disabled' => $can_edit_clients_only,
     ];
 
     // Currencies form select.
@@ -220,6 +229,7 @@ class EditRateSheetForm extends FormBase {
       '#attributes' => [
         'min' => date('Y-m-d'),
       ],
+      '#disabled' => $can_edit_clients_only,
     ];
 
     // Markup retail.
@@ -229,6 +239,7 @@ class EditRateSheetForm extends FormBase {
       '#step' => 1,
       '#required' => TRUE,
       '#default_value' => $rate_sheet->markup_retail,
+      '#disabled' => $can_edit_clients_only,
     ];
 
     // Load rate sheet items.
@@ -366,6 +377,26 @@ class EditRateSheetForm extends FormBase {
       ],
     ];
 
+    // Client selection fields
+    $all_clients = $this->rateSheetService->getAllClients();
+    $selected_client_ids = $this->rateSheetService->getRateSheetClientIds($id);
+    
+    $form['clients_data'] = [
+      '#type' => 'hidden',
+      '#value' => json_encode($all_clients),
+      '#attributes' => [
+        'data-rate-sheet-clients-data' => '',
+      ],
+    ];
+
+    $form['selected_clients'] = [
+      '#type' => 'hidden',
+      '#default_value' => json_encode($selected_client_ids),
+      '#attributes' => [
+        'data-rate-sheet-selected-clients' => '',
+      ],
+    ];
+
     // Get reject comments.
     $reject_comments = $this->rateSheetService->getRateSheetRejectComments($id);
 
@@ -411,22 +442,34 @@ class EditRateSheetForm extends FormBase {
       '#value' => $is_cancelled,
     ];
 
+    $form['is_approved'] = [
+      '#type' => 'value',
+      '#value' => $is_approved,
+    ];
+
+    $form['can_edit_clients_only'] = [
+      '#type' => 'value',
+      '#value' => $can_edit_clients_only,
+    ];
+
     // Always show actions container for the owner
     $form['actions'] = [
       '#type' => 'container',
       '#attributes' => ['class' => ['form-actions d-flex gap-2']],
     ];
 
-    // Only show submit button if user can edit (has unresolved comments) and not cancelled
-    if ($can_edit && !$is_cancelled) {
+    // Show submit button if:
+    // 1. User can edit (has unresolved comments) and not cancelled, OR
+    // 2. Rate sheet is approved (for client management only)
+    if (($can_edit && !$is_cancelled) || $can_edit_clients_only) {
       $form['actions']['submit'] = [
         '#type' => 'submit',
         '#value' => $this->t('Update Rate Sheet'),
       ];
     }
 
-    // Always show cancel button if not already cancelled
-    if (!$is_cancelled) {
+    // Always show cancel button if not already cancelled and not approved
+    if (!$is_cancelled && !$is_approved) {
       $form['actions']['cancel'] = [
         '#type' => 'submit',
         '#value' => $this->t('Cancel Rate Sheet'),
@@ -443,6 +486,7 @@ class EditRateSheetForm extends FormBase {
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-ranges';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-cancel';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-reject-comments';
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-clients';
     return $form;
   }
 
@@ -519,25 +563,72 @@ class EditRateSheetForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
     $rate_sheet_id = $values['rate_sheet_id'];
-    $payload = $values['rate_sheet_item_ranges_payload'] ?? '';
-    $submitted_ranges = [];
-
-    // Parse the JSON payload.
-    if (!empty($payload)) {
-      $decoded_payload = json_decode($payload, TRUE);
-      if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_payload)) {
-        $submitted_ranges = $decoded_payload;
+    $can_edit_clients_only = $values['can_edit_clients_only'] ?? FALSE;
+    
+    // Parse selected clients
+    $selected_clients = [];
+    $selected_clients_json = $values['selected_clients'] ?? '[]';
+    if (!empty($selected_clients_json)) {
+      $decoded = json_decode($selected_clients_json, TRUE);
+      if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+        $selected_clients = array_filter($decoded, 'is_numeric');
       }
-    }
-
-    // Fallback to form values if payload is empty.
-    if (empty($submitted_ranges)) {
-      $submitted_ranges = $values['rate_sheet_item_ranges'] ?? [];
     }
 
     $transaction = $this->database->startTransaction();
 
     try {
+      // If in clients-only mode (approved status), only update client relationships
+      if ($can_edit_clients_only) {
+        // Update client relationships only
+        $this->rateSheetService->updateClientRateSheets($rate_sheet_id, $selected_clients, $this->currentUser->id());
+
+        // Log the action
+        $this->database->insert('action_log')
+          ->fields([
+            'action_type',
+            'entity_target_type',
+            'entity_target_id',
+            'created_by',
+            'created_date',
+            'log_data',
+            'solved',
+          ])
+          ->values([
+            'CLIENT_UPDATE',
+            'RATE_SHEET',
+            $rate_sheet_id,
+            $this->currentUser->id(),
+            \Drupal::time()->getRequestTime(),
+            "User {$this->currentUser->id()} updated clients for approved rate sheet {$rate_sheet_id}.",
+            0,
+          ])
+          ->execute();
+
+        unset($transaction);
+
+        $this->messenger->addStatus($this->t('Rate sheet clients have been updated successfully.'));
+        $form_state->setRedirect('zcs_api_attributes.rate_sheet_list');
+        return;
+      }
+
+      // Normal edit mode - update all fields
+      $payload = $values['rate_sheet_item_ranges_payload'] ?? '';
+      $submitted_ranges = [];
+
+      // Parse the JSON payload.
+      if (!empty($payload)) {
+        $decoded_payload = json_decode($payload, TRUE);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_payload)) {
+          $submitted_ranges = $decoded_payload;
+        }
+      }
+
+      // Fallback to form values if payload is empty.
+      if (empty($submitted_ranges)) {
+        $submitted_ranges = $values['rate_sheet_item_ranges'] ?? [];
+      }
+
       // Update rate sheet.
       $this->database->update('rate_sheet')
         ->fields([
@@ -547,6 +638,9 @@ class EditRateSheetForm extends FormBase {
         ])
         ->condition('id', $rate_sheet_id)
         ->execute();
+
+      // Update client relationships
+      $this->rateSheetService->updateClientRateSheets($rate_sheet_id, $selected_clients, $this->currentUser->id());
 
       // Update rate sheet item ranges.
       $rate_sheet_items = $this->database->select('rate_sheet_item', 'rsi')

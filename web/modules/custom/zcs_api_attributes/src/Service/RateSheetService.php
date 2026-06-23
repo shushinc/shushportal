@@ -245,6 +245,179 @@ class RateSheetService {
   }
 
   /**
+   * Checks if a rate sheet is approved.
+   *
+   * @param int $rate_sheet_id
+   *   The Rate Sheet ID.
+   *
+   * @return bool
+   *   TRUE if the rate sheet is approved, FALSE otherwise.
+   */
+  public function isRateSheetApproved(int $rate_sheet_id): bool {
+    $status = $this->getRateSheetStatus($rate_sheet_id);
+    return strtolower($status) === 'approved';
+  }
+
+  /**
+   * Gets all active clients (groups of type 'partner').
+   *
+   * @return array
+   *   Array of clients with id and label.
+   */
+  public function getAllClients(): array {
+    $query = $this->database->select('groups_field_data', 'gfd')
+      ->fields('gfd', ['id', 'label'])
+      ->condition('type', 'partner')
+      ->condition('status', 1)
+      ->orderBy('label', 'ASC');
+
+    $results = $query->execute()->fetchAll();
+
+    $clients = [];
+    foreach ($results as $result) {
+      $clients[] = [
+        'id' => $result->id,
+        'label' => $result->label,
+      ];
+    }
+
+    return $clients;
+  }
+
+  /**
+   * Creates client rate sheet relationships.
+   *
+   * @param int $rate_sheet_id
+   *   The rate sheet ID.
+   * @param array $client_ids
+   *   Array of client IDs.
+   * @param int $user_id
+   *   The user ID creating the relationships.
+   *
+   * @throws \Exception
+   */
+  public function createClientRateSheets(int $rate_sheet_id, array $client_ids, int $user_id) {
+    if (empty($client_ids)) {
+      return;
+    }
+
+    $transaction = $this->database->startTransaction();
+
+    try {
+      $pending_status_id = $this->getRateStatusId('Pending');
+      $current_time = \Drupal::time()->getRequestTime();
+
+      foreach ($client_ids as $client_id) {
+        // Get client name
+        $client_name = $this->database->select('groups_field_data', 'gfd')
+          ->fields('gfd', ['label'])
+          ->condition('id', $client_id)
+          ->execute()
+          ->fetchField();
+
+        // Insert client rate sheet relationship
+        $this->database->insert('client_rate_sheet')
+          ->fields([
+            'rate_sheet_id' => $rate_sheet_id,
+            'client_id' => $client_id,
+            'created_by' => $user_id,
+            'created_date' => $current_time,
+            'active' => 0,
+            'rate_sheet_client_status_id' => $pending_status_id,
+          ])
+          ->execute();
+
+        // Log the action
+        $this->database->insert('action_log')
+          ->fields([
+            'action_type' => 'STATUS_UPDATE_PENDING',
+            'entity_target_type' => 'CLIENT_RATE_SHEET',
+            'entity_target_id' => $rate_sheet_id,
+            'created_by' => $user_id,
+            'created_date' => $current_time,
+            'log_data' => "User {$user_id} created a new relationship between {$client_name} and rate sheet {$rate_sheet_id}",
+            'solved' => 0,
+          ])
+          ->execute();
+      }
+
+      unset($transaction);
+    }
+    catch (\Exception $e) {
+      if (isset($transaction)) {
+        $transaction->rollBack();
+      }
+      $this->logger->error('Failed to create client rate sheets: @message', ['@message' => $e->getMessage()]);
+      throw $e;
+    }
+  }
+
+  /**
+   * Gets client IDs associated with a rate sheet.
+   *
+   * @param int $rate_sheet_id
+   *   The rate sheet ID.
+   *
+   * @return array
+   *   Array of client IDs.
+   */
+  public function getRateSheetClientIds(int $rate_sheet_id): array {
+    $query = $this->database->select('client_rate_sheet', 'crs')
+      ->fields('crs', ['client_id'])
+      ->condition('rate_sheet_id', $rate_sheet_id);
+
+    return $query->execute()->fetchCol();
+  }
+
+  /**
+   * Updates client rate sheet relationships.
+   *
+   * @param int $rate_sheet_id
+   *   The rate sheet ID.
+   * @param array $new_client_ids
+   *   Array of new client IDs.
+   * @param int $user_id
+   *   The user ID making the update.
+   *
+   * @throws \Exception
+   */
+  public function updateClientRateSheets(int $rate_sheet_id, array $new_client_ids, int $user_id) {
+    $transaction = $this->database->startTransaction();
+
+    try {
+      $existing_client_ids = $this->getRateSheetClientIds($rate_sheet_id);
+      
+      // Find clients to remove
+      $clients_to_remove = array_diff($existing_client_ids, $new_client_ids);
+      
+      // Find clients to add
+      $clients_to_add = array_diff($new_client_ids, $existing_client_ids);
+
+      // Remove old relationships
+      if (!empty($clients_to_remove)) {
+        $this->database->delete('client_rate_sheet')
+          ->condition('rate_sheet_id', $rate_sheet_id)
+          ->condition('client_id', $clients_to_remove, 'IN')
+          ->execute();
+      }
+
+      // Add new relationships
+      if (!empty($clients_to_add)) {
+        $this->createClientRateSheets($rate_sheet_id, $clients_to_add, $user_id);
+      }
+
+      unset($transaction);
+    }
+    catch (\Exception $e) {
+      if (isset($transaction)) {
+        $transaction->rollBack();
+      }
+      $this->logger->error('Failed to update client rate sheets: @message', ['@message' => $e->getMessage()]);
+      throw $e;
+    }
+  }
+
+  /**
    * Creates a new rate sheet with items and ranges.
    *
    * @param array $data
@@ -255,6 +428,7 @@ class RateSheetService {
    *   - effective_date: The effective date timestamp.
    *   - attribute_ids: Array of attribute node IDs.
    *   - ranges: Array of ranges keyed by attribute ID.
+   *   - client_ids: (optional) Array of client IDs.
    *
    * @return int|false
    *   The new rate sheet ID or FALSE on failure.

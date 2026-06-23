@@ -77,3 +77,13 @@ discount-sheet:
   css:
     theme:
       css/discount-sheet.css: {}
+
+rate-sheet-clients:
+  js:
+    js/rate-sheet-clients.js: {}
+  css:
+    theme:
+      css/rate-sheet-clients.css: {}
+  dependencies:
+    - core/drupal
+    - core/once
