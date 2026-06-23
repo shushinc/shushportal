@@ -18,15 +18,22 @@
          */
         function updateSelectionState() {
           var checkedCount = 0;
-          var totalCount = itemCheckboxes.length;
+          var totalCount = 0;
+          var enabledCount = 0;
 
           itemCheckboxes.forEach(function (checkbox) {
-            if (checkbox.checked) {
+            if (!checkbox.disabled) {
+              enabledCount++;
+            }
+            if (checkbox.checked && !checkbox.disabled) {
               checkedCount++;
+            }
+            if (!checkbox.disabled) {
+              totalCount++;
             }
           });
 
-          // Update select all checkbox state
+          // Update select all checkbox state (only consider enabled checkboxes)
           if (selectAllCheckbox) {
             selectAllCheckbox.checked = checkedCount === totalCount && totalCount > 0;
             selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < totalCount;
@@ -57,7 +64,10 @@
           selectAllCheckbox.addEventListener('change', function () {
             var checked = selectAllCheckbox.checked;
             itemCheckboxes.forEach(function (checkbox) {
-              checkbox.checked = checked;
+              // Only change state of enabled checkboxes
+              if (!checkbox.disabled) {
+                checkbox.checked = checked;
+              }
             });
             updateSelectionState();
           });

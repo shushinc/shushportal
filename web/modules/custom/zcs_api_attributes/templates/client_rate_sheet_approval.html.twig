@@ -71,6 +71,7 @@
         {% for sheet_info in content.final %}
           {% set rate_sheet_status = sheet_info.status|lower %}
           {% set item_value = sheet_info.rate_sheet_id ~ '_' ~ sheet_info.client_id %}
+          {% set is_rejected = rate_sheet_status == 'rejected' %}
           <tr>
             <td class="client-rate-sheet-checkbox-cell">
               <input 
@@ -78,7 +79,9 @@
                 name="selected_items[]" 
                 value="{{ item_value }}"
                 data-item-checkbox
+                data-status="{{ rate_sheet_status }}"
                 aria-label="Select {{ sheet_info.client_name }} - {{ sheet_info.rate_sheet_name }}"
+                {% if is_rejected %}disabled{% endif %}
               />
             </td>
             <td>{{ counter }}</td>

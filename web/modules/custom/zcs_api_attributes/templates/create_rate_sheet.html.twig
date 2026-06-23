@@ -139,10 +139,10 @@
               <thead>
                 <tr>
                   <th>Range</th>
-                  <th>From range</th>
-                  <th>To range</th>
-                  <th>Partial rate</th>
-                  <th>Success rate</th>
+                  <th>From Range</th>
+                  <th>To Range</th>
+                  <th>Success Rate</th>
+                  <th>Rate Price</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -179,8 +179,8 @@
                           <span aria-hidden="true">∞</span> Unbounded
                         </span>
                       </td>
-                      <td>{{ range_data.partial_range }}</td>
                       <td>{{ range_data.success_rate }}</td>
+                      <td>{{ range_data.partial_range }}</td>
                       <td class="rate-sheet-range-actions">
                         {% if is_first_range %}
                           <span class="rate-sheet-initial-range-note"></span>
