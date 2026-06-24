@@ -144,9 +144,27 @@
           return;
         }
 
-        filterInput.addEventListener('input', debounce(function () {
-          filterForm.submit();
-        }, 500));
+        var tableRows = filterForm.querySelectorAll('.client-rate-sheet-table tbody tr');
+
+        filterInput.addEventListener('input', function () {
+          var query = filterInput.value.trim().toLowerCase();
+
+          tableRows.forEach(function (row) {
+            var rateSheetNameCell = row.cells[3]; // Rate Sheet Name is the 4th column (index 3)
+
+            if (!rateSheetNameCell) {
+              return;
+            }
+
+            var rateSheetName = rateSheetNameCell.textContent.toLowerCase();
+            var matches = !query || rateSheetName.indexOf(query) !== -1;
+
+            row.style.display = matches ? '' : 'none';
+          });
+
+          // Update selection state after filtering
+          updateSelectionState();
+        });
       });
     }
   };
