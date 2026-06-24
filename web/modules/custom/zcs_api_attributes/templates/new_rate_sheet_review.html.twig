@@ -77,10 +77,10 @@
                     {% for range in item.ranges %}
                       <div class="rate-sheet-review-range-grid-row" data-rate-sheet-range-row data-attribute-id="{{ item.id }}" data-range-index="{{ loop.index0 }}" role="row">
                         <span class="rate-sheet-range-label-text" role="cell">Range {{ loop.index }}</span>
-                        <span role="cell">{{ range.from_range }}</span>
-                        <span role="cell">{{ range.to_range }}</span>
-                        <span role="cell">{{ range.partial_range }}</span>
-                        <span role="cell">{{ range.success_rate }}</span>
+                        <span role="cell">{{ range.from_range|number_format_range }}</span>
+                        <span role="cell">{{ range.to_range|number_format_range }}</span>
+                        <span role="cell">{{ range.partial_range|number_format_range }}</span>
+                        <span role="cell">{{ range.success_rate|number_format_range }}</span>
                       </div>
                     {% endfor %}
                   </div>

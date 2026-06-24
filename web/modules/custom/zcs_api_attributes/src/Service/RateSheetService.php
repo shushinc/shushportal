@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\node\Entity\Node;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Service for managing rate sheets.
@@ -852,21 +853,28 @@ class RateSheetService {
   public function approveClientRateSheet(int $rate_sheet_id, int $client_id, int $user_id) {
     $transaction = $this->database->startTransaction();
 
-    $client_rate_sheet_id = $this->database->select('client_rate_sheet', 'crs')
-      ->fields('crs', ['id'])
+    $client_rate_sheet = $this->database->select('client_rate_sheet', 'crs')
+      ->fields('crs', ['id', 'created_by'])
       ->condition('client_id', $client_id)
       ->condition('rate_sheet_id', $rate_sheet_id)
       ->execute()
-      ->fetchField();
+      ->fetchAll();
 
-    if ($client_rate_sheet_id) {
+    if ($client_rate_sheet[0]->id) {
+
+      if ((int) $client_rate_sheet[0]->created_by === (int) $user_id) {
+        throw new AccessDeniedHttpException(
+          'You cannot approve a rate sheet linking that you created.'
+        );
+      }
+
       try {
         // Insert approval action log
         $this->database->insert('action_log')
           ->fields([
             'action_type' => 'STATUS_UPDATE_APPROVE',
             'entity_target_type' => 'CLIENT_RATE_SHEET',
-            'entity_target_id' => $client_rate_sheet_id,
+            'entity_target_id' => $client_rate_sheet[0]->id,
             'created_by' => $user_id,
             'created_date' => \Drupal::time()->getRequestTime(),
             'log_data' => "User {$user_id} approved client rate sheet {$rate_sheet_id} for client {$client_id}.",
@@ -879,7 +887,7 @@ class RateSheetService {
           ->fields('al', ['id'])
           ->condition('action_type', 'STATUS_UPDATE_APPROVE')
           ->condition('entity_target_type', 'CLIENT_RATE_SHEET')
-          ->condition('entity_target_id', $client_rate_sheet_id)
+          ->condition('entity_target_id', $client_rate_sheet[0]->id)
           ->countQuery()
           ->execute()
           ->fetchField();
@@ -960,20 +968,27 @@ class RateSheetService {
   public function rejectClientRateSheet(int $rate_sheet_id, int $client_id, int $user_id) {
     $transaction = $this->database->startTransaction();
 
-    $client_rate_sheet_id = $this->database->select('client_rate_sheet', 'crs')
-      ->fields('crs', ['id'])
+    $client_rate_sheet = $this->database->select('client_rate_sheet', 'crs')
+      ->fields('crs', ['id', 'created_by'])
       ->condition('client_id', $client_id)
       ->condition('rate_sheet_id', $rate_sheet_id)
       ->execute()
-      ->fetchField();
+      ->fetchAll();
 
     try {
+
+      if ((int) $client_rate_sheet[0]->created_by === (int) $user_id) {
+        throw new AccessDeniedHttpException(
+          'You cannot reject a rate sheet linking that you created.'
+        );
+      }
+
       // Insert rejection action log
       $this->database->insert('action_log')
         ->fields([
           'action_type' => 'STATUS_UPDATE_REJECT',
           'entity_target_type' => 'CLIENT_RATE_SHEET',
-          'entity_target_id' => $client_rate_sheet_id,
+          'entity_target_id' => $client_rate_sheet[0]->id,
           'created_by' => $user_id,
           'created_date' => \Drupal::time()->getRequestTime(),
           'log_data' => "User {$user_id} rejected client rate sheet {$rate_sheet_id} for client {$client_id}.",

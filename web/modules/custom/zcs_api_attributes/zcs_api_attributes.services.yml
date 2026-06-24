@@ -21,3 +21,7 @@ services:
       - '@logger.channel.zcs_api_attributes'
   zcs_api_attributes.rate_sheet_approval_access:
     class: Drupal\zcs_api_attributes\Access\RateSheetApprovalAccessCheck
+  zcs_api_attributes.twig.number_format:
+    class: Drupal\zcs_api_attributes\TwigExtension\NumberFormatExtension
+    tags:
+      - { name: twig.extension }

@@ -275,88 +275,10 @@ class EditRateSheetForm extends FormBase {
     }
 
     $nids = [];
-    $form['rate_sheet_item_ranges'] = [
-      '#type' => 'container',
-      '#tree' => TRUE,
-    ];
 
     foreach ($rate_sheet_items as $item) {
       $attribute_id = $item['api_attribute_id'];
       $nids[] = $attribute_id;
-      $ranges = $ranges_by_item_id[$item['id']] ?? [];
-
-      // Filter out ranges where from_range is 0 and all other values are 0 or -1
-      // (these are unfilled default ranges that shouldn't be shown in edit mode)
-      $filtered_ranges = [];
-      foreach ($ranges as $range) {
-        // Keep the range if:
-        // 1. from_range is not 0, OR
-        // 2. Any of the rate values (partial_range or success_rate) are non-zero
-        if ($range['from_range'] != 0 || $range['partial_range'] != 0 || $range['success_rate'] != 0) {
-          $filtered_ranges[] = $range;
-        }
-      }
-
-      // If no valid ranges exist after filtering, don't create any form elements
-      // (the template will show the default single range)
-      if (empty($filtered_ranges)) {
-        continue;
-      }
-
-      foreach ($filtered_ranges as $range_index => $range) {
-        $form['rate_sheet_item_ranges'][$attribute_id][$range_index]['from_range'] = [
-          '#type' => 'number',
-          '#min' => 0,
-          '#default_value' => $range['from_range'],
-          '#step' => 0.001,
-          '#attributes' => [
-            'data-rate-sheet-range-field' => 'from_range',
-            'data-attribute-id' => $attribute_id,
-            'data-range-index' => $range_index,
-          ],
-        ];
-
-        $form['rate_sheet_item_ranges'][$attribute_id][$range_index]['to_range'] = [
-          '#type' => 'number',
-          '#min' => -1,
-          '#default_value' => $range['to_range'],
-          '#step' => 0.001,
-          '#attributes' => [
-            'data-rate-sheet-range-field' => 'to_range',
-            'data-attribute-id' => $attribute_id,
-            'data-range-index' => $range_index,
-          ],
-        ];
-
-        $form['rate_sheet_item_ranges'][$attribute_id][$range_index]['partial_range'] = [
-          '#type' => 'number',
-          '#min' => 0,
-          '#default_value' => $range['partial_range'],
-          '#step' => 0.001,
-          '#attributes' => [
-            'data-rate-sheet-range-field' => 'partial_range',
-            'data-attribute-id' => $attribute_id,
-            'data-range-index' => $range_index,
-          ],
-        ];
-
-        $form['rate_sheet_item_ranges'][$attribute_id][$range_index]['success_rate'] = [
-          '#type' => 'number',
-          '#min' => 0,
-          '#default_value' => $range['success_rate'],
-          '#step' => 0.001,
-          '#attributes' => [
-            'data-rate-sheet-range-field' => 'success_rate',
-            'data-attribute-id' => $attribute_id,
-            'data-range-index' => $range_index,
-          ],
-        ];
-      }
-
-      $form['tiered_calculation_' . $attribute_id] = [
-        '#type' => 'checkbox',
-        '#default_value' => $item['tiered_calculation'],
-      ];
     }
 
     $form['nodes'] = [
@@ -484,6 +406,7 @@ class EditRateSheetForm extends FormBase {
     $form['#theme'] = 'create_rate_sheet';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-ranges';
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-number-format';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-cancel';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-reject-comments';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-clients';
@@ -495,6 +418,12 @@ class EditRateSheetForm extends FormBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
+    $can_edit_clients_only = $values['can_edit_clients_only'] ?? FALSE;
+
+    // If in clients-only mode, skip most validation
+    if ($can_edit_clients_only) {
+      return;
+    }
 
     // Validate rate sheet name.
     if (empty(trim($values['name']))) {
@@ -520,38 +449,44 @@ class EditRateSheetForm extends FormBase {
       }
     }
 
-    // Validate JSON payload.
+    // Validate JSON payload only - ignore form fields
     $payload = $values['rate_sheet_item_ranges_payload'] ?? '';
-    if (!empty($payload)) {
-      $decoded = json_decode($payload, TRUE);
-      if (json_last_error() !== JSON_ERROR_NONE) {
-        $form_state->setErrorByName('rate_sheet_item_ranges_payload', $this->t('Invalid range data format.'));
+    if (empty($payload)) {
+      $form_state->setErrorByName('rate_sheet_item_ranges_payload', $this->t('Range data is required.'));
+      return;
+    }
+
+    $decoded = json_decode($payload, TRUE);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      $form_state->setErrorByName('rate_sheet_item_ranges_payload', $this->t('Invalid range data format.'));
+      return;
+    }
+
+    if (!is_array($decoded)) {
+      $form_state->setErrorByName('rate_sheet_item_ranges_payload', $this->t('Range data must be an array.'));
+      return;
+    }
+
+    // Validate range values from the payload (which contains unformatted numbers).
+    foreach ($decoded as $attribute_id => $ranges) {
+      if (!is_array($ranges)) {
+        continue;
       }
-      elseif (!is_array($decoded)) {
-        $form_state->setErrorByName('rate_sheet_item_ranges_payload', $this->t('Range data must be an array.'));
-      }
-      else {
-        // Validate range values.
-        foreach ($decoded as $attribute_id => $ranges) {
-          if (!is_array($ranges)) {
-            continue;
-          }
-          foreach ($ranges as $range_index => $range) {
-            if (!is_array($range)) {
-              continue;
-            }
+      foreach ($ranges as $range_index => $range) {
+        if (!is_array($range)) {
+          continue;
+        }
 
-            $from = $range['from_range'] ?? NULL;
-            $to = $range['to_range'] ?? NULL;
+        // Remove any formatting from the values
+        $from = isset($range['from_range']) ? str_replace(',', '', $range['from_range']) : NULL;
+        $to = isset($range['to_range']) ? str_replace(',', '', $range['to_range']) : NULL;
 
-            if (!is_numeric($from) || $from < 0) {
-              $form_state->setError($form, $this->t('Invalid "from" range value for attribute @id.', ['@id' => $attribute_id]));
-            }
+        if (!is_numeric($from) || $from < 0) {
+          $form_state->setError($form, $this->t('Invalid "from" range value for attribute @id.', ['@id' => $attribute_id]));
+        }
 
-            if ($to != -1 && (!is_numeric($to) || $to < $from)) {
-              $form_state->setError($form, $this->t('Invalid "to" range value for attribute @id. Must be greater than "from" or -1 for unbounded.', ['@id' => $attribute_id]));
-            }
-          }
+        if ($to != -1 && (!is_numeric($to) || floatval($to) < floatval($from))) {
+          $form_state->setError($form, $this->t('Invalid "to" range value for attribute @id. Must be greater than "from" or -1 for unbounded.', ['@id' => $attribute_id]));
         }
       }
     }
@@ -624,9 +559,18 @@ class EditRateSheetForm extends FormBase {
         }
       }
 
-      // Fallback to form values if payload is empty.
-      if (empty($submitted_ranges)) {
-        $submitted_ranges = $values['rate_sheet_item_ranges'] ?? [];
+      // Clean all numeric values from formatting
+      $cleaned_ranges = [];
+      foreach ($submitted_ranges as $attribute_id => $ranges) {
+        $cleaned_ranges[$attribute_id] = [];
+        foreach ($ranges as $range_index => $range) {
+          $cleaned_ranges[$attribute_id][$range_index] = [
+            'from_range' => str_replace(',', '', $range['from_range'] ?? '0'),
+            'to_range' => str_replace(',', '', $range['to_range'] ?? '0'),
+            'partial_range' => str_replace(',', '', $range['partial_range'] ?? '0'),
+            'success_rate' => str_replace(',', '', $range['success_rate'] ?? '0'),
+          ];
+        }
       }
 
       // Update rate sheet.
@@ -649,7 +593,7 @@ class EditRateSheetForm extends FormBase {
         ->execute()
         ->fetchAllKeyed(1, 0);
 
-      foreach ($submitted_ranges as $attribute_id => $ranges) {
+      foreach ($cleaned_ranges as $attribute_id => $ranges) {
         if (!isset($rate_sheet_items[$attribute_id])) {
           continue;
         }

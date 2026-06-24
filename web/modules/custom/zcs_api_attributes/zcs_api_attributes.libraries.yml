@@ -23,6 +23,13 @@ rate-sheet-ranges:
     - core/drupal
     - core/once
 
+rate-sheet-number-format:
+  js:
+    js/rate-sheet-number-format.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
 rate-sheet-ux:
   js:
     js/rate-sheet-ux.js: {}

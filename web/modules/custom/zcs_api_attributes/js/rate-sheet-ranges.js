@@ -124,6 +124,24 @@
   }
 
   /**
+   * Removes formatting from a number string.
+   *
+   * @param {string} value
+   *   The value string.
+   *
+   * @return {string}
+   *   The unformatted number string.
+   */
+  function unformatNumber(value) {
+    if (typeof value !== 'string') {
+      return String(value);
+    }
+
+    // Remove all commas and other non-numeric characters except decimal point, minus sign, and digits
+    return value.replace(/[^\d.-]/g, '');
+  }
+
+  /**
    * Gets numeric value from an input with fallback.
    *
    * @param {HTMLElement} input
@@ -135,7 +153,13 @@
    *   The parsed value or fallback.
    */
   function getNumericInputValue(input, fallback) {
-    var parsed = input ? parseFloat(input.value) : NaN;
+    if (!input) {
+      return fallback;
+    }
+
+    // Unformat the value first to handle formatted numbers
+    var unformatted = unformatNumber(input.value);
+    var parsed = parseFloat(unformatted);
 
     if (Number.isNaN(parsed)) {
       return fallback;
@@ -574,6 +598,21 @@
     attach: function (context) {
       once('rate-sheet-ranges', '[data-rate-sheet-ranges]', context).forEach(function (container) {
         var form = container.closest('form');
+
+        // Create initial range rows for empty tables
+        getAttributeItems(container).forEach(function (attributeItem) {
+          var tbody = getRangeTableBody(attributeItem);
+          var existingRows = getRangeRows(attributeItem);
+          
+          if (tbody && existingRows.length === 0) {
+            var attributeId = attributeItem.getAttribute('data-attribute-id');
+            if (attributeId) {
+              var initialRow = createRangeRow(attributeId, 0, '0');
+              initialRow.setAttribute('data-rate-sheet-initial-range-row', '');
+              tbody.appendChild(initialRow);
+            }
+          }
+        });
 
         initializeAccordion(container);
         updateRangesPayload(container);
