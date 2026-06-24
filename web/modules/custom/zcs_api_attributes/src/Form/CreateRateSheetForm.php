@@ -209,6 +209,15 @@ class CreateRateSheetForm extends FormBase {
       ],
     ];
 
+    // For new rate sheets, there are no locked clients
+    $form['locked_clients'] = [
+      '#type' => 'hidden',
+      '#default_value' => '[]',
+      '#attributes' => [
+        'data-rate-sheet-locked-clients' => '',
+      ],
+    ];
+
     $form['is_approved'] = [
       '#type' => 'value',
       '#value' => FALSE,

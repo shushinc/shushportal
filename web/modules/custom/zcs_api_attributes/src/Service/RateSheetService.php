@@ -371,7 +371,96 @@ class RateSheetService {
   }
 
   /**
+   * Gets detailed information about a client and their rate sheet linking status.
+   *
+   * @param int $client_id
+   *   The client (group) ID.
+   * @param int $rate_sheet_id
+   *   The rate sheet ID.
+   *
+   * @return array|null
+   *   Array with client details or NULL if not found.
+   */
+  public function getClientDetails(int $client_id, int $rate_sheet_id): ?array {
+    // Get client basic info from groups_field_data
+    $client = $this->database->select('groups_field_data', 'gfd')
+      ->fields('gfd', ['id', 'label'])
+      ->condition('id', $client_id)
+      ->condition('type', 'partner')
+      ->execute()
+      ->fetchObject();
+
+    if (!$client) {
+      return NULL;
+    }
+
+    // Get client type from group__field_partner_type
+    $type_value = $this->database->select('group__field_partner_type', 'gfpt')
+      ->fields('gfpt', ['field_partner_type_value'])
+      ->condition('entity_id', $client_id)
+      ->execute()
+      ->fetchField();
+
+    // Get client industry from group__field_industry
+    $industry_value = $this->database->select('group__field_industry', 'gfi')
+      ->fields('gfi', ['field_industry_value'])
+      ->condition('entity_id', $client_id)
+      ->execute()
+      ->fetchField();
+
+    // Get linking status from client_rate_sheet
+    $linking = $this->database->select('client_rate_sheet', 'crs')
+      ->fields('crs', ['rate_sheet_client_status_id'])
+      ->condition('rate_sheet_id', $rate_sheet_id)
+      ->condition('client_id', $client_id)
+      ->execute()
+      ->fetchObject();
+
+    $status_name = 'Unknown';
+    if ($linking && $linking->rate_sheet_client_status_id) {
+      $status_name = $this->database->select('rate_sheet_status_lookup', 'rssl')
+        ->fields('rssl', ['status_name'])
+        ->condition('id', $linking->rate_sheet_client_status_id)
+        ->execute()
+        ->fetchField();
+    }
+
+    // Get field labels from field config
+    $type_label = $type_value ?: 'N/A';
+    $industry_label = $industry_value ?: 'N/A';
+
+    // Try to get human-readable labels from field config
+    try {
+      $field_config_type = \Drupal\field\Entity\FieldConfig::load('group.partner.field_partner_type');
+      if ($field_config_type && $type_value) {
+        $allowed_values = $field_config_type->getSetting('allowed_values');
+        $type_label = $allowed_values[$type_value] ?? $type_value;
+      }
+
+      $field_config_industry = \Drupal\field\Entity\FieldConfig::load('group.partner.field_industry');
+      if ($field_config_industry && $industry_value) {
+        $allowed_values = $field_config_industry->getSetting('allowed_values');
+        $industry_label = $allowed_values[$industry_value] ?? $industry_value;
+      }
+    }
+    catch (\Exception $e) {
+      // Use raw values if field config can't be loaded
+    }
+
+    return [
+      'id' => $client->id,
+      'name' => $client->label,
+      'type' => $type_label,
+      'industry' => $industry_label,
+      'status' => $status_name ?: 'Pending',
+    ];
+  }
+
+  /**
    * Updates client rate sheet relationships.
+   *
+   * Business rule: Once a client is linked to a rate sheet, it cannot be unlinked.
+   * Only new clients can be added.
    *
    * @param int $rate_sheet_id
    *   The rate sheet ID.
@@ -388,19 +477,23 @@ class RateSheetService {
     try {
       $existing_client_ids = $this->getRateSheetClientIds($rate_sheet_id);
       
-      // Find clients to remove
+      // Business rule: Prevent unlinking existing clients
+      // Check if any existing clients are being removed
       $clients_to_remove = array_diff($existing_client_ids, $new_client_ids);
       
-      // Find clients to add
-      $clients_to_add = array_diff($new_client_ids, $existing_client_ids);
-
-      // Remove old relationships
       if (!empty($clients_to_remove)) {
-        $this->database->delete('client_rate_sheet')
-          ->condition('rate_sheet_id', $rate_sheet_id)
-          ->condition('client_id', $clients_to_remove, 'IN')
-          ->execute();
+        // Log the attempt
+        $this->logger->warning('Attempt to unlink clients from rate sheet @rate_sheet_id by user @user_id. Clients: @clients', [
+          '@rate_sheet_id' => $rate_sheet_id,
+          '@user_id' => $user_id,
+          '@clients' => implode(', ', $clients_to_remove),
+        ]);
+        
+        throw new \Exception('Cannot unlink clients from a rate sheet. Once linked, clients cannot be removed.');
       }
+      
+      // Find clients to add (only new ones)
+      $clients_to_add = array_diff($new_client_ids, $existing_client_ids);
 
       // Add new relationships
       if (!empty($clients_to_add)) {

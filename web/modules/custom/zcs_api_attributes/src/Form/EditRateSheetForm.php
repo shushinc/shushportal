@@ -319,6 +319,31 @@ class EditRateSheetForm extends FormBase {
       ],
     ];
 
+    // Locked clients are those already linked (cannot be unlinked)
+    $form['locked_clients'] = [
+      '#type' => 'hidden',
+      '#default_value' => json_encode($selected_client_ids),
+      '#attributes' => [
+        'data-rate-sheet-locked-clients' => '',
+      ],
+    ];
+
+    // Get detailed client information for the table
+    $linked_clients = [];
+    if (!empty($selected_client_ids)) {
+      foreach ($selected_client_ids as $client_id) {
+        $client_data = $this->rateSheetService->getClientDetails($client_id, $id);
+        if ($client_data) {
+          $linked_clients[] = $client_data;
+        }
+      }
+    }
+
+    $form['linked_clients_data'] = [
+      '#type' => 'value',
+      '#value' => $linked_clients,
+    ];
+
     // Get reject comments.
     $reject_comments = $this->rateSheetService->getRateSheetRejectComments($id);
 

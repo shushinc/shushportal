@@ -153,6 +153,36 @@
   margin: 0;
 }
 
+.rate-sheet-client-item--locked {
+  opacity: 0.6;
+  background: #f9fafb;
+}
+
+.rate-sheet-client-item--locked label {
+  cursor: not-allowed;
+}
+
+.rate-sheet-client-checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.rate-sheet-client-locked-badge,
+.rate-sheet-client-tag-locked-badge {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.rate-sheet-client-tag--locked {
+  background: #e5e7eb;
+  color: #6b7280;
+}
+
+.rate-sheet-client-tag--locked .rate-sheet-client-tag-label {
+  font-style: italic;
+}
+
 .rate-sheet-client-modal-footer {
   display: flex;
   justify-content: flex-end;
