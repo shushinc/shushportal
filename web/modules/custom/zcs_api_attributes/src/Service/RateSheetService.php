@@ -246,6 +246,25 @@ class RateSheetService {
   }
 
   /**
+   * Gets the rate sheet status Name by status ID.
+   *
+   * @param int $status_id
+   *   The status id.
+   *
+   * @return string|null
+   *   The status ID or NULL if not found.
+   */
+  public function getRateStatusName(int $status_id): ?string {
+    $status_name = $this->database->select('rate_sheet_status_lookup', 'rssl')
+      ->fields('rssl', ['status_name'])
+      ->condition('id', $status_id)
+      ->execute()
+      ->fetchField();
+
+    return $status_name !== FALSE ? $status_name : NULL;
+  }
+
+  /**
    * Checks if a rate sheet is approved.
    *
    * @param int $rate_sheet_id
@@ -793,6 +812,8 @@ class RateSheetService {
         ->condition('id', $result->rate_sheet_client_status_id)
         ->execute()
         ->fetchField();
+      
+      $status_name = (int) $result->active === 0 ? 'Disabled' : $status_name;
 
       // Get approvers info
       $approvers = $this->getClientRateSheetApprovers($result->rate_sheet_id, $result->client_id);
@@ -929,6 +950,9 @@ class RateSheetService {
           case 'disable':
             $this->disableClientRateSheet($rate_sheet_id, $client_id, $user_id);
             break;
+          case 'enable':
+            $this->enableClientRateSheet($rate_sheet_id, $client_id, $user_id);
+            break;
         }
       }
     }
@@ -955,7 +979,7 @@ class RateSheetService {
     $transaction = $this->database->startTransaction();
 
     $client_rate_sheet = $this->database->select('client_rate_sheet', 'crs')
-      ->fields('crs', ['id', 'created_by'])
+      ->fields('crs', ['id', 'created_by', 'rate_sheet_client_status_id'])
       ->condition('client_id', $client_id)
       ->condition('rate_sheet_id', $rate_sheet_id)
       ->execute()
@@ -963,9 +987,17 @@ class RateSheetService {
 
     if ($client_rate_sheet[0]->id) {
 
+      $current_status = $this->getRateStatusName($client_rate_sheet[0]->rate_sheet_client_status_id);
+
+      if ($current_status != 'Pending') {
+        throw new AccessDeniedHttpException(
+          'You can only approve pending relationships.'
+        );
+      }
+
       if ((int) $client_rate_sheet[0]->created_by === (int) $user_id) {
         throw new AccessDeniedHttpException(
-          'You cannot approve a rate sheet linking that you created.'
+          'You cannot approve a linkage that you created.'
         );
       }
 
@@ -1035,7 +1067,7 @@ class RateSheetService {
     $transaction = $this->database->startTransaction();
 
     $client_rate_sheet = $this->database->select('client_rate_sheet', 'crs')
-      ->fields('crs', ['id', 'created_by'])
+      ->fields('crs', ['id', 'created_by', 'rate_sheet_client_status_id'])
       ->condition('client_id', $client_id)
       ->condition('rate_sheet_id', $rate_sheet_id)
       ->execute()
@@ -1043,9 +1075,17 @@ class RateSheetService {
 
     try {
 
+      $current_status = $this->getRateStatusName((int) $client_rate_sheet[0]->rate_sheet_client_status_id);
+
+      if ($current_status == 'Approved' || $current_status == 'Cancelled') {
+        throw new AccessDeniedHttpException(
+          'You cannot reject a linkage that is already Approved or Cancelled.'
+        );
+      }
+
       if ((int) $client_rate_sheet[0]->created_by === (int) $user_id) {
         throw new AccessDeniedHttpException(
-          'You cannot reject a rate sheet linking that you created.'
+          'You cannot reject a linkage that you created.'
         );
       }
 
@@ -1082,11 +1122,23 @@ class RateSheetService {
     }
   }
 
+  /**
+   * Disable a client rate sheet relationship.
+   *
+   * @param int $client_id
+   *   The Client (group) ID.
+   * @param int $rate_sheet_id
+   *   The Rate Sheet ID.
+   * @param int $user_id
+   *   The Current User ID.
+   * 
+   * @throws \Exception
+   */
   public function disableClientRateSheet(int $rate_sheet_id, int $client_id, int $user_id) {
     $transaction = $this->database->startTransaction();
 
     $client_rate_sheet = $this->database->select('client_rate_sheet', 'crs')
-      ->fields('crs', ['id', 'created_by'])
+      ->fields('crs', ['id', 'created_by', 'rate_sheet_client_status_id', 'active'])
       ->condition('client_id', $client_id)
       ->condition('rate_sheet_id', $rate_sheet_id)
       ->execute()
@@ -1094,9 +1146,23 @@ class RateSheetService {
 
     try {
 
+      $current_status = $this->getRateStatusName($client_rate_sheet[0]->rate_sheet_client_status_id);
+      $active = (int) $client_rate_sheet[0]->active === 1 ? TRUE : FALSE;
+      if ($current_status != 'Approved') {
+        throw new AccessDeniedHttpException(
+          'You can only cancel Approved linkages.'
+        );
+      }
+
+      if (!$active) {
+        throw new AccessDeniedHttpException(
+          'You can only cancel enabled linkages.'
+        );
+      }
+
       if ((int) $client_rate_sheet[0]->created_by === (int) $user_id) {
         throw new AccessDeniedHttpException(
-          'You cannot disable a rate sheet linking that you created.'
+          'You cannot disable a linkage that you created.'
         );
       }
 
@@ -1112,15 +1178,81 @@ class RateSheetService {
           'solved' => 0,
         ])
         ->execute();
-
-      // Update status to Rejected
-      $cancelled_status_id = $this->getRateStatusId('Cancelled');
       
       $this->database->update('client_rate_sheet')
         ->fields(
           [
-            'rate_sheet_client_status_id' => $cancelled_status_id,
-            'active' => 0
+            'active' => 0,
+          ]
+        )
+        ->condition('rate_sheet_id', $rate_sheet_id)
+        ->condition('client_id', $client_id)
+        ->execute();
+
+      unset($transaction);
+    }
+    catch (\Exception $e) {
+      if (isset($transaction)) {
+        $transaction->rollBack();
+      }
+      $this->logger->error('Failed to disable client rate sheet: @message', ['@message' => $e->getMessage()]);
+      throw $e;
+    }
+  }
+
+  /**
+   * Enable a client rate sheet relationship.
+   *
+   * @param int $client_id
+   *   The Client (group) ID.
+   * @param int $rate_sheet_id
+   *   The Rate Sheet ID.
+   * @param int $user_id
+   *   The Current User ID.
+   * 
+   * @throws \Exception
+   */
+  public function enableClientRateSheet(int $rate_sheet_id, int $client_id, int $user_id) {
+    $transaction = $this->database->startTransaction();
+
+    $client_rate_sheet = $this->database->select('client_rate_sheet', 'crs')
+      ->fields('crs', ['id', 'created_by', 'rate_sheet_client_status_id', 'active'])
+      ->condition('client_id', $client_id)
+      ->condition('rate_sheet_id', $rate_sheet_id)
+      ->execute()
+      ->fetchAll();
+
+    try {
+
+      if ((int) $client_rate_sheet[0]->active === 1) {
+        throw new AccessDeniedHttpException(
+          'You can only enable Disabled linkages.'
+        );
+      }
+
+      if ((int) $client_rate_sheet[0]->created_by === (int) $user_id) {
+        throw new AccessDeniedHttpException(
+          'You cannot enable a linkage that you created.'
+        );
+      }
+
+      // Insert rejection action log
+      $this->database->insert('action_log')
+        ->fields([
+          'action_type' => 'STATUS_UPDATE_ENABLE',
+          'entity_target_type' => 'CLIENT_RATE_SHEET',
+          'entity_target_id' => $client_rate_sheet[0]->id,
+          'created_by' => $user_id,
+          'created_date' => \Drupal::time()->getRequestTime(),
+          'log_data' => "User {$user_id} enabled client rate sheet {$rate_sheet_id} for client {$client_id}.",
+          'solved' => 0,
+        ])
+        ->execute();
+      
+      $this->database->update('client_rate_sheet')
+        ->fields(
+          [
+            'active' => 1,
           ]
         )
         ->condition('rate_sheet_id', $rate_sheet_id)

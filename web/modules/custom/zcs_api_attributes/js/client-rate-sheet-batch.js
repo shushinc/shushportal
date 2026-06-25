@@ -12,6 +12,7 @@
         var approveButton = form.querySelector('[data-batch-approve]');
         var rejectButton = form.querySelector('[data-batch-reject]');
         var disableButton = form.querySelector('[data-batch-disable]');
+        var enableButton = form.querySelector('[data-batch-enable]');
         var selectedCountDisplay = form.querySelector('[data-selected-count]');
 
         function handleBulkAction(button, actionLabel) {
@@ -95,6 +96,9 @@
           if (disableButton) {
             disableButton.disabled = !hasSelection;
           }
+          if (enableButton) {
+            enableButton.disabled = !hasSelection;
+          }
         }
 
         // Handle select all checkbox
@@ -130,6 +134,10 @@
 
         if (disableButton) {
           handleBulkAction(disableButton, 'disable');
+        }
+
+        if (enableButton) {
+          handleBulkAction(enableButton, 'enable');
         }
 
         // Initialize state
