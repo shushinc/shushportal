@@ -1,0 +1,9 @@
+uuid: c27e5a8f-bbe2-45cd-802a-e39f898a5817
+langcode: en
+status: true
+dependencies: {  }
+id: client_rate_sheet_admin
+label: 'Client Rate Sheet Admin'
+weight: 13
+is_admin: null
+permissions: {  }

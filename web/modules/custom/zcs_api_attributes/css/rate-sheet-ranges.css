@@ -661,3 +661,15 @@
     text-align: center;
   }
 }
+
+.rate-sheet-linked-clients h3 {
+  font-family: "Roboto", sans-serif;
+  font-size: 24px;
+  line-height: 42px;
+  font-weight: 700;
+  color: rgb(43, 54, 116);
+  text-transform: capitalize;
+  letter-spacing: 0.2px;
+  text-align: left;
+  margin: 2rem 0 0 ;
+}

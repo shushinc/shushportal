@@ -25,7 +25,7 @@
           type="submit" 
           name="batch_action" 
           value="approve"
-          formaction="/pricing/client-rate-sheet/approve-batch"
+          formaction="/pricing/client-rate-sheet/client-ratesheet-status-batch"
           class="button button--primary"
           data-batch-approve
           disabled
@@ -36,12 +36,23 @@
           type="submit" 
           name="batch_action" 
           value="reject"
-          formaction="/pricing/client-rate-sheet/reject-batch"
+          formaction="/pricing/client-rate-sheet/client-ratesheet-status-batch"
           class="button button--danger"
           data-batch-reject
           disabled
         >
           Reject Selected
+        </button>
+        <button 
+          type="submit" 
+          name="batch_action" 
+          value="disable"
+          formaction="/pricing/client-rate-sheet/client-ratesheet-status-batch"
+          class="button button--warning"
+          data-batch-disable
+          disabled
+        >
+          Disbale Linking
         </button>
       </div>
     </div>

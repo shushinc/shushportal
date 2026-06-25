@@ -1,9 +1,14 @@
 uuid: c529f3ad-5883-45c8-990d-d3e49f3e831d
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  module:
+    - zcs_api_attributes
 id: finance_admin
 label: 'Rate Sheet Admin'
 weight: 6
 is_admin: null
-permissions: {  }
+permissions:
+  - 'create rate sheet'
+  - 'list client rate sheets'
+  - 'list rate sheets'

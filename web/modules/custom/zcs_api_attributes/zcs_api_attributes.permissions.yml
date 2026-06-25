@@ -1,0 +1,19 @@
+list rate sheets:
+  title: 'List existing rate sheets'
+  description: 'Allow users to see existing rate sheets.'
+  restrict access: TRUE
+
+list client rate sheets:
+  title: 'List existing client rate sheets'
+  description: 'Allow users to see existing client rate sheets linking.'
+  restrict access: TRUE
+
+create rate sheet:
+  title: 'Create new Rate Sheets'
+  description: 'Allow users to create new Rate Sheets.'
+  restrict access: TRUE
+
+client rate sheet status change:
+  title: 'Change status of a Client Rate Sheet linking'
+  description: 'Allow users to update the status of a Client Rate Sheet relation.'
+  restrict access: TRUE

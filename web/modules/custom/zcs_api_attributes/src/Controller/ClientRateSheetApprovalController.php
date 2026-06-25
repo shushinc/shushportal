@@ -122,20 +122,14 @@ Class ClientRateSheetApprovalController extends ControllerBase {
         return $build;
     }
 
-    /**
-     * Approve client rate sheets in batch.
-     */
-    public function approveClientRateSheetBatch() {
+    public function changeStatusClientRateSheetBatch() {
         $request = \Drupal::request();
         $selected_items = $request->request->all('selected_items');
-        
-        if (empty($selected_items)) {
-            \Drupal::messenger()->addWarning($this->t('No items selected for approval.'));
-            $url = Url::fromRoute('zcs_api_attributes.client_rate_sheet_approval');
-            return new RedirectResponse($url->toString());
-        }
-        
+        $batch_action = $request->request->get('batch_action');
+        $success_count = 0;
+        $error_count = 0;
         $current_user_id = \Drupal::currentUser()->id();
+        $return_msg_label = "";
         
         // Group by rate sheet ID
         $grouped = [];
@@ -146,72 +140,37 @@ Class ClientRateSheetApprovalController extends ControllerBase {
             }
             $grouped[$rate_sheet_id][] = $client_id;
         }
-        
-        $success_count = 0;
-        $error_count = 0;
-        
-        foreach ($grouped as $rate_sheet_id => $client_ids) {
-            try {
-                $this->rateSheetService->approveClientRateSheetBatch($rate_sheet_id, $client_ids, $current_user_id);
-                $success_count += count($client_ids);
-            }
-            catch (\Exception $e) {
-                $error_count += count($client_ids);
-                \Drupal::messenger()->addError($this->t('Failed to approve some client rate sheets: @message', ['@message' => $e->getMessage()]));
-            }
-        }
-        
-        if ($success_count > 0) {
-            \Drupal::messenger()->addStatus($this->t('Successfully approved @count client rate sheet(s).', ['@count' => $success_count]));
-        }
-        
-        $url = Url::fromRoute('zcs_api_attributes.client_rate_sheet_approval');
-        return new RedirectResponse($url->toString());
-    }
 
-    /**
-     * Reject client rate sheets in batch.
-     */
-    public function rejectClientRateSheetBatch() {
-        $request = \Drupal::request();
-        $selected_items = $request->request->all('selected_items');
-        
         if (empty($selected_items)) {
-            \Drupal::messenger()->addWarning($this->t('No items selected for rejection.'));
+            \Drupal::messenger()->addWarning($this->t('No items selected.'));
             $url = Url::fromRoute('zcs_api_attributes.client_rate_sheet_approval');
             return new RedirectResponse($url->toString());
         }
-        
-        $current_user_id = \Drupal::currentUser()->id();
-        
-        // Group by rate sheet ID
-        $grouped = [];
-        foreach ($selected_items as $item) {
-            list($rate_sheet_id, $client_id) = explode('_', $item);
-            if (!isset($grouped[$rate_sheet_id])) {
-                $grouped[$rate_sheet_id] = [];
-            }
-            $grouped[$rate_sheet_id][] = $client_id;
-        }
-        
-        $success_count = 0;
-        $error_count = 0;
-        
+
         foreach ($grouped as $rate_sheet_id => $client_ids) {
             try {
-                $this->rateSheetService->rejectClientRateSheetBatch($rate_sheet_id, $client_ids, $current_user_id);
+                $this->rateSheetService->statusClientRateSheetBatchOperation($rate_sheet_id, $client_ids, $current_user_id, $batch_action);
                 $success_count += count($client_ids);
             }
             catch (\Exception $e) {
                 $error_count += count($client_ids);
-                \Drupal::messenger()->addError($this->t('Failed to reject some client rate sheets: @message', ['@message' => $e->getMessage()]));
+                \Drupal::messenger()->addError(
+                    $this->t(
+                        'Failed to perform bach operation on clients rate sheets: @message',
+                        ['@message' => $e->getMessage()]
+                    )
+                );
             }
         }
-        
+
         if ($success_count > 0) {
-            \Drupal::messenger()->addStatus($this->t('Successfully rejected @count client rate sheet(s).', ['@count' => $success_count]));
+            \Drupal::messenger()->addStatus(
+                $this->t(
+                    'Successfully @operation @count client rate sheet(s).', ['@count' => $success_count, '@operation' => $return_msg_label]
+                )
+            );
         }
-        
+
         $url = Url::fromRoute('zcs_api_attributes.client_rate_sheet_approval');
         return new RedirectResponse($url->toString());
     }

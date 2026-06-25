@@ -896,6 +896,7 @@ class RateSheetService {
     return implode('<br>', $output);
   }
 
+
   /**
    * Approves client rate sheets in batch.
    *
@@ -905,30 +906,37 @@ class RateSheetService {
    *   Array of Client IDs.
    * @param int $user_id
    *   The user ID performing the approval.
+   * @param string $op
+   *   The operation to be performed.
    *
    * @throws \Exception
    */
-  public function approveClientRateSheetBatch(int $rate_sheet_id, array $client_ids, int $user_id) {
+
+  public function statusClientRateSheetBatchOperation(int $rate_sheet_id, array $client_ids, int $user_id, string $op) {
     if (empty($client_ids)) {
       return;
     }
 
-    $transaction = $this->database->startTransaction();
-
     try {
       foreach ($client_ids as $client_id) {
-        $this->approveClientRateSheet($rate_sheet_id, $client_id, $user_id);
+        switch($op) {
+          case 'approve':
+            $this->approveClientRateSheet($rate_sheet_id, $client_id, $user_id);
+            break;
+          case 'reject':
+            $this->rejectClientRateSheet($rate_sheet_id, $client_id, $user_id);
+            break;
+          case 'disable':
+            $this->disableClientRateSheet($rate_sheet_id, $client_id, $user_id);
+            break;
+        }
       }
-
-      unset($transaction);
     }
     catch (\Exception $e) {
-      if (isset($transaction)) {
-        $transaction->rollBack();
-      }
       $this->logger->error('Failed to approve client rate sheets in batch: @message', ['@message' => $e->getMessage()]);
       throw $e;
     }
+
   }
 
   /**
@@ -1012,41 +1020,6 @@ class RateSheetService {
   }
 
   /**
-   * Rejects client rate sheets in batch.
-   *
-   * @param int $rate_sheet_id
-   *   The Rate Sheet ID.
-   * @param array $client_ids
-   *   Array of Client IDs.
-   * @param int $user_id
-   *   The user ID performing the rejection.
-   *
-   * @throws \Exception
-   */
-  public function rejectClientRateSheetBatch(int $rate_sheet_id, array $client_ids, int $user_id) {
-    if (empty($client_ids)) {
-      return;
-    }
-
-    $transaction = $this->database->startTransaction();
-
-    try {
-      foreach ($client_ids as $client_id) {
-        $this->rejectClientRateSheet($rate_sheet_id, $client_id, $user_id);
-      }
-
-      unset($transaction);
-    }
-    catch (\Exception $e) {
-      if (isset($transaction)) {
-        $transaction->rollBack();
-      }
-      $this->logger->error('Failed to reject client rate sheets in batch: @message', ['@message' => $e->getMessage()]);
-      throw $e;
-    }
-  }
-
-  /**
    * Rejects a client rate sheet.
    *
    * @param int $rate_sheet_id
@@ -1105,6 +1078,62 @@ class RateSheetService {
         $transaction->rollBack();
       }
       $this->logger->error('Failed to reject client rate sheet: @message', ['@message' => $e->getMessage()]);
+      throw $e;
+    }
+  }
+
+  public function disableClientRateSheet(int $rate_sheet_id, int $client_id, int $user_id) {
+    $transaction = $this->database->startTransaction();
+
+    $client_rate_sheet = $this->database->select('client_rate_sheet', 'crs')
+      ->fields('crs', ['id', 'created_by'])
+      ->condition('client_id', $client_id)
+      ->condition('rate_sheet_id', $rate_sheet_id)
+      ->execute()
+      ->fetchAll();
+
+    try {
+
+      if ((int) $client_rate_sheet[0]->created_by === (int) $user_id) {
+        throw new AccessDeniedHttpException(
+          'You cannot disable a rate sheet linking that you created.'
+        );
+      }
+
+      // Insert rejection action log
+      $this->database->insert('action_log')
+        ->fields([
+          'action_type' => 'STATUS_UPDATE_DISABLE',
+          'entity_target_type' => 'CLIENT_RATE_SHEET',
+          'entity_target_id' => $client_rate_sheet[0]->id,
+          'created_by' => $user_id,
+          'created_date' => \Drupal::time()->getRequestTime(),
+          'log_data' => "User {$user_id} disabled client rate sheet {$rate_sheet_id} for client {$client_id}.",
+          'solved' => 0,
+        ])
+        ->execute();
+
+      // Update status to Rejected
+      $cancelled_status_id = $this->getRateStatusId('Cancelled');
+      
+      $this->database->update('client_rate_sheet')
+        ->fields(
+          [
+            'rate_sheet_client_status_id' => $cancelled_status_id,
+            'active' => 0
+          ]
+        )
+        ->condition('rate_sheet_id', $rate_sheet_id)
+        ->condition('client_id', $client_id)
+        ->execute();
+
+      unset($transaction);
+    }
+    catch (\Exception $e) {
+      if (isset($transaction)) {
+        $transaction->rollBack();
+      }
+      $this->logger->error('Failed to disable client rate sheet: @message', ['@message' => $e->getMessage()]);
       throw $e;
     }
   }

@@ -11,7 +11,42 @@
         var itemCheckboxes = form.querySelectorAll('[data-item-checkbox]');
         var approveButton = form.querySelector('[data-batch-approve]');
         var rejectButton = form.querySelector('[data-batch-reject]');
+        var disableButton = form.querySelector('[data-batch-disable]');
         var selectedCountDisplay = form.querySelector('[data-selected-count]');
+
+        function handleBulkAction(button, actionLabel) {
+          if (!button) {
+            return;
+          }
+
+          button.addEventListener('click', function (event) {
+            var checkedItems = [];
+
+            itemCheckboxes.forEach(function (checkbox) {
+              if (checkbox.checked) {
+                checkedItems.push(checkbox.value);
+              }
+            });
+
+            if (checkedItems.length === 0) {
+              event.preventDefault();
+              alert('Please select at least one item to ' + actionLabel + '.');
+              return;
+            }
+
+            var confirmed = confirm(
+              'Are you sure you want to ' +
+                actionLabel +
+                ' ' +
+                checkedItems.length +
+                ' client rate sheet(s)?'
+            );
+
+            if (!confirmed) {
+              event.preventDefault();
+            }
+          });
+        }
 
         /**
          * Updates the selected count display and button states.
@@ -57,6 +92,9 @@
           if (rejectButton) {
             rejectButton.disabled = !hasSelection;
           }
+          if (disableButton) {
+            disableButton.disabled = !hasSelection;
+          }
         }
 
         // Handle select all checkbox
@@ -82,54 +120,16 @@
 
         // Handle approve button
         if (approveButton) {
-          approveButton.addEventListener('click', function (event) {
-            var checkedItems = [];
-            itemCheckboxes.forEach(function (checkbox) {
-              if (checkbox.checked) {
-                checkedItems.push(checkbox.value);
-              }
-            });
-
-            if (checkedItems.length === 0) {
-              event.preventDefault();
-              alert('Please select at least one item to approve.');
-              return;
-            }
-
-            var confirmed = confirm(
-              'Are you sure you want to approve ' + checkedItems.length + ' client rate sheet(s)?'
-            );
-
-            if (!confirmed) {
-              event.preventDefault();
-            }
-          });
+          handleBulkAction(approveButton, 'approve');
         }
 
         // Handle reject button
         if (rejectButton) {
-          rejectButton.addEventListener('click', function (event) {
-            var checkedItems = [];
-            itemCheckboxes.forEach(function (checkbox) {
-              if (checkbox.checked) {
-                checkedItems.push(checkbox.value);
-              }
-            });
+          handleBulkAction(rejectButton, 'reject');
+        }
 
-            if (checkedItems.length === 0) {
-              event.preventDefault();
-              alert('Please select at least one item to reject.');
-              return;
-            }
-
-            var confirmed = confirm(
-              'Are you sure you want to reject ' + checkedItems.length + ' client rate sheet(s)?'
-            );
-
-            if (!confirmed) {
-              event.preventDefault();
-            }
-          });
+        if (disableButton) {
+          handleBulkAction(disableButton, 'disable');
         }
 
         // Initialize state
@@ -168,30 +168,5 @@
       });
     }
   };
-
-  /**
-   * Debounce function to limit how often a function is called.
-   *
-   * @param {Function} func
-   *   The function to debounce.
-   * @param {number} wait
-   *   The delay in milliseconds.
-   *
-   * @return {Function}
-   *   The debounced function.
-   */
-  function debounce(func, wait) {
-    var timeout;
-    return function executedFunction() {
-      var context = this;
-      var args = arguments;
-      var later = function () {
-        timeout = null;
-        func.apply(context, args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
-  }
 
 })(Drupal, once);
