@@ -85,7 +85,7 @@ final class CreateKeyForm extends FormBase {
 
     $form['app_name'] = [ 
       '#type' => 'textfield',
-      '#title' => $this->t('Name'),
+      '#title' => $this->t('App Name'),
       '#required' => TRUE,
       '#description' => $this->t('Limit upto 15 characters.'),
       '#attributes' => [

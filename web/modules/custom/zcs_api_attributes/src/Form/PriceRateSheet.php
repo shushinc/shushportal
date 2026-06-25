@@ -120,7 +120,7 @@ class PriceRateSheet extends FormBase {
 
     $form['retail_markup_percentage'] = [
       '#type' => 'number',
-      '#min' => 1,      
+      '#min' => 0,      
       '#step' => 1,
       '#required' => TRUE,
     ];
