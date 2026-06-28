@@ -1477,3 +1477,23 @@ table {
     }
   }
 }
+
+.header-site-logo {
+  .site__logo {
+    img {
+      max-width: 300px;
+      width: 100%;
+      height: auto;
+    }
+  }
+}
+
+.password-change-page {
+  .right-side-logo {
+     img {
+      max-width: 300px;
+      width: 100%;
+      height: auto;
+    }
+  }
+}
