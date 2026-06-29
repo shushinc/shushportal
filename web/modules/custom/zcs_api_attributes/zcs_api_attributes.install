@@ -2,6 +2,7 @@
 
 /**
  * @file
+ * Install, update and uninstall functions for the zcs_api_attributes module.
  */
 
 use Drupal\Core\Database\Database;
@@ -1220,4 +1221,120 @@ function zcs_api_attributes_update_9019() {
   ");
 
   return t('Converted client_rate_sheet.id to AUTO_INCREMENT primary key.');
+}
+
+/**
+ * Create the api_access_token table.
+ */
+function zcs_api_attributes_update_9020() {
+  $schema = Database::getConnection()->schema();
+  
+  if ($schema->tableExists('api_access_token')) {
+    return t('Table api_access_token already exists.');
+  }
+
+  $table_schema = [
+    'description' => 'Stores API access tokens for client authentication.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique token ID.',
+      ],
+      'client_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The client (Group) ID this token belongs to.',
+      ],
+      'name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Human-readable token name.',
+      ],
+      'token_prefix' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Public token prefix for lookup.',
+      ],
+      'token_hash' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Secure hash of the token secret.',
+      ],
+      'expires_at' => [
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'Expiration timestamp. NULL means no expiration.',
+      ],
+      'last_used' => [
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'Timestamp of last successful token usage.',
+      ],
+      'last_used_ip' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => FALSE,
+        'description' => 'IP address from last successful token usage.',
+      ],
+      'last_used_user_agent' => [
+        'type' => 'text',
+        'not null' => FALSE,
+        'description' => 'User-Agent from last successful token usage.',
+      ],
+      'active' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 1,
+        'description' => 'Boolean indicating whether the token is active.',
+      ],
+      'created_by' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'User ID of the admin who created the token.',
+      ],
+      'created_date' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Creation timestamp.',
+      ],
+      'changed_by' => [
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'User ID of the admin who last changed the token.',
+      ],
+      'changed_date' => [
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'Last changed timestamp.',
+      ],
+      'revoked_by' => [
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'User ID of the admin who revoked the token.',
+      ],
+      'revoked_date' => [
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'Revocation timestamp.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'token_prefix' => ['token_prefix'],
+    ],
+    'indexes' => [
+      'client_id' => ['client_id'],
+      'active' => ['active'],
+      'expires_at' => ['expires_at'],
+    ],
+  ];
+
+  $schema->createTable('api_access_token', $table_schema);
+  
+  return t('Created api_access_token table.');
 }

@@ -25,3 +25,10 @@ services:
     class: Drupal\zcs_api_attributes\TwigExtension\NumberFormatExtension
     tags:
       - { name: twig.extension }
+  zcs_api_attributes.api_access_token_service:
+    class: Drupal\zcs_api_attributes\Service\ApiAccessTokenService
+    arguments:
+      - '@database'
+      - '@current_user'
+      - '@logger.channel.zcs_api_attributes'
+      - '@request_stack'
