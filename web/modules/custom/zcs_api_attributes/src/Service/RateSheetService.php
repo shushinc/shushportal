@@ -1271,6 +1271,137 @@ class RateSheetService {
   }
 
   /**
+   * Gets client rate sheet ranges for requested attributes.
+   *
+   * @param string $contact_name
+   *   The contact name.
+   * @param string $contact_email
+   *   The contact email.
+   * @param array $attribute_names
+   *   Array of attribute names to retrieve.
+   *
+   * @return array|null
+   *   Array with client_id, rate_sheet_id, and attributes with ranges,
+   *   or NULL if client or active rate sheet not found.
+   *
+   * @throws \Exception
+   */
+  public function getClientRateSheetRanges(string $contact_name, string $contact_email, array $attribute_names): ?array {
+    // Step 1: Find the client by contact name and email.
+    $client_id = $this->database->select('group__field_contact_name', 'gfcn')
+      ->fields('gfcn', ['entity_id'])
+      ->condition('field_contact_name_value', $contact_name)
+      ->execute()
+      ->fetchField();
+
+    $client_status = $this->database->select('group__field_partner_status', 'gfps')
+      ->fields('gfps', ['field_partner_status_value'])
+      ->condition('entity_id', $client_id)
+      ->execute()
+      ->fetchField();
+
+    if (!$client_id) {
+      throw new \Exception('Client not found.');
+    }
+
+    if ($client_status !== 'active') {
+      throw new \Exception('The client is not active.');
+    }
+
+    // Verify contact email matches.
+    $contact_email_match = $this->database->select('group__field_contact_email', 'gfce')
+      ->fields('gfce', ['field_contact_email_value'])
+      ->condition('entity_id', $client_id)
+      ->condition('field_contact_email_value', $contact_email)
+      ->execute()
+      ->fetchField();
+
+    if (!$contact_email_match) {
+      throw new \Exception('Wrong contact email.');
+    }
+
+    // Step 2: Find the active rate sheet for this client.
+    $approved_status_id = $this->getRateStatusId('Approved');
+
+    $rate_sheet_id = $this->database->select('client_rate_sheet', 'crs')
+      ->fields('crs', ['rate_sheet_id'])
+      ->condition('client_id', $client_id)
+      ->condition('rate_sheet_client_status_id', $approved_status_id)
+      ->condition('active', 1)
+      ->execute()
+      ->fetchField();
+
+    if (!$rate_sheet_id) {
+      throw new \Exception('No active rate sheets founded for this client.');
+    }
+
+    // Step 3: Retrieve all requested rate sheet items.
+    $query = $this->database->select('rate_sheet_item', 'rsi')
+      ->fields('rsi', ['id', 'attribute_name'])
+      ->condition('rate_sheet_id', $rate_sheet_id)
+      ->condition('attribute_name', $attribute_names, 'IN');
+
+    $rate_sheet_items = $query->execute()->fetchAll();
+
+    if (empty($rate_sheet_items)) {
+      throw new \Exception('No attributes found.');
+    }
+
+    // Build a map of item_id => attribute_name.
+    $item_map = [];
+    $item_ids = [];
+    foreach ($rate_sheet_items as $item) {
+      $item_map[$item->id] = $item->attribute_name;
+      $item_ids[] = $item->id;
+    }
+
+    // Step 4: Retrieve all ranges for these items.
+    $ranges_query = $this->database->select('rate_sheet_item_range', 'rsir')
+      ->fields('rsir', ['rate_sheet_item_id', 'from_range', 'to_range', 'success_rate', 'partial_range'])
+      ->condition('rate_sheet_item_id', $item_ids, 'IN')
+      ->orderBy('rate_sheet_item_id')
+      ->orderBy('id');
+
+    $ranges_results = $ranges_query->execute()->fetchAll();
+
+    // Group ranges by rate_sheet_item_id.
+    $ranges_by_item = [];
+    foreach ($ranges_results as $range) {
+      $ranges_by_item[$range->rate_sheet_item_id][] = [
+        'from_range' => (int) $range->from_range,
+        'to_range' => (int) $range->to_range,
+        'success_rate' => (int) $range->success_rate,
+        'partial_range' => (int) $range->partial_range,
+      ];
+    }
+
+    // Build the response preserving the order of requested attributes.
+    $attributes = [];
+    foreach ($attribute_names as $attribute_name) {
+      // Find the item_id for this attribute.
+      $item_id = array_search($attribute_name, $item_map);
+      
+      if ($item_id !== FALSE && isset($ranges_by_item[$item_id])) {
+        $attributes[] = [
+          'name' => $attribute_name,
+          'ranges' => $ranges_by_item[$item_id],
+        ];
+      }
+    }
+
+    // If no attributes were found, return NULL.
+    if (empty($attributes)) {
+      return NULL;
+    }
+
+    return [
+      'client_id' => (int) $client_id,
+      'rate_sheet_id' => (int) $rate_sheet_id,
+      'attributes' => $attributes,
+    ];
+  }
+
+  /**
    * Updates the client's selected rate sheets field.
    *
    * @param int $client_id
