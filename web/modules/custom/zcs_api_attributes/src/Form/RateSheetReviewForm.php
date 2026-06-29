@@ -211,21 +211,32 @@ class RateSheetReviewForm extends FormBase {
     $updatedFields[$values['approved_by'] . '_status'] = (int) $values['status'];
     $updatedFields[$values['approved_by'] . '_uid'] = (int) $this->currentUser()->id();
     if ($values['another_approver_status'] == 2 && $values['status'] == 2) {
-      $updatedFields['attribute_status'] = 2;
-      foreach (explode(",", $values['nodes']) as $id) {
-        $node = Node::load($id);
-        if ($node instanceof NodeInterface) {
-          if (isset($values['price' . $id])) {
-            $node->set('field_standard_price', $values['price' . $id]);
-          }
-          else {
-            $node->set('field_standard_price', $values['international_price_' . $id]);
-            $node->set('field_domestic_standard_price', $values['domestic_price_' . $id]);
-          }
-          $node->save();
-        }
-      }
       $price_sheet_post_api_call = \Drupal::service('zcs_api_attributes.propose_price_ratesheet')->RetailMarkupPrice($values['apid']);
+      if ($price_sheet_post_api_call) {
+        $updatedFields['attribute_status'] = 2;
+      
+        foreach (explode(",", $values['nodes']) as $id) {
+          $node = Node::load($id);
+      
+          if ($node instanceof NodeInterface) {
+            if (isset($values['price' . $id])) {
+              $node->set('field_standard_price', $values['price' . $id]);
+            }
+            else {
+              $node->set('field_standard_price', $values['international_price_' . $id]);
+              $node->set('field_domestic_standard_price', $values['domestic_price_' . $id]);
+            }
+      
+            $node->save();
+          }
+        }
+        \Drupal::messenger()->addStatus(t('Price sheet updated successfully.'));
+      }
+      else {
+        $form_state->setRedirect('zcs_api_attributes.rate_sheet.approval');
+        \Drupal::messenger()->addError(t('Failed to update the price sheet. Please try again later or contact administrator.'));
+        return;
+      }
     }
     elseif ($values['another_approver_status'] == 3 || $values['status'] == 3) {
       $updatedFields['attribute_status'] = 3;

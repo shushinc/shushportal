@@ -8,4 +8,6 @@ web/themes/contrib/
 vendor/
 **/*.code-workspace
 **/*.DS_Store
-.ddev/
+.ddev/config.yaml
+/.editorconfig
+/.gitattributes

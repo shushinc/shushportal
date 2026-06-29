@@ -2186,6 +2186,18 @@ table tbody td .text-bold {
   table-layout: fixed;
 }
 
+.header-site-logo .site__logo img {
+  max-width: 300px;
+  width: 100%;
+  height: auto;
+}
+
+.password-change-page .right-side-logo img {
+  max-width: 300px;
+  width: 100%;
+  height: auto;
+}
+
 /* Variables */
 form.user-logout-confirm {
   text-align: center;

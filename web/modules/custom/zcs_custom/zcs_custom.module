@@ -2,6 +2,7 @@
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\File\FileUrlGeneratorInterface;
 
 /**
  * Implements hook_theme().
@@ -61,22 +62,38 @@ function zcs_custom_menu_local_tasks_alter(array &$local_tasks) {
 }
 
 
+/**
+ * Implements hook_preprocess_page().
+ */
 function zcs_custom_preprocess_page(array &$variables) {
 
-  $route_name = \DRUPAL::routeMatch()->getRouteName();
-  if ($route_name == 'change_pwd_page.change_password_form') {
-    $theme = \Drupal::theme()->getActiveTheme();
-    $logo_path = $theme->getLogo();
-  
-     // Get the file_url_generator service.
-    $file_url_generator = \Drupal::service('file_url_generator');
-  
-     // Convert logo path to a full URL.
-    $logo_url = $file_url_generator->generateAbsoluteString($logo_path);
-    // Make it available to your Twig template:
-    $variables['site_logo_url'] = $logo_url;
+  $theme = \Drupal::theme()->getActiveTheme();
+  $theme_name = $theme->getName();
+
+  // Theme settings.
+  $settings = \Drupal::config($theme_name . '.settings');
+
+  $logo_url = '';
+
+  // Custom logo uploaded via Appearance > Settings.
+  if (!$settings->get('logo.use_default') && !empty($settings->get('logo.path'))) {
+
+    $logo_path = $settings->get('logo.path');
+
+    $logo_url = \Drupal::service('file_url_generator')
+      ->generateAbsoluteString($logo_path);
   }
- 
+  else {
+    // Default theme logo.
+    $logo_url = $theme->getLogo();
+  }
+
+  $variables['site_logo_url'] = $logo_url;
+
+  // Debug.
+  \Drupal::logger('zcs_custom')->notice('Logo URL: @url', [
+    '@url' => $logo_url,
+  ]);
 }
 
 
