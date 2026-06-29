@@ -49,28 +49,46 @@ table.rate-sheet-approval tbody td span.rejected {
   position: relative;
   font-size: 0;
 }
+table.attributes-table tbody td span.pending,
 table.rate-sheet-approval tbody td span.pending {
   position: relative;
 }
 table.rate-sheet-approval tbody td span.approved::before,
 table.rate-sheet-approval tbody td span.rejected::before,
-table.rate-sheet-approval tbody td span.pending::before {
+table.attributes-table tbody td span.pending::before,
+table.rate-sheet-approval tbody td span.pending::before,
+table.attributes-table tbody td span.approved::before {
   content: "";
   height: 12px;
   width: 12px;
   background: url("/themes/custom/shush/images/active-bg.svg") no-repeat;
   display: block;
   position: absolute;
-  left: 0;
+  left: 5px;
   top: 50%;
   background-size: cover;
-  margin-top: -11px;
+  margin-top: -6px;
 }
 
+table.attributes-table tbody td span {
+  position: relative;
+}
+
+table.attributes-table tbody td span.rejected::before,
 table.rate-sheet-approval tbody td span.rejected::before {
   background: url("/themes/custom/shush/images/error-bg.svg") no-repeat;
   background-size: cover;
+  content: "";
+  height: 12px;
+  width: 12px;
+  display: block;
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  margin-top: -6px;
 }
+
+table.attributes-table tbody td span.pending::before,
 table.rate-sheet-approval tbody td span.pending::before {
   background: url("/themes/custom/shush/images/pending.svg") no-repeat;
   background-size: cover;
@@ -81,24 +99,33 @@ table.rate-sheet-approval tbody td span.pending::before {
   height: 16px;
   margin-top: -6px;
 }
+
+table.attributes-table tbody td.approved,
 table.rate-sheet-approval tbody td.approved {
   color: #06b487;
   font-weight: 700;
 }
 
+table.attributes-table tbody td.rejected,
 table.rate-sheet-approval tbody td.rejected {
   color: #cc1b0c;
   font-weight: 700;
 }
 
-table.rate-sheet-approval tbody td.pending {
+table.attributes-table tbody td.pending,
+table.rate-sheet-approval tbody td.pending,
+table.attributes-table tbody td.disabled,
+table.rate-sheet-approval tbody td.disabled {
   color: #fcc418;
   font-weight: 700;
 }
+
+table.attributes-table .btn-primary:hover,
 table.rate-sheet-approval .btn-primary:hover {
   background: #4f9bf5;
 }
 
+.attributes-table .btn-primary,
 .rate-sheet-approval .btn-primary {
   background: #fff;
   border: 2px solid #118df0;
@@ -108,6 +135,9 @@ table.rate-sheet-approval .btn-primary:hover {
   text-align: center;
 }
 
+.attributes-table .ajax-progress-throbber,
 .rate-sheet-approval .ajax-progress-throbber {
   display: none;
 }
+
+.attributes-table {}

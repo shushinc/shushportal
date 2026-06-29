@@ -1,0 +1,44 @@
+list rate sheets:
+  title: 'List existing rate sheets'
+  description: 'Allow users to see existing rate sheets.'
+  restrict access: TRUE
+
+list client rate sheets:
+  title: 'List existing client rate sheets'
+  description: 'Allow users to see existing client rate sheets linking.'
+  restrict access: TRUE
+
+create rate sheet:
+  title: 'Create new Rate Sheets'
+  description: 'Allow users to create new Rate Sheets.'
+  restrict access: TRUE
+
+client rate sheet status change:
+  title: 'Change status of a Client Rate Sheet linking'
+  description: 'Allow users to update the status of a Client Rate Sheet relation.'
+  restrict access: TRUE
+
+view api access tokens:
+  title: 'View API Access Tokens'
+  description: 'Allow users to view API access token metadata.'
+  restrict access: TRUE
+
+administer api access tokens:
+  title: 'Administer API Access Tokens'
+  description: 'Allow users to create, enable, disable, and edit API access tokens.'
+  restrict access: TRUE
+
+generate api access tokens:
+  title: 'Generate API Access Tokens'
+  description: 'Allow users to generate new Client API access tokens.'
+  restrict access: TRUE
+
+regenerate api access tokens:
+  title: 'Regenerate API Access Tokens'
+  description: 'Allow users to regenerate existing Client API access tokens.'
+  restrict access: TRUE
+
+delete api access tokens:
+  title: 'Delete API Access Tokens'
+  description: 'Allow users to delete API access tokens.'
+  restrict access: TRUE

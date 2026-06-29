@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Rate Sheet Status Update</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #2b3674; border-bottom: 2px solid #4f9bf5; padding-bottom: 10px;">
+            Rate Sheet Status Update
+        </h2>
+        
+        <p>Hello,</p>
+        
+        <p>The rate sheet <strong>"{{ rate_sheet_name }}"</strong> that you created has been <strong>{{ status }}</strong>.</p>
+        
+        <div style="background-color: #f8fafd; border-left: 4px solid #4f9bf5; padding: 15px; margin: 20px 0;">
+            <p style="margin: 0;"><strong>Rate Sheet Details:</strong></p>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+                <li><strong>Name:</strong> {{ rate_sheet_name }}</li>
+                <li><strong>Status:</strong> {{ status }}</li>
+                <li><strong>Effective Date:</strong> {{ effective_date }}</li>
+                <li><strong>Reviewed By:</strong> {{ reviewer_email }}</li>
+            </ul>
+        </div>
+        
+        {% if reject_comment %}
+        <div style="background-color: #fff5f5; border-left: 4px solid #cc1b0c; padding: 15px; margin: 20px 0;">
+            <p style="margin: 0 0 10px 0;"><strong>Rejection Reason:</strong></p>
+            <p style="margin: 0; white-space: pre-wrap;">{{ reject_comment }}</p>
+        </div>
+        {% endif %}
+        
+        <p>You can view the rate sheet details by visiting the rate sheet management page.</p>
+        
+        <p style="margin-top: 30px;">
+            <a href="{{ rate_sheet_list_url }}" style="display: inline-block; padding: 12px 24px; background-color: #4f9bf5; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                View Rate Sheets
+            </a>
+        </p>
+        
+        <hr style="border: none; border-top: 1px solid #e6eaf5; margin: 30px 0;">
+        
+        <p style="color: #718096; font-size: 12px;">
+            This is an automated message from {{ site_name }}. Please do not reply to this email.
+        </p>
+    </div>
+</body>
+</html>

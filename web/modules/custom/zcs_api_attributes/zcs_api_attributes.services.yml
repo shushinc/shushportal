@@ -9,3 +9,26 @@ services:
   zcs_api_attributes.discount_sheet:
     class: Drupal\zcs_api_attributes\Services\DiscountPriceSheet
     arguments: ['@database']
+  logger.channel.zcs_api_attributes:
+    parent: logger.channel_base
+    arguments: ['zcs_api_attributes']
+  zcs_api_attributes.rate_sheet_service:
+    class: Drupal\zcs_api_attributes\Service\RateSheetService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.zcs_api_attributes'
+  zcs_api_attributes.rate_sheet_approval_access:
+    class: Drupal\zcs_api_attributes\Access\RateSheetApprovalAccessCheck
+  zcs_api_attributes.twig.number_format:
+    class: Drupal\zcs_api_attributes\TwigExtension\NumberFormatExtension
+    tags:
+      - { name: twig.extension }
+  zcs_api_attributes.api_access_token_service:
+    class: Drupal\zcs_api_attributes\Service\ApiAccessTokenService
+    arguments:
+      - '@database'
+      - '@current_user'
+      - '@logger.channel.zcs_api_attributes'
+      - '@request_stack'

@@ -49,8 +49,16 @@
   padding: 10px;
 }
 
+.pricing-rate-sheet-list .rate-sheet-filter {
+  grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
+}
+
 .ui-dialog .rate-sheet-filter {
   margin: 0;
+}
+
+.ui-dialog .rate-sheet-submit-wrapper {
+  margin: 40px 0;
 }
 
 .rate-sheet-filter .rate-sheet-filter-currencies,
@@ -144,7 +152,8 @@
   margin: 20px auto;
 }
 
-.ui-dialog .rate-sheet .form-submit:not(.is-disabled) {
+.ui-dialog .rate-sheet .form-submit:not(.is-disabled),
+.ui-dialog .rate-sheet .button--success:not(.is-disabled) {
   background: #118df0;
   color: #fff;
   border-radius: 10px;
@@ -157,6 +166,11 @@
   display: block;
   width: 100%;
 }
+
+.ui-dialog .rate-sheet .button--success:not(.is-disabled) {
+  background: #06b487!important;
+}
+
 .ui-dialog .rate-sheet table th:first-child {
   width: 4%;
 }
@@ -204,4 +218,584 @@
 #date-validation-message .date-validation-message-error {
   font-size: 12px;
   color: red;
+}
+
+/* Reject Comments Accordion */
+.rate-sheet-reject-comments, .messages.messages--warning {
+  margin-bottom: 5rem;
+  margin-top: 2.5rem;
+  background: #fff;
+  border: 1px solid #856404;
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 1rem;
+  background-color: #fff3cd;
+}
+
+.rate-sheet-reject-comments h3 {
+  color: #856404;
+  font-size: 1.5rem;
+}
+
+.rate-sheet-reject-comments p {
+  color: #856404;
+}
+
+.rate-sheet-reject-comments-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: #f8f9fa;
+  border: none;
+  cursor: pointer;
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2b3674;
+  text-align: left;
+  transition: background-color 0.2s ease;
+}
+
+.rate-sheet-reject-comments-toggle:hover {
+  background: #e9ecef;
+}
+
+.rate-sheet-reject-comments-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-right: 0.75rem;
+  font-size: 20px;
+  font-weight: bold;
+  color: #118df0;
+  transition: transform 0.2s ease;
+}
+
+.rate-sheet-reject-comments.is-expanded .rate-sheet-reject-comments-icon {
+  transform: rotate(0deg);
+}
+
+.rate-sheet-reject-comments-title {
+  flex: 1;
+}
+
+.rate-sheet-reject-comments-panel {
+  padding: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.reject-comments-description {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.reject-comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reject-comment-item {
+  font-size: 14px;
+  font-family: "Montserrat", sans-serif;
+  line-height: 1.5;
+}
+
+.reject-comment-item .form-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 0;
+}
+
+.reject-comment-item input[type="checkbox"] {
+  height: 18px;
+  width: auto;
+  margin-right: 1rem;
+  cursor: pointer;
+}
+
+.reject-comment-item label {
+  margin: 0;
+  cursor: pointer;
+  font-size: 14px;
+  color: #2b3674;
+}
+
+.reject-comment-item--solved {
+  opacity: 0.6;
+}
+
+.reject-comment-item--solved label {
+  text-decoration: line-through;
+  color: #999;
+}
+
+/* Reject comments solved styling */
+.reject-comment-item--solved {
+  background: #e7f5e7;
+  border-color: #c3e6c3;
+  opacity: 0.8;
+}
+
+.reject-comment-item--solved .form-checkbox:disabled {
+  cursor: not-allowed;
+}
+
+.reject-comment-solved:disabled + label {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.reject-comments-solved-note {
+  padding: 0.5rem;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  color: #856404;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.reject-comment-item .form-checkbox {
+  margin-right: 0.5rem;
+}
+
+.reject-comment-item label {
+  display: inline;
+  font-weight: normal;
+}
+
+/* Rate Sheet Accordion Styles */
+.rate-sheet-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rate-sheet-accordion-item {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.rate-sheet-accordion-item.is-collapsed {
+  border-color: #e0e0e0;
+}
+
+.rate-sheet-accordion-item.is-expanded {
+  border-color: #118df0;
+}
+
+.rate-sheet-accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: #f8f9fa;
+  gap: 1rem;
+}
+
+.rate-sheet-attribute-heading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.rate-sheet-attribute-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  background: #118df0;
+  color: #fff;
+  border-radius: 50%;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.rate-sheet-attribute-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.rate-sheet-attribute-title {
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2b3674;
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rate-sheet-pricing-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.rate-sheet-pricing-mode-badge--flat {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.rate-sheet-pricing-mode-badge--tiered {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.rate-sheet-accordion-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.rate-sheet-add-range {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  background: #fff;
+  color: #118df0;
+  border: 2px solid #118df0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.rate-sheet-add-range:hover {
+  background: #118df0;
+  color: #fff;
+}
+
+.rate-sheet-accordion-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 8px 16px;
+  background: #fff;
+  color: #2b3674;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.rate-sheet-accordion-toggle:hover {
+  background: #f8f9fa;
+  border-color: #118df0;
+}
+
+.rate-sheet-accordion-toggle-text {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.rate-sheet-accordion-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.rate-sheet-accordion-panel {
+  padding: 1.5rem;
+  background: #fff;
+  border-top: 1px solid #e0e0e0;
+}
+
+.rate-sheet-accordion-panel[hidden] {
+  display: none;
+}
+
+/* Rate Sheet Ranges Table */
+.rate-sheet-ranges-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: "Montserrat", sans-serif;
+}
+
+.rate-sheet-ranges-table thead th {
+  padding: 12px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2b3674;
+  background: #f8f9fa;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.rate-sheet-ranges-table tbody td {
+  padding: 12px;
+  font-size: 14px;
+  color: #2b3674;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.rate-sheet-range-row {
+  transition: background-color 0.2s ease;
+}
+
+.rate-sheet-range-row:hover {
+  background: #f8f9fa;
+}
+
+.rate-sheet-range-label {
+  font-weight: 600;
+}
+
+.rate-sheet-range-label-text {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2b3674;
+}
+
+.rate-sheet-to-range-cell {
+  position: relative;
+}
+
+.rate-sheet-unbounded-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 4px 10px;
+  background: #fff3cd;
+  color: #856404;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.rate-sheet-initial-range-note {
+  font-size: 12px;
+  color: #666;
+  font-style: italic;
+}
+
+.rate-sheet-remove-range {
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 12px;
+  background: #fff;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.rate-sheet-remove-range:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
+.rate-sheet-range-actions {
+  text-align: center;
+}
+
+/* Readonly from_range inputs */
+.rate-sheet-ranges-table input[readonly] {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  color: #666;
+}
+
+/* Progressive Loading */
+.rate-sheet-load-more-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1.5rem;
+}
+
+.rate-sheet-load-more {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 24px;
+  background: #fff;
+  color: #118df0;
+  border: 2px solid #118df0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rate-sheet-load-more:hover {
+  background: #118df0;
+  color: #fff;
+}
+
+.rate-sheet-progressive-summary {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  color: #666;
+}
+
+.rate-sheet-no-results-message {
+  text-align: center;
+  padding: 2rem;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  color: #666;
+  background: #f8f9fa;
+  border-radius: 10px;
+  margin-top: 1rem;
+}
+
+/* API Attribute Filter */
+.api-attribute-filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+}
+
+.api-attribute-filter-control {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.api-attribute-filter-control label {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2b3674;
+  white-space: nowrap;
+}
+
+.api-attribute-filter-control input[type="search"] {
+  flex: 1;
+  padding: 8px 12px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  transition: border-color 0.2s ease;
+}
+
+.api-attribute-filter-control input[type="search"]:focus {
+  outline: none;
+  border-color: #118df0;
+}
+
+.api-attribute-filter-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Review Screen Specific Styles */
+.rate-sheet-review-attribute-item {
+  /* Inherits from .rate-sheet-accordion-item */
+}
+
+.rate-sheet-tiered-badge {
+  /* Same as .rate-sheet-pricing-mode-badge */
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.rate-sheet-tiered-badge[data-rate-sheet-mode="flat"] {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.rate-sheet-tiered-badge[data-rate-sheet-mode="tiered"] {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+/* .rate-sheet-review-range-grid {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr 1fr 1fr;
+  gap: 1px;
+  background: #e0e0e0;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+} */
+
+.rate-sheet-review-range-grid-header {
+  display: contents;
+}
+
+.rate-sheet-review-range-grid-header > span {
+  padding: 12px;
+  background: #f8f9fa;
+  font-family: "Montserrat", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2b3674;
+}
+
+.rate-sheet-review-range-grid-row {
+  display: contents;
+}
+
+.rate-sheet-review-range-grid-row > span {
+  padding: 12px;
+  background: #fff;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  color: #2b3674;
+}
+
+.rate-sheet-review-range-grid-row:hover > span {
+  background: #f8f9fa;
 }

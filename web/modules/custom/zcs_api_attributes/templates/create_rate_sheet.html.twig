@@ -1,0 +1,220 @@
+{{ attach_library('zcs_api_attributes/rate-sheet-ux') }}
+
+{{ form.form_build_id }}
+{{ form.form_token }}
+{{ form.form_id }}
+{{ form.nodes }}
+{{ form.range_currency_symbol }}
+{{ form.rate_sheet_item_ranges_payload }}
+{{ form.clients_data }}
+{{ form.selected_clients }}
+
+{% if form.rate_sheet_id %}
+  {{ form.rate_sheet_id }}
+{% endif %}
+
+{% if form.message %}
+  <p class="message">{{ form.message }}</p>
+{% endif %}
+
+{% if form.is_cancelled and form.is_cancelled['#value'] == true %}
+  <div class="messages messages--error">
+    <strong>Cancelled:</strong> This rate sheet has been cancelled and cannot be edited.
+  </div>
+{% elseif form.can_edit and form.can_edit['#value'] == false %}
+  <div class="messages messages--warning">
+    <strong>View Only:</strong> This rate sheet is in view-only mode. To edit it, there must be unresolved reviewer comments.
+  </div>
+{% endif %}
+
+{% if form.reject_comments_data %}
+  {% set reject_comments = form.reject_comments_data['#value'] %}
+  {% if reject_comments is not empty %}
+    <div class="rate-sheet-reject-comments">
+      <h3>Reviewer Comments</h3>
+      <p class="reject-comments-description">Please review and mark comments as resolved:</p>
+      <div class="reject-comments-list">
+        {% for comment_data in reject_comments %}
+          <div class="reject-comment-item {% if comment_data.solved %}reject-comment-item--solved{% endif %}">
+            {{ form.reject_comments[comment_data.id] }}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+{% endif %}
+
+<div class="rate-sheet-filter">
+  <div class="rate-sheet-filter-name">
+    <span class="attributes-label">Rate Sheet Name</span>
+    <span class="attribute-inputs">{{ form.name }}</span>
+  </div>
+  <div class="rate-sheet-filter-currencies">
+    <span class="attributes-label">Currency</span>
+    <span class="attribute-inputs">{{ form.currencies }}</span>
+  </div>
+  <div class="rate-sheet-filter-effective">
+    <span class="attributes-label">Effective Date</span>
+    <span class="attribute-inputs">{{ form.attribute_date }}</span>
+  </div>
+
+  <div class="rate-sheet-markup-retail-percentage">
+    <span class="attributes-label">Markup Retail {{ '%' }}</span>
+    <span class="attribute-inputs">{{ form.retail_markup_percentage }}</span>
+  </div>
+</div>
+
+{% if form.linked_clients_data %}
+  {% set linked_clients = form.linked_clients_data['#value'] %}
+  {% if linked_clients is not empty %}
+    <div class="rate-sheet-linked-clients">
+      <h3>Linked Clients</h3>
+      <table class="rate-sheet-linked-clients-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Client Name</th>
+            <th>Type</th>
+            <th>Industry</th>
+            <th>Linking Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set counter = 1 %}
+          {% for client in linked_clients %}
+            <tr>
+              <td>{{ counter }}</td>
+              <td>{{ client.name }}</td>
+              <td>{{ client.type }}</td>
+              <td>{{ client.industry }}</td>
+              <td class="{{ client.status|lower }}">{{ client.status }}</td>
+            </tr>
+            {% set counter = counter + 1 %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+{% endif %}
+
+<div class="rate-sheet-attributes">
+  <span class="attribute-inputs">
+    {% set attributes = fetch_attributes() %}
+    {% set currency_symbol = form.range_currency_symbol['#value']|default('') %}
+
+    {% if form.is_approved and form.is_approved['#value'] == true %}
+      <div class="api-attribute-filter">
+        <div class="api-attribute-filter-control">
+          <button type="button" class="button button--small rate-sheet-add-client" data-rate-sheet-add-client="">
+            Add clients
+          </button>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if not (form.can_edit_clients_only and form.can_edit_clients_only['#value'] == true) %}
+      <div class="api-attribute-filter">
+        <div class="api-attribute-filter-control">
+          <label for="rate-sheet-attribute-filter">Filter API Attributes</label>
+          <input type="search" id="rate-sheet-attribute-filter" data-rate-sheet-attribute-filter placeholder="Type attribute name">
+        </div>
+
+        <div class="api-attribute-filter-actions">
+          {% if form.actions %}
+            {{ form.actions }}
+          {% endif %}
+          {% if form.submit %}
+            {{ form.submit }}
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if not (form.can_edit_clients_only and form.can_edit_clients_only['#value'] == true) %}
+    <div class="rate-sheet-accordion" data-rate-sheet-ranges data-rate-sheet-progressive data-rate-sheet-initial-visible="10" data-rate-sheet-load-step="10">
+      {% set counter = 1 %}
+      {% for id, title in attributes.titles %}
+        {% set ranges_for_attribute = attribute(form.rate_sheet_item_ranges, id) %}
+        {% set first_range = attribute(ranges_for_attribute, 0) %}
+        {% set is_first_item = counter == 1 %}
+        {% set panel_id = 'rate-sheet-attribute-panel-' ~ id %}
+
+        <div class="rate-sheet-accordion-item" data-rate-sheet-attribute-item data-attribute-id="{{ id }}" data-attribute-name="{{ title|lower|e('html_attr') }}" data-rate-sheet-collapsed="{{ is_first_item ? 'false' : 'true' }}">
+          <div class="rate-sheet-accordion-header">
+            <div class="rate-sheet-attribute-heading">
+              <span class="rate-sheet-attribute-number">{{ counter }}</span>
+              <div class="rate-sheet-attribute-title-group">
+                <h3 class="rate-sheet-attribute-title">{{ title }}</h3>
+                <span class="rate-sheet-pricing-mode-badge rate-sheet-pricing-mode-badge--flat" data-rate-sheet-tiered-badge data-rate-sheet-mode="flat">
+                  Flat
+                </span>
+              </div>
+            </div>
+
+            <div class="rate-sheet-accordion-controls">
+              <span class="rate-sheet-tiered-calculation-field" hidden aria-hidden="true">
+                {{ form['tiered_calculation_' ~ id] }}
+              </span>
+
+              <button type="button" class="button button--small rate-sheet-add-range" data-rate-sheet-add-range data-attribute-id="{{ id }}">
+                Add Range
+              </button>
+
+              <button type="button" class="rate-sheet-accordion-toggle" data-rate-sheet-accordion-toggle aria-expanded="{{ is_first_item ? 'true' : 'false' }}" aria-controls="{{ panel_id }}">
+                <span class="rate-sheet-accordion-toggle-text">{{ is_first_item ? 'Collapse' : 'Expand' }}</span>
+                <span class="rate-sheet-accordion-icon" data-rate-sheet-accordion-icon aria-hidden="true">{{ is_first_item ? '−' : '+' }}</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="{{ panel_id }}" class="rate-sheet-accordion-panel" data-rate-sheet-accordion-panel aria-hidden="{{ is_first_item ? 'false' : 'true' }}"{{ is_first_item ? '' : ' hidden' }}>
+            <table class="attributes-table rate-sheet-ranges-table" data-rate-sheet-range-table>
+              <thead>
+                <tr>
+                  <th>Range</th>
+                  <th>From Range</th>
+                  <th>To Range</th>
+                  <th>Success Rate</th>
+                  <th>Rate Price</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {# Initial range row will be created by JavaScript #}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {% set counter = counter + 1 %}
+      {% else %}
+        <p class="message">No API attributes are available for this rate sheet.</p>
+      {% endfor %}
+    </div>
+
+    <p class="rate-sheet-no-results-message" data-rate-sheet-no-results hidden>
+      No API attributes match your filter.
+    </p>
+
+    <div class="rate-sheet-load-more-wrapper" data-rate-sheet-load-more-wrapper hidden>
+      <button type="button" class="button rate-sheet-load-more" data-rate-sheet-load-more>
+        Load more attributes
+      </button>
+      <span class="rate-sheet-progressive-summary" data-rate-sheet-progressive-summary aria-live="polite"></span>
+    </div>
+    </div>
+    {% else %}
+      <div class="rate-sheet-clients-only-mode">
+        <p class="messages messages--status">
+          This rate sheet is approved. You can only add or remove clients using the button above.
+        </p>
+        
+        {% if form.actions %}
+          <div class="form-actions">
+            {{ form.actions }}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+  </span>
+</div>

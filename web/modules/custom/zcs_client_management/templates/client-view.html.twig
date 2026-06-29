@@ -114,6 +114,34 @@
 		</div>
 	</div>
 
+	{% if client_rate_sheets is not empty %}
+		<div class="client-rate-sheets-section">
+			<span class="client-rate-sheets-title">Approved Rate Sheets</span>
+			<table class="client-rate-sheets-table">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Rate Sheet Name</th>
+						<th>Effective Date</th>
+						<th>Markup Retail</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% set counter = 1 %}
+					{% for rate_sheet in client_rate_sheets %}
+						<tr>
+							<td>{{ counter }}</td>
+							<td>{{ rate_sheet.name }}</td>
+							<td>{{ rate_sheet.effective_date }}</td>
+							<td>{{ rate_sheet.markup_retail }}</td>
+						</tr>
+						{% set counter = counter + 1 %}
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	{% endif %}
+
 	<div class="api-aggreement-covers">
 		<span class="title">API Agreement Covers</span>
 		<span>

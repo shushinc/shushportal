@@ -1,0 +1,5 @@
+zcs_api_attributes.api_access_token.add:
+  route_name: zcs_api_attributes.api_access_token.add
+  title: 'Add API Access Token'
+  appears_on:
+    - zcs_api_attributes.api_access_token.list

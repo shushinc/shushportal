@@ -1,0 +1,14 @@
+uuid: 2e6d10d0-0dcf-4fc4-966d-3d20911a5760
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.client_rate_sheet_admin
+  module:
+    - user
+id: user_remove_role_action.client_rate_sheet_admin
+label: 'Remove the Client Rate Sheet Admin role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: client_rate_sheet_admin

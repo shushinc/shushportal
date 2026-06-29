@@ -2,6 +2,7 @@
 
 /**
  * @file
+ * Install, update and uninstall functions for the zcs_api_attributes module.
  */
 
 use Drupal\Core\Database\Database;
@@ -640,4 +641,700 @@ function zcs_api_attributes_update_9011() {
       $database->createTable($table_name, $table);
     }
   }
+}
+
+/**
+ * Add solved field to action_log table.
+ */
+function zcs_api_attributes_update_9013() {
+  $spec = [
+    'type' => 'int',
+    'size' => 'tiny',
+    'description' => "Whether the action has been resolved",
+    'default' => 0,
+  ];
+  $schema = \Drupal::database()->schema();
+  if (!$schema->fieldExists('action_log', 'solved')) {
+    $schema->addField('action_log', 'solved', $spec);
+  }
+}
+
+/**
+ * Adding new tables to add the new client/ratesheet structure.
+ */
+function zcs_api_attributes_update_9012() {
+  $tables = [];
+
+  /**
+   * Rate Sheet
+   */
+  $tables['rate_sheet'] = [
+    'description' => 'Stores rate sheets.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+      ],
+      'name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'currency' => [
+        'type' => 'varchar',
+        'length' => 45,
+        'not null' => FALSE,
+        'default' => '',
+      ],
+      'effective_date' => [
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => FALSE,
+        'default' => '',
+      ],
+      'markup_retail' => [
+        'type' => 'float',
+        'not null' => FALSE,
+        'default' => 0,
+      ],
+      'created_by' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'created_date' => [
+        'type' => 'varchar',
+        'length' => 19,
+        'not null' => FALSE,
+        'default' => '',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'created_by' => ['created_by'],
+    ],
+    'foreign keys' => [
+      'rate_sheet_author' => [
+        'table' => 'users',
+        'columns' => [
+          'created_by' => 'uid',
+        ],
+      ],
+    ],
+  ];
+
+  /**
+   * Rate Sheet Item
+   * api_attribute_id references node.nid
+   * content type: api_attributes
+   */
+  $tables['rate_sheet_item'] = [
+    'description' => 'Stores rate sheet items.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+      ],
+      'attribute_name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'default' => '',
+        'description' => 'Attribute name.',
+      ],
+      'rate_sheet_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'api_attribute_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Reference to node.nid where bundle = api_attributes.',
+      ],
+      'tiered_calculation' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'rate_sheet_id' => ['rate_sheet_id'],
+      'api_attribute_id' => ['api_attribute_id'],
+    ],
+    'foreign keys' => [
+      'rate_sheet_ref' => [
+        'table' => 'rate_sheet',
+        'columns' => [
+          'rate_sheet_id' => 'id',
+        ],
+      ],
+      'api_attribute_node_ref' => [
+        'table' => 'node',
+        'columns' => [
+          'api_attribute_id' => 'nid',
+        ],
+      ],
+    ],
+  ];
+
+  $tables['rate_sheet_item_range'] = [
+    'description' => 'Stores rate sheet items ranges.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+      ],
+      'rate_sheet_item_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'from_range' => [
+        'type' => 'float',
+        'default' => 0,
+      ],
+      'to_range' => [
+        'type' => 'float',
+        'default' => 0,
+      ],
+      'success_rate' => [
+        'type' => 'float',
+        'default' => 0,
+      ],
+      'partial_range' => [
+        'type' => 'float',
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'rate_sheet_item_id' => ['rate_sheet_item_id'],
+    ],
+    'foreign keys' => [
+      'rate_sheet_item_ref' => [
+        'table' => 'rate_sheet_item',
+        'columns' => [
+          'rate_sheet_item_id' => 'id',
+        ],
+      ],
+    ],
+  ];
+
+  /**
+   * Client Rate Sheet
+   * client_id references groups.id
+   */
+  $tables['client_rate_sheet'] = [
+    'description' => 'Relationship between clients and rate sheets.',
+    'fields' => [
+      'rate_sheet_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'client_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'created_by' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'created_date' => [
+        'type' => 'varchar',
+        'length' => 19,
+        'default' => '',
+      ],
+      'active' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['rate_sheet_id', 'client_id'],
+    'indexes' => [
+      'client_id' => ['client_id'],
+      'created_by' => ['created_by'],
+    ],
+    'foreign keys' => [
+      'rate_sheet_ref' => [
+        'table' => 'rate_sheet',
+        'columns' => [
+          'rate_sheet_id' => 'id',
+        ],
+      ],
+
+      'partner_group_ref' => [
+        'table' => 'groups',
+        'columns' => [
+          'client_id' => 'id',
+        ],
+      ],
+
+      'author_ref' => [
+        'table' => 'users',
+        'columns' => [
+          'created_by' => 'uid',
+        ],
+      ],
+    ],
+  ];
+
+  /**
+   * Action Log
+   */
+  $tables['action_log'] = [
+    'description' => 'Stores audit/action logs.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+      ],
+      'action_type' => [
+        'type' => 'varchar',
+        'length' => 45,
+        'default' => '',
+      ],
+      'entity_target_type' => [
+        'type' => 'varchar',
+        'length' => 45,
+        'default' => '',
+      ],
+      'entity_target_id' => [
+        'type' => 'int',
+        'default' => 0,
+      ],
+      'created_by' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'created_date' => [
+        'type' => 'varchar',
+        'length' => 19,
+        'default' => '',
+      ],
+      'log_data' => [
+        'type' => 'text',
+        'size' => 'big',
+        'serialize' => TRUE,
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'created_by' => ['created_by'],
+    ],
+  ];
+
+  $tables['rate_sheet_status'] = [
+    'description' => 'Relationship between rate sheets and statuses.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+      ],
+      'rate_sheet_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'status_name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'date' => [
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => FALSE,
+        'default' => '',
+      ],
+      'created_by' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'rate_sheet_id' => ['rate_sheet_id'],
+      'created_by' => ['created_by']
+    ],
+    'foreign keys' => [
+      'author_ref' => [
+        'table' => 'users',
+        'columns' => [
+          'created_by' => 'uid',
+        ],
+      ],
+    ],
+  ];
+
+  $schema = \Drupal::database()->schema();
+
+  foreach ($tables as $table_name => $table) {
+    if (!$schema->tableExists($table_name)) {
+      $schema->createTable($table_name, $table);
+    }
+  }
+}
+
+/**
+ * Create rate_sheet_status_lookup table and add status field to rate_sheet.
+ */
+function zcs_api_attributes_update_9014() {
+  $schema = \Drupal::database()->schema();
+  $database = \Drupal::database();
+
+  // Create rate_sheet_status table if it doesn't exist.
+  if (!$schema->tableExists('rate_sheet_status_lookup')) {
+    $table = [
+      'description' => 'Lookup table for rate sheet statuses.',
+      'fields' => [
+        'id' => [
+          'type' => 'serial',
+          'not null' => TRUE,
+          'description' => 'Primary Key: Unique status ID.',
+        ],
+        'status_name' => [
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+          'default' => '',
+          'description' => 'Status name.',
+        ],
+      ],
+      'primary key' => ['id'],
+      'unique keys' => [
+        'status_name' => ['status_name'],
+      ],
+    ];
+    $schema->createTable('rate_sheet_status_lookup', $table);
+
+    // Pre-populate with default statuses.
+    $database->insert('rate_sheet_status_lookup')
+      ->fields(['status_name'])
+      ->values(['Pending'])
+      ->values(['Approved'])
+      ->values(['Draft'])
+      ->values(['Rejected'])
+      ->values(['Cancelled'])
+      ->execute();
+  }
+
+  // Add rate_sheet_status_id field to rate_sheet table if it doesn't exist.
+  if ($schema->tableExists('rate_sheet') && !$schema->fieldExists('rate_sheet', 'rate_sheet_status_id')) {
+    $spec = [
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+      'default' => NULL,
+      'description' => 'Foreign key to rate_sheet_status_lookup.id',
+    ];
+    $schema->addField('rate_sheet', 'rate_sheet_status_id', $spec);
+
+    // Add index for the foreign key.
+    $schema->addIndex('rate_sheet', 'rate_sheet_status_id', ['rate_sheet_status_id'], [
+      'fields' => [
+        'rate_sheet_status_id' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => FALSE,
+        ],
+      ],
+    ]);
+  }
+}
+
+/**
+ * Update the action_log rate_sheet_status, adding the 'action_log_id' field.
+ */
+function zcs_api_attributes_update_9016() {
+  $schema = \Drupal::database()->schema();
+
+  if (
+    $schema->tableExists('rate_sheet_status') &&
+    !$schema->fieldExists('rate_sheet_status', 'action_log_id')
+  ) {
+
+    $spec = [
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+      'description' => 'References the action_log record associated with this status.',
+    ];
+
+    $schema->addField('rate_sheet_status', 'action_log_id', $spec);
+  }
+}
+
+/**
+ * Add rate_sheet_client_status_id field to client_rate_sheet table.
+ */
+function zcs_api_attributes_update_9017() {
+  $schema = \Drupal::database()->schema();
+  
+  if ($schema->tableExists('client_rate_sheet') && 
+      !$schema->fieldExists('client_rate_sheet', 'rate_sheet_client_status_id')) {
+    
+    $spec = [
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+      'default' => NULL,
+      'description' => 'Foreign key to rate_sheet_status_lookup.id',
+    ];
+    
+    $schema->addField('client_rate_sheet', 'rate_sheet_client_status_id', $spec);
+    
+    // Add index for the foreign key.
+    $schema->addIndex('client_rate_sheet', 'rate_sheet_client_status_id', 
+      ['rate_sheet_client_status_id'], [
+        'fields' => [
+          'rate_sheet_client_status_id' => [
+            'type' => 'int',
+            'unsigned' => TRUE,
+            'not null' => FALSE,
+          ],
+        ],
+      ]
+    );
+  }
+}
+
+/**
+ * Add auto increment ID to client_rate_sheet table.
+ */
+function zcs_api_attributes_update_9018() {
+
+  $database = \Drupal::database();
+  $schema = $database->schema();
+
+  if ($schema->tableExists('client_rate_sheet') &&
+      !$schema->fieldExists('client_rate_sheet', 'id')) {
+    
+    $schema->addField('client_rate_sheet', 'id', [
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+      'description' => 'Primary key.',
+    ]);
+
+    $result = $database->query("
+      SELECT rate_sheet_id, client_id
+      FROM {client_rate_sheet}
+      ORDER BY created_date
+    ");
+
+    $counter = 1;
+
+    foreach ($result as $record) {
+      $database->update('client_rate_sheet')
+        ->fields([
+          'id' => $counter++,
+        ])
+        ->condition('rate_sheet_id', $record->rate_sheet_id)
+        ->condition('client_id', $record->client_id)
+        ->execute();
+    }
+
+    $database->query("
+      ALTER TABLE {client_rate_sheet}
+      MODIFY id INT UNSIGNED NOT NULL AUTO_INCREMENT
+    ");
+
+    $database->query("
+      ALTER TABLE {client_rate_sheet}
+      ADD PRIMARY KEY (id)
+    ");
+  }
+}
+
+/**
+ * Converts client_rate_sheet.id to an auto increment primary key.
+ */
+function zcs_api_attributes_update_9019() {
+  $database = \Drupal::database();
+
+  $column = $database->query("
+    SELECT EXTRA
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'client_rate_sheet'
+      AND COLUMN_NAME = 'id'
+  ")->fetchField();
+
+  if ($column === 'auto_increment') {
+    return t('The client_rate_sheet.id column is already AUTO_INCREMENT.');
+  }
+
+  $result = $database->query("
+    SELECT rate_sheet_id, client_id
+    FROM {client_rate_sheet}
+    WHERE id IS NULL
+    ORDER BY rate_sheet_id, client_id
+  ");
+
+  $max_id = (int) $database->query("
+    SELECT COALESCE(MAX(id), 0)
+    FROM {client_rate_sheet}
+  ")->fetchField();
+
+  foreach ($result as $record) {
+    $database->update('client_rate_sheet')
+      ->fields([
+        'id' => ++$max_id,
+      ])
+      ->condition('rate_sheet_id', $record->rate_sheet_id)
+      ->condition('client_id', $record->client_id)
+      ->execute();
+  }
+
+  $database->query("
+    ALTER TABLE {client_rate_sheet}
+    DROP PRIMARY KEY
+  ");
+
+  $database->query("
+    ALTER TABLE {client_rate_sheet}
+    MODIFY COLUMN id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    ADD PRIMARY KEY (id)
+  ");
+
+  $database->query("
+    ALTER TABLE {client_rate_sheet}
+    ADD UNIQUE KEY client_rate_sheet_unique (rate_sheet_id, client_id)
+  ");
+
+  return t('Converted client_rate_sheet.id to AUTO_INCREMENT primary key.');
+}
+
+/**
+ * Create the api_access_token table.
+ */
+function zcs_api_attributes_update_9020() {
+  $schema = Database::getConnection()->schema();
+  
+  if ($schema->tableExists('api_access_token')) {
+    return t('Table api_access_token already exists.');
+  }
+
+  $table_schema = [
+    'description' => 'Stores API access tokens for client authentication.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique token ID.',
+      ],
+      'client_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The client (Group) ID this token belongs to.',
+      ],
+      'name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Human-readable token name.',
+      ],
+      'token_prefix' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Public token prefix for lookup.',
+      ],
+      'token_hash' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Secure hash of the token secret.',
+      ],
+      'expires_at' => [
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'Expiration timestamp. NULL means no expiration.',
+      ],
+      'last_used' => [
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'Timestamp of last successful token usage.',
+      ],
+      'last_used_ip' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => FALSE,
+        'description' => 'IP address from last successful token usage.',
+      ],
+      'last_used_user_agent' => [
+        'type' => 'text',
+        'not null' => FALSE,
+        'description' => 'User-Agent from last successful token usage.',
+      ],
+      'active' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 1,
+        'description' => 'Boolean indicating whether the token is active.',
+      ],
+      'created_by' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'User ID of the admin who created the token.',
+      ],
+      'created_date' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Creation timestamp.',
+      ],
+      'changed_by' => [
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'User ID of the admin who last changed the token.',
+      ],
+      'changed_date' => [
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'Last changed timestamp.',
+      ],
+      'revoked_by' => [
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'User ID of the admin who revoked the token.',
+      ],
+      'revoked_date' => [
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'Revocation timestamp.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'token_prefix' => ['token_prefix'],
+    ],
+    'indexes' => [
+      'client_id' => ['client_id'],
+      'active' => ['active'],
+      'expires_at' => ['expires_at'],
+    ],
+  ];
+
+  $schema->createTable('api_access_token', $table_schema);
+  
+  return t('Created api_access_token table.');
 }

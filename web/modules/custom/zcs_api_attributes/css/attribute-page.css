@@ -1,7 +1,15 @@
+.pricing-rate-sheet-list .api-popup-width-resize {
+  width: 1460px!important;
+}
 .attributes-table {
   width: 100%;
 }
 
+.pricing-rate-sheet-list
+#block-shush-primary-admin-actions
+  nav
+  li
+  a,
 .network_authentication_pricing_over_time
   #block-shush-primary-admin-actions
   nav
@@ -14,6 +22,11 @@
   padding: 10px 15px;
 }
 
+.pricing-rate-sheet-list
+#block-shush-primary-admin-actions
+  nav
+  li
+  a:hover,
 .network_authentication_pricing_over_time
   #block-shush-primary-admin-actions
   nav
@@ -22,6 +35,11 @@
   background: #fff;
   color: #118df0;
 }
+
+.pricing-rate-sheet-list
+#block-shush-primary-admin-actions
+  nav
+  li,
 .network_authentication_pricing_over_time
   #block-shush-primary-admin-actions
   nav
@@ -46,15 +64,38 @@ table.attributes-table tr td {
 .demand_partner_discounts_or_different_pricing table.attributes-table thead th {
   text-align: center;
 }
-.network_authentication_pricing_over_time table.attributes-table thead th {
+.pricing-rate-sheet-list table.attributes-table thead th,
+.network_authentication_pricing_over_time table.attributes-table thead th,
+.client-rate-sheet-approval table.attributes-table thead th {
   line-height: 20px;
   text-align: center;
   vertical-align: top;
 }
+
+.client-rate-sheet-approval table.attributes-table thead th:last-child {
+  width: 16%;
+}
+
+.pricing-rate-sheet-list
+table.attributes-table
+thead
+th:first-child,
+.client-rate-sheet-approval
+table.attributes-table
+thead
+th:first-child,
 .network_authentication_pricing_over_time
   table.attributes-table
   thead
   th:first-child {
+  text-align: left;
+}
+
+.pricing-rate-sheet-list
+table.attributes-table
+  thead
+  th:nth-last-child(1) {
+  width: 17%;
   text-align: left;
 }
 .network_authentication_pricing_over_time
@@ -64,6 +105,11 @@ table.attributes-table tr td {
   width: 40%;
   text-align: left;
 }
+
+.pricing-rate-sheet-list
+table.attributes-table
+  tbody
+  td:nth-child(2),
 .network_authentication_pricing_over_time
   table.attributes-table
   tbody
@@ -97,14 +143,29 @@ table.attributes-table th:nth-child(4) {
 .network_authentication_pricing_over_time
   table.attributes-table
   tr
+  td:nth-child(1),
+  .pricing-rate-sheet-list table.attributes-table
+  tr
   td:nth-child(1) {
   text-align: left;
   font-weight: 300;
   width: 1%;
 }
+.pricing-rate-sheet-list table.attributes-table tr td,
+.client-rate-sheet-approval table.attributes-table tr td,
 .network_authentication_pricing_over_time table.attributes-table tr td {
   text-align: center;
   padding: 10px 20px;
+}
+
+.pricing-rate-sheet-list table.attributes-table tr td.rate-sheet-actions,
+.pricing-rate-sheet-list table.attributes-table tr td.rate-sheet-range-actions {
+  text-align: left!important;
+}
+
+.pricing-rate-sheet-list table.attributes-table tr td.status {
+  display: flex;
+  flex-direction: column;
 }
 
 table.attributes-table tr td:first-child {
@@ -165,7 +226,8 @@ table.attributes-table tr td:first-child {
 .api-attribute-status table thead tr td,
 .change-network-authentication-pricing table thead tr td,
 .network_authentication_pricing_over_time table thead tr td,
-.demand_partner_discounts_or_different_pricing table thead tr td {
+.demand_partner_discounts_or_different_pricing table thead tr td,
+.pricing-rate-sheet-list table thead tr td {
   font-weight: 700 !important;
   padding: 10px;
   text-align: center;
@@ -475,3 +537,49 @@ table.attributes-table tr td:first-child {
   margin-top: -14px;
   background-size: cover;
 }
+
+.api-attribute-filter {
+    margin: 0 0 1rem;
+    max-width: 360px;
+    padding: 10px;
+  }
+
+  .api-attribute-filter label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .api-attribute-filter input {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+    transition: all 0.3s ease-in-out;
+    box-shadow: none;
+    height: 38px;
+    margin-bottom: 0.5rem;
+    font-size: 13px;
+    padding: 3px 10px;
+  }
+
+  .rate-sheet-floating-submit {
+    bottom: 24px;
+    opacity: 0;
+    pointer-events: none;
+    position: fixed;
+    right: 24px;
+    transition: opacity 0.25s ease;
+    z-index: 1000;
+  }
+
+  .rate-sheet-floating-submit.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rate-sheet-floating-submit {
+      transition: none;
+    }
+  }

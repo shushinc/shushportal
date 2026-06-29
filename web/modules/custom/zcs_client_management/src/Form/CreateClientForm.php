@@ -320,7 +320,6 @@ class CreateClientForm extends FormBase {
       '#suffix' => '</div>',
     ];
 
-
     $form['actions'] = [
       '#type' => 'actions',
       'submit' => [
@@ -515,6 +514,9 @@ class CreateClientForm extends FormBase {
       $json[$nid] = $values['attribute_' . $nid];
     }
     $encoded_data = Json::encode($json);
+
+    // Process selected rate sheets - we'll handle client_rate_sheet table separately
+  
     $partner_name = $form_state->getValue('partner_name');
     $contact_name = $form_state->getValue('contact_name');
     $contact_email = $form_state->getValue('contact_email');
@@ -612,6 +614,7 @@ class CreateClientForm extends FormBase {
             $response = Json::decode($kong_response);
             $group->set('field_consumer_id', $response['id']);
             $group->save();
+
             $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
             $this->messenger()->addMessage($this->t('Client is invited successfully.'));
             $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
@@ -673,6 +676,7 @@ class CreateClientForm extends FormBase {
         "family_name" => $form_state->getValue('contact_name') ?? '',
       ]);
       $group->save();
+
       $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
       $uid = \Drupal::currentUser()->id();
       $user = User::load($uid);

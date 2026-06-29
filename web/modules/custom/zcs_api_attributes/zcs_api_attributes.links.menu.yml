@@ -15,5 +15,12 @@ zcs_api_attributes.manage_discount_pricing:
   description: Manage Discount Pricing
   parent: system.admin_structure
   route_name: zcs_api_attributes.manage_discount_pricing
-  weight: 10 
+  weight: 10
+
+zcs_api_attributes.api_access_tokens:
+  title: API Access Tokens
+  description: Manage Client API access tokens.
+  parent: system.admin_config_services
+  route_name: zcs_api_attributes.api_access_token.list
+  weight: 10
 

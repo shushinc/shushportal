@@ -100,6 +100,42 @@ class ViewClientController extends ControllerBase {
       }
     }
 
+    // Get approved client rate sheets for this client
+    $database = \Drupal::database();
+    $approved_status_id = $database->select('rate_sheet_status_lookup', 'rssl')
+      ->fields('rssl', ['id'])
+      ->condition('status_name', 'Approved')
+      ->execute()
+      ->fetchField();
+
+    $client_rate_sheets = [];
+    if ($approved_status_id) {
+      $query = $database->select('client_rate_sheet', 'crs')
+        ->fields('crs', ['rate_sheet_id'])
+        ->condition('client_id', $gid)
+        ->condition('rate_sheet_client_status_id', $approved_status_id);
+
+      $rate_sheet_ids = $query->execute()->fetchCol();
+
+      if (!empty($rate_sheet_ids)) {
+        $rate_sheets_query = $database->select('rate_sheet', 'rs')
+          ->fields('rs', ['id', 'name', 'effective_date', 'markup_retail'])
+          ->condition('id', $rate_sheet_ids, 'IN')
+          ->orderBy('effective_date', 'DESC');
+
+        $rate_sheets = $rate_sheets_query->execute()->fetchAll();
+
+        foreach ($rate_sheets as $rate_sheet) {
+          $client_rate_sheets[] = [
+            'id' => $rate_sheet->id,
+            'name' => $rate_sheet->name,
+            'effective_date' => date('M d, Y', $rate_sheet->effective_date),
+            'markup_retail' => $rate_sheet->markup_retail . '%',
+          ];
+        }
+      }
+    }
+
     $module_path = \Drupal::service('extension.list.module')->getPath('zcs_client_management');
     $image_url = '/' . $module_path . '/images/client_view.png';
     return [
@@ -125,6 +161,7 @@ class ViewClientController extends ControllerBase {
       '#country_code' => $country_code,
       '#postal_code' => $postal_code,
       '#agreement_covers' => $api_covers,
+      '#client_rate_sheets' => $client_rate_sheets,
       '#image_url' => $image_url,
       '#cache' => [
         'max-age' => 0,

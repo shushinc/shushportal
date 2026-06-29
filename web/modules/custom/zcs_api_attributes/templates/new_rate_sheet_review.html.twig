@@ -1,0 +1,117 @@
+{{ form.form_build_id }}
+{{ form.form_token }}
+{{ form.form_id }}
+{{ form.rate_sheet_id }}
+
+{% if form.message %}
+  <div class="new-rate-sheet-review new-rate-sheet-review--empty">
+    <p class="message">{{ form.message }}</p>
+  </div>
+{% else %}
+  <div class="new-rate-sheet-review rate-sheet-review-page">
+    <div class="rate-sheet-filter">
+      <div class="rate-sheet-filter-name">
+        <span class="attributes-label">Rate Sheet Name</span>
+        <span class="attribute-inputs">{{ form.name }}</span>
+      </div>
+      <div class="rate-sheet-filter-currencies">
+        <span class="attributes-label">Currency</span>
+        <span class="attribute-inputs">{{ form.currencies }}</span>
+      </div>
+      <div class="rate-sheet-filter-effective">
+        <span class="attributes-label">Effective Date</span>
+        <span class="attribute-inputs">{{ form.attribute_date }}</span>
+      </div>
+      <div class="rate-sheet-markup-retail-percentage">
+        <span class="attributes-label">Markup Retail {{ '%' }}</span>
+        <span class="attribute-inputs">{{ form.retail_markup_percentage }}</span>
+      </div>
+    </div>
+
+    <div class="rate-sheet-attributes">
+      <div class="rate-sheet-attributes-toolbar">
+        <div class="api-attribute-filter">
+          <label for="rate-sheet-attribute-filter">Filter API Attributes</label>
+          <input type="search" id="rate-sheet-attribute-filter" data-rate-sheet-attribute-filter placeholder="Type attribute name">
+        </div>
+        <p class="rate-sheet-progressive-summary" data-rate-sheet-progressive-summary></p>
+      </div>
+
+      <p class="rate-sheet-no-results" data-rate-sheet-no-results hidden>No API attributes match your filter.</p>
+
+      {% if form.rate_sheet_items['#value'] is empty %}
+        <p class="rate-sheet-empty">No API attributes found for this rate sheet.</p>
+      {% else %}
+        <div class="rate-sheet-accordion-list" data-rate-sheet-ranges data-rate-sheet-initial-visible="10" data-rate-sheet-load-step="10">
+          {% set counter = 1 %}
+          {% for item in form.rate_sheet_items['#value'] %}
+            {% set panel_id = 'rate-sheet-review-panel-' ~ item.id %}
+            <article class="rate-sheet-attribute-item rate-sheet-review-attribute-item" data-rate-sheet-attribute-item data-attribute-id="{{ item.id }}" data-attribute-name="{{ item.attribute_name|lower|e('html_attr') }}" data-rate-sheet-collapsed="false">
+              <header class="rate-sheet-attribute-header">
+                <div class="rate-sheet-attribute-heading">
+                  <span class="rate-sheet-attribute-number">{{ counter }}</span>
+                  <div class="rate-sheet-attribute-title-group">
+                    <h3 class="rate-sheet-attribute-title">{{ item.attribute_name }}</h3>
+                    <span class="rate-sheet-tiered-badge" data-rate-sheet-review-tiered-badge data-rate-sheet-mode="{{ item.tiered_calculation == 1 ? 'tiered' : 'flat' }}">
+                      {{ item.tiered_calculation == 1 ? 'Tiered' : 'Flat' }}
+                    </span>
+                  </div>
+                </div>
+                <button type="button" class="rate-sheet-accordion-toggle" data-rate-sheet-accordion-toggle aria-expanded="true" aria-controls="{{ panel_id }}">
+                  <span class="rate-sheet-accordion-toggle-text">Collapse</span>
+                  <span class="rate-sheet-accordion-icon" data-rate-sheet-accordion-icon aria-hidden="true">−</span>
+                </button>
+              </header>
+
+              <div id="{{ panel_id }}" class="rate-sheet-accordion-panel" data-rate-sheet-accordion-panel>
+                {% if item.ranges is not empty %}
+                  <div class="rate-sheet-review-range-grid" role="table" aria-label="Ranges for {{ item.attribute_name }}">
+                    <div class="rate-sheet-review-range-grid-header" role="row">
+                      <span role="columnheader">Range</span>
+                      <span role="columnheader">From range</span>
+                      <span role="columnheader">To range</span>
+                      <span role="columnheader">Partial range</span>
+                      <span role="columnheader">Success rate</span>
+                    </div>
+
+                    {% for range in item.ranges %}
+                      <div class="rate-sheet-review-range-grid-row" data-rate-sheet-range-row data-attribute-id="{{ item.id }}" data-range-index="{{ loop.index0 }}" role="row">
+                        <span class="rate-sheet-range-label-text" role="cell">Range {{ loop.index }}</span>
+                        <span role="cell">{{ range.from_range|number_format_range }}</span>
+                        <span role="cell">{{ range.to_range|number_format_range }}</span>
+                        <span role="cell">{{ range.partial_range|number_format_range }}</span>
+                        <span role="cell">{{ range.success_rate|number_format_range }}</span>
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <p class="rate-sheet-no-ranges">No ranges configured.</p>
+                {% endif %}
+              </div>
+            </article>
+
+            {% set counter = counter + 1 %}
+          {% endfor %}
+        </div>
+
+        <div class="rate-sheet-load-more-wrapper" data-rate-sheet-load-more-wrapper hidden>
+          <button type="button" class="rate-sheet-load-more" data-rate-sheet-load-more>Load more attributes</button>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if form.status is defined or form.approve is defined or form.reject is defined %}
+      <div class="rate-sheet-review-actions">
+        {% if form.status is defined %}
+          {{ form.status }}
+        {% endif %}
+        {% if form.approve is defined %}
+          {{ form.approve }}
+        {% endif %}
+        {% if form.reject is defined %}
+          {{ form.reject }}
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+{% endif %}

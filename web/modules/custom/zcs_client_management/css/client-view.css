@@ -116,14 +116,14 @@ body[class^="view-"] {
   letter-spacing: 0.5px;
 }
 
-.api-aggreement-covers {
+.api-aggreement-covers, .client-rate-sheets-section {
   margin-top: 32px;
   padding: 20px;
   border: 1px solid #dce3ed;
   border-radius: 12px;
 }
 
-.api-aggreement-covers .title {
+.api-aggreement-covers .title, .client-rate-sheets-section span {
   font-family: "DM Sans", sans-serif;
   font-size: 16px;
   font-weight: 700;
@@ -131,11 +131,20 @@ body[class^="view-"] {
   display: block;
   border-bottom: 1px solid #000;
 }
+
 .api-aggreement-covers span {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0;
 }
+
+.client-rate-sheets-table tr td {
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #2e3b8f;
+}
+
 .api-aggreement-covers span p {
   font-family: "DM Sans", sans-serif;
   display: flex;

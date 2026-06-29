@@ -254,6 +254,7 @@ class PriceRateSheet extends FormBase {
     $values = $form_state->getValues();
     $nids = explode(",", $values['nodes']);
     $json = [];
+    $userMails = [];
     foreach ($nids as $nid) {
       $international_price = $values['international_price_' . $nid];
       if ($values['international_price_' . $nid] == 0) {

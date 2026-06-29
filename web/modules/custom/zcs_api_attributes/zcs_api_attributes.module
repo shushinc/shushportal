@@ -40,6 +40,18 @@ function zcs_api_attributes_theme() {
       ],
       'template' => 'network_authentication_pricing_over_time',
     ],
+    'rate_sheet_list' => [
+      'variables' => [
+        'content' => NULL,
+      ],
+      'template' => 'rate_sheet_list',
+    ],
+    'client_rate_sheet_approval' => [
+      'variables' => [
+        'content' => NULL,
+      ],
+      'template' => 'client_rate_sheet_approval',
+    ],
     'demand_partner_discounts_or_different_pricing' => [
       'variables' => [
         'content' => NULL,
@@ -49,6 +61,10 @@ function zcs_api_attributes_theme() {
     'rate_sheet' => [
       'render element' => 'form',
       'template' => 'rate_sheet',
+    ],
+    'create_rate_sheet' => [
+      'render element' => 'form',
+      'template' => 'create_rate_sheet',
     ],
     'rate_sheet_approval' => [
       'variables' => [
@@ -94,6 +110,10 @@ function zcs_api_attributes_theme() {
       'render element' => 'form',
       'template' => 'discount_sheet_review',
     ],
+    'new_rate_sheet_review' => [
+      'render element' => 'form',
+      'template' => 'new_rate_sheet_review',
+    ],
   ];
 }
 
@@ -124,7 +144,14 @@ function zcs_api_attributes_mail($key, &$message, $params) {
       $message['subject'] = t('Discount Price sheet Requested for Approval', $options);
       $message['body'][] = Markup::create($params['message']);
       $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed; delsp=yes';
-      break;   
+      break;
+
+    case 'rate_sheet_status_change':
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = $params['subject'];
+      $message['body'][] = Markup::create($params['message']);
+      $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed; delsp=yes';
+      break;
   }
 }
 
