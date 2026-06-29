@@ -137,35 +137,11 @@ class ClientRateSheetApiController extends ControllerBase {
     }
 
     try {
-      $client = $this->entityTypeManager->getStorage('group')->load($client_id);
-
-      if (!$client) {
-        return new JsonResponse(
-          ['error' => 'Client not found'],
-          404
-        );
-      }
-
-      $contact_name = $client->hasField('field_contact_name') 
-        ? $client->get('field_contact_name')->value 
-        : '';
-      
-      $contact_email = $client->hasField('field_contact_email') 
-        ? $client->get('field_contact_email')->value 
-        : '';
-
       $result = $this->rateSheetService->getClientRateSheetRanges(
-        $contact_name,
-        $contact_email,
+        $client_id,
         $data['attributes']
       );
 
-      if ($result === NULL) {
-        return new JsonResponse(
-          ['error' => 'No active rate sheet available for this client'],
-          404
-        );
-      }
 
       return new JsonResponse($result, 200);
     }
@@ -176,8 +152,8 @@ class ClientRateSheetApiController extends ControllerBase {
       );
 
       return new JsonResponse(
-        ['error' => 'Internal server error'],
-        500
+        ['error' => $e->getMessage()],
+        400
       );
     }
   }

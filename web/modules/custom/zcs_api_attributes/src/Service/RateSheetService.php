@@ -1273,51 +1273,30 @@ class RateSheetService {
   /**
    * Gets client rate sheet ranges for requested attributes.
    *
-   * @param string $contact_name
-   *   The contact name.
-   * @param string $contact_email
-   *   The contact email.
+   * @param int $client_id
+   *   The client ID.
    * @param array $attribute_names
    *   Array of attribute names to retrieve.
    *
-   * @return array|null
-   *   Array with client_id, rate_sheet_id, and attributes with ranges,
-   *   or NULL if client or active rate sheet not found.
+   * @return array
+   *   Array with client_id, rate_sheet_id, and attributes with ranges.
    *
    * @throws \Exception
    */
-  public function getClientRateSheetRanges(string $contact_name, string $contact_email, array $attribute_names): ?array {
-    // Step 1: Find the client by contact name and email.
-    $client_id = $this->database->select('group__field_contact_name', 'gfcn')
-      ->fields('gfcn', ['entity_id'])
-      ->condition('field_contact_name_value', $contact_name)
-      ->execute()
-      ->fetchField();
-
+  public function getClientRateSheetRanges(int $client_id, array $attribute_names): array {
+    // Step 1: Validate the client is active.
     $client_status = $this->database->select('group__field_partner_status', 'gfps')
       ->fields('gfps', ['field_partner_status_value'])
       ->condition('entity_id', $client_id)
       ->execute()
       ->fetchField();
 
-    if (!$client_id) {
+    if (!$client_status) {
       throw new \Exception('Client not found.');
     }
 
     if ($client_status !== 'active') {
       throw new \Exception('The client is not active.');
-    }
-
-    // Verify contact email matches.
-    $contact_email_match = $this->database->select('group__field_contact_email', 'gfce')
-      ->fields('gfce', ['field_contact_email_value'])
-      ->condition('entity_id', $client_id)
-      ->condition('field_contact_email_value', $contact_email)
-      ->execute()
-      ->fetchField();
-
-    if (!$contact_email_match) {
-      throw new \Exception('Wrong contact email.');
     }
 
     // Step 2: Find the active rate sheet for this client.
@@ -1344,7 +1323,7 @@ class RateSheetService {
     $rate_sheet_items = $query->execute()->fetchAll();
 
     if (empty($rate_sheet_items)) {
-      throw new \Exception('No attributes found.');
+      throw new \Exception('No attributes found for the requested rate sheet.');
     }
 
     // Build a map of item_id => attribute_name.
@@ -1387,11 +1366,6 @@ class RateSheetService {
           'ranges' => $ranges_by_item[$item_id],
         ];
       }
-    }
-
-    // If no attributes were found, return NULL.
-    if (empty($attributes)) {
-      return NULL;
     }
 
     return [
