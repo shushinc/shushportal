@@ -1302,11 +1302,16 @@ class RateSheetService {
     // Step 2: Find the active rate sheet for this client.
     $approved_status_id = $this->getRateStatusId('Approved');
 
+    // A client may have multiple approved active Rate Sheet associations.
+    // The active Rate Sheet is always the most recently created association.
+    // Therefore, use the highest client_rate_sheet.id.
     $rate_sheet_id = $this->database->select('client_rate_sheet', 'crs')
       ->fields('crs', ['rate_sheet_id'])
       ->condition('client_id', $client_id)
       ->condition('rate_sheet_client_status_id', $approved_status_id)
       ->condition('active', 1)
+      ->orderBy('id', 'DESC')
+      ->range(0, 1)
       ->execute()
       ->fetchField();
 
@@ -1350,7 +1355,7 @@ class RateSheetService {
         'from_range' => (int) $range->from_range,
         'to_range' => (int) $range->to_range,
         'success_rate' => (int) $range->success_rate,
-        'partial_range' => (int) $range->partial_range,
+        'rate_price' => (int) $range->partial_range,
       ];
     }
 
