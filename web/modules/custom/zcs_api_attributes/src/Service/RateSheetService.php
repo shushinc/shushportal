@@ -8,6 +8,7 @@ use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\node\Entity\Node;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Drupal\Component\Datetime\TimeInterface;
 
 /**
  * Service for managing rate sheets.
@@ -43,6 +44,13 @@ class RateSheetService {
   protected $logger;
 
   /**
+   * The timer.
+   * 
+   * @var \Drupal\Component\Datetime\TimeInterface
+   */
+  protected $time;
+
+  /**
    * Constructs a RateSheetService object.
    *
    * @param \Drupal\Core\Database\Connection $database
@@ -58,12 +66,14 @@ class RateSheetService {
     Connection $database,
     EntityTypeManagerInterface $entity_type_manager,
     AccountProxyInterface $current_user,
-    LoggerInterface $logger
+    LoggerInterface $logger,
+    TimeInterface $timer
   ) {
     $this->database = $database;
     $this->entityTypeManager = $entity_type_manager;
     $this->currentUser = $current_user;
     $this->logger = $logger;
+    $this->time = $timer;
   }
 
   /**
@@ -281,15 +291,27 @@ class RateSheetService {
   /**
    * Gets all active clients (groups of type 'partner').
    *
+   * @param bool $list_actives
+   *  Decide if list only active clients.
+   *
    * @return array
    *   Array of clients with id and label.
    */
-  public function getAllClients(): array {
+  public function getAllClients($list_actives = FALSE): array {
     $query = $this->database->select('groups_field_data', 'gfd')
       ->fields('gfd', ['id', 'label'])
-      ->condition('type', 'partner')
-      ->condition('status', 1)
-      ->orderBy('label', 'ASC');
+      ->condition('gfd.type', 'partner')
+      ->condition('gfd.status', 1)
+      ->orderBy('gfd.label', 'ASC');
+
+    if ($list_actives) {
+      $query->innerJoin(
+        'group__field_partner_status',
+        'gfps',
+        'gfps.entity_id = gfd.id'
+      );
+      $query->condition('gfps.field_partner_status_value', 'active');
+    }
 
     $results = $query->execute()->fetchAll();
 
@@ -301,8 +323,8 @@ class RateSheetService {
       ];
     }
 
-    return $clients;
-  }
+  return $clients;
+}
 
   /**
    * Creates client rate sheet relationships.
@@ -1305,12 +1327,18 @@ class RateSheetService {
     // A client may have multiple approved active Rate Sheet associations.
     // The active Rate Sheet is always the most recently created association.
     // Therefore, use the highest client_rate_sheet.id.
-    $rate_sheet_id = $this->database->select('client_rate_sheet', 'crs')
+    $today = $this->time->getRequestTime();
+    $query = $this->database->select('client_rate_sheet', 'crs');
+
+    $query->join('rate_sheet', 'rs', 'rs.id = crs.rate_sheet_id');
+    
+    $rate_sheet_id = $query
       ->fields('crs', ['rate_sheet_id'])
-      ->condition('client_id', $client_id)
-      ->condition('rate_sheet_client_status_id', $approved_status_id)
-      ->condition('active', 1)
-      ->orderBy('id', 'DESC')
+      ->condition('crs.client_id', $client_id)
+      ->condition('crs.rate_sheet_client_status_id', $approved_status_id)
+      ->condition('crs.active', 1)
+      ->condition('rs.effective_date', $today, '<=')
+      ->orderBy('crs.id', 'DESC')
       ->range(0, 1)
       ->execute()
       ->fetchField();

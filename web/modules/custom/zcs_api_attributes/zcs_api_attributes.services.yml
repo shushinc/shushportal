@@ -19,6 +19,7 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@logger.channel.zcs_api_attributes'
+      - '@datetime.time'
   zcs_api_attributes.rate_sheet_approval_access:
     class: Drupal\zcs_api_attributes\Access\RateSheetApprovalAccessCheck
   zcs_api_attributes.twig.number_format:
