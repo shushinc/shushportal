@@ -177,18 +177,22 @@ function zcs_menu_install() {
     $client_menu_child_link3->save();
   }
 
-  $client_rate_sheet_menu_link = MenuLinkContent::create([
-    'title' => 'Client Rate Sheet Approval',
-    'link' => ['uri' => 'internal:/client/rate-sheet-approval'], // Adjust path as needed.
-    'menu_name' => $menu_name,
-    'parent' => $client_parent_id, // Set the parent ID.
-    'weight' => 9,
-    'menu_per_role__show_role' => [
-      'administrator',
-      'authenticated',
-    ],
-  ]);
-  $client_rate_sheet_menu_link->save();
+  // $client_rate_sheet_menu_link = MenuLinkContent::create([
+  //   'title' => 'Client Rate Sheet Approval',
+  //   'link' => ['uri' => 'internal:/client/rate-sheet-approval'], // Adjust path as needed.
+  //   'menu_name' => $menu_name,
+  //   'parent' => $client_parent_id, // Set the parent ID.
+  //   'weight' => 9,
+  //   'menu_per_role__show_role' => [
+  //     'administrator',
+  //     'carrier_admin',
+  //     'finance_admin',
+  //     'financial_rate_sheet_approval_level_1',
+  //     'financial_rate_sheet_approval_level_2',
+  //     'client_rate_sheet_admin',
+  //   ],
+  // ]);
+  // $client_rate_sheet_menu_link->save();
 
   // Create the parent menu link.
   $price_parent_menu_link = MenuLinkContent::create([
@@ -277,21 +281,22 @@ function zcs_menu_install() {
   ]);
   $pricing_menu_child_link4->save();
 
-  $pricing_menu_child_link5 = MenuLinkContent::create([
-    'title' => 'Rate Sheet',
-    'link' => ['uri' => 'internal:/pricing/rate-sheet-list'],
-    'menu_name' => $menu_name,
-    'parent' => $pricing_parent_id, // Set the parent ID.
-    'weight' => 14,
-    'menu_per_role__show_role' => [
-      'administrator',
-      'carrier_admin',
-      'finance_admin',
-      'financial_rate_sheet_approval_level_1',
-      'financial_rate_sheet_approval_level_2',
-    ],
-  ]);
-  $pricing_menu_child_link5->save();
+  // $pricing_menu_child_link5 = MenuLinkContent::create([
+  //   'title' => 'Rate Sheet',
+  //   'link' => ['uri' => 'internal:/pricing/rate-sheet-list'],
+  //   'menu_name' => $menu_name,
+  //   'parent' => $pricing_parent_id, // Set the parent ID.
+  //   'weight' => 14,
+  //   'menu_per_role__show_role' => [
+  //     'administrator',
+  //     'carrier_admin',
+  //     'finance_admin',
+  //     'financial_rate_sheet_approval_level_1',
+  //     'financial_rate_sheet_approval_level_2',
+  //     'client_rate_sheet_admin',
+  //   ],
+  // ]);
+  // $pricing_menu_child_link5->save();
 
   // Create the parent menu link.
   $use_case_review_parent_menu_link = MenuLinkContent::create([
