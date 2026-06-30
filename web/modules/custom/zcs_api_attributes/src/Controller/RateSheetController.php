@@ -81,7 +81,6 @@ class RateSheetController extends ControllerBase {
       $route_name,
       $route_parameters,
       \Drupal::currentUser(),
-    // Return AccessResult object.
       TRUE
     );
 
@@ -95,8 +94,10 @@ class RateSheetController extends ControllerBase {
 
       $is_current_user_owner = ($result->created_by == \Drupal::currentUser()->id());
       $current_user_roles = \Drupal::currentUser()->getRoles();
-      $approval_roles = ['financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
+      $approval_roles = ['financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2', 'finance_admin'];
+      $rate_sheet_admin_roles = ['client_rate_sheet_admin', 'finance_admin'];
       $has_approval_role = !empty(array_intersect($approval_roles, $current_user_roles));
+      $has_admin_rate_sheets_roles = !empty(array_intersect($rate_sheet_admin_roles, $current_user_roles));
 
       $actions = [];
       
@@ -115,7 +116,7 @@ class RateSheetController extends ControllerBase {
       }
       
       // Show Edit or View action only if user is the owner
-      if ($is_current_user_owner) {
+      if ($has_admin_rate_sheets_roles) {
         $status = $this->rateSheetService->getRateSheetStatus($result->id);
         $is_cancelled = strtolower($status) === 'cancelled';
         

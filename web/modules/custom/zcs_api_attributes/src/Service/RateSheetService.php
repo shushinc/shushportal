@@ -281,15 +281,27 @@ class RateSheetService {
   /**
    * Gets all active clients (groups of type 'partner').
    *
+   * @param bool $list_actives
+   *  Decide if list only active clients.
+   *
    * @return array
    *   Array of clients with id and label.
    */
-  public function getAllClients(): array {
+  public function getAllClients($list_actives = FALSE): array {
     $query = $this->database->select('groups_field_data', 'gfd')
       ->fields('gfd', ['id', 'label'])
-      ->condition('type', 'partner')
-      ->condition('status', 1)
-      ->orderBy('label', 'ASC');
+      ->condition('gfd.type', 'partner')
+      ->condition('gfd.status', 1)
+      ->orderBy('gfd.label', 'ASC');
+
+    if ($list_actives) {
+      $query->innerJoin(
+        'group__field_partner_status',
+        'gfps',
+        'gfps.entity_id = gfd.id'
+      );
+      $query->condition('gfps.field_partner_status_value', 'active');
+    }
 
     $results = $query->execute()->fetchAll();
 
@@ -301,8 +313,8 @@ class RateSheetService {
       ];
     }
 
-    return $clients;
-  }
+  return $clients;
+}
 
   /**
    * Creates client rate sheet relationships.

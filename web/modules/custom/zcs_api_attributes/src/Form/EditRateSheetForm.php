@@ -140,6 +140,11 @@ class EditRateSheetForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $id = 0) {
+
+    $current_user_roles = \Drupal::currentUser()->getRoles();
+    $rate_sheet_admin_roles = ['client_rate_sheet_admin', 'finance_admin'];
+    $has_admin_rate_sheets_roles = !empty(array_intersect($rate_sheet_admin_roles, $current_user_roles));
+
     // Load the rate sheet.
     $rate_sheet = $this->database->select('rate_sheet', 'rs')
       ->fields('rs', ['id', 'name', 'currency', 'markup_retail', 'effective_date', 'created_by'])
@@ -152,9 +157,7 @@ class EditRateSheetForm extends FormBase {
       return $form;
     }
 
-    // Check if current user is the owner.
-    $is_owner = $rate_sheet->created_by == $this->currentUser->id();
-    if (!$is_owner) {
+    if (!$has_admin_rate_sheets_roles) {
       $this->messenger->addError($this->t('You do not have permission to view this rate sheet.'));
       return $form;
     }
@@ -300,7 +303,7 @@ class EditRateSheetForm extends FormBase {
     ];
 
     // Client selection fields
-    $all_clients = $this->rateSheetService->getAllClients();
+    $all_clients = $this->rateSheetService->getAllClients(TRUE);
     $selected_client_ids = $this->rateSheetService->getRateSheetClientIds($id);
     
     $form['clients_data'] = [

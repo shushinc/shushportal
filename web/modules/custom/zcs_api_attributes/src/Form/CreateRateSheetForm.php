@@ -191,7 +191,7 @@ class CreateRateSheetForm extends FormBase {
     ];
 
     // Client selection fields
-    $all_clients = $this->rateSheetService->getAllClients();
+    $all_clients = $this->rateSheetService->getAllClients(TRUE);
     
     $form['clients_data'] = [
       '#type' => 'hidden',
