@@ -61,7 +61,7 @@ class NewRateSheetReviewForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, $id = 0) {
 
     $data = $this->database->select('rate_sheet', 'rs')
-      ->fields('rs', ['id', 'name', 'currency', 'markup_retail', 'effective_date'])
+      ->fields('rs', ['id', 'name', 'currency', 'markup_retail', 'effective_date', 'created_by'])
       ->condition('id', $id)
       ->execute()
       ->fetchObject();
@@ -73,6 +73,8 @@ class NewRateSheetReviewForm extends FormBase {
       $form['#theme'] = 'new_rate_sheet_review';
       return $form;
     }
+
+    $is_current_user_owner = ($data->created_by == \Drupal::currentUser()->id());
 
     $currency_label = $data->currency;
     foreach ($this->list as $currency) {
@@ -181,7 +183,8 @@ class NewRateSheetReviewForm extends FormBase {
     // 2. Rate sheet is Pending
     // 3. They don't have unresolved comments (waiting for creator to resolve)
     // 4. Rate sheet is not cancelled
-    if (array_intersect($allowed_roles, $user_roles) && $rateSheetStatus === 'Pending' && !$user_has_unresolved_comments && !$is_cancelled) {
+    // 5. The current user is not the owner (creator) of the rate sheet.
+    if (array_intersect($allowed_roles, $user_roles) && $rateSheetStatus === 'Pending' && !$user_has_unresolved_comments && !$is_cancelled && !$is_current_user_owner) {
       $form['status'] = [
         '#type' => 'select',
         '#options' => [2 => 'Approve', 3 => 'Reject'],

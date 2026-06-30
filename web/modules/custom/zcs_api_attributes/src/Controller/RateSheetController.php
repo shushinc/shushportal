@@ -102,7 +102,7 @@ class RateSheetController extends ControllerBase {
       $actions = [];
       
       // Show Review action only if user is not owner AND has approval roles
-      if (!$is_current_user_owner && $has_approval_role) {
+      if ($has_approval_role) {
         $actions[] = [
           'title' => 'Review',
           'url' => Url::fromRoute(
