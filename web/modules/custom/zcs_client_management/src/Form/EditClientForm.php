@@ -379,6 +379,7 @@ final class EditClientForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
     $values = $form_state->getValues();
+
     $nids = explode(",", $values['nodes']);
     $json = [];
     foreach ($nids as $nid) {
@@ -457,10 +458,14 @@ final class EditClientForm extends FormBase {
       "family_name" => $family_name ?? '',
     ]);
 
-    $group->save();
-    
-    $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
-    $this->messenger()->addMessage($this->t('Client is updated successfully.'));
+    $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBillingV1($gid, $partner_name, $partner_type, $partner_status, $pricing_type);
+    if ($client_billing_profile) {
+      $group->save();
+      $this->messenger()->addMessage($this->t('Client is updated successfully.'));
+    }
+    else {
+      $this->messenger()->adderror($this->t('There is problem in updating.Please contact adminstrator'));
+    }
     $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
   }
 

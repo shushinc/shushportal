@@ -554,76 +554,100 @@ class CreateClientForm extends FormBase {
         if($response != 'error'){
           $status_code = $response->getStatusCode();
           if ($status_code == '201') {
-            $group = Group::create([
-              'type' => 'partner',
-              'label' => $partner_name,
-              'field_contact_name' => $contact_name,
-              'field_contact_email' => $contact_email,
-              'field_description' => $partner_description,
-              'field_partner_status' => $partner_status,
-              'field_partner_type' => $partner_type,
-              'field_client_legal_contact' => $client_legal_contact,
-              'field_client_point_of_contact' => $client_point_of_contact,
-              'field_agreement_effective_date' => $agreement_effective_date,
-              'field_prepayment_amount' => $prepayment_amount,
-              'field_prepayment_balance_left' => $prepayment_balance_left,
-              'field_prepayment_balance_used' => $prepayment_balance_used,
-              'field_currency' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
-              'field_industry' => $industry,
-              'field_pricing_type' => $pricing_type,
-              'field_apis_agreement_covers' => $encoded_data,
-              'user_id' => \Drupal::currentUser()->id(),
-              'created' => \Drupal::time()->getRequestTime(),
-            ]);
-            $group->save();
-            $uid = \Drupal::currentUser()->id();
-            $user = User::load($uid);
-            $group->addMember($user, ['group_roles' => ['partner-admin']]);
-            $group->save();
+            // invoke aggregates api call.
+            $create_client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBillingProfile($partner_name, $partner_type, $partner_status, $pricing_type);
+            if($create_client_billing_profile){
+              $group = Group::create([
+                'type' => 'partner',
+                'label' => $partner_name,
+                'field_contact_name' => $contact_name,
+                'field_contact_email' => $contact_email,
+                'field_description' => $partner_description,
+                'field_partner_status' => $partner_status,
+                'field_partner_type' => $partner_type,
+                'field_client_legal_contact' => $client_legal_contact,
+                'field_client_point_of_contact' => $client_point_of_contact,
+                'field_agreement_effective_date' => $agreement_effective_date,
+                'field_prepayment_amount' => $prepayment_amount,
+                'field_prepayment_balance_left' => $prepayment_balance_left,
+                'field_prepayment_balance_used' => $prepayment_balance_used,
+                'field_currency' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
+                'field_industry' => $industry,
+                'field_pricing_type' => $pricing_type,
+                'field_apis_agreement_covers' => $encoded_data,
+                'user_id' => \Drupal::currentUser()->id(),
+                'created' => \Drupal::time()->getRequestTime(),
+              ]);
+              $group->save();
+              $uid = \Drupal::currentUser()->id();
+              $user = User::load($uid);
+              $group->addMember($user, ['group_roles' => ['partner-admin']]);
+              $group->save();
 
-            $group->set('field_address', [
-              "langcode" => null,
-              "country_code" => $country_code ?? '',
-              "administrative_area" => $administrative_area ?? '',
-              "locality" => $locality ?? '',
-              "dependent_locality" => $dependent_locality ?? '',
-              "postal_code" => $postal_code ?? '',
-              "sorting_code" => $sorting_code ?? '',
-              "address_line1" => $address_line1 ?? '',
-              "address_line2" => $address_line2 ?? '',
-              "address_line3" => $address_line3 ?? '',
-              "organization" => $organization ?? '',
-              "given_name" => $form_state->getValue('contact_name') ?? '',
-              "additional_name" => $additional_name ?? '',
-              "family_name" => $form_state->getValue('contact_name') ?? '',
-            ]);
-            $group->save();
-            $user = User::create([
-              'name' => $contact_name,
-              'mail' => $contact_email,
-              'status' => 0, //
-              'roles' => 'authenticated',
-            ]);
-            $user->save();
+              $group->set('field_address', [
+                "langcode" => null,
+                "country_code" => $country_code ?? '',
+                "administrative_area" => $administrative_area ?? '',
+                "locality" => $locality ?? '',
+                "dependent_locality" => $dependent_locality ?? '',
+                "postal_code" => $postal_code ?? '',
+                "sorting_code" => $sorting_code ?? '',
+                "address_line1" => $address_line1 ?? '',
+                "address_line2" => $address_line2 ?? '',
+                "address_line3" => $address_line3 ?? '',
+                "organization" => $organization ?? '',
+                "given_name" => $form_state->getValue('contact_name') ?? '',
+                "additional_name" => $additional_name ?? '',
+                "family_name" => $form_state->getValue('contact_name') ?? '',
+              ]);
+              $group->save();
+              $user = User::create([
+                'name' => $contact_name,
+                'mail' => $contact_email,
+                'status' => 0, //
+                'roles' => 'authenticated',
+              ]);
+              $user->save();
 
-            $token = $this->generateToken();
-            $save_invitation = $this->saveInvitation($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
-            $send_email = $this->sendInvitationMail($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
+              $token = $this->generateToken();
+              $save_invitation = $this->saveInvitation($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
+              $send_email = $this->sendInvitationMail($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
 
-            $kong_response = $response->getBody()->getContents();
-            $response = Json::decode($kong_response);
-            $group->set('field_consumer_id', $response['id']);
-            $group->save();
-
-            $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
-            $this->messenger()->addMessage($this->t('Client is invited successfully.'));
-            $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
+              $kong_response = $response->getBody()->getContents();
+              $response = Json::decode($kong_response);
+              $group->set('field_consumer_id', $response['id']);
+              $group->save();
+              $this->messenger()->addMessage($this->t('Client is invited successfully.'));
+              $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
+              
+            }
+            else {
+              $kong_response = $response->getBody()->getContents();
+              $response = Json::decode($kong_response);
+              $consumer_id = $response['id'];
+              $delete_consumer = \Drupal::service('zcs_kong.kong_gateway')->deleteConsumer($consumer_id);
+              if($delete_consumer!= 'error'){
+                $delete_status_code =  $delete_consumer->getStatusCode();
+                if ($delete_status_code  == '201') {
+                  \Drupal::logger('kong')->info('Deleted @client user in the kong for failure client profile', ['@client' => $partner_name]);
+                }
+                else {
+                  \Drupal::logger('kong')->error('Not able to delete the @client user in the kong for failure client profile', ['@client' => $partner_name]);
+                }
+              }
+              $this->messenger()->addError($this->t('There is problem in processing your request.Please contact Administrator'));
+              $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
+            }
           }
           else {
-            // logger
+            $this->messenger()->addMessage($this->t('There is problem in processing your request.Please contact Administrator'));
+            $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
           }
         }
-
+        else {
+          $this->messenger()->addMessage($this->t('There is problem in processing your request.Please contact Administrator'));
+          $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
+        }
       } catch (RequestException $e) {
         if ($e->hasResponse()) {
           $error_response = $e->getResponse();
@@ -636,64 +660,72 @@ class CreateClientForm extends FormBase {
       }
     }
     else {
-      $group = Group::create([
-        'type' => 'partner',
-        'label' => $partner_name,
-        'field_contact_name' => $contact_name,
-        'field_contact_email' => $contact_email,
-        'field_description' => $partner_description,
-        'field_partner_status' => $partner_status,
-        'field_partner_type' => $partner_type,
-        'field_client_legal_contact' => $client_legal_contact,
-        'field_client_point_of_contact' => $client_point_of_contact,
-        'field_agreement_effective_date' => $agreement_effective_date,
-        'field_prepayment_amount' => $prepayment_amount,
-        'field_prepayment_balance_left' => $prepayment_balance_left,
-        'field_prepayment_balance_used' => $prepayment_balance_used,
-        'field_currency' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
-        'field_industry' => $industry,
-        'field_pricing_type' => $pricing_type,
-        'field_apis_agreement_covers' => $encoded_data,
-        'user_id' => \Drupal::currentUser()->id(),
-        'created' => \Drupal::time()->getRequestTime(),
-      ]);
-      $group->save();
+      $create_client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBillingProfile($partner_name, $partner_type, $partner_status, $pricing_type);
+      if ($create_client_billing_profile) {
+        $group = Group::create([
+          'type' => 'partner',
+          'label' => $partner_name,
+          'field_contact_name' => $contact_name,
+          'field_contact_email' => $contact_email,
+          'field_description' => $partner_description,
+          'field_partner_status' => $partner_status,
+          'field_partner_type' => $partner_type,
+          'field_client_legal_contact' => $client_legal_contact,
+          'field_client_point_of_contact' => $client_point_of_contact,
+          'field_agreement_effective_date' => $agreement_effective_date,
+          'field_prepayment_amount' => $prepayment_amount,
+          'field_prepayment_balance_left' => $prepayment_balance_left,
+          'field_prepayment_balance_used' => $prepayment_balance_used,
+          'field_currency' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
+          'field_industry' => $industry,
+          'field_pricing_type' => $pricing_type,
+          'field_apis_agreement_covers' => $encoded_data,
+          'user_id' => \Drupal::currentUser()->id(),
+          'created' => \Drupal::time()->getRequestTime(),
+        ]);
+        $group->save();
 
-      $group->set('field_address', [
-        "langcode" => null,
-        "country_code" => $country_code ?? '',
-        "administrative_area" => $administrative_area ?? '',
-        "locality" => $locality ?? '',
-        "dependent_locality" => $dependent_locality ?? '',
-        "postal_code" => $postal_code ?? '',
-        "sorting_code" => $sorting_code ?? '',
-        "address_line1" => $address_line1 ?? '',
-        "address_line2" => $address_line2 ?? '',
-        "address_line3" => $address_line3 ?? '',
-        "organization" => $organization ?? '',
-        "given_name" => $form_state->getValue('contact_name') ?? '',
-        "additional_name" => $additional_name ?? '',
-        "family_name" => $form_state->getValue('contact_name') ?? '',
-      ]);
-      $group->save();
+        $group->set('field_address', [
+          "langcode" => null,
+          "country_code" => $country_code ?? '',
+          "administrative_area" => $administrative_area ?? '',
+          "locality" => $locality ?? '',
+          "dependent_locality" => $dependent_locality ?? '',
+          "postal_code" => $postal_code ?? '',
+          "sorting_code" => $sorting_code ?? '',
+          "address_line1" => $address_line1 ?? '',
+          "address_line2" => $address_line2 ?? '',
+          "address_line3" => $address_line3 ?? '',
+          "organization" => $organization ?? '',
+          "given_name" => $form_state->getValue('contact_name') ?? '',
+          "additional_name" => $additional_name ?? '',
+          "family_name" => $form_state->getValue('contact_name') ?? '',
+        ]);
+        $group->save();
+        // $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
+        $uid = \Drupal::currentUser()->id();
+        $user = User::load($uid);
+        $group->addMember($user, ['group_roles' => ['partner-admin']]);
+        $group->save();
+        $user = User::create([
+          'name' => $contact_name,
+          'mail' => $contact_email,
+          'status' => 0, //
+          'roles' => 'authenticated',
+        ]);
+        $user->save();
+        $token = $this->generateToken();
+        $save_invitation = $this->saveInvitation($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
+        $send_email = $this->sendInvitationMail($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
+        $this->messenger()->addMessage($this->t('Client is invited successfully.'));
+        $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
 
-      $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
-      $uid = \Drupal::currentUser()->id();
-      $user = User::load($uid);
-      $group->addMember($user, ['group_roles' => ['partner-admin']]);
-      $group->save();
-      $user = User::create([
-        'name' => $contact_name,
-        'mail' => $contact_email,
-        'status' => 0, //
-        'roles' => 'authenticated',
-      ]);
-      $user->save();
-      $token = $this->generateToken();
-      $save_invitation = $this->saveInvitation($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
-      $send_email = $this->sendInvitationMail($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
-      $this->messenger()->addMessage($this->t('Client is invited successfully.'));
-      $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
+      }
+      else {
+        $this->messenger()->addMessage($this->t('There is problem in processing your request.Please contact Administrator'));
+        $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
+      }
+     
     }
   }
 

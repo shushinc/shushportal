@@ -194,12 +194,17 @@ class DiscountPricingReviewForm extends FormBase {
     $updatedFields[$values['approved_by'] . '_status'] = (int) $values['status'];
     $updatedFields[$values['approved_by'] . '_uid'] = (int) $this->currentUser()->id();
     if ($values['another_approver_status'] == 2 && $values['status'] == 2) {
-      $updatedFields['attribute_status'] = 2;
-      $discount_pricing_json_data = $values['discount_page_data'];
-      $client_id = $values['client'];
       $group = Group::load($client_id);
-      $group->set('field_discount_pricing', $discount_pricing_json_data);
-      $group->save();
+      $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBillingApproval($group,  $values['discount_page_data']);
+      if($client_billing_profile){
+        $updatedFields['attribute_status'] = 2;
+        $discount_pricing_json_data = $values['discount_page_data'];
+        $group->set('field_discount_pricing', $discount_pricing_json_data);
+        $group->save();
+      } else {
+        $this->messenger()->addError($this->t('There was a problem sending your email notification.'));
+        $form_state->setRedirect('zcs_api_attributes.pricing_discount_review_list');
+      }
     }
     elseif ($values['another_approver_status'] == 3 || $values['status'] == 3) {
       $updatedFields['attribute_status'] = 3;
@@ -209,10 +214,10 @@ class DiscountPricingReviewForm extends FormBase {
       ->condition('id', $values['apid'])
       ->execute();
     $this->messenger()->addStatus('Status submitted successfully');
-    if ($values['another_approver_status'] == 2 && $values['status'] == 2) {
-      $group = Group::load($client_id);
-      $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
-    } 
+    // if ($values['another_approver_status'] == 2 && $values['status'] == 2) {
+    //   $group = Group::load($client_id);
+    //   $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
+    // } 
     // Sending the email for approver2.
     if ($values['approved_by'] == 'approver1' && $values['status'] == 2) {
       $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => 'financial_rate_sheet_approval_level_2', 'status' => 1]);
