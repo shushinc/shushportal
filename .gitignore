@@ -11,3 +11,16 @@ vendor/
 .ddev/config.yaml
 /.editorconfig
 /.gitattributes
+.ddev/addon-metadata/
+.ddev/commands/
+.ddev/docker-compose.phpmyadmin.yaml
+.ddev/docker-compose.phpmyadmin_norouter.yaml
+phpcs.xml.dist
+phpstan-baseline.neon
+phpstan.neon.dist
+private-files/
+web/private:/
+web/sites/default/config.yaml
+web/sites/default/services.yml
+web/sites/default/settings.php
+web/themes/custom/shush/node_modules/
