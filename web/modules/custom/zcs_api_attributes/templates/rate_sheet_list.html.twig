@@ -8,14 +8,13 @@
     <table class="attributes-table">
       <thead>
         <tr>
-          <th>#</th>
           <th>Name</th>
           <th>Currency</th>
           <th>Effec. Date</th>
-          <th>Markup Retail(%)</th>
+          <th>Enterprise Custom Markup(%)</th>
           <th>Approvers</th>
           <th>Status</th>
-          <th>Action</th>
+          <th>Operations</th>
         </tr>
       </thead>
       <tbody>
@@ -25,7 +24,6 @@
           {% set rate_sheet_status = sheet_info.status|lower %}
 
           <tr>
-            <td>{{ counter }}</td>
             <td>{{ sheet_info.name }}</td>
             <td>{{ sheet_info.currency }}</td>
             <td>{{ sheet_info.effective_date }}</td>
@@ -33,27 +31,17 @@
             <td>{{ sheet_info.approvals|raw }}</td>
             <td class="{{ rate_sheet_status }}">{{ sheet_info.status }}</td>
             <td>
-              <div class="dropdown">
-                <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                  Actions
-                </button>
-
-                <ul class="dropdown-menu dropdown-menu-end">
-                  {% for action in sheet_info.actions %}
-                    <li>
-                      <a
-                        href="{{ action.disabled ? 'javascript:void(0)' : action.url }}"
-                        class="dropdown-item {{ action.class }} {% if action.ajax %}use-ajax{% endif %}"
-                        {% if action.ajax %}
-                          data-dialog-type="modal"
-                          data-dialog-options='{"width":1000,"title":"Rate Sheet Review","dialogClass":"api-popup-width-resize api-table-fixed"}'
+              <div class="edit-operation">
+                  <div class="edit-operation-wrap">
+                    {% for action in sheet_info.actions %}
+                      <a href="{{ action.disabled ? 'javascript:void(0)' : action.url }}" class="dropdown-item {{ action.class }} {% if action.ajax %}use-ajax{% endif %}"
+                        {% if action.ajax %} data-dialog-type="modal" data-dialog-options='{"width":1000,"title":"Rate Sheet Review","dialogClass":"api-popup-width-resize api-table-fixed"}'
                         {% endif %}
                       >
                         {{ action.title }}
                       </a>
-                    </li>
                   {% endfor %}
-                </ul>
+                  </div>
               </div>
             </td>
           </tr>
