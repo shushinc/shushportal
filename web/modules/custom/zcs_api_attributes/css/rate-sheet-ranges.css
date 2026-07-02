@@ -281,7 +281,7 @@
 
 .rate-sheet-ranges-table th,
 .rate-sheet-ranges-table td {
-  text-align: center;
+  text-align: left;
   vertical-align: middle;
 }
 
@@ -350,7 +350,7 @@
   align-items: center;
   display: flex;
   gap: 0.25rem;
-  justify-content: center;
+  justify-content: start;
 }
 
 .rate-sheet-dynamic-field-prefix {
@@ -364,7 +364,7 @@
 
 .rate-sheet-to-range-input-wrapper {
   display: inline-flex;
-  justify-content: center;
+  justify-content: start;
   width: 100%;
 }
 
@@ -515,7 +515,7 @@
   align-items: center;
   display: flex;
   gap: 0.5rem;
-  justify-content: center;
+  justify-content: flex-end;
   min-width: 7rem;
 }
 
