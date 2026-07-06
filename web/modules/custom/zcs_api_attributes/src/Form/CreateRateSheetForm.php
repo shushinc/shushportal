@@ -156,7 +156,7 @@ class CreateRateSheetForm extends FormBase {
     // Markup retail.
     $form['retail_markup_percentage'] = [
       '#type' => 'number',
-      '#min' => 1,
+      '#min' => 0,
       '#step' => 1,
       '#required' => TRUE,
     ];
@@ -246,12 +246,6 @@ class CreateRateSheetForm extends FormBase {
     // Validate rate sheet name.
     if (empty(trim($values['name']))) {
       $form_state->setErrorByName('name', $this->t('Rate sheet name is required.'));
-    }
-
-    // Validate markup percentage.
-    $markup = $values['retail_markup_percentage'] ?? NULL;
-    if (!is_numeric($markup) || $markup < 1) {
-      $form_state->setErrorByName('retail_markup_percentage', $this->t('Markup percentage must be at least 1.'));
     }
 
     // Validate effective date.
