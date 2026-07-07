@@ -64,10 +64,15 @@ table.attributes-table tr td {
 .demand_partner_discounts_or_different_pricing table.attributes-table thead th {
   text-align: center;
 }
-.network_authentication_pricing_over_time table.attributes-table thead th,
-.client-rate-sheet-approval table.attributes-table thead th {
+.network_authentication_pricing_over_time table.attributes-table thead th {
   line-height: 20px;
   text-align: center;
+  vertical-align: top;
+}
+
+.client-rate-sheet-approval table.attributes-table thead th {
+  line-height: 20px;
+  text-align: left;
   vertical-align: top;
 }
 
@@ -75,6 +80,10 @@ table.attributes-table tr td {
   line-height: 20px;
   text-align: left;
   vertical-align: top;
+}
+
+.client-rate-sheet-approval table.attributes-table thead th:nth-child(7) {
+  width: 23%;
 }
 
 .client-rate-sheet-approval table.attributes-table thead th:last-child {
@@ -153,9 +162,14 @@ table.attributes-table th:nth-child(4) {
   font-weight: 300;
   width: 1%;
 }
-.client-rate-sheet-approval table.attributes-table tr td,
+
 .network_authentication_pricing_over_time table.attributes-table tr td {
   text-align: center;
+  padding: 10px 20px;
+}
+
+.client-rate-sheet-approval table.attributes-table tr td {
+  text-align: left;
   padding: 10px 20px;
 }
 

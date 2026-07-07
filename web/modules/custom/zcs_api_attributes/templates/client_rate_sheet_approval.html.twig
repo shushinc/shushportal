@@ -78,9 +78,8 @@
               aria-label="Select all items"
             />
           </th>
-          <th>#</th>
-          <th>Client Name</th>
-          <th>Rate Sheet Name</th>
+          <th>Client</th>
+          <th>Rate Sheet</th>
           <th>Currency</th>
           <th>Effec. Date</th>
           <th>Enterprise Custom Markup(%)</th>
@@ -106,7 +105,6 @@
                 {% if is_rejected %}disabled{% endif %}
               />
             </td>
-            <td>{{ counter }}</td>
             <td>{{ sheet_info.client_name }}</td>
             <td>{{ sheet_info.rate_sheet_name }}</td>
             <td>{{ sheet_info.currency }}</td>
