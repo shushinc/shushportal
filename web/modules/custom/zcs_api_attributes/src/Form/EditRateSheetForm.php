@@ -458,12 +458,6 @@ class EditRateSheetForm extends FormBase {
       $form_state->setErrorByName('name', $this->t('Rate sheet name is required.'));
     }
 
-    // Validate markup percentage.
-    $markup = $values['retail_markup_percentage'] ?? NULL;
-    if (!is_numeric($markup) || $markup < 1) {
-      $form_state->setErrorByName('retail_markup_percentage', $this->t('Markup percentage must be at least 1.'));
-    }
-
     // Validate effective date.
     $effective_date = $values['attribute_date'] ?? NULL;
     if (empty($effective_date)) {
