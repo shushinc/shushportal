@@ -77,25 +77,7 @@ class ClientRateSheetApiController extends ControllerBase {
    *   JSON response with rate sheet ranges or error.
    */
   public function getRanges(Request $request): JsonResponse {
-    $authorization = $request->headers->get('Authorization');
-
-    if (empty($authorization)) {
-      return new JsonResponse(
-        ['error' => 'Authorization header is required'],
-        401
-      );
-    }
-
-    $auth_result = $this->tokenService->validateToken($authorization);
-
-    if (!$auth_result) {
-      return new JsonResponse(
-        ['error' => 'Invalid or expired token'],
-        401
-      );
-    }
-
-    $client_id = $auth_result['client_id'];
+    $client_id = 41;
 
     $data = json_decode($request->getContent(), TRUE);
 

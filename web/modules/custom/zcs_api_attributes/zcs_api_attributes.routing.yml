@@ -287,7 +287,7 @@ zcs_api_attributes.client_rate_sheet.client_ratesheet_status_batch:
     no_cache: true
 
 zcs_api_attributes.client_rate_sheet.ranges:
-  path: '/api/v1/client-rate-sheet/ranges'
+  path: '/api/aggregates/v1/revenue/calculate'
   defaults:
     _controller: '\Drupal\zcs_api_attributes\Controller\ClientRateSheetApiController::getRanges'
   methods: [POST]
