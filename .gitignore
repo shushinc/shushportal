@@ -15,6 +15,9 @@ vendor/
 .ddev/commands/
 .ddev/docker-compose.phpmyadmin.yaml
 .ddev/docker-compose.phpmyadmin_norouter.yaml
+.ddev/
+web/sites/default/
+web/themes/custom/shush/node_modules/
 phpcs.xml.dist
 phpstan-baseline.neon
 phpstan.neon.dist
@@ -24,3 +27,4 @@ web/sites/default/config.yaml
 web/sites/default/services.yml
 web/sites/default/settings.php
 web/themes/custom/shush/node_modules/
+web/private:/

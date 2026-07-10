@@ -104,6 +104,37 @@ class kongService  {
   }
 
 
+
+  /**
+   * Delete a consumer from Kong.
+   *
+   * @param string $consumer_id
+   *   Kong consumer ID (or username).
+   *
+   * @return mixed
+   */
+  public function deleteConsumer($consumer_id) {
+    $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
+    $endpoint = $endpoint_url . '/consumers/' . $consumer_id;
+
+    try {
+      $response = $this->httpClient->request('DELETE', $endpoint, [
+        'verify' => FALSE,
+      ]);
+
+      return $response;
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('kong')->error(
+        'Error deleting consumer from Kong gateway: @message',
+        ['@message' => $e->getMessage()]
+      );
+
+      return "error";
+    }
+  }
+
+
   public function createConsumerSync($username, $customer_id, $consumer_email) {
 
     $endpoint_url = \Drupal::config('zcs_custom.settings')->get('kong_endpoint');
