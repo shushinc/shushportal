@@ -53,9 +53,20 @@ class ViewClientController extends ControllerBase {
       $pricing_type_values = $field_config_pricing_type->getSetting('allowed_values');
     }
 
-    $currency =  $group->get('field_currency')->value ?? '';
-    $number = new NumberFormatter($currency  ?? 'en_US', NumberFormatter::CURRENCY);
-    $symbol = $number->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
+    // $currency =  $group->get('field_currency')->value ?? '';
+    // $number = new NumberFormatter($currency  ?? 'en_US', NumberFormatter::CURRENCY);
+    // $symbol = $number->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
+    
+    $currencyMap = [];
+    foreach (require __DIR__ . '/../../resources/currencies.php' as $currency) {
+       $currencyMap[$currency['alphabeticCode']] = $currency['locale'];
+    }  
+    $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'USD';
+    $locale = $currencyMap[$currency];
+    $number = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
+    $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);  
+
+    
     $address = $group->get('field_address')->getValue();
     $address_value = isset($address[0]) ? $address[0]: '';
 
