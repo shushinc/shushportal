@@ -95,8 +95,8 @@ class DiscountPricingReviewForm extends FormBase {
     // To fetch currencies.
     $currencies = [];
     foreach ($this->list as $list) {
-      if (!empty($list['locale'])) {
-        $currencies[$list['locale']] = $list['currency'] . ' (' . $list['alphabeticCode'] . ')';
+      if (!empty($list['alphabeticCode'])) {
+        $currencies[$list['lphabeticCode']] = $list['currency'] . ' (' . $list['alphabeticCode'] . ')';
       }
     }
     $form['currencies'] = [

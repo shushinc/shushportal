@@ -72,9 +72,9 @@ class CreatePricingDiscount extends FormBase {
       $defaultCurrency = $this->getRequest()->get('cur');
     }
 
-    $defaultCurrency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'USD';
+  //  $defaultCurrency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'USD';
     // Show the right currency symbol based on the chosen one.
-    $number = new \NumberFormatter($defaultCurrency, \NumberFormatter::CURRENCY);
+  //  $number = new \NumberFormatter($defaultCurrency, \NumberFormatter::CURRENCY);
    // $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
 
     // To fetch currencies.
