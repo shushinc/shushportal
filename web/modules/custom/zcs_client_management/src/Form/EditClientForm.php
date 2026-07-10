@@ -258,9 +258,9 @@ final class EditClientForm extends FormBase {
       '#suffix' => '</div></div>',
     ];
 
-    $code = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
+    $code = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'USD';
     foreach ($lists_currencies as $currency_data) {
-      if ($currency_data['locale'] === $code) {
+      if ($currency_data['alphabeticCode'] === $code) {
         $currency_code = $currency_data['alphabeticCode'];
       }
     }
