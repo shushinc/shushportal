@@ -80,22 +80,33 @@ class PriceRateSheet extends FormBase {
       $defaultCurrency = $this->getRequest()->get('cur');
     }
 
-    $defaultCurrency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
-    // Show the right currency symbol based on the chosen one.
-    $number = new \NumberFormatter($defaultCurrency, \NumberFormatter::CURRENCY);
-    $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
+    $currencyMap = [];
+    foreach (require __DIR__ . '/../../resources/currencies.php' as $currency) {
+       $currencyMap[$currency['alphabeticCode']] = $currency['locale'];
+    } 
+
+    $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'USD';
+    $locale = $currencyMap[$currency];
+    $number = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
+    $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL); 
+
+
+    // $defaultCurrency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
+    // // Show the right currency symbol based on the chosen one.
+    // $number = new \NumberFormatter($defaultCurrency, \NumberFormatter::CURRENCY);
+    // $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
 
     // To fetch currencies.
     $currencies = [];
     foreach ($this->list as $list) {
       if (!empty($list['locale'])) {
-        $currencies[$list['locale']] = $list['currency'] . ' (' . $list['alphabeticCode'] . ')';
+        $currencies[$list['alphabeticCode']] = $list['currency'] . ' (' . $list['alphabeticCode'] . ')';
       }
     }
     $form['currencies'] = [
       '#type' => 'select',
       '#options' => $currencies,
-      '#default_value' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US',
+      '#default_value' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'USD',
       '#disabled' => TRUE,
       '#weight' => 0,
     ];
@@ -142,7 +153,7 @@ class PriceRateSheet extends FormBase {
           '#min' => 0,
           '#default_value' => $content->field_domestic_standard_price->value ?? 0.000,
           '#step' => 0.001,
-          '#field_prefix' => $symbol,
+         '#field_prefix' => $symbol,
         ];
       }
     }

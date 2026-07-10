@@ -56,10 +56,22 @@ class RateSheetTwig extends AbstractExtension implements ExtensionInterface {
       ->execute();
     $contents = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
     // $final = [];
-    $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
-    // Show the right currency symbol based on the chosen one.
-    $number = new \NumberFormatter($currency, \NumberFormatter::CURRENCY);
+
+    $currencyMap = [];
+    foreach (require __DIR__ . '/../../resources/currencies.php' as $currency) {
+       $currencyMap[$currency['alphabeticCode']] = $currency['locale'];
+    } 
+
+    $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'USD';
+    $locale = $currencyMap[$currency];
+    $number = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
     $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
+
+
+    // $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
+    // // Show the right currency symbol based on the chosen one.
+    // $number = new \NumberFormatter($currency, \NumberFormatter::CURRENCY);
+    // $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
 
     $titles = $prices = [];
     if (!empty($contents)) {

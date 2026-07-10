@@ -71,15 +71,19 @@ class PricingOverTime extends ControllerBase {
       ->execute()->fetchAll();
     $prices = $headerDate = $symbols = [];
 
+    $currencyMap = [];
+    foreach (require __DIR__ . '/../../resources/currencies.php' as $currency) {
+       $currencyMap[$currency['alphabeticCode']] = $currency['locale'];
+    }  
     foreach ($resultSet as $result) {
       $prices[] = Json::decode($result->page_data);
       $headerDate[] = date("M d, Y", strtotime($result->effective_date));
-      $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
-      $number = new \NumberFormatter($currency, \NumberFormatter::CURRENCY);
-      $symbols[] = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
+      $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'USD';
+      $locale = $currencyMap[$currency];
+      $number = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
+      $symbols[] = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);   
     }
     if (!empty($contents)) {
-
       foreach ($contents as $content) {
         $final[] = [
           'title' => $content->title->value,
