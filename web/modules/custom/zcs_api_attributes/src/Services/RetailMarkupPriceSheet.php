@@ -97,10 +97,10 @@ class RetailMarkupPriceSheet  {
       $international = $rates['international'];
       $domestic = $rates['domestic'];
       $final = [];
-      $code = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
+      $code = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'USD';
       $lists_currencies = require __DIR__ . '/../../resources/currencies.php';
       foreach($lists_currencies as $currency_data) {
-        if ($currency_data['locale'] === $code) {
+        if ($currency_data['alphabeticCode'] === $code) {
           $currency_code = $currency_data['alphabeticCode'];
         }
       }

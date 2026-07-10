@@ -69,10 +69,10 @@ class DiscountPricingReviewForm extends FormBase {
       ->fields('apd', ['approver1_uid', 'approver1_status', 'approver2_uid', 'approver2_status', 'currency_locale', 'client_name', 'client_id', 'attribute_status', 'page_data'])
       ->condition('id', $id)
       ->execute()->fetchObject();
-    $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
+    //$currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
     // Show the right currency symbol based on the chosen one.
-    $number = new \NumberFormatter($currency, \NumberFormatter::CURRENCY);
-    $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
+   // $number = new \NumberFormatter($currency, \NumberFormatter::CURRENCY);
+   // $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
 
     if (!empty($data)) {
       $form['discount_page_data'] = [
@@ -95,8 +95,8 @@ class DiscountPricingReviewForm extends FormBase {
     // To fetch currencies.
     $currencies = [];
     foreach ($this->list as $list) {
-      if (!empty($list['locale'])) {
-        $currencies[$list['locale']] = $list['currency'] . ' (' . $list['alphabeticCode'] . ')';
+      if (!empty($list['alphabeticCode'])) {
+        $currencies[$list['alphabeticCode']] = $list['currency'] . ' (' . $list['alphabeticCode'] . ')';
       }
     }
     $form['currencies'] = [
