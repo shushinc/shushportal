@@ -15,6 +15,9 @@ use Drupal\Core\Render\Markup;
 
 /**
  * Provides the create rate sheet form.
+ * @TODO Every rate sheet starts in the begenning of the month
+ *  - Always 1rst day
+ *  - Disable the effective date of the form
  */
 class CreateRateSheetForm extends FormBase {
 

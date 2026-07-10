@@ -70,8 +70,8 @@
                       <span role="columnheader">Range</span>
                       <span role="columnheader">From range</span>
                       <span role="columnheader">To range</span>
-                      <span role="columnheader">$ Partial Tx Unit Price</span>
-                      <span role="columnheader">$ Successful Tx Unit Price</span>
+                      <span role="columnheader">Successful Tx Unit Price</span>
+                      <span role="columnheader">Partial Tx Unit Price</span>
                     </div>
 
                     {% for range in item.ranges %}
@@ -79,8 +79,8 @@
                         <span class="rate-sheet-range-label-text" role="cell">Range {{ loop.index }}</span>
                         <span role="cell">{{ range.from_range|number_format_range }}</span>
                         <span role="cell">{{ range.to_range|number_format_range }}</span>
-                        <span role="cell">{{ range.partial_range|number_format_range }}</span>
                         <span role="cell">{{ range.success_rate|number_format_range }}</span>
+                        <span role="cell">{{ range.partial_range|number_format_range }}</span>
                       </div>
                     {% endfor %}
                   </div>

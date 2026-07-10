@@ -68,74 +68,55 @@ class ClientRateSheetApiController extends ControllerBase {
   }
 
   /**
-   * Returns pricing ranges for a client's active rate sheet.
+   * Processes aggregate payload and calculates pricing.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request object.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
-   *   JSON response with rate sheet ranges or error.
+   *   JSON response with enriched buckets.
    */
   public function getRanges(Request $request): JsonResponse {
-    $client_id = 41;
+    // Decode JSON payload
+    $payload = json_decode($request->getContent(), TRUE);
 
-    $data = json_decode($request->getContent(), TRUE);
-
-    if (!is_array($data)) {
+    if (!is_array($payload)) {
       return new JsonResponse(
         ['error' => 'Invalid JSON request body'],
         400
       );
     }
 
-    if (!isset($data['attributes'])) {
+    // Validate top-level structure
+    if (!isset($payload['buckets']) || !is_array($payload['buckets'])) {
       return new JsonResponse(
-        ['error' => 'attributes is required'],
+        ['error' => 'Missing or invalid buckets array'],
         400
       );
     }
 
-    if (!is_array($data['attributes'])) {
+    if (empty($payload['buckets'])) {
       return new JsonResponse(
-        ['error' => 'attributes must be an array'],
+        ['error' => 'Buckets array cannot be empty'],
         400
       );
-    }
-
-    if (empty($data['attributes'])) {
-      return new JsonResponse(
-        ['error' => 'attributes cannot be empty'],
-        400
-      );
-    }
-
-    foreach ($data['attributes'] as $attribute) {
-      if (!is_string($attribute)) {
-        return new JsonResponse(
-          ['error' => 'Every attribute must be a string'],
-          400
-        );
-      }
     }
 
     try {
-      $result = $this->rateSheetService->getClientRateSheetRanges(
-        $client_id,
-        $data['attributes']
-      );
-
+      // Process payload through service
+      $result = $this->rateSheetService->processAggregatePricing($payload);
 
       return new JsonResponse($result, 200);
     }
     catch (\Exception $e) {
       $this->getLogger('zcs_api_attributes')->error(
-        'Error retrieving client rate sheet ranges: @message',
+        'Error processing aggregate pricing: @message',
         ['@message' => $e->getMessage()]
       );
 
       return new JsonResponse(
-        ['error' => $e->getMessage()],
-        400
+        ['error' => 'Internal server error'],
+        500
       );
     }
   }

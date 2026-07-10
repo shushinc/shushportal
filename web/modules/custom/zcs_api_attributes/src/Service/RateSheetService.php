@@ -1293,6 +1293,814 @@ class RateSheetService {
   }
 
   /**
+   * Resolves the active approved effective rate sheet for a client.
+   *
+   * @param int $client_id
+   *   The client (group) ID.
+   *
+   * @return int|null
+   *   The rate sheet ID or NULL if not found.
+   */
+  public function getActiveRateSheetForClient(int $client_id): ?int {
+    
+    /**
+     * @TODO verify order and filtering logic for active rate sheet, when
+     * clients have multiple.
+     */
+    $today = $this->time->getRequestTime();
+    $approved_status_id = $this->getRateStatusId('Approved');
+
+    $query = $this->database->select('client_rate_sheet', 'crs');
+    $query->join('rate_sheet', 'rs', 'rs.id = crs.rate_sheet_id');
+    
+    $rate_sheet_id = $query
+      ->fields('crs', ['rate_sheet_id'])
+      ->condition('crs.client_id', $client_id)
+      ->condition('crs.rate_sheet_client_status_id', $approved_status_id)
+      ->condition('crs.active', 1)
+      ->condition('rs.effective_date', $today, '<=')
+      ->orderBy('crs.effective_date', 'DESC')
+      ->range(0, 1)
+      ->execute()
+      ->fetchField();
+
+    return $rate_sheet_id !== FALSE ? (int) $rate_sheet_id : NULL;
+  }
+
+  /**
+   * Processes aggregate payload and calculates pricing for all buckets.
+   *
+   * @param array $payload
+   *   The aggregate payload containing buckets.
+   *
+   * @return array
+   *   The enriched payload with pricing information.
+   */
+  public function processAggregatePricing(array $payload): array {
+    $run_id = $payload['run_id'] ?? '';
+    $buckets = $payload['buckets'] ?? [];
+
+    $enriched_buckets = [];
+
+    foreach ($buckets as $bucket) {
+      $enriched_bucket = $this->processBucket($bucket, $run_id);
+      $enriched_buckets[] = $enriched_bucket;
+    }
+
+    $payload['buckets'] = $enriched_buckets;
+    return $payload;
+  }
+
+  /**
+   * Processes a single bucket and calculates pricing.
+   *
+   * @param array $bucket
+   *   The bucket data.
+   * @param string $run_id
+   *   The run ID from the payload.
+   *
+   * @return array
+   *   The enriched bucket with pricing information.
+   */
+  protected function processBucket(array $bucket, string $run_id): array {
+    // Check for duplicate
+    $source_bucket_id = $bucket['source_bucket_id'] ?? '';
+    
+    if (empty($source_bucket_id)) {
+      return $this->enrichBucketWithError($bucket, 'Missing source_bucket_id');
+    }
+
+    $existing = $this->database->select('api_pricing_calculation_log', 'apcl')
+      ->fields('apcl', ['id'])
+      ->condition('source_bucket_id', $source_bucket_id)
+      ->execute()
+      ->fetchField();
+
+    if ($existing) {
+      return $this->enrichBucketAsDuplicate($bucket);
+    }
+
+    // Validate required fields
+    $validation_error = $this->validateBucket($bucket);
+    if ($validation_error) {
+      $this->logFailedBucket($bucket, $run_id, $validation_error);
+      return $this->enrichBucketWithError($bucket, $validation_error);
+    }
+
+    try {
+      // Resolve client
+      $client_key = $bucket['client'];
+      $client_data = $this->resolveClient($client_key);
+      
+      if (!$client_data) {
+        throw new \Exception('Client not found or inactive');
+      }
+
+      // Resolve API attribute
+      $endpoint = $bucket['endpoint'];
+      $attribute_data = $this->resolveApiAttribute($endpoint);
+      
+      // @TODO after getting the client and the attribute, fecth the ranges
+      // using a sinlge SQL query
+
+      if (!$attribute_data) {
+        throw new \Exception('API attribute not found for endpoint');
+      }
+
+      // Resolve active rate sheet
+      $rate_sheet_id = $this->getActiveRateSheetForClient($client_data['id']);
+      
+      if (!$rate_sheet_id) {
+        throw new \Exception('No active rate sheet found for client');
+      }
+
+      // Get rate sheet markup
+      $markup_percentage = $this->getRateSheetMarkup($rate_sheet_id);
+
+      // Resolve rate sheet item
+      $rate_sheet_item = $this->resolveRateSheetItem($rate_sheet_id, $attribute_data['id']);
+      
+      if (!$rate_sheet_item) {
+        throw new \Exception('Rate sheet item not found');
+      }
+
+      // Get ranges
+      $ranges = $this->getRateSheetItemRanges($rate_sheet_item['id']);
+      
+      if (empty($ranges)) {
+        throw new \Exception('No pricing ranges found');
+      }
+
+      // Calculate cumulative usage
+      $cumulative_before = $this->getCumulativeUsage(
+        $client_data['id'],
+        $attribute_data['id'],
+        $rate_sheet_id
+      );
+
+      $total_transaction_count = (int) $bucket['total_transaction_count'];
+      $cumulative_after = $cumulative_before + $total_transaction_count;
+
+      // Calculate pricing
+      $calculation = $this->calculatePricing(
+        $bucket,
+        $ranges,
+        $cumulative_before,
+        $cumulative_after
+      );
+
+      // Log successful calculation
+      $this->logSuccessfulBucket(
+        $bucket,
+        $run_id,
+        $client_data,
+        $attribute_data,
+        $rate_sheet_id,
+        $rate_sheet_item['id'],
+        $cumulative_before,
+        $cumulative_after,
+        $markup_percentage,
+        $calculation
+      );
+
+      // Enrich bucket
+      return $this->enrichBucketWithPricing(
+        $bucket,
+        $client_data,
+        $attribute_data,
+        $markup_percentage,
+        $calculation
+      );
+
+    } catch (\Exception $e) {
+      $error_message = $e->getMessage();
+      $this->logger->error('Bucket processing failed: @message', ['@message' => $error_message]);
+      
+      $this->logFailedBucket($bucket, $run_id, $error_message);
+      return $this->enrichBucketWithError($bucket, $error_message);
+    }
+  }
+
+  /**
+   * Validates a bucket has all required fields.
+   *
+   * @param array $bucket
+   *   The bucket data.
+   *
+   * @return string|null
+   *   Error message or NULL if valid.
+   */
+  protected function validateBucket(array $bucket): ?string {
+    $required_fields = [
+      'source_bucket_id',
+      'datatime',
+      'client',
+      'endpoint',
+      'total_transaction_count',
+      'total_full_rate_billable_transaction',
+      'total_lower_rate_billable_transaction',
+      'total_no_billable_transaction',
+    ];
+
+    foreach ($required_fields as $field) {
+      if (!isset($bucket[$field])) {
+        return "Missing required field: {$field}";
+      }
+    }
+
+    // Validate numeric fields
+    $numeric_fields = [
+      'total_transaction_count',
+      'total_full_rate_billable_transaction',
+      'total_lower_rate_billable_transaction',
+      'total_no_billable_transaction',
+    ];
+
+    foreach ($numeric_fields as $field) {
+      if (!is_numeric($bucket[$field]) || $bucket[$field] < 0) {
+        return "Invalid value for {$field}: must be integer >= 0";
+      }
+    }
+
+    // Validate sum
+    $sum = (int) $bucket['total_full_rate_billable_transaction']
+      + (int) $bucket['total_lower_rate_billable_transaction']
+      + (int) $bucket['total_no_billable_transaction'];
+
+    if ($sum < 0) {
+      return 'Sum of billable transactions must be >= 0';
+    }
+
+    return NULL;
+  }
+
+  /**
+   * Resolves a client by client key.
+   *
+   * @param string $client_key
+   *   The client key.
+   *
+   * @return array|null
+   *   Array with id and type, or NULL if not found.
+   */
+  protected function resolveClient(string $client_key): ?array {
+    $query = $this->database->select('groups_field_data', 'gfd');
+    $query->leftJoin('group__field_partner_status', 'gfps', 'gfps.entity_id = gfd.id');
+    $query->leftJoin('group__field_partner_type', 'gfpt', 'gfpt.entity_id = gfd.id');
+    
+    $result = $query
+      ->fields('gfd', ['id'])
+      ->fields('gfpt', ['field_partner_type_value'])
+      ->condition('gfd.label', $client_key)
+      ->condition('gfd.type', 'partner')
+      ->condition('gfps.field_partner_status_value', 'active')
+      ->execute()
+      ->fetchObject();
+
+    if (!$result) {
+      return NULL;
+    }
+
+    return [
+      'id' => (int) $result->id,
+      'type' => $result->field_partner_type_value ?? 'unknown',
+    ];
+  }
+
+  /**
+   * Resolves an API attribute by endpoint.
+   *
+   * @param string $endpoint
+   *   The endpoint path.
+   *
+   * @return array|null
+   *   Array with id and name, or NULL if not found.
+   */
+  protected function resolveApiAttribute(string $endpoint): ?array {
+    $query = $this->database->select('node_field_data', 'nfd');
+    $query->join('node__field_endpoint', 'nfe', 'nfe.entity_id = nfd.nid');
+    
+    $result = $query
+      ->fields('nfd', ['nid', 'title'])
+      ->condition('nfd.type', 'api_attributes')
+      ->condition('nfe.field_endpoint_value', $endpoint)
+      ->execute()
+      ->fetchObject();
+
+    if (!$result) {
+      return NULL;
+    }
+
+    return [
+      'id' => (int) $result->nid,
+      'name' => $result->title,
+    ];
+  }
+
+  /**
+   * Resolves a rate sheet item.
+   *
+   * @param int $rate_sheet_id
+   *   The rate sheet ID.
+   * @param int $api_attribute_id
+   *   The API attribute node ID.
+   *
+   * @return array|null
+   *   Array with id, or NULL if not found.
+   * 
+   * @TODO reduce code verbosity. SQL performance, less queries
+   */
+  protected function resolveRateSheetItem(int $rate_sheet_id, int $api_attribute_id): ?array {
+    $result = $this->database->select('rate_sheet_item', 'rsi')
+      ->fields('rsi', ['id'])
+      ->condition('rate_sheet_id', $rate_sheet_id)
+      ->condition('api_attribute_id', $api_attribute_id)
+      ->execute()
+      ->fetchObject();
+
+    if (!$result) {
+      return NULL;
+    }
+
+    return [
+      'id' => (int) $result->id,
+    ];
+  }
+
+  /**
+   * Gets rate sheet item ranges.
+   *
+   * @param int $rate_sheet_item_id
+   *   The rate sheet item ID.
+   *
+   * @return array
+   *   Array of ranges.
+   */
+  protected function getRateSheetItemRanges(int $rate_sheet_item_id): array {
+    $results = $this->database->select('rate_sheet_item_range', 'rsir')
+      ->fields('rsir', ['id', 'from_range', 'to_range', 'success_rate', 'partial_range'])
+      ->condition('rate_sheet_item_id', $rate_sheet_item_id)
+      ->orderBy('from_range', 'ASC')
+      ->orderBy('id', 'ASC')
+      ->execute()
+      ->fetchAll();
+
+    $ranges = [];
+    foreach ($results as $result) {
+      $ranges[] = [
+        'id' => (int) $result->id,
+        'from_range' => (int) $result->from_range,
+        'to_range' => (int) $result->to_range,
+        'success_unit_price' => (float) $result->success_rate,
+        'partial_unit_price' => (float) $result->partial_range,
+      ];
+    }
+
+    return $ranges;
+  }
+
+  /**
+   * Gets rate sheet markup percentage.
+   *
+   * @param int $rate_sheet_id
+   *   The rate sheet ID.
+   *
+   * @return float
+   *   The markup percentage.
+   */
+  protected function getRateSheetMarkup(int $rate_sheet_id): float {
+    $markup = $this->database->select('rate_sheet', 'rs')
+      ->fields('rs', ['markup_retail'])
+      ->condition('id', $rate_sheet_id)
+      ->execute()
+      ->fetchField();
+
+    return $markup !== FALSE ? (float) $markup : 0.0;
+  }
+
+  /**
+   * Gets cumulative usage for a client/attribute/rate sheet combination.
+   *
+   * @param int $client_id
+   *   The client ID.
+   * @param int $api_attribute_id
+   *   The API attribute ID.
+   * @param int $rate_sheet_id
+   *   The rate sheet ID.
+   *
+   * @return int
+   *   The cumulative transaction count.
+   */
+  protected function getCumulativeUsage(int $client_id, int $api_attribute_id, int $rate_sheet_id): int {
+
+    $query = $this->database->select('api_pricing_calculation_log', 'apcl');
+
+    $query->addExpression('SUM(total_transaction_count)', 'cumulative');
+
+    $cumulative = $query
+      ->condition('client_id', $client_id)
+      ->condition('api_attribute_id', $api_attribute_id)
+      ->condition('rate_sheet_id', $rate_sheet_id)
+      ->condition('status', 'success')
+      ->execute()
+      ->fetchAll();
+
+    $total = 0;
+    foreach ($cumulative as $row) {
+      $total += (int) $row->cumulative;
+    }
+
+    return $total;
+  }
+
+  /**
+   * Calculates pricing for a bucket across ranges.
+   *
+   * @param array $bucket
+   *   The bucket data.
+   * @param array $ranges
+   *   The pricing ranges.
+   * @param int $cumulative_before
+   *   Cumulative usage before this bucket.
+   * @param int $cumulative_after
+   *   Cumulative usage after this bucket.
+   *
+   * @return array
+   *   Calculation results with breakdown.
+   */
+  protected function calculatePricing(array $bucket, array $ranges, int $cumulative_before, int $cumulative_after): array {
+    $total_full_rate = (int) $bucket['total_full_rate_billable_transaction'];
+    $total_lower_rate = (int) $bucket['total_lower_rate_billable_transaction'];
+
+    $segments = $this->calculateSegments($ranges, $cumulative_before, $cumulative_after);
+    
+    // Allocate transactions across segments
+    $full_rate_allocation = $this->allocateTransactions($total_full_rate, $segments);
+    $lower_rate_allocation = $this->allocateTransactions($total_lower_rate, $segments);
+
+    $breakdown = [];
+    $total_success_amount = 0;
+    $total_partial_amount = 0;
+
+    foreach ($segments as $index => $segment) {
+      $full_rate_count = $full_rate_allocation[$index];
+      $lower_rate_count = $lower_rate_allocation[$index];
+
+      $success_amount = $full_rate_count * $segment['success_unit_price'];
+      $partial_amount = $lower_rate_count * $segment['partial_unit_price'];
+      $segment_total = $success_amount + $partial_amount;
+
+      $total_success_amount += $success_amount;
+      $total_partial_amount += $partial_amount;
+
+      $breakdown[] = [
+        'range_id' => $segment['range_id'],
+        'range_from' => $segment['from_range'],
+        'range_to' => $segment['to_range'],
+        'segment_transaction_count' => $segment['count'],
+        'full_rate_billable_transaction' => $full_rate_count,
+        'lower_rate_billable_transaction' => $lower_rate_count,
+        'success_unit_price' => $segment['success_unit_price'],
+        'partial_unit_price' => $segment['partial_unit_price'],
+        'success_amount' => round($success_amount, 4),
+        'partial_amount' => round($partial_amount, 4),
+        'segment_total_amount' => round($segment_total, 4),
+      ];
+    }
+
+    return [
+      'successful_est_revenue' => round($total_success_amount, 4),
+      'unsuccessful_est_revenue' => round($total_partial_amount, 4),
+      'total_est_revenue' => round($total_success_amount + $total_partial_amount, 4),
+      'successful_unit_price' => $total_full_rate > 0 ? round($total_success_amount / $total_full_rate, 4) : 0,
+      'unsuccessful_unit_price' => $total_lower_rate > 0 ? round($total_partial_amount / $total_lower_rate, 4) : 0,
+      'breakdown' => $breakdown,
+    ];
+  }
+
+  /**
+   * Calculates segments for a bucket across ranges.
+   *
+   * @param array $ranges
+   *   The pricing ranges.
+   * @param int $cumulative_before
+   *   Cumulative usage before this bucket.
+   * @param int $cumulative_after
+   *   Cumulative usage after this bucket.
+   *
+   * @return array
+   *   Array of segments.
+   */
+  protected function calculateSegments(array $ranges, int $cumulative_before, int $cumulative_after): array {
+    $segments = [];
+    $current_position = $cumulative_before + 1;
+    $end_position = $cumulative_after;
+
+    foreach ($ranges as $range) {
+      $range_start = $range['from_range'];
+      $range_end = $range['to_range'] === -1 ? PHP_INT_MAX : $range['to_range'];
+
+      // Skip ranges that are completely before current position
+      if ($range_end < $current_position) {
+        continue;
+      }
+
+      // Skip ranges that are completely after end position
+      if ($range_start > $end_position) {
+        break;
+      }
+
+      // Calculate segment within this range
+      $segment_start = max($current_position, $range_start);
+      $segment_end = min($end_position, $range_end);
+      $segment_count = $segment_end - $segment_start + 1;
+
+      if ($segment_count > 0) {
+        $segments[] = [
+          'range_id' => $range['id'],
+          'from_range' => $range_start,
+          'to_range' => $range['to_range'],
+          'count' => $segment_count,
+          'success_unit_price' => $range['success_unit_price'],
+          'partial_unit_price' => $range['partial_unit_price'],
+        ];
+
+        $current_position = $segment_end + 1;
+      }
+
+      if ($current_position > $end_position) {
+        break;
+      }
+    }
+
+    return $segments;
+  }
+
+  /**
+   * Allocates transactions across segments proportionally.
+   *
+   * @param int $total_transactions
+   *   Total transactions to allocate.
+   * @param array $segments
+   *   The segments.
+   *
+   * @return array
+   *   Array of allocated transaction counts per segment.
+   */
+  protected function allocateTransactions(int $total_transactions, array $segments): array {
+    if ($total_transactions === 0 || empty($segments)) {
+      return array_fill(0, count($segments), 0);
+    }
+
+    $total_segment_count = 0;
+    foreach ($segments as $segment) {
+      $total_segment_count += $segment['count'];
+    }
+
+    if ($total_segment_count === 0) {
+      return array_fill(0, count($segments), 0);
+    }
+
+    $allocated = [];
+    $remainders = [];
+    $allocated_sum = 0;
+
+    foreach ($segments as $index => $segment) {
+      $proportion = $segment['count'] / $total_segment_count;
+      $raw_value = $total_transactions * $proportion;
+      $floored_value = (int) floor($raw_value);
+      
+      $allocated[$index] = $floored_value;
+      $remainders[$index] = $raw_value - $floored_value;
+      $allocated_sum += $floored_value;
+    }
+
+    // Distribute remaining units to largest remainders
+    $remaining = $total_transactions - $allocated_sum;
+    if ($remaining > 0) {
+      arsort($remainders);
+      $distributed = 0;
+      foreach ($remainders as $index => $remainder) {
+        if ($distributed >= $remaining) {
+          break;
+        }
+        $allocated[$index]++;
+        $distributed++;
+      }
+    }
+
+    return $allocated;
+  }
+
+  /**
+   * Enriches a bucket with pricing information.
+   *
+   * @param array $bucket
+   *   The original bucket.
+   * @param array $client_data
+   *   Client data.
+   * @param array $attribute_data
+   *   Attribute data.
+   * @param float $markup_percentage
+   *   Markup percentage.
+   * @param array $calculation
+   *   Calculation results.
+   *
+   * @return array
+   *   Enriched bucket.
+   */
+  protected function enrichBucketWithPricing(array $bucket, array $client_data, array $attribute_data, float $markup_percentage, array $calculation): array {
+    $bucket['client_type'] = $client_data['type'];
+    $bucket['attribute'] = $attribute_data['name'];
+    $bucket['pricing_type'] = '';
+    $bucket['success_unit_price'] = $calculation['successful_unit_price'];
+    $bucket['unsuccessful_unit_price'] = $calculation['unsuccessful_unit_price'];
+    $bucket['markup_percentage'] = $markup_percentage;
+    $bucket['discount_price'] = 0.0;
+    $bucket['pricing_status'] = 'success';
+
+    $transaction_rows = [];
+
+    if ((int) $bucket['total_full_rate_billable_transaction'] > 0) {
+      $transaction_rows[] = [
+        'transaction_type' => 'Successful',
+        'total_full_rate_billable_transaction' => (int) $bucket['total_full_rate_billable_transaction'],
+        'est_revenue' => $calculation['successful_est_revenue'],
+      ];
+    }
+
+    if ((int) $bucket['total_lower_rate_billable_transaction'] > 0) {
+      $transaction_rows[] = [
+        'transaction_type' => 'UnSuccessful',
+        'total_lower_rate_billable_transaction' => (int) $bucket['total_lower_rate_billable_transaction'],
+        'est_revenue' => $calculation['unsuccessful_est_revenue'],
+      ];
+    }
+
+    $bucket['transaction_rows'] = $transaction_rows;
+
+    return $bucket;
+  }
+
+  /**
+   * Enriches a bucket with error information.
+   *
+   * @param array $bucket
+   *   The original bucket.
+   * @param string $error_message
+   *   The error message.
+   *
+   * @return array
+   *   Enriched bucket.
+   */
+  protected function enrichBucketWithError(array $bucket, string $error_message): array {
+    $bucket['pricing_status'] = 'failed';
+    $bucket['pricing_error'] = $error_message;
+    return $bucket;
+  }
+
+  /**
+   * Enriches a bucket as duplicate.
+   *
+   * @param array $bucket
+   *   The original bucket.
+   *
+   * @return array
+   *   Enriched bucket.
+   */
+  protected function enrichBucketAsDuplicate(array $bucket): array {
+    $bucket['pricing_status'] = 'duplicate';
+    return $bucket;
+  }
+
+  /**
+   * Logs a successful bucket calculation.
+   *
+   * @param array $bucket
+   *   The bucket data.
+   * @param string $run_id
+   *   The run ID.
+   * @param array $client_data
+   *   Client data.
+   * @param array $attribute_data
+   *   Attribute data.
+   * @param int $rate_sheet_id
+   *   Rate sheet ID.
+   * @param int $rate_sheet_item_id
+   *   Rate sheet item ID.
+   * @param int $cumulative_before
+   *   Cumulative before.
+   * @param int $cumulative_after
+   *   Cumulative after.
+   * @param float $markup_percentage
+   *   Markup percentage.
+   * @param array $calculation
+   *   Calculation results.
+   */
+  protected function logSuccessfulBucket(
+    array $bucket,
+    string $run_id,
+    array $client_data,
+    array $attribute_data,
+    int $rate_sheet_id,
+    int $rate_sheet_item_id,
+    int $cumulative_before,
+    int $cumulative_after,
+    float $markup_percentage,
+    array $calculation
+  ): void {
+
+    try {
+
+      $this->database->insert('api_pricing_calculation_log')
+      ->fields([
+        'run_id' => $run_id,
+        'source_bucket_id' => $bucket['source_bucket_id'],
+        'client_key' => $bucket['client'],
+        'client_id' => $client_data['id'],
+        'client_type' => $client_data['type'],
+        'api_attribute_id' => $attribute_data['id'],
+        'attribute_name' => $attribute_data['name'],
+        'endpoint' => $bucket['endpoint'],
+        'rate_sheet_id' => $rate_sheet_id,
+        'rate_sheet_item_id' => $rate_sheet_item_id,
+        'bucket_datetime' => strtotime($bucket['datatime']),
+        'total_transaction_count' => (int) $bucket['total_transaction_count'],
+        'total_full_rate_billable_transaction' => (int) $bucket['total_full_rate_billable_transaction'],
+        'total_lower_rate_billable_transaction' => (int) $bucket['total_lower_rate_billable_transaction'],
+        'total_no_billable_transaction' => (int) $bucket['total_no_billable_transaction'],
+        'cumulative_before' => $cumulative_before,
+        'cumulative_after' => $cumulative_after,
+        'successful_unit_price' => $calculation['successful_unit_price'],
+        'unsuccessful_unit_price' => $calculation['unsuccessful_unit_price'],
+        'markup_percentage' => $markup_percentage,
+        'discount_price' => 0.0,
+        'successful_est_revenue' => $calculation['successful_est_revenue'],
+        'unsuccessful_est_revenue' => $calculation['unsuccessful_est_revenue'],
+        'total_est_revenue' => $calculation['total_est_revenue'],
+        'calculation_breakdown' => json_encode($calculation['breakdown']),
+        'status' => 'success',
+        'error_message' => NULL,
+        'created_date' => $this->time->getRequestTime(),
+      ])
+      ->execute();
+
+    }
+    catch (\Exception $e) {
+      if (isset($transaction)) {
+        $transaction->rollBack();
+      }
+      \Drupal::logger('zcs_api_attributes')->error('Failed to insert api_pricing_calculation_log: @message', ['@message' => $e->getMessage()]);
+      throw $e;
+    }
+  }
+
+  /**
+   * Logs a failed bucket.
+   *
+   * @param array $bucket
+   *   The bucket data.
+   * @param string $run_id
+   *   The run ID.
+   * @param string $error_message
+   *   The error message.
+   */
+  protected function logFailedBucket(array $bucket, string $run_id, string $error_message): void {
+    $this->database->insert('api_pricing_calculation_log')
+      ->fields([
+        'run_id' => $run_id,
+        'source_bucket_id' => $bucket['source_bucket_id'] ?? '',
+        'client_key' => $bucket['client'] ?? '',
+        'client_id' => 0,
+        'client_type' => NULL,
+        'api_attribute_id' => NULL,
+        'attribute_name' => NULL,
+        'endpoint' => $bucket['endpoint'] ?? '',
+        'rate_sheet_id' => NULL,
+        'rate_sheet_item_id' => NULL,
+        'bucket_datetime' => $bucket['datatime'] ?? '',
+        'total_transaction_count' => (int) ($bucket['total_transaction_count'] ?? 0),
+        'total_full_rate_billable_transaction' => (int) ($bucket['total_full_rate_billable_transaction'] ?? 0),
+        'total_lower_rate_billable_transaction' => (int) ($bucket['total_lower_rate_billable_transaction'] ?? 0),
+        'total_no_billable_transaction' => (int) ($bucket['total_no_billable_transaction'] ?? 0),
+        'cumulative_before' => 0,
+        'cumulative_after' => 0,
+        'successful_unit_price' => NULL,
+        'unsuccessful_unit_price' => NULL,
+        'markup_percentage' => 0.0,
+        'discount_price' => 0.0,
+        'successful_est_revenue' => 0.0,
+        'unsuccessful_est_revenue' => 0.0,
+        'total_est_revenue' => 0.0,
+        'calculation_breakdown' => NULL,
+        'status' => 'failed',
+        'error_message' => $error_message,
+        'created_date' => $this->time->getRequestTime(),
+      ])
+      ->execute();
+  }
+
+  /**
    * Gets client rate sheet ranges for requested attributes.
    *
    * @param int $client_id
@@ -1322,26 +2130,7 @@ class RateSheetService {
     }
 
     // Step 2: Find the active rate sheet for this client.
-    $approved_status_id = $this->getRateStatusId('Approved');
-
-    // A client may have multiple approved active Rate Sheet associations.
-    // The active Rate Sheet is always the most recently created association.
-    // Therefore, use the highest client_rate_sheet.id.
-    $today = $this->time->getRequestTime();
-    $query = $this->database->select('client_rate_sheet', 'crs');
-
-    $query->join('rate_sheet', 'rs', 'rs.id = crs.rate_sheet_id');
-    
-    $rate_sheet_id = $query
-      ->fields('crs', ['rate_sheet_id'])
-      ->condition('crs.client_id', $client_id)
-      ->condition('crs.rate_sheet_client_status_id', $approved_status_id)
-      ->condition('crs.active', 1)
-      ->condition('rs.effective_date', $today, '<=')
-      ->orderBy('crs.id', 'DESC')
-      ->range(0, 1)
-      ->execute()
-      ->fetchField();
+    $rate_sheet_id = $this->getActiveRateSheetForClient($client_id);
 
     if (!$rate_sheet_id) {
       throw new \Exception('No active rate sheets founded for this client.');

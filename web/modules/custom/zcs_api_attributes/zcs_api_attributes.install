@@ -1353,7 +1353,7 @@ function zcs_api_attributes_update_9022() {
   }
 
   $table = [
-    'description' => 'Stores pricing calculation logs for processed aggregate API buckets.',
+    'description' => 'Stores official Moriarty pricing calculation logs for aggregate API buckets.',
     'fields' => [
       'id' => [
         'type' => 'serial',
@@ -1362,13 +1362,13 @@ function zcs_api_attributes_update_9022() {
       ],
       'run_id' => [
         'type' => 'varchar',
-        'length' => 100,
-        'not null' => FALSE,
+        'length' => 255,
+        'not null' => TRUE,
         'description' => 'Payload run identifier.',
       ],
       'source_bucket_id' => [
         'type' => 'varchar',
-        'length' => 128,
+        'length' => 255,
         'not null' => TRUE,
         'description' => 'Unique source bucket identifier used for deduplication.',
       ],
@@ -1386,14 +1386,14 @@ function zcs_api_attributes_update_9022() {
       ],
       'client_type' => [
         'type' => 'varchar',
-        'length' => 100,
+        'length' => 255,
         'not null' => FALSE,
         'description' => 'Resolved client type.',
       ],
       'api_attribute_id' => [
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE,
+        'not null' => FALSE,
         'description' => 'API Attribute node ID.',
       ],
       'attribute_name' => [
@@ -1411,20 +1411,20 @@ function zcs_api_attributes_update_9022() {
       'rate_sheet_id' => [
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE,
+        'not null' => FALSE,
         'description' => 'Resolved Rate Sheet ID.',
       ],
       'rate_sheet_item_id' => [
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE,
+        'not null' => FALSE,
         'description' => 'Resolved Rate Sheet Item ID.',
       ],
       'bucket_datetime' => [
-        'type' => 'int',
-        'unsigned' => TRUE,
+        'type' => 'varchar',
+        'length' => 255,
         'not null' => TRUE,
-        'description' => 'Bucket datetime as Unix timestamp.',
+        'description' => 'Bucket datetime from payload.',
       ],
       'total_transaction_count' => [
         'type' => 'int',
@@ -1464,56 +1464,62 @@ function zcs_api_attributes_update_9022() {
       ],
       'successful_unit_price' => [
         'type' => 'numeric',
-        'precision' => 14,
-        'scale' => 6,
+        'precision' => 10,
+        'scale' => 4,
         'not null' => FALSE,
       ],
       'unsuccessful_unit_price' => [
         'type' => 'numeric',
-        'precision' => 14,
-        'scale' => 6,
+        'precision' => 10,
+        'scale' => 4,
         'not null' => FALSE,
       ],
       'markup_percentage' => [
+        'type' => 'numeric',
+        'precision' => 10,
+        'scale' => 2,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'discount_price' => [
         'type' => 'numeric',
         'precision' => 10,
         'scale' => 4,
         'not null' => TRUE,
         'default' => 0,
       ],
-      'discount_price' => [
+      'successful_est_revenue' => [
         'type' => 'numeric',
-        'precision' => 14,
-        'scale' => 6,
+        'precision' => 10,
+        'scale' => 4,
         'not null' => TRUE,
         'default' => 0,
       ],
-      'full_rate_amount' => [
+      'unsuccessful_est_revenue' => [
         'type' => 'numeric',
-        'precision' => 14,
-        'scale' => 6,
+        'precision' => 10,
+        'scale' => 4,
         'not null' => TRUE,
         'default' => 0,
       ],
-      'lower_rate_amount' => [
+      'total_est_revenue' => [
         'type' => 'numeric',
-        'precision' => 14,
-        'scale' => 6,
+        'precision' => 10,
+        'scale' => 4,
         'not null' => TRUE,
         'default' => 0,
       ],
-      'total_amount' => [
-        'type' => 'numeric',
-        'precision' => 14,
-        'scale' => 6,
-        'not null' => TRUE,
-        'default' => 0,
+      'calculation_breakdown' => [
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+        'description' => 'JSON breakdown of calculation segments.',
       ],
       'status' => [
         'type' => 'varchar',
-        'length' => 30,
+        'length' => 50,
         'not null' => TRUE,
-        'default' => 'success',
+        'description' => 'Status: success, failed, or duplicate.',
       ],
       'error_message' => [
         'type' => 'text',
@@ -1521,7 +1527,6 @@ function zcs_api_attributes_update_9022() {
       ],
       'created_date' => [
         'type' => 'int',
-        'unsigned' => TRUE,
         'not null' => TRUE,
       ],
     ],
@@ -1530,17 +1535,12 @@ function zcs_api_attributes_update_9022() {
       'source_bucket_id' => ['source_bucket_id'],
     ],
     'indexes' => [
-      'billing_key' => [
-        'client_id',
-        'api_attribute_id',
-        'rate_sheet_id',
-      ],
       'client_id' => ['client_id'],
       'api_attribute_id' => ['api_attribute_id'],
       'rate_sheet_id' => ['rate_sheet_id'],
-      'bucket_datetime' => ['bucket_datetime'],
       'status' => ['status'],
-      'created_date' => ['created_date'],
+      'run_id' => ['run_id'],
+      'cumulative_key' => ['client_id', 'api_attribute_id', 'rate_sheet_id', 'status'],
     ],
   ];
 

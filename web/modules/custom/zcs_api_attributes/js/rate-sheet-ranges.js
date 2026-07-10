@@ -570,7 +570,7 @@
 
     row.appendChild(createToRangeCell(attributeId, rangeIndex));
 
-    ['partial_range', 'success_rate'].forEach(function (fieldName) {
+    ['success_rate', 'partial_range'].forEach(function (fieldName) {
       var cell = document.createElement('td');
 
       cell.appendChild(createRangeInput(attributeId, rangeIndex, fieldName, '0'));
