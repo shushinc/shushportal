@@ -72,16 +72,16 @@ class CreatePricingDiscount extends FormBase {
       $defaultCurrency = $this->getRequest()->get('cur');
     }
 
-    $defaultCurrency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
+  //  $defaultCurrency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'USD';
     // Show the right currency symbol based on the chosen one.
-    $number = new \NumberFormatter($defaultCurrency, \NumberFormatter::CURRENCY);
-    $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
+  //  $number = new \NumberFormatter($defaultCurrency, \NumberFormatter::CURRENCY);
+   // $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
 
     // To fetch currencies.
     $currencies = [];
     foreach ($this->list as $list) {
-      if (!empty($list['locale'])) {
-        $currencies[$list['locale']] = $list['currency'] . ' (' . $list['alphabeticCode'] . ')';
+      if (!empty($list['alphabeticCode'])) {
+        $currencies[$list['alphabeticCode']] = $list['currency'] . ' (' . $list['alphabeticCode'] . ')';
       }
     }
     $form['pricing_validation_message'] = [

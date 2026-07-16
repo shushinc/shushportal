@@ -124,8 +124,8 @@ class CreateRateSheetForm extends FormBase {
     // To fetch currencies.
     $currencies = [];
     foreach ($this->list as $list) {
-      if (!empty($list['locale'])) {
-        $currencies[$list['locale']] = $list['currency'] . ' (' . $list['alphabeticCode'] . ')';
+      if (!empty($list['alphabeticCode'])) {
+        $currencies[$list['alphabeticCode']] = $list['currency'] . ' (' . $list['alphabeticCode'] . ')';
       }
     }
 

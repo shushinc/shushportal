@@ -153,7 +153,7 @@ class RateSheetController extends ControllerBase {
       $final[] = [
         'id' => $result->id,
         'name' => $result->name,
-        'currency' => $result->currency,
+        'currency' => \Drupal::config('zcs_custom.settings')->get('currency') ?? 'USD',
         'effective_date' => date('M d, Y', $result->effective_date),
         'markup_retail' => $result->markup_retail,
         'approvals' => $this->rateSheetService->getRateSheetApprovers($result->id),

@@ -107,11 +107,20 @@ final class PortalSettingsForm extends ConfigFormBase {
     $lists = require __DIR__ . '/../../resources/currencies.php';
     // to fetch currencies.
     $currencies = [];
+
+   
+
+    // foreach ($lists as $list) {
+    //   if (!empty($list['locale'])) {
+    //     $currencies[$list['locale']] = $list['currency'] .' ('. $list['alphabeticCode'] .')';
+    //   }
+    // }
     foreach ($lists as $list) {
-      if (!empty($list['locale'])) {
-        $currencies[$list['locale']] = $list['currency'] .' ('. $list['alphabeticCode'] .')';
+      if (!empty($list['alphabeticCode'])) {
+        $currencies[$list['alphabeticCode']] = $list['currency'] . ' (' . $list['alphabeticCode'] . ')';
       }
     }
+
     $form['currency_settings'] = [
       '#type' => 'details',
       '#open' => FALSE,
@@ -124,7 +133,7 @@ final class PortalSettingsForm extends ConfigFormBase {
     $form['currency_settings']['currency'] = [
       '#type' => 'select',
       '#options' => $currencies,
-      '#default_value' => $this->config('zcs_custom.settings')->get('currency') ?? 'en_US',
+      '#default_value' => $this->config('zcs_custom.settings')->get('currency') ?? 'USD',
       '#description' => t('Provide a currency value.'),
     ];
 
