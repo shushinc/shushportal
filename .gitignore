@@ -24,3 +24,10 @@ web/sites/default/config.yaml
 web/sites/default/services.yml
 web/sites/default/settings.php
 web/themes/custom/shush/node_modules/
+
+#server/runtime files
+/metabase/
+/private-files/
+/web/sites/default/settings.php
+/web/var/
+/web/version.json
