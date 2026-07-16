@@ -69,10 +69,16 @@ class RateSheetReviewForm extends FormBase {
       ->condition('id', $id)
       ->execute()->fetchObject();
 
-    $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
-    // Show the right currency symbol based on the chosen one.
-    $number = new \NumberFormatter($currency, \NumberFormatter::CURRENCY);
+    $currencyMap = [];
+    foreach (require __DIR__ . '/../../resources/currencies.php' as $currency) {
+       $currencyMap[$currency['alphabeticCode']] = $currency['locale'];
+    } 
+
+    $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'USD';
+    $locale = $currencyMap[$currency];
+    $number = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
     $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
+
 
     if (!empty($data)) {
       $json_data = Json::decode($data->page_data);
@@ -117,8 +123,8 @@ class RateSheetReviewForm extends FormBase {
     // To fetch currencies.
     $currencies = [];
     foreach ($this->list as $list) {
-      if (!empty($list['locale'])) {
-        $currencies[$list['locale']] = $list['currency'] . ' (' . $list['alphabeticCode'] . ')';
+      if (!empty($list['alphabeticCode'])) {
+        $currencies[$list['alphabeticCode']] = $list['currency'] . ' (' . $list['alphabeticCode'] . ')';
       }
     }
     $form['currencies'] = [
