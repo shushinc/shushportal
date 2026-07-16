@@ -11,3 +11,10 @@ vendor/
 .ddev/config.yaml
 /.editorconfig
 /.gitattributes
+
+#server/runtime files
+/metabase/
+/private-files/
+/web/sites/default/settings.php
+/web/var/
+/web/version.json
