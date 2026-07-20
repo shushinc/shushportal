@@ -365,6 +365,78 @@
     });
   }
 
+  function getSortedRangeRows(attributeItem) {
+    return getRangeRows(attributeItem).sort(function (rowA, rowB) {
+      var indexA = parseInt(rowA.getAttribute('data-range-index'), 10);
+      var indexB = parseInt(rowB.getAttribute('data-range-index'), 10);
+
+      if (Number.isNaN(indexA)) {
+        indexA = 0;
+      }
+
+      if (Number.isNaN(indexB)) {
+        indexB = 0;
+      }
+
+      return indexA - indexB;
+    });
+  }
+
+  function setPartialRangeReadonly(input, isReadonly) {
+    if (!input) {
+      return;
+    }
+
+    input.readOnly = isReadonly;
+    input.tabIndex = isReadonly ? -1 : 0;
+
+    if (isReadonly) {
+      input.setAttribute('aria-readonly', 'true');
+    }
+    else {
+      input.removeAttribute('aria-readonly');
+    }
+  }
+
+  function syncPartialRangeValues(attributeItem) {
+    var rows = getSortedRangeRows(attributeItem);
+
+    if (!rows.length) {
+      return;
+    }
+
+    var firstRow = rows[0];
+    var firstInput = getRangeInput(firstRow, 'partial_range');
+
+    if (!firstInput) {
+      return;
+    }
+
+    var partialValue = firstInput.value || '0';
+
+    rows.forEach(function (row, index) {
+      var input = getRangeInput(row, 'partial_range');
+
+      if (!input) {
+        return;
+      }
+
+      if (index === 0) {
+        setPartialRangeReadonly(input, false);
+        return;
+      }
+
+      input.value = partialValue;
+      setPartialRangeReadonly(input, true);
+    });
+  }
+
+  function syncPartialRangeValuesForAll(container) {
+    getAttributeItems(container).forEach(function (attributeItem) {
+      syncPartialRangeValues(attributeItem);
+    });
+  }
+
   /**
    * Updates the hidden JSON payload with current range data.
    *
@@ -394,6 +466,7 @@
         }
 
         updateAttributeRangeMode(attributeItem);
+        syncPartialRangeValues(attributeItem);
 
         payload[attributeId] = {};
 
@@ -489,6 +562,7 @@
       setAccordionCollapsed(attributeItem, collapsed);
       updateRangeLabels(attributeItem);
       updateAttributeRangeMode(attributeItem);
+      syncPartialRangeValues(attributeItem);
     });
   }
 
@@ -619,8 +693,29 @@
 
         // Debounce payload updates to avoid excessive JSON serialization.
         var debouncedUpdate = debounce(function () {
+          syncPartialRangeValuesForAll(container);
           updateRangesPayload(container);
         }, 300);
+
+        container.addEventListener('input', function (event) {
+          var input = event.target;
+
+          if (!input || input.nodeType !== 1 || input.tagName !== 'INPUT') {
+            return;
+          }
+
+          if (input.getAttribute('data-rate-sheet-range-field') !== 'partial_range') {
+            return;
+          }
+
+          var attributeItem = input.closest('[data-rate-sheet-attribute-item]');
+
+          if (!attributeItem) {
+            return;
+          }
+
+          syncPartialRangeValues(attributeItem);
+        });
 
         container.addEventListener('input', debouncedUpdate);
 
@@ -733,6 +828,7 @@
 
             tbody.appendChild(row);
 
+            syncPartialRangeValues(attributeItem);
             setAccordionCollapsed(attributeItem, false);
             updateRangeLabels(attributeItem);
             updateAttributeRangeMode(attributeItem);
@@ -773,6 +869,7 @@
 
             removableRow.parentNode.removeChild(removableRow);
 
+            syncPartialRangeValues(removedAttributeItem);
             updateRangeLabels(removedAttributeItem);
             updateAttributeRangeMode(removedAttributeItem);
             updateRangesPayload(container);
