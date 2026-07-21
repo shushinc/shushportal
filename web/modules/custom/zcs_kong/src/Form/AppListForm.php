@@ -131,6 +131,10 @@ final class AppListForm extends FormBase {
 
               $update_link = Link::fromTextAndUrl('Edit', $url);
               $delete_link = Link::createFromRoute('Delete', 'zcs_kong.delete_key', ['id' => $app->id()]);
+<<<<<<< HEAD
+=======
+             // $operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$delete_link->toString()."</div></div>");
+>>>>>>> ab36aec (kong-key-rotation)
               $operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$update_link->toString() . '' . $delete_link->toString()."</div></div>");
             }
             else {
@@ -140,7 +144,11 @@ final class AppListForm extends FormBase {
 
             $created_time = $app->get('created')->value;
             $updated_time = $app->get('changed')->value;
+<<<<<<< HEAD
             $expiry_time = (int) $app->get('field_expiry_date')->value;
+=======
+            $expiry_time = $app->get('field_expiry_date')->value;
+>>>>>>> ab36aec (kong-key-rotation)
             $renewal_date =  date('M d, Y' , (int)$app->get('changed')->value);
             if ($updated_time > $created_time) {
                $renewal_date =  date('M d, Y' , (int)$app->get('changed')->value);
@@ -174,8 +182,13 @@ final class AppListForm extends FormBase {
               'tag' => $app->get('field_tag')->value ?? '',
               'created' => date('M d, Y' , (int)$created_time),
               // 'renewal' => $renewal_date ?? '-',
+<<<<<<< HEAD
              // 'expiry' => (!empty($expiry_time) && (int) $expiry_time > 0) ? date('M d, Y', (int) $expiry_time): '-',
               'expiry' =>  $expiry_time,
+=======
+              'expiry' => (!empty($expiry_time) && (int) $expiry_time > 0) ? date('M d, Y', (int) $expiry_time): '-',
+              //'expiry' => $expiry_time ?? '-',
+>>>>>>> ab36aec (kong-key-rotation)
               'client_id' => [
                 'data' =>  Markup::create("<div class='client-key''>$client_id</div><div class='pwd-toggle'></div><div class='client-password'></div>"),
                 'class' => 'api-keys',
@@ -252,6 +265,10 @@ final class AppListForm extends FormBase {
 
               $update_link = Link::fromTextAndUrl('Edit', $url);
               $delete_link = Link::createFromRoute('Delete', 'zcs_kong.delete_key', ['id' => $app->id()]);
+<<<<<<< HEAD
+=======
+              //$operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$delete_link->toString()."</div></div>");
+>>>>>>> ab36aec (kong-key-rotation)
               $operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$update_link->toString() . '' . $delete_link->toString()."</div></div>");
             }
             else {
@@ -293,7 +310,13 @@ final class AppListForm extends FormBase {
               'tag' => $app->get('field_tag')->value ?? '',
               // 'ttl' => $app->get('field_ttl')->value ?? '',
               'created' => date('M d, Y' , (int)$created_time),
+<<<<<<< HEAD
               'expiry' => $expiry_time,
+=======
+              // 'renewal' => $renewal_date ?? '-',
+            //  'expiry' => $expiry_time ?? '-',
+              'expiry' => (!empty($expiry_time) && (int) $expiry_time > 0) ? date('M d, Y', (int) $expiry_time): '-',
+>>>>>>> ab36aec (kong-key-rotation)
               'client_id' => [
                 'data' =>  Markup::create("<div class='client-key''>$client_id</div><div class='pwd-toggle'></div><div class='client-password'></div>"),
                 'class' => 'api-keys',
