@@ -28,6 +28,9 @@ settings:
     -
       value: never_expires
       label: 'Never Expires'
+    -
+      value: expire_now
+      label: 'Expire Now'
   allowed_values_function: ''
 module: options
 locked: false

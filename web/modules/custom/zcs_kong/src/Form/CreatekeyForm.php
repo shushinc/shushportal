@@ -75,13 +75,13 @@ final class CreateKeyForm extends FormBase {
       ]; 
     }
 
-    // $ttl = [
-    //   "7776000" => '90 Days',
-    //   "15552000" => '180 Days',
-    //   "14688000" => '170 Days',
-    //   "31536000" => '365 Days',
-    //   "never_expires" => 'Never Expires',
-    // ];
+    $ttl = [
+      "7776000" => '90 Days',
+      "15552000" => '180 Days',
+      "14688000" => '170 Days',
+      "31536000" => '365 Days',
+      "never_expires" => 'Never Expires',
+    ];
 
     $form['app_name'] = [ 
       '#type' => 'textfield',
@@ -109,13 +109,13 @@ final class CreateKeyForm extends FormBase {
         'maxlength' => 15,
       ],
     ];
-    // $form['kong_key_ttl'] = [
-    //   '#type' => 'select',
-    //   '#title' => $this->t('TTL'),
-    //   '#options' => $ttl,
-    //   '#required' => TRUE,
-    //   '#default_value' => '7776000',
-    // ];
+    $form['kong_key_ttl'] = [
+      '#type' => 'select',
+      '#title' => $this->t('TTL'),
+      '#options' => $ttl,
+      '#required' => TRUE,
+      '#default_value' => '7776000',
+    ];
     $form['actions'] = [
       '#type' => 'actions',
       'submit' => [
@@ -149,7 +149,7 @@ final class CreateKeyForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
     $tags = trim($form_state->getValue('kong_key_tags')); 
-   // $ttl = $form_state->getValue('kong_key_ttl'); 
+    $ttl = $form_state->getValue('kong_key_ttl'); 
     $app_name = $form_state->getValue('app_name'); 
     $redirect_uris = $form_state->getValue('redirect_uri'); 
     if (\Drupal::currentUser()->hasRole('carrier_admin') || \Drupal::currentUser()->hasRole('administrator')) {
@@ -172,7 +172,7 @@ final class CreateKeyForm extends FormBase {
               if($jwt_status_code == '201') {
                 $jwt_response_body  = (string) $create_jwt_token_response->getBody();
                 $client_id = $form_state->getValue('consumer_id'); 
-                $response_key_details = \Drupal::service('zcs_kong.kong_gateway')->saveApp($client_id, $response_body, $jwt_response_body);
+                $response_key_details = \Drupal::service('zcs_kong.kong_gateway')->saveApp($client_id, $response_body, $jwt_response_body, $ttl);
                 $this->messenger()->addMessage('App created Successfully');  
               } else {
                 $this->messenger()->addMessage('JWT creation failed and please create new app');  
@@ -205,7 +205,7 @@ final class CreateKeyForm extends FormBase {
               $jwt_status_code = $create_jwt_token_response->getStatusCode();
               if($jwt_status_code == '201') {
                 $jwt_response_body  = (string) $create_jwt_token_response->getBody();
-                $response_key_details = \Drupal::service('zcs_kong.kong_gateway')->saveApp($consumer_id, $response_body, $jwt_response_body);
+                $response_key_details = \Drupal::service('zcs_kong.kong_gateway')->saveApp($consumer_id, $response_body, $jwt_response_body, $ttl);
                 $this->messenger()->addMessage('App created Successfully');  
               } else {
                 $this->messenger()->addMessage('JWT creation failed and please create new app');  
