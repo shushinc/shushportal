@@ -686,7 +686,7 @@ public function getUsersAppList($consumer_id) {
     }
   }
 
-     /**
+  /**
    * {@inheritdoc}
    */
 
@@ -714,15 +714,15 @@ public function getUsersAppList($consumer_id) {
      /**
    * {@inheritdoc}
    */
-  public function saveApp($client_id, $response, $jwt_response_body) {
+  public function saveApp($client_id, $response, $jwt_response_body, $ttl) {
     $group = $this->getGroupDetails($client_id);
     $app = Json::decode($response);
     $jwt_response = Json::decode($jwt_response_body);
 
 
-    // if ($ttl!= 'never_expires') {
-    //   $expiry_time = $ttl + time();
-    // }
+    if ($ttl!= 'never_expires') {
+      $expiry_time = $ttl + time();
+    }
 
 
     // Create a new node object.
@@ -737,11 +737,11 @@ public function getUsersAppList($consumer_id) {
       'field_client_id' => $app['client_id'],
       'field_client_secret' =>$app['client_secret'],
       'field_redirect_url' => $app['redirect_uris'][0] ?? '',
-      //'field_ttl' => $ttl,
+      'field_ttl' => $ttl,
       'field_app_status' => 'active',
       'field_jwt' => $jwt_response['id'],
       'field_jwt_key' => $jwt_response['key'],
-     // 'field_expiry_date' => $expiry_time ?? '',
+      'field_expiry_date' => $expiry_time ?? '',
       //'field_renewal_date' => '',
       'uid' => \Drupal::currentUser()->id(),
       'created' => time(), // Node creation timestamp.
@@ -770,11 +770,11 @@ public function getUsersAppList($consumer_id) {
 
 
 
-     /**
+  /**
    * {@inheritdoc}
    */
-  public function updateAppNode($app_node_id, $ttl, $response) {
-    $app = Json::decode($response);
+  public function updateAppNode($app_node_id, $ttl) {
+   // $app = Json::decode($response);
     $node = Node::load($app_node_id);
     if ($ttl!= 'never_expires') {
       $expiry_time = $ttl + time();
@@ -782,12 +782,99 @@ public function getUsersAppList($consumer_id) {
     else {
       $expiry_time = '';
     }
-    $node->set('field_app_key', $app['key']);
-    $node->set('field_tag', $app['tags']);
+    // $node->set('field_app_key', $app['key']);
+    // $node->set('field_tag', $app['tags']);
     $node->set('field_ttl', $ttl);
     $node->set('field_expiry_date', $expiry_time);
     $node->set('field_renewal_date', time());
     $node->save();
+    return TRUE;
+  }
+
+  
+
+  public function syncExpiredApps() {
+
+  $processed = 0;
+  $current_time = \Drupal::time()->getCurrentTime();
+
+    $nodes = \Drupal::entityQuery('node')
+    ->condition('type', 'app') // Replace 'app' with your content type machine name.
+    ->condition('status', 1) // Published nodes.
+    ->condition('field_app_status', 'active')
+    ->accessCheck(FALSE)
+    ->execute();
+
+    $nids = \Drupal\node\Entity\Node::loadMultiple($nodes);
+     if (empty($nids)) {
+       return 0;
+     }
+    foreach($nids as $nid_object) {
+       // Skip gateway apps.
+      if (!empty($nid_object->get('field_gateway')->value)) {
+        continue;
+      }
+        // Never expires.
+      if ($nid_object->get('field_ttl')->value === 'never_expires') {
+        continue;
+      }
+
+      $expiry_time = (int) $nid_object->get('field_expiry_date')->value;
+  
+      if (empty($expiry_time)) {
+        continue;
+      }
+      if ($expiry_time == 0) {
+        continue;
+      }
+
+      // Not yet expired.
+      if ($expiry_time > $current_time) {
+        continue;
+      }
+      
+     // call the delete controller 
+     $this->deleteKeyKong($nid_object);
+    }
+ 
+    return $processed;
+  }
+
+
+
+  /**
+   * {@inheritdoc}
+   */
+
+  public function deleteKeyKong($app) {
+    $consumer_id = $app->get('field_consumer_id')->getValue()[0]['value'];
+    $user_name = \Drupal::service('zcs_kong.kong_gateway')->getContactNameUsingConsumerId($consumer_id);
+    $client_id = $app->get('field_client_id')->value;
+    if(!empty($client_id)) {
+      $jwt_id = $app->get('field_jwt')->getValue()[0]['value'];
+      $delete_credentials_response = \Drupal::service('zcs_kong.kong_gateway')->deleteAppCredentials($user_name, $client_id);
+      if (!empty($delete_credentials_response) && $delete_credentials_response != "error") {
+        $status_code = $delete_credentials_response->getStatusCode();
+        if ($status_code == '204') {
+          \Drupal::logger('kong_app_expiry_app')->info('Expired app @id deleted successfully : @id', ['@id' => $app->id()]);
+          $app->set('field_app_status', 'deleted');
+          $app->save();
+          $delete_jwt_response = \Drupal::service('zcs_kong.kong_gateway')->deleteJwt($user_name, $jwt_id);
+          $jwt_status_code = $delete_jwt_response->getStatusCode();
+          if ($jwt_status_code == '204') {
+            \Drupal::logger('kong_app_expiry_jwt')->info('Expired app @id deleted successfully : @id', ['@id' => $app->id()]);
+            \Drupal::messenger()->addMessage('App Deleted Successfully');
+          }
+          else {
+            \Drupal::messenger()->addMessage('App Deleted Successfully and Error in JWT deletion');
+          }     
+        }
+      }
+      else {
+        \Drupal::logger('kong_app_expiry_error')->error('Erro in deleting the Expired app @id : @id', ['@id' => $app->id()]);
+        \Drupal::messenger()->addError('Gateway connection failure to delete App.Please contact the administrator for further assistance.');
+      }
+    }
     return TRUE;
   }
 
