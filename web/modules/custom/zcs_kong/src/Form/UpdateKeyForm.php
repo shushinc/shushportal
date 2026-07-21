@@ -107,7 +107,7 @@ final class UpdateKeyForm extends FormBase {
     ];
 
     $form['kong_key_tags'] = [
-      '#type' => 'textfield',
+      '#type' => 'hidden',
       '#title' => $this->t('Tags'),
       '#description' => $this->t('Limit upto 15 characters.'),
       '#default_value' => $app->get('field_tag')->value ?? '',
@@ -155,17 +155,21 @@ final class UpdateKeyForm extends FormBase {
     $ttl = $form_state->getValue('kong_key_ttl'); 
     $tag = $form_state->getValue('kong_key_tags'); 
     $app_key = $form_state->getValue('consumer_app_key'); 
-    $response_key_details = \Drupal::service('zcs_kong.kong_gateway')->updateApp($consumer_id, $app_key_id, $ttl, $tag, $app_key);
-    if(!empty($response_key_details)) {
-      $status_code = $response_key_details->getStatusCode();
-      if ($status_code == '200') {
-        $response_key_details = \Drupal::service('zcs_kong.kong_gateway')->updateAppNode($app_node_id, $ttl ,$response_key_details->getBody()->getContents());
-        $this->messenger()->addMessage('App updated Successfully');  
-        $form_state->setRedirectUrl(Url::fromRoute('zcs_kong.app_list'));   
-      }else {
-        $this->messenger()->addError('Gateway connection failure to update App.Please contact the administrator for further assistance');
-      }
-    }
+    $response_key_details = \Drupal::service('zcs_kong.kong_gateway')->updateAppNode($app_node_id, $ttl);
+    $this->messenger()->addMessage('App updated Successfully');
+
+
+   // $response_key_details = \Drupal::service('zcs_kong.kong_gateway')->updateApp($consumer_id, $app_key_id, $ttl, $tag, $app_key);
+    // if(!empty($response_key_details)) {
+    //   $status_code = $response_key_details->getStatusCode();
+    //   if ($status_code == '200') {
+    //     $response_key_details = \Drupal::service('zcs_kong.kong_gateway')->updateAppNode($app_node_id, $ttl ,$response_key_details->getBody()->getContents());
+    //     $this->messenger()->addMessage('App updated Successfully');  
+    //     $form_state->setRedirectUrl(Url::fromRoute('zcs_kong.app_list'));   
+    //   }else {
+    //     $this->messenger()->addError('Gateway connection failure to update App.Please contact the administrator for further assistance');
+    //   }
+    // }
     $form_state->setRedirectUrl(Url::fromRoute('zcs_kong.app_list'));
   }
 
