@@ -91,6 +91,7 @@ final class UpdateKeyForm extends FormBase {
       "14688000" => '170 Days',
       "31536000" => '365 Days',
       "never_expires" => 'Never Expires',
+      "expire_now" => 'Expire Now',
     ];
 
     $form['app_key_id'] = [
@@ -156,7 +157,9 @@ final class UpdateKeyForm extends FormBase {
     $tag = $form_state->getValue('kong_key_tags'); 
     $app_key = $form_state->getValue('consumer_app_key'); 
     $response_key_details = \Drupal::service('zcs_kong.kong_gateway')->updateAppNode($app_node_id, $ttl);
-    $this->messenger()->addMessage('App updated Successfully');
+    if($ttl != 'expire_now') {
+      $this->messenger()->addMessage('App updated Successfully');
+    }
     $form_state->setRedirectUrl(Url::fromRoute('zcs_kong.app_list'));
   }
 
