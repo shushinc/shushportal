@@ -131,7 +131,6 @@ final class AppListForm extends FormBase {
 
               $update_link = Link::fromTextAndUrl('Edit', $url);
               $delete_link = Link::createFromRoute('Delete', 'zcs_kong.delete_key', ['id' => $app->id()]);
-             // $operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$delete_link->toString()."</div></div>");
               $operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$update_link->toString() . '' . $delete_link->toString()."</div></div>");
             }
             else {
@@ -176,7 +175,6 @@ final class AppListForm extends FormBase {
               'created' => date('M d, Y' , (int)$created_time),
               // 'renewal' => $renewal_date ?? '-',
               'expiry' => (!empty($expiry_time) && (int) $expiry_time > 0) ? date('M d, Y', (int) $expiry_time): '-',
-              //'expiry' => $expiry_time ?? '-',
               'client_id' => [
                 'data' =>  Markup::create("<div class='client-key''>$client_id</div><div class='pwd-toggle'></div><div class='client-password'></div>"),
                 'class' => 'api-keys',
@@ -253,7 +251,6 @@ final class AppListForm extends FormBase {
 
               $update_link = Link::fromTextAndUrl('Edit', $url);
               $delete_link = Link::createFromRoute('Delete', 'zcs_kong.delete_key', ['id' => $app->id()]);
-              //$operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$delete_link->toString()."</div></div>");
               $operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$update_link->toString() . '' . $delete_link->toString()."</div></div>");
             }
             else {
@@ -295,8 +292,6 @@ final class AppListForm extends FormBase {
               'tag' => $app->get('field_tag')->value ?? '',
               // 'ttl' => $app->get('field_ttl')->value ?? '',
               'created' => date('M d, Y' , (int)$created_time),
-              // 'renewal' => $renewal_date ?? '-',
-            //  'expiry' => $expiry_time ?? '-',
               'expiry' => (!empty($expiry_time) && (int) $expiry_time > 0) ? date('M d, Y', (int) $expiry_time): '-',
               'client_id' => [
                 'data' =>  Markup::create("<div class='client-key''>$client_id</div><div class='pwd-toggle'></div><div class='client-password'></div>"),
