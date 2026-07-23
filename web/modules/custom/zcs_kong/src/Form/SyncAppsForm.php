@@ -60,9 +60,6 @@ class SyncAppsForm extends FormBase {
             $relationships = \Drupal::entityTypeManager()->getStorage('group_relationship')->loadByProperties(['gid' => $group->id()]);
             foreach ($relationships as $relationship) {
               $entity = $relationship->getEntity();
-              // if ($entity && $entity->getEntityTypeId() === 'node' && $entity->bundle() === 'app'  && $entity->get('field_gateway')->isEmpty()) {
-              //   $app_count++;
-              // }
               if ($entity && $entity->getEntityTypeId() === 'node' && !$entity->get('field_jwt')->isEmpty() && !$entity->get('field_jwt_key')->isEmpty()) {
                 $jwt_count++;
               }
