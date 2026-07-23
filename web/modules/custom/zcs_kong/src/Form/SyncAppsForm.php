@@ -59,7 +59,11 @@ class SyncAppsForm extends FormBase {
             $relationships = \Drupal::entityTypeManager()->getStorage('group_relationship')->loadByProperties(['gid' => $group->id()]);
             foreach ($relationships as $relationship) {
               $entity = $relationship->getEntity();
+<<<<<<< HEAD
               if ($entity && $entity->getEntityTypeId() === 'node' && $entity->bundle() === 'app' && $entity->get('field_gateway')->isEmpty() && $entity->get('field_app_status')->value !== 'deleted' && !$entity->get('field_jwt')->isEmpty() && !$entity->get('field_jwt_key')->isEmpty()) {
+=======
+              if ($entity && $entity->getEntityTypeId() === 'node' && !$entity->get('field_jwt')->isEmpty() && !$entity->get('field_jwt_key')->isEmpty()) {
+>>>>>>> b84f0c7 (kong-sync-fix-expired-apps)
                 $jwt_count++;
               }
             }
