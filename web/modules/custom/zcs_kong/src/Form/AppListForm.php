@@ -156,8 +156,7 @@ final class AppListForm extends FormBase {
               if($expiry_time > $created_time) {
                 $expiry_time = date('M d, Y' , (int)$app->get('field_expiry_date')->value);
               }
-            }
-            // dump($app->getTitle().'-'.$expiry_time);
+            }    
             $key = $app->get('field_app_key')->value ?? '';
             $client_id = $app->get('field_client_id')->value ?? '';
             $secret_key = $app->get('field_client_secret')->value ?? '';
@@ -173,9 +172,7 @@ final class AppListForm extends FormBase {
               'app_name' => $app->getTitle(),
               'tag' => $app->get('field_tag')->value ?? '',
               'created' => date('M d, Y' , (int)$created_time),
-              // 'renewal' => $renewal_date ?? '-',
-             // 'expiry' => (!empty($expiry_time) && (int) $expiry_time > 0) ? date('M d, Y', (int) $expiry_time): '-',
-              'expiry' =>  $expiry_time,
+              'expiry' => ($expiry_time == 0) ? '-' : $expiry_time,
               'client_id' => [
                 'data' =>  Markup::create("<div class='client-key''>$client_id</div><div class='pwd-toggle'></div><div class='client-password'></div>"),
                 'class' => 'api-keys',
@@ -293,7 +290,7 @@ final class AppListForm extends FormBase {
               'tag' => $app->get('field_tag')->value ?? '',
               // 'ttl' => $app->get('field_ttl')->value ?? '',
               'created' => date('M d, Y' , (int)$created_time),
-              'expiry' => $expiry_time,
+              'expiry' => ($expiry_time == 0) ? '-' : $expiry_time,
               'client_id' => [
                 'data' =>  Markup::create("<div class='client-key''>$client_id</div><div class='pwd-toggle'></div><div class='client-password'></div>"),
                 'class' => 'api-keys',
