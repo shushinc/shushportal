@@ -1017,12 +1017,6 @@ class RateSheetService {
         );
       }
 
-      if ((int) $client_rate_sheet[0]->created_by === (int) $user_id) {
-        throw new AccessDeniedHttpException(
-          'You cannot approve a linkage that you created.'
-        );
-      }
-
       try {
         // Insert approval action log
         $this->database->insert('action_log')
@@ -1105,12 +1099,6 @@ class RateSheetService {
         );
       }
 
-      if ((int) $client_rate_sheet[0]->created_by === (int) $user_id) {
-        throw new AccessDeniedHttpException(
-          'You cannot reject a linkage that you created.'
-        );
-      }
-
       // Insert rejection action log
       $this->database->insert('action_log')
         ->fields([
@@ -1182,12 +1170,6 @@ class RateSheetService {
         );
       }
 
-      if ((int) $client_rate_sheet[0]->created_by === (int) $user_id) {
-        throw new AccessDeniedHttpException(
-          'You cannot disable a linkage that you created.'
-        );
-      }
-
       // Insert rejection action log
       $this->database->insert('action_log')
         ->fields([
@@ -1249,12 +1231,6 @@ class RateSheetService {
       if ((int) $client_rate_sheet[0]->active === 1) {
         throw new AccessDeniedHttpException(
           'You can only enable Disabled linkages.'
-        );
-      }
-
-      if ((int) $client_rate_sheet[0]->created_by === (int) $user_id) {
-        throw new AccessDeniedHttpException(
-          'You cannot enable a linkage that you created.'
         );
       }
 
@@ -1459,14 +1435,13 @@ class RateSheetService {
         $rate_sheet_id
       );
 
-      $total_transaction_count = (int) $bucket['total_transaction_count'];
+      $total_transaction_count = (int) $bucket['total_full_rate_billable_transaction'];
       $cumulative_after = $cumulative_before + $total_transaction_count;
 
       $calculation = $this->calculatePricing(
         $bucket,
         $ranges,
-        $cumulative_before,
-        $cumulative_after
+        $cumulative_before
       );
 
       $this->logSuccessfulBucket(
@@ -1710,7 +1685,7 @@ class RateSheetService {
 
     $query = $this->database->select('api_pricing_calculation_log', 'apcl');
 
-    $query->addExpression('SUM(total_transaction_count)', 'cumulative');
+    $query->addExpression('SUM(total_full_rate_billable_transaction)', 'cumulative');
 
     $cumulative = $query
       ->condition('client_id', $client_id)
@@ -1737,174 +1712,92 @@ class RateSheetService {
    *   The pricing ranges.
    * @param int $cumulative_before
    *   Cumulative usage before this bucket.
-   * @param int $cumulative_after
-   *   Cumulative usage after this bucket.
    *
    * @return array
    *   Calculation results with breakdown.
    */
-  protected function calculatePricing(array $bucket, array $ranges, int $cumulative_before, int $cumulative_after): array {
+  protected function calculatePricing(array $bucket, array $ranges, int $cumulative_before): array {
+
     $total_full_rate = (int) $bucket['total_full_rate_billable_transaction'];
     $total_lower_rate = (int) $bucket['total_lower_rate_billable_transaction'];
 
-    $segments = $this->calculateSegments($ranges, $cumulative_before, $cumulative_after);
-    
-    // Allocate transactions across segments
-    $full_rate_allocation = $this->allocateTransactions($total_full_rate, $segments);
-    $lower_rate_allocation = $this->allocateTransactions($total_lower_rate, $segments);
+    $remaining_success = $total_full_rate;
+    $current_position = $cumulative_before;
 
     $breakdown = [];
+
     $total_success_amount = 0;
-    $total_partial_amount = 0;
 
-    foreach ($segments as $index => $segment) {
-      $full_rate_count = $full_rate_allocation[$index];
-      $lower_rate_count = $lower_rate_allocation[$index];
+    foreach ($ranges as $range) {
 
-      $success_amount = $full_rate_count * $segment['success_unit_price'];
-      $partial_amount = $lower_rate_count * $segment['partial_unit_price'];
-      $segment_total = $success_amount + $partial_amount;
+      if ($remaining_success <= 0) {
+        break;
+      }
+
+      $range_from = (int) $range['from_range'];
+      $range_to = (int) $range['to_range'];
+
+      // Already consumed.
+      if ($range_to != -1 && $current_position >= $range_to) {
+        continue;
+      }
+
+      if ($range_to == -1) {
+        $available = $remaining_success;
+      }
+      else {
+
+        $start = max($current_position + 1, $range_from);
+
+        $available = max(
+          0,
+          $range_to - $start + 1
+        );
+      }
+
+      if ($available == 0) {
+        continue;
+      }
+
+      $success_count = min($remaining_success, $available);
+
+      $success_amount = $success_count * $range['success_unit_price'];
 
       $total_success_amount += $success_amount;
-      $total_partial_amount += $partial_amount;
 
       $breakdown[] = [
-        'range_id' => $segment['range_id'],
-        'range_from' => $segment['from_range'],
-        'range_to' => $segment['to_range'],
-        'segment_transaction_count' => $segment['count'],
-        'full_rate_billable_transaction' => $full_rate_count,
-        'lower_rate_billable_transaction' => $lower_rate_count,
-        'success_unit_price' => $segment['success_unit_price'],
-        'partial_unit_price' => $segment['partial_unit_price'],
+        'range_id' => $range['id'],
+        'range_from' => $range_from,
+        'range_to' => $range_to,
+        'segment_transaction_count' => $success_count,
+        'full_rate_billable_transaction' => $success_count,
+        'lower_rate_billable_transaction' => 0,
+        'success_unit_price' => $range['success_unit_price'],
+        'partial_unit_price' => $range['partial_unit_price'],
         'success_amount' => round($success_amount, 4),
-        'partial_amount' => round($partial_amount, 4),
-        'segment_total_amount' => round($segment_total, 4),
+        'partial_amount' => 0,
+        'segment_total_amount' => round($success_amount, 4),
       ];
+
+      $remaining_success -= $success_count;
+      $current_position += $success_count;
     }
+
+    // Partial transactions always use the fixed Partial Unit Price.
+    $partial_unit_price = (float) $ranges[0]['partial_unit_price'];
+
+    $total_partial_amount = $total_lower_rate * $partial_unit_price;
 
     return [
       'successful_est_revenue' => round($total_success_amount, 4),
       'unsuccessful_est_revenue' => round($total_partial_amount, 4),
       'total_est_revenue' => round($total_success_amount + $total_partial_amount, 4),
-      'successful_unit_price' => $total_full_rate > 0 ? round($total_success_amount / $total_full_rate, 4) : 0,
-      'unsuccessful_unit_price' => $total_lower_rate > 0 ? round($total_partial_amount / $total_lower_rate, 4) : 0,
+      'successful_unit_price' => $total_full_rate > 0
+        ? round($total_success_amount / $total_full_rate, 4)
+        : 0,
+      'unsuccessful_unit_price' => $partial_unit_price,
       'breakdown' => $breakdown,
     ];
-  }
-
-  /**
-   * Calculates segments for a bucket across ranges.
-   *
-   * @param array $ranges
-   *   The pricing ranges.
-   * @param int $cumulative_before
-   *   Cumulative usage before this bucket.
-   * @param int $cumulative_after
-   *   Cumulative usage after this bucket.
-   *
-   * @return array
-   *   Array of segments.
-   */
-  protected function calculateSegments(array $ranges, int $cumulative_before, int $cumulative_after): array {
-    $segments = [];
-    $current_position = $cumulative_before + 1;
-    $end_position = $cumulative_after;
-
-    foreach ($ranges as $range) {
-      $range_start = $range['from_range'];
-      $range_end = $range['to_range'] === -1 ? PHP_INT_MAX : $range['to_range'];
-
-      // Skip ranges that are completely before current position
-      if ($range_end < $current_position) {
-        continue;
-      }
-
-      // Skip ranges that are completely after end position
-      if ($range_start > $end_position) {
-        break;
-      }
-
-      // Calculate segment within this range
-      $segment_start = max($current_position, $range_start);
-      $segment_end = min($end_position, $range_end);
-      $segment_count = $segment_end - $segment_start + 1;
-
-      if ($segment_count > 0) {
-        $segments[] = [
-          'range_id' => $range['id'],
-          'from_range' => $range_start,
-          'to_range' => $range['to_range'],
-          'count' => $segment_count,
-          'success_unit_price' => $range['success_unit_price'],
-          'partial_unit_price' => $range['partial_unit_price'],
-        ];
-
-        $current_position = $segment_end + 1;
-      }
-
-      if ($current_position > $end_position) {
-        break;
-      }
-    }
-
-    return $segments;
-  }
-
-  /**
-   * Allocates transactions across segments proportionally.
-   *
-   * @param int $total_transactions
-   *   Total transactions to allocate.
-   * @param array $segments
-   *   The segments.
-   *
-   * @return array
-   *   Array of allocated transaction counts per segment.
-   */
-  protected function allocateTransactions(int $total_transactions, array $segments): array {
-    if ($total_transactions === 0 || empty($segments)) {
-      return array_fill(0, count($segments), 0);
-    }
-
-    $total_segment_count = 0;
-    foreach ($segments as $segment) {
-      $total_segment_count += $segment['count'];
-    }
-
-    if ($total_segment_count === 0) {
-      return array_fill(0, count($segments), 0);
-    }
-
-    $allocated = [];
-    $remainders = [];
-    $allocated_sum = 0;
-
-    foreach ($segments as $index => $segment) {
-      $proportion = $segment['count'] / $total_segment_count;
-      $raw_value = $total_transactions * $proportion;
-      $floored_value = (int) floor($raw_value);
-      
-      $allocated[$index] = $floored_value;
-      $remainders[$index] = $raw_value - $floored_value;
-      $allocated_sum += $floored_value;
-    }
-
-    // Distribute remaining units to largest remainders
-    $remaining = $total_transactions - $allocated_sum;
-    if ($remaining > 0) {
-      arsort($remainders);
-      $distributed = 0;
-      foreach ($remainders as $index => $remainder) {
-        if ($distributed >= $remaining) {
-          break;
-        }
-        $allocated[$index]++;
-        $distributed++;
-      }
-    }
-
-    return $allocated;
   }
 
   /**

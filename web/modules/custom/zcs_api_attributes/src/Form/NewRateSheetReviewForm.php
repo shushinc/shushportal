@@ -74,8 +74,6 @@ class NewRateSheetReviewForm extends FormBase {
       return $form;
     }
 
-    $is_current_user_owner = ($data->created_by == \Drupal::currentUser()->id());
-
     $currency_label = $data->currency;
     foreach ($this->list as $currency) {
       if (!empty($currency['locale']) && $currency['locale'] === $data->currency) {
@@ -163,7 +161,11 @@ class NewRateSheetReviewForm extends FormBase {
     $form['#theme'] = 'new_rate_sheet_review';
 
     $user_roles = $this->currentUser()->getRoles();
-    $allowed_roles = ['financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
+    $allowed_roles = [
+      'financial_rate_sheet_approval_level_1',
+      'financial_rate_sheet_approval_level_2',
+      'finance_admin',
+    ];
 
     // Check rate sheet status.
     $rateSheetService = \Drupal::service('zcs_api_attributes.rate_sheet_service');
@@ -183,8 +185,7 @@ class NewRateSheetReviewForm extends FormBase {
     // 2. Rate sheet is Pending
     // 3. They don't have unresolved comments (waiting for creator to resolve)
     // 4. Rate sheet is not cancelled
-    // 5. The current user is not the owner (creator) of the rate sheet.
-    if (array_intersect($allowed_roles, $user_roles) && $rateSheetStatus === 'Pending' && !$user_has_unresolved_comments && !$is_cancelled && !$is_current_user_owner) {
+    if (array_intersect($allowed_roles, $user_roles) && $rateSheetStatus === 'Pending' && !$user_has_unresolved_comments && !$is_cancelled) {
       $form['status'] = [
         '#type' => 'select',
         '#options' => [2 => 'Approve', 3 => 'Reject'],
@@ -236,7 +237,11 @@ class NewRateSheetReviewForm extends FormBase {
     $reject_comment = $form_state->getValue('reject_comment');
 
     // Check user roles.
-    $allowed_roles = ['financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2'];
+    $allowed_roles = [
+      'financial_rate_sheet_approval_level_1',
+      'financial_rate_sheet_approval_level_2',
+      'finance_admin',
+    ];
     $user_roles = $this->currentUser()->getRoles();
 
     if (!array_intersect($allowed_roles, $user_roles)) {
