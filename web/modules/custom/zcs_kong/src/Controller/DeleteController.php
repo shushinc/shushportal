@@ -56,7 +56,7 @@ class DeleteController extends ControllerBase {
    /**
    *
    */
-  public function access(AccountInterface $account) {
+  public function access($id, AccountInterface $account) {
     if (\Drupal::currentUser()->hasRole('carrier_admin') || \Drupal::currentUser()->hasRole('administrator')) {
       return AccessResult::allowed();
     }
