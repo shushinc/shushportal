@@ -774,20 +774,7 @@ public function getUsersAppList($consumer_id) {
    * {@inheritdoc}
    */
   public function updateAppNode($app_node_id, $ttl) {
-<<<<<<< HEAD
     $node = Node::load($app_node_id);
-=======
-   // $app = Json::decode($response);
-    $node = Node::load($app_node_id);
-    if ($ttl!= 'never_expires') {
-      $expiry_time = $ttl + time();
-    }
-    else {
-      $expiry_time = '';
-    }
-    // $node->set('field_app_key', $app['key']);
-    // $node->set('field_tag', $app['tags']);
->>>>>>> ab36aec (kong-key-rotation)
     $node->set('field_ttl', $ttl);
     if($ttl == 'expire_now') {
      // make call to the kong
@@ -873,10 +860,7 @@ public function getUsersAppList($consumer_id) {
         if ($status_code == '204') {
           \Drupal::logger('kong_app_expiry_app')->info('Expired app @id deleted successfully : @id', ['@id' => $app->id()]);
           $app->set('field_app_status', 'deleted');
-<<<<<<< HEAD
           $app->set('field_expiry_date', '');
-=======
->>>>>>> ab36aec (kong-key-rotation)
           $app->save();
           $delete_jwt_response = \Drupal::service('zcs_kong.kong_gateway')->deleteJwt($user_name, $jwt_id);
           $jwt_status_code = $delete_jwt_response->getStatusCode();
@@ -892,17 +876,12 @@ public function getUsersAppList($consumer_id) {
       else {
         \Drupal::logger('kong_app_expiry_error')->error('Erro in deleting the Expired app @id : @id', ['@id' => $app->id()]);
         \Drupal::messenger()->addError('Gateway connection failure to delete App.Please contact the administrator for further assistance.');
-<<<<<<< HEAD
         return FALSE;
       }
     }
     else {
       return FALSE;
     }
-=======
-      }
-    }
->>>>>>> ab36aec (kong-key-rotation)
     return TRUE;
   }
 
