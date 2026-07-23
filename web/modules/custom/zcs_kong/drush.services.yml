@@ -1,0 +1,7 @@
+services:
+ zcs_kong.commands:
+    class: Drupal\zcs_kong\Drush\Commands\KongExpiryCommands
+    arguments:
+      - '@zcs_kong.kong_gateway'
+    tags:
+      - { name: drush.command }

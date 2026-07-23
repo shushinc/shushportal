@@ -85,6 +85,7 @@ final class AppListForm extends FormBase {
       'app_name' => $this->t('App Name'),
       'tag' => $this->t('Tag'),
       'created' => $this->t('Created Date'),
+      'expiry' => $this->t('Expiry Date'),
       'client_id' => $this->t('Client ID'),
       'client_secret' => $this->t('Client Secret'),
       'status' => $this->t('Status'),
@@ -117,20 +118,20 @@ final class AppListForm extends FormBase {
             $description = $group->get('field_description')->getValue()[0]['value'];
             $app_status = $app->get('field_app_status')->value;
             if ($app_status == 'active') {
-              // $url = Url::fromRoute('zcs_kong.edit_key', ['id' => $app->id()]);
-              // $url->setOptions([
-              //   'attributes' => [
-              //     'class' => ['use-ajax'], // Enables AJAX
-              //     'data-dialog-type' => 'modal', // Opens in a modal
-              //     'data-dialog-options' => json_encode([
-              //       'width' => 400,
-              //     ]),
-              //   ],
-              // ]);
+              $url = Url::fromRoute('zcs_kong.edit_key', ['id' => $app->id()]);
+              $url->setOptions([
+                'attributes' => [
+                  'class' => ['use-ajax'], // Enables AJAX
+                  'data-dialog-type' => 'modal', // Opens in a modal
+                  'data-dialog-options' => json_encode([
+                    'width' => 400,
+                  ]),
+                ],
+              ]);
 
-              // $update_link = Link::fromTextAndUrl('Edit', $url);
+              $update_link = Link::fromTextAndUrl('Edit', $url);
               $delete_link = Link::createFromRoute('Delete', 'zcs_kong.delete_key', ['id' => $app->id()]);
-              $operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$delete_link->toString()."</div></div>");
+              $operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$update_link->toString() . '' . $delete_link->toString()."</div></div>");
             }
             else {
               $operation_link = Markup::create('<div class="edit-operation disabled">');
@@ -139,16 +140,16 @@ final class AppListForm extends FormBase {
 
             $created_time = $app->get('created')->value;
             $updated_time = $app->get('changed')->value;
-            $expiry_time = $app->get('field_expiry_date')->value;
+            $expiry_time = (int) $app->get('field_expiry_date')->value;
+            $renewal_date =  date('M d, Y' , (int)$app->get('changed')->value);
             if ($updated_time > $created_time) {
                $renewal_date =  date('M d, Y' , (int)$app->get('changed')->value);
             }
 
 
-            if ($app->get('field_ttl')->value == 'never_expires') {
+            if ($app->get('field_ttl')->value == 'never_expires' || $app->get('field_ttl')->value == 'expire_now' ) {
               $ttl = 'Never Expires';
               $expiry_time = '-';
-
             }
             else {
               $ttl = $app->get('field_ttl')->value;
@@ -156,6 +157,7 @@ final class AppListForm extends FormBase {
                 $expiry_time = date('M d, Y' , (int)$app->get('field_expiry_date')->value);
               }
             }
+            // dump($app->getTitle().'-'.$expiry_time);
             $key = $app->get('field_app_key')->value ?? '';
             $client_id = $app->get('field_client_id')->value ?? '';
             $secret_key = $app->get('field_client_secret')->value ?? '';
@@ -172,7 +174,8 @@ final class AppListForm extends FormBase {
               'tag' => $app->get('field_tag')->value ?? '',
               'created' => date('M d, Y' , (int)$created_time),
               // 'renewal' => $renewal_date ?? '-',
-              // 'expiry' => $expiry_time ?? '-',
+             // 'expiry' => (!empty($expiry_time) && (int) $expiry_time > 0) ? date('M d, Y', (int) $expiry_time): '-',
+              'expiry' =>  $expiry_time,
               'client_id' => [
                 'data' =>  Markup::create("<div class='client-key''>$client_id</div><div class='pwd-toggle'></div><div class='client-password'></div>"),
                 'class' => 'api-keys',
@@ -236,9 +239,20 @@ final class AppListForm extends FormBase {
            // $description = $group->get('field_description')->getValue()[0]['value'];
             $app_status = $app->get('field_app_status')->value;
             if ($app_status == 'active') {
-              // $update_link = Link::createFromRoute('Edit', 'zcs_kong.edit_key', ['id' => $app->id()]);
+              $url = Url::fromRoute('zcs_kong.edit_key', ['id' => $app->id()]);
+              $url->setOptions([
+                'attributes' => [
+                  'class' => ['use-ajax'], // Enables AJAX
+                  'data-dialog-type' => 'modal', // Opens in a modal
+                  'data-dialog-options' => json_encode([
+                    'width' => 400,
+                  ]),
+                ],
+              ]);
+
+              $update_link = Link::fromTextAndUrl('Edit', $url);
               $delete_link = Link::createFromRoute('Delete', 'zcs_kong.delete_key', ['id' => $app->id()]);
-              $operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$delete_link->toString()."</div></div>");
+              $operation_link = Markup::create("<div class='edit-operation'><div class='edit-operation-wrap'>".$update_link->toString() . '' . $delete_link->toString()."</div></div>");
             }
             else {
               $operation_link = Markup::create('<div class="edit-operation disabled">');
@@ -249,7 +263,7 @@ final class AppListForm extends FormBase {
             if ($updated_time > $created_time) {
                $renewal_date =  date('M d, Y' , (int)$app->get('changed')->value);
             }
-            if ($app->get('field_ttl')->value == 'never_expires') {
+            if ($app->get('field_ttl')->value == 'never_expires' || $app->get('field_ttl')->value == 'expire_now' ) {
               $ttl = 'Never Expires';
               $expiry_time = '-';
             }
@@ -279,8 +293,7 @@ final class AppListForm extends FormBase {
               'tag' => $app->get('field_tag')->value ?? '',
               // 'ttl' => $app->get('field_ttl')->value ?? '',
               'created' => date('M d, Y' , (int)$created_time),
-              // 'renewal' => $renewal_date ?? '-',
-              // 'expiry' => $expiry_time ?? '-',
+              'expiry' => $expiry_time,
               'client_id' => [
                 'data' =>  Markup::create("<div class='client-key''>$client_id</div><div class='pwd-toggle'></div><div class='client-password'></div>"),
                 'class' => 'api-keys',
