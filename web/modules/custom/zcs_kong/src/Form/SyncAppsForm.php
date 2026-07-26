@@ -60,7 +60,7 @@ class SyncAppsForm extends FormBase {
             $relationships = \Drupal::entityTypeManager()->getStorage('group_relationship')->loadByProperties(['gid' => $group->id()]);
             foreach ($relationships as $relationship) {
               $entity = $relationship->getEntity();
-              if ($entity && $entity->getEntityTypeId() === 'node' && !$entity->get('field_jwt')->isEmpty() && !$entity->get('field_jwt_key')->isEmpty()) {
+              if ($entity && $entity->getEntityTypeId() === 'node' && $entity->bundle() === 'app' && $entity->get('field_gateway')->isEmpty() && $entity->get('field_app_status')->value !== 'deleted' && !$entity->get('field_jwt')->isEmpty() && !$entity->get('field_jwt_key')->isEmpty()) {
                 $jwt_count++;
               }
               if ($entity && $entity->getEntityTypeId() === 'node' && $entity->bundle() === 'app' && $entity->get('field_gateway')->isEmpty()) {
@@ -133,15 +133,15 @@ class SyncAppsForm extends FormBase {
          \Drupal::logger('zcs_kong_sync')->warning('Group @gid dont have consumer id', ['@gid' => $group->id()]);
         }
       }
+      
     }
-
     $form['groups'] = [
       '#type'    => 'tableselect',
       '#header'  => [
         'gid'  => $this->t('ID'),
         'name' => $this->t('Client Name'),
         'email' => $this->t('Email'),
-        'app_count'    => $this->t('Total Apps'),
+        'app_count'    => $this->t('Active Apps'),
         'expired_apps'  => $this->t('Expired Apps'),
         'apps_synced' => $this->t('Apps Synced'),
         // 'jwt_count'    => $this->t('Total Jwt'),
@@ -287,7 +287,7 @@ class SyncAppsForm extends FormBase {
     $app_nodes = [];
     foreach ($relationships as $relationship) {
       $entity = $relationship->getEntity();
-      if ( $entity && $entity->getEntityTypeId() === 'node' && $entity->bundle() === 'app' && $entity->get('field_gateway')->isEmpty()) {
+      if ( $entity && $entity->getEntityTypeId() === 'node' && $entity->bundle() === 'app' && $entity->get('field_gateway')->isEmpty() && $entity->get('field_app_status')->value !== 'deleted') {
         $app_nodes[] = $entity;
         \Drupal::logger('zcs_kong')->notice(
           'Eligible App Node: @title (NID: @nid)',
