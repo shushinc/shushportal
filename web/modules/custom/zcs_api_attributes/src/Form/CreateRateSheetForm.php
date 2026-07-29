@@ -118,6 +118,7 @@ class CreateRateSheetForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->configFactory->get('zcs_custom.settings');
     $defaultCurrency = $config->get('currency') ?? 'en_US';
+    $defaultCurrency = $defaultCurrency === 'USD' ? 'en_US' : $defaultCurrency;
     $number = new \NumberFormatter($defaultCurrency, \NumberFormatter::CURRENCY);
     $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
 
