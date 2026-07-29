@@ -4,3 +4,27 @@
  * @file
  * Primary module hooks for zcs_kong module.
  */
+
+
+/**
+ * Implements hook_cron().
+ */
+function zcs_kong_cron() {
+  /** @var \Drupal\zcs_kong\Service\KongGateway $kong_gateway */
+  $kong_gateway = \Drupal::service('zcs_kong.kong_gateway');
+
+  try {
+    $count = $kong_gateway->syncExpiredApps();
+
+    \Drupal::logger('zcs_custom')->notice(
+      'Expired app sync completed. @count app(s) processed.',
+      ['@count' => $count]
+    );
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('zcs_custom')->error(
+      'Expired app sync failed: @message',
+      ['@message' => $e->getMessage()]
+    );
+  }
+}

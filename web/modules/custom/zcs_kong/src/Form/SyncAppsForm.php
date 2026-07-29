@@ -41,6 +41,7 @@ class SyncAppsForm extends FormBase {
               }
             }
             $app_count = 0;
+            $expired_app_count = 0;
             $apps_synced = 0;
             $jwt_count = 0;
             $jwt_synced = 0;
@@ -59,12 +60,18 @@ class SyncAppsForm extends FormBase {
             $relationships = \Drupal::entityTypeManager()->getStorage('group_relationship')->loadByProperties(['gid' => $group->id()]);
             foreach ($relationships as $relationship) {
               $entity = $relationship->getEntity();
-              if ($entity && $entity->getEntityTypeId() === 'node' && $entity->bundle() === 'app'  && $entity->get('field_gateway')->isEmpty()) {
-                $app_count++;
-              }
-              if ($entity && $entity->getEntityTypeId() === 'node' && !$entity->get('field_jwt')->isEmpty() && !$entity->get('field_jwt_key')->isEmpty()) {
+              if ($entity && $entity->getEntityTypeId() === 'node' && $entity->bundle() === 'app' && $entity->get('field_gateway')->isEmpty() && $entity->get('field_app_status')->value !== 'deleted' && !$entity->get('field_jwt')->isEmpty() && !$entity->get('field_jwt_key')->isEmpty()) {
                 $jwt_count++;
               }
+              if ($entity && $entity->getEntityTypeId() === 'node' && $entity->bundle() === 'app' && $entity->get('field_gateway')->isEmpty()) {
+              // Count deleted apps separately.
+              if ($entity->get('field_app_status')->value === 'deleted') {
+                $expired_app_count++;
+              }
+              else {
+                $app_count++;
+              }
+             }
             }
 
             if (!$user_synced) {
@@ -113,6 +120,7 @@ class SyncAppsForm extends FormBase {
               'name'         => $group->label(),
               'email'        => $group->get('field_contact_email')->value,
               'app_count'    => $app_count,
+              'expired_apps' => $expired_app_count,
               'apps_synced'  => $apps_synced,
               //'jwt_count'    => $jwt_count,
               //'jwt_synced'   => $jwt_synced,
@@ -125,15 +133,16 @@ class SyncAppsForm extends FormBase {
          \Drupal::logger('zcs_kong_sync')->warning('Group @gid dont have consumer id', ['@gid' => $group->id()]);
         }
       }
+      
     }
-
     $form['groups'] = [
       '#type'    => 'tableselect',
       '#header'  => [
         'gid'  => $this->t('ID'),
         'name' => $this->t('Client Name'),
         'email' => $this->t('Email'),
-        'app_count'    => $this->t('Total Apps'),
+        'app_count'    => $this->t('Active Apps'),
+        'expired_apps'  => $this->t('Expired Apps'),
         'apps_synced' => $this->t('Apps Synced'),
         // 'jwt_count'    => $this->t('Total Jwt'),
         // 'jwt_synced'   => $this->t('Jwt Synced'),
@@ -278,7 +287,7 @@ class SyncAppsForm extends FormBase {
     $app_nodes = [];
     foreach ($relationships as $relationship) {
       $entity = $relationship->getEntity();
-      if ( $entity && $entity->getEntityTypeId() === 'node' && $entity->bundle() === 'app' && $entity->get('field_gateway')->isEmpty()) {
+      if ( $entity && $entity->getEntityTypeId() === 'node' && $entity->bundle() === 'app' && $entity->get('field_gateway')->isEmpty() && $entity->get('field_app_status')->value !== 'deleted') {
         $app_nodes[] = $entity;
         \Drupal::logger('zcs_kong')->notice(
           'Eligible App Node: @title (NID: @nid)',
