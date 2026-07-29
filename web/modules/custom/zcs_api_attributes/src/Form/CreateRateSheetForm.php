@@ -15,6 +15,9 @@ use Drupal\Core\Render\Markup;
 
 /**
  * Provides the create rate sheet form.
+ * @TODO Every rate sheet starts in the begenning of the month
+ *  - Always 1rst day
+ *  - Disable the effective date of the form
  */
 class CreateRateSheetForm extends FormBase {
 
@@ -150,7 +153,9 @@ class CreateRateSheetForm extends FormBase {
       '#weight' => 1,
       '#attributes' => [
         'min' => date('Y-m-d'),
+        'type'=> 'month'
       ],
+      '#date_date_format' => 'm/Y',
     ];
 
     // Markup retail.
@@ -254,10 +259,22 @@ class CreateRateSheetForm extends FormBase {
       $form_state->setErrorByName('attribute_date', $this->t('Effective date is required.'));
     }
     else {
-      $date_timestamp = strtotime($effective_date);
-      $today = strtotime(date('Y-m-d'));
-      if ($date_timestamp < $today) {
-        $form_state->setErrorByName('attribute_date', $this->t('Effective date cannot be in the past.'));
+      $effectiveDate = \DateTimeImmutable::createFromFormat('Y-m', $effective_date);
+
+      if (!$effectiveDate) {
+        $form_state->setErrorByName('attribute_date', $this->t('Effective date must include a valid month and year.'));
+      }
+      else {
+        $effectiveDate = $effectiveDate->setDate(
+          (int) $effectiveDate->format('Y'),
+          (int) $effectiveDate->format('m'),
+          1
+        );
+        $currentMonthStart = new \DateTimeImmutable('first day of this month');
+
+        if ($effectiveDate < $currentMonthStart) {
+          $form_state->setErrorByName('attribute_date', $this->t('Effective date cannot be in the past.'));
+        }
       }
     }
 
@@ -325,7 +342,7 @@ class CreateRateSheetForm extends FormBase {
     try {
 
       $currency = array_filter($this->list, function ($currency) use ($values) {
-        return $currency['locale'] === $values['currencies'];
+        return $currency['alphabeticCode'] === $values['currencies'];
       });
 
       // Clean all numeric values from formatting
@@ -342,11 +359,20 @@ class CreateRateSheetForm extends FormBase {
         }
       }
 
+      $effectiveDate = \DateTimeImmutable::createFromFormat('Y-m', $values['attribute_date'] ?? '');
+      $effectiveDate = $effectiveDate
+        ? $effectiveDate->setDate(
+          (int) $effectiveDate->format('Y'),
+          (int) $effectiveDate->format('m'),
+          1
+        )
+        : new \DateTimeImmutable('first day of this month');
+
       $rate_sheet_id = $this->rateSheetService->createRateSheet([
         'name' => $values['name'],
         'currency' => reset($currency)['alphabeticCode'],
         'markup_retail' => $values['retail_markup_percentage'],
-        'effective_date' => strtotime($values['attribute_date']),
+        'effective_date' => $effectiveDate->getTimestamp(),
         'attribute_ids' => $nids,
         'ranges' => $cleaned_ranges,
         'client_ids' => [],

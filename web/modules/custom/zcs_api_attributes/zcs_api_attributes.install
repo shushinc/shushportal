@@ -1119,74 +1119,33 @@ function zcs_api_attributes_update_9017() {
 /**
  * Add auto increment ID to client_rate_sheet table.
  */
+/**
+ * Add the id column to client_rate_sheet and populate existing records.
+ */
 function zcs_api_attributes_update_9018() {
-
   $database = \Drupal::database();
   $schema = $database->schema();
 
-  if ($schema->tableExists('client_rate_sheet') &&
-      !$schema->fieldExists('client_rate_sheet', 'id')) {
-    
+  if (!$schema->tableExists('client_rate_sheet')) {
+    return t('The client_rate_sheet table does not exist.');
+  }
+
+  // Add the column if it does not exist.
+  if (!$schema->fieldExists('client_rate_sheet', 'id')) {
     $schema->addField('client_rate_sheet', 'id', [
       'type' => 'int',
       'unsigned' => TRUE,
       'not null' => FALSE,
-      'description' => 'Primary key.',
+      'description' => 'Temporary ID column.',
     ]);
-
-    $result = $database->query("
-      SELECT rate_sheet_id, client_id
-      FROM {client_rate_sheet}
-      ORDER BY created_date
-    ");
-
-    $counter = 1;
-
-    foreach ($result as $record) {
-      $database->update('client_rate_sheet')
-        ->fields([
-          'id' => $counter++,
-        ])
-        ->condition('rate_sheet_id', $record->rate_sheet_id)
-        ->condition('client_id', $record->client_id)
-        ->execute();
-    }
-
-    $database->query("
-      ALTER TABLE {client_rate_sheet}
-      MODIFY id INT UNSIGNED NOT NULL AUTO_INCREMENT
-    ");
-
-    $database->query("
-      ALTER TABLE {client_rate_sheet}
-      ADD PRIMARY KEY (id)
-    ");
-  }
-}
-
-/**
- * Converts client_rate_sheet.id to an auto increment primary key.
- */
-function zcs_api_attributes_update_9019() {
-  $database = \Drupal::database();
-
-  $column = $database->query("
-    SELECT EXTRA
-    FROM information_schema.COLUMNS
-    WHERE TABLE_SCHEMA = DATABASE()
-      AND TABLE_NAME = 'client_rate_sheet'
-      AND COLUMN_NAME = 'id'
-  ")->fetchField();
-
-  if ($column === 'auto_increment') {
-    return t('The client_rate_sheet.id column is already AUTO_INCREMENT.');
   }
 
+  // Populate only rows that do not yet have an ID.
   $result = $database->query("
     SELECT rate_sheet_id, client_id
     FROM {client_rate_sheet}
     WHERE id IS NULL
-    ORDER BY rate_sheet_id, client_id
+    ORDER BY created_date, rate_sheet_id, client_id
   ");
 
   $max_id = (int) $database->query("
@@ -1204,23 +1163,67 @@ function zcs_api_attributes_update_9019() {
       ->execute();
   }
 
+  return t('Added and populated the id column.');
+}
+
+/**
+ * Converts client_rate_sheet.id to an auto increment primary key.
+ */
+/**
+ * Convert client_rate_sheet.id into the AUTO_INCREMENT primary key.
+ */
+function zcs_api_attributes_update_9019() {
+  $database = \Drupal::database();
+  $schema = $database->schema();
+
+  if (!$schema->tableExists('client_rate_sheet')) {
+    return t('The client_rate_sheet table does not exist.');
+  }
+
+  // Ensure there are no NULL IDs.
+  $null_count = (int) $database->query("
+    SELECT COUNT(*)
+    FROM {client_rate_sheet}
+    WHERE id IS NULL
+  ")->fetchField();
+
+  if ($null_count > 0) {
+    throw new \Drupal\Core\Utility\UpdateException('Some records still have NULL IDs.');
+  }
+
+  // Check whether id is already AUTO_INCREMENT.
+  $extra = $database->query("
+    SELECT EXTRA
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'client_rate_sheet'
+      AND COLUMN_NAME = 'id'
+  ")->fetchField();
+
+  if ($extra === 'auto_increment') {
+    return t('The id column is already AUTO_INCREMENT.');
+  }
+
+  // Remove the current composite primary key.
   $database->query("
     ALTER TABLE {client_rate_sheet}
     DROP PRIMARY KEY
   ");
 
+  // Convert id into AUTO_INCREMENT and PRIMARY KEY.
   $database->query("
     ALTER TABLE {client_rate_sheet}
-    MODIFY COLUMN id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    ADD PRIMARY KEY (id)
+      MODIFY COLUMN id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+      ADD PRIMARY KEY (id)
   ");
 
+  // Preserve uniqueness of the original business key.
   $database->query("
     ALTER TABLE {client_rate_sheet}
-    ADD UNIQUE KEY client_rate_sheet_unique (rate_sheet_id, client_id)
+      ADD UNIQUE KEY client_rate_sheet_unique (rate_sheet_id, client_id)
   ");
 
-  return t('Converted client_rate_sheet.id to AUTO_INCREMENT primary key.');
+  return t('Converted id to AUTO_INCREMENT primary key.');
 }
 
 /**
@@ -1337,4 +1340,211 @@ function zcs_api_attributes_update_9020() {
   $schema->createTable('api_access_token', $table_schema);
   
   return t('Created api_access_token table.');
+}
+
+/**
+ * Creates the api_pricing_calculation_log table.
+ */
+function zcs_api_attributes_update_9022() {
+  $schema = \Drupal::database()->schema();
+
+  if ($schema->tableExists('api_pricing_calculation_log')) {
+    return t('Table api_pricing_calculation_log already exists.');
+  }
+
+  $table = [
+    'description' => 'Stores official Moriarty pricing calculation logs for aggregate API buckets.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique calculation log ID.',
+      ],
+      'run_id' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Payload run identifier.',
+      ],
+      'source_bucket_id' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Unique source bucket identifier used for deduplication.',
+      ],
+      'client_key' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Client key received from the aggregate payload.',
+      ],
+      'client_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Client Group ID.',
+      ],
+      'client_type' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'description' => 'Resolved client type.',
+      ],
+      'api_attribute_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => 'API Attribute node ID.',
+      ],
+      'attribute_name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'description' => 'Resolved API Attribute name.',
+      ],
+      'endpoint' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Endpoint received from the aggregate payload.',
+      ],
+      'rate_sheet_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => 'Resolved Rate Sheet ID.',
+      ],
+      'rate_sheet_item_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => 'Resolved Rate Sheet Item ID.',
+      ],
+      'bucket_datetime' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Bucket datetime from payload.',
+      ],
+      'total_transaction_count' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'total_full_rate_billable_transaction' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'total_lower_rate_billable_transaction' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'total_no_billable_transaction' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'cumulative_before' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'cumulative_after' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'successful_unit_price' => [
+        'type' => 'numeric',
+        'precision' => 10,
+        'scale' => 4,
+        'not null' => FALSE,
+      ],
+      'unsuccessful_unit_price' => [
+        'type' => 'numeric',
+        'precision' => 10,
+        'scale' => 4,
+        'not null' => FALSE,
+      ],
+      'markup_percentage' => [
+        'type' => 'numeric',
+        'precision' => 10,
+        'scale' => 2,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'discount_price' => [
+        'type' => 'numeric',
+        'precision' => 10,
+        'scale' => 4,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'successful_est_revenue' => [
+        'type' => 'numeric',
+        'precision' => 10,
+        'scale' => 4,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'unsuccessful_est_revenue' => [
+        'type' => 'numeric',
+        'precision' => 10,
+        'scale' => 4,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'total_est_revenue' => [
+        'type' => 'numeric',
+        'precision' => 10,
+        'scale' => 4,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'calculation_breakdown' => [
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+        'description' => 'JSON breakdown of calculation segments.',
+      ],
+      'status' => [
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => 'Status: success, failed, or duplicate.',
+      ],
+      'error_message' => [
+        'type' => 'text',
+        'not null' => FALSE,
+      ],
+      'created_date' => [
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'source_bucket_id' => ['source_bucket_id'],
+    ],
+    'indexes' => [
+      'client_id' => ['client_id'],
+      'api_attribute_id' => ['api_attribute_id'],
+      'rate_sheet_id' => ['rate_sheet_id'],
+      'status' => ['status'],
+      'run_id' => ['run_id'],
+      'cumulative_key' => ['client_id', 'api_attribute_id', 'rate_sheet_id', 'status'],
+    ],
+  ];
+
+  $schema->createTable('api_pricing_calculation_log', $table);
+
+  return t('Created api_pricing_calculation_log table.');
 }
