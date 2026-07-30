@@ -694,7 +694,6 @@ display:
           plugin_id: user_roles
           operator: or
           value:
-            all: all
             carrier_admin: carrier_admin
             client_admin: client_admin
             finance_admin: finance_admin
