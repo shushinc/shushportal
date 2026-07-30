@@ -668,6 +668,96 @@
     return row;
   }
 
+  /**
+   * Loads existing ranges from the hidden JSON payload.
+   *
+   * @param {HTMLElement} container
+   *   The ranges container.
+   */
+  function loadExistingRanges(container) {
+    if (!container) {
+      return;
+    }
+
+    var form = container.closest('form');
+    var payloadInput = form ? form.querySelector('[data-rate-sheet-ranges-payload]') : null;
+
+    if (!payloadInput || !payloadInput.value) {
+      return;
+    }
+
+    var payload = {};
+
+    try {
+      payload = JSON.parse(payloadInput.value);
+
+      if (!payload || typeof payload !== 'object') {
+        return;
+      }
+    }
+    catch (error) {
+      console.error('Unable to parse existing ranges payload.', error);
+      return;
+    }
+
+    Object.keys(payload).forEach(function (attributeId) {
+
+      var attributeItem = getAttributeItem(container, attributeId);
+
+      if (!attributeItem) {
+        return;
+      }
+
+      var tbody = getRangeTableBody(attributeItem);
+
+      if (!tbody) {
+        return;
+      }
+
+      // Remove the empty row created by default.
+      tbody.innerHTML = '';
+
+      var ranges = payload[attributeId];
+
+      Object.keys(ranges)
+        .sort(function (a, b) {
+          return parseInt(a, 10) - parseInt(b, 10);
+        })
+        .forEach(function (rangeIndex) {
+
+          var range = ranges[rangeIndex];
+
+          var row = createRangeRow(
+            attributeId,
+            parseInt(rangeIndex, 10),
+            range.from_range
+          );
+
+          var toRange = getRangeInput(row, 'to_range');
+          var successRate = getRangeInput(row, 'success_rate');
+          var partialRate = getRangeInput(row, 'partial_range');
+
+          if (toRange) {
+            toRange.value = range.to_range;
+          }
+
+          if (successRate) {
+            successRate.value = range.success_rate;
+          }
+
+          if (partialRate) {
+            partialRate.value = range.partial_range;
+          }
+
+          tbody.appendChild(row);
+        });
+
+      updateRangeLabels(attributeItem);
+      updateAttributeRangeMode(attributeItem);
+      syncPartialRangeValues(attributeItem);
+    });
+  }
+
   Drupal.behaviors.rateSheetRanges = {
     attach: function (context) {
       once('rate-sheet-ranges', '[data-rate-sheet-ranges]', context).forEach(function (container) {
@@ -688,6 +778,7 @@
           }
         });
 
+        loadExistingRanges(container);
         initializeAccordion(container);
         updateRangesPayload(container);
 
