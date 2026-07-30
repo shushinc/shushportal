@@ -3,7 +3,15 @@ langcode: en
 status: true
 dependencies:
   config:
+    - user.role.api_attribute_admin
+    - user.role.api_attribute_approval_level_1
+    - user.role.api_attribute_approval_level_2
     - user.role.carrier_admin
+    - user.role.client_admin
+    - user.role.finance_admin
+    - user.role.financial_rate_sheet_approval_level_1
+    - user.role.financial_rate_sheet_approval_level_2
+    - user.role.reports_admin
   module:
     - user
 _core:
@@ -686,7 +694,16 @@ display:
           plugin_id: user_roles
           operator: or
           value:
+            all: all
             carrier_admin: carrier_admin
+            client_admin: client_admin
+            finance_admin: finance_admin
+            reports_admin: reports_admin
+            financial_rate_sheet_approval_level_1: financial_rate_sheet_approval_level_1
+            financial_rate_sheet_approval_level_2: financial_rate_sheet_approval_level_2
+            api_attribute_admin: api_attribute_admin
+            api_attribute_approval_level_1: api_attribute_approval_level_1
+            api_attribute_approval_level_2: api_attribute_approval_level_2
           group: 1
           exposed: false
           expose:
@@ -798,6 +815,7 @@ display:
           query_tags: {  }
       relationships: {  }
       css_class: 'user-grid-block user-management-view'
+      group_by: true
       header:
         area:
           id: area
