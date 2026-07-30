@@ -237,7 +237,7 @@ class kongService  {
 
   public function checkUserAccessGeneratekey(){
       $memberships = \Drupal::service('group.membership_loader')->loadByUser(\Drupal::currentUser());
-      if (isset($memberships)) {
+      if (!empty($memberships)) {
         $roles = $memberships[0]->getRoles();
         $group_roles = [];
         foreach($roles as $role) {
