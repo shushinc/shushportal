@@ -142,7 +142,7 @@ class EditRateSheetForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, $id = 0) {
 
     $current_user_roles = \Drupal::currentUser()->getRoles();
-    $rate_sheet_admin_roles = ['client_rate_sheet_admin', 'finance_admin'];
+    $rate_sheet_admin_roles = ['client_rate_sheet_admin', 'finance_admin',];
     $has_admin_rate_sheets_roles = !empty(array_intersect($rate_sheet_admin_roles, $current_user_roles));
 
     // Load the rate sheet.
@@ -278,11 +278,39 @@ class EditRateSheetForm extends FormBase {
     }
 
     $nids = [];
+    $ranges_by_attribute_id = [];
 
     foreach ($rate_sheet_items as $item) {
-      $attribute_id = $item['api_attribute_id'];
+      $attribute_id = (string) $item['api_attribute_id'];
+      $item_id = $item['id'];
+
       $nids[] = $attribute_id;
+
+      $ranges = $ranges_by_item_id[$item_id] ?? [];
+
+      $ranges_by_attribute_id[$attribute_id] = array_map(
+        static function (array $range): array {
+          return [
+            'id' => $range['id'],
+            'from_range' => $range['from_range'],
+            'to_range' => $range['to_range'],
+            'partial_range' => $range['partial_range'],
+            'success_rate' => $range['success_rate'],
+          ];
+        },
+        $ranges
+      );
+
+      $form['tiered_calculation_' . $attribute_id] = [
+        '#type' => 'hidden',
+        '#default_value' => (int) $item['tiered_calculation'],
+      ];
     }
+
+    $form['rate_sheet_item_ranges'] = [
+      '#type' => 'value',
+      '#value' => $ranges_by_attribute_id,
+    ];
 
     $form['nodes'] = [
       '#type' => 'hidden',
@@ -296,7 +324,10 @@ class EditRateSheetForm extends FormBase {
 
     $form['rate_sheet_item_ranges_payload'] = [
       '#type' => 'hidden',
-      '#default_value' => '',
+      '#default_value' => json_encode(
+        $ranges_by_attribute_id,
+        JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+      ),
       '#attributes' => [
         'data-rate-sheet-ranges-payload' => '',
       ],
