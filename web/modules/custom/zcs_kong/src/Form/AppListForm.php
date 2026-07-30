@@ -20,6 +20,8 @@ use Drupal\group\Entity\GroupContent;
 use Drupal\group\Entity\GroupRelationship;
 use Drupal\group\Entity\GroupContentType;
 use Drupal\group\Entity\GroupMembership;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResult;
 
 /**
  * Provides a User Management list form.
@@ -375,4 +377,22 @@ final class AppListForm extends FormBase {
 
   }
 
+   /**
+   *
+   */
+  public function access(AccountInterface $account) {
+
+    if ($account->hasRole('carrier_admin') || $account->hasRole('administrator')) {
+      return AccessResult::allowed();
+    }
+
+    $memberships = \Drupal::service('group.membership_loader')->loadByUser($account);
+    if (!empty($memberships)) {
+      return AccessResult::allowed();
+    }
+
+    return AccessResult::forbidden();
+  }
 }
+
+
