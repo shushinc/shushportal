@@ -164,3 +164,17 @@ function zcs_custom_tokens($type, $tokens, array $data, array $options, Bubbleab
   }
   return $replacements;
 }
+
+function zcs_custom_preprocess_menu(array &$variables) {
+  if ($variables['menu_name'] !== 'main') {
+    return;
+  }
+
+   // Apply only to the "client" menu.     
+    foreach ($variables['items'] as $key => $item) {
+      if ($item['title'] == 'Client' && empty($item['below'])) {
+         unset($variables['items'][$key]);
+      }
+    }
+    
+}
