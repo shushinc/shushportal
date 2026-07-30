@@ -238,9 +238,6 @@ final class CreateKeyForm extends FormBase {
 
     if (!empty($memberships)) {
       $membership = reset($memberships);
-      dump($membership);
-      die;
-
       $roles = $membership->getRoles();
       $group_roles = [];
 
