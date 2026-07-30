@@ -229,25 +229,30 @@ final class CreateKeyForm extends FormBase {
    *
    */
   public function access(AccountInterface $account) {
-    if (\Drupal::currentUser()->hasRole('carrier_admin') || \Drupal::currentUser()->hasRole('administrator')) {
+
+    if ($account->hasRole('carrier_admin') || $account->hasRole('administrator')) {
       return AccessResult::allowed();
     }
-    else {
-      $memberships = \Drupal::service('group.membership_loader')->loadByUser(\Drupal::currentUser());
-      if (isset($memberships)) {
-        $roles = $memberships[0]->getRoles();
-        $group_roles = [];
-        foreach($roles as $role) {
-          $group_roles[] = $role->id();
-        }
-        if (in_array('partner-admin', $group_roles)) {
-          return AccessResult::allowed();
-        }
-        else{
-          return AccessResult::forbidden();
-        }
+
+    $memberships = \Drupal::service('group.membership_loader')->loadByUser($account);
+
+    if (!empty($memberships)) {
+      $membership = reset($memberships);
+      dump($membership);
+      die;
+
+      $roles = $membership->getRoles();
+      $group_roles = [];
+
+      foreach ($roles as $role) {
+        $group_roles[] = $role->id();
+      }
+
+      if (in_array('partner-admin', $group_roles)) {
+        return AccessResult::allowed();
       }
     }
+
     return AccessResult::forbidden();
   }
 }
