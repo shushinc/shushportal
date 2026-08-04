@@ -8,6 +8,7 @@ dependencies:
     - user.role.api_attribute_approval_level_2
     - user.role.carrier_admin
     - user.role.client_admin
+    - user.role.consent_viewer
     - user.role.finance_admin
     - user.role.financial_rate_sheet_approval_level_1
     - user.role.financial_rate_sheet_approval_level_2
@@ -703,6 +704,7 @@ display:
             api_attribute_admin: api_attribute_admin
             api_attribute_approval_level_1: api_attribute_approval_level_1
             api_attribute_approval_level_2: api_attribute_approval_level_2
+            consent_viewer: consent_viewer
           group: 1
           exposed: false
           expose:

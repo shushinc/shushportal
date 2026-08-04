@@ -33,6 +33,7 @@ function zcs_menu_install() {
         'api_attribute_admin',
         'api_attribute_approval_level_1',
         'api_attribute_approval_level_2',
+        'consent_viewer',
       ],
   ]);
   $carrier_parent_menu_link->save();
