@@ -62,6 +62,7 @@ final class UserEditForm extends FormBase {
       'api_attribute_admin',
       'api_attribute_approval_level_1',
       'api_attribute_approval_level_2',
+      'consent_viewer',
      ];
     $role_options = [];
 

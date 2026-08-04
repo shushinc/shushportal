@@ -1,0 +1,9 @@
+uuid: 20306690-5245-4d6b-9397-95d3672104d1
+langcode: en
+status: true
+dependencies: {  }
+id: consent_viewer
+label: 'Consent Viewer'
+weight: 13
+is_admin: null
+permissions: {  }
