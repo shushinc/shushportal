@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Url;
+use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
  * Class AnonymousRedirectSubscriber.
@@ -97,12 +98,40 @@ class AnonymousRedirectSubscriber implements EventSubscriberInterface {
 
 
   public function checkRedirect(RequestEvent $event) {
+
     // Ensure this runs only for authenticated users
     if (\Drupal::currentUser()->isAuthenticated()) {
       $request = $event->getRequest();
       $path = $request->getPathInfo(); // Get the current URL path
       $queryParams = $request->query->all(); // Get query parameters
 
+        // Check if user has exactly these two roles.
+      $roles = \Drupal::currentUser()->getRoles();
+      sort($roles);
+
+      $expected_roles = [
+        'authenticated',
+        'consent_viewer',
+      ];
+      sort($expected_roles);
+
+      $is_consent_viewer = ($roles === $expected_roles);
+
+      // Redirect consent_viewer users to Consent Management.
+      if ($is_consent_viewer && preg_match('/^\/user\/\d+$/', $path)) {
+        $response = new RedirectResponse(
+          Url::fromRoute('zcs_consent.consent_view')->toString()
+        );
+        $event->setResponse($response);
+        return;
+      }
+      // Redirect only from the site's base URL.
+      if ($is_consent_viewer && $request->getPathInfo() === '/') {
+        $response = new RedirectResponse(
+          Url::fromRoute('zcs_consent.consent_view')->toString()
+        );
+        $event->setResponse($response);
+      }
       // Check if user is visiting /user/{uid} with ?check_logged_in=1
       if (preg_match('/^\/user\/\d+$/', $path) && isset($queryParams['check_logged_in'])) {
         $response = new RedirectResponse(Url::fromRoute('<front>')->toString());

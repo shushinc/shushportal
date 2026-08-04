@@ -68,6 +68,7 @@ final class UserInviteForm extends FormBase {
     $roles_to_keep = [
        'carrier_admin',
        'finance_admin', 
+       'consent_viewer',
        'financial_rate_sheet_approval_level_1', 
        'financial_rate_sheet_approval_level_2',
        'api_attribute_admin',
