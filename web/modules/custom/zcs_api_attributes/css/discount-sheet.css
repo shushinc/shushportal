@@ -1,7 +1,7 @@
 #edit-pricing-discount {
     table-layout: fixed;
     order: 3;
-  }
+}
   #edit-pricing-discount tr th:first-child {
     width: 2%;
     text-align: left;
@@ -38,6 +38,14 @@
   .pricing-discount-sheet .js-form-item-client .form-select {
     border-radius: 8px;
     height: 48px;
+  }
+  
+  .pricing-discount-sheet .create-discount-link-wrapper a.button.button--primary.disable-link {
+    background-color: #999 !important;
+    border-color: #999 !important;
+    color: #fff !important;
+    pointer-events: none;
+    cursor: not-allowed;
   }
   
   #edit-create-discount-pricing-link {

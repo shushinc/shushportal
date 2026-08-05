@@ -41,6 +41,7 @@ class SyncAppsForm extends FormBase {
               }
             }
             $app_count = 0;
+            $expired_app_count = 0;
             $apps_synced = 0;
             $jwt_count = 0;
             $jwt_synced = 0;
@@ -59,12 +60,18 @@ class SyncAppsForm extends FormBase {
             $relationships = \Drupal::entityTypeManager()->getStorage('group_relationship')->loadByProperties(['gid' => $group->id()]);
             foreach ($relationships as $relationship) {
               $entity = $relationship->getEntity();
-              if ($entity && $entity->getEntityTypeId() === 'node' && $entity->bundle() === 'app'  && $entity->get('field_gateway')->isEmpty()) {
-                $app_count++;
-              }
-              if ($entity && $entity->getEntityTypeId() === 'node' && !$entity->get('field_jwt')->isEmpty() && !$entity->get('field_jwt_key')->isEmpty()) {
+              if ($entity && $entity->getEntityTypeId() === 'node' && $entity->bundle() === 'app' && $entity->get('field_gateway')->isEmpty() && $entity->get('field_app_status')->value !== 'deleted' && !$entity->get('field_jwt')->isEmpty() && !$entity->get('field_jwt_key')->isEmpty()) {
                 $jwt_count++;
               }
+              if ($entity && $entity->getEntityTypeId() === 'node' && $entity->bundle() === 'app' && $entity->get('field_gateway')->isEmpty()) {
+              // Count deleted apps separately.
+              if ($entity->get('field_app_status')->value === 'deleted') {
+                $expired_app_count++;
+              }
+              else {
+                $app_count++;
+              }
+             }
             }
 
             if (!$user_synced) {
@@ -89,10 +96,10 @@ class SyncAppsForm extends FormBase {
               $status_text = 'Partially Synced';
               $status_color = 'orange';
             }
-            // elseif ($jwt_synced < $jwt_count) {
-            //   $status_text = 'Partially Synced';
-            //   $status_color = 'orange';
-            // }
+            elseif ($jwt_synced < $jwt_count) {
+              $status_text = 'Partially Synced';
+              $status_color = 'orange';
+            }
             else {
               // All apps synced.
               $status_text = 'Synced';
@@ -113,6 +120,7 @@ class SyncAppsForm extends FormBase {
               'name'         => $group->label(),
               'email'        => $group->get('field_contact_email')->value,
               'app_count'    => $app_count,
+              'expired_apps' => $expired_app_count,
               'apps_synced'  => $apps_synced,
               //'jwt_count'    => $jwt_count,
               //'jwt_synced'   => $jwt_synced,
@@ -125,15 +133,16 @@ class SyncAppsForm extends FormBase {
          \Drupal::logger('zcs_kong_sync')->warning('Group @gid dont have consumer id', ['@gid' => $group->id()]);
         }
       }
+      
     }
-
     $form['groups'] = [
       '#type'    => 'tableselect',
       '#header'  => [
         'gid'  => $this->t('ID'),
         'name' => $this->t('Client Name'),
         'email' => $this->t('Email'),
-        'app_count'    => $this->t('Total Apps'),
+        'app_count'    => $this->t('Active Apps'),
+        'expired_apps'  => $this->t('Expired Apps'),
         'apps_synced' => $this->t('Apps Synced'),
         // 'jwt_count'    => $this->t('Total Jwt'),
         // 'jwt_synced'   => $this->t('Jwt Synced'),
@@ -243,31 +252,27 @@ class SyncAppsForm extends FormBase {
       return;
     }
 
-  $get_consumer_response = $kong_service->getConsumer($contact_email);
+    $get_consumer_response = $kong_service->getConsumer($contact_email);
 
-  if ($get_consumer_response !== 'error') {
+    if ($get_consumer_response !== 'error') {
 
-    $response = Json::decode(
-      $get_consumer_response->getBody()->getContents()
-    );
-
-    if (empty($response['data'])) {
-    $create_consumer_response = $kong_service->createConsumerSync(
-      $user_name,
-      $consumer_id,
-      $contact_email
-    );
-
-    if (
-      $create_consumer_response !== 'error' &&
-      $create_consumer_response->getStatusCode() == 201
-    ) {
-
-      \Drupal::logger('zcs_kong')->notice(
-        'Created consumer for @email',
-        ['@email' => $contact_email]
+      $response = Json::decode(
+        $get_consumer_response->getBody()->getContents()
       );
-    }
+
+      if (empty($response['data'])) {
+      $create_consumer_response = $kong_service->createConsumerSync(
+        $user_name,
+        $consumer_id,
+        $contact_email
+      );
+
+      if ($create_consumer_response !== 'error' && $create_consumer_response->getStatusCode() == 201) {
+        \Drupal::logger('zcs_kong')->notice(
+          'Created consumer for @email',
+          ['@email' => $contact_email]
+        );
+      }
     }
   }
 
@@ -282,12 +287,7 @@ class SyncAppsForm extends FormBase {
     $app_nodes = [];
     foreach ($relationships as $relationship) {
       $entity = $relationship->getEntity();
-      if (
-        $entity &&
-        $entity->getEntityTypeId() === 'node' &&
-        $entity->bundle() === 'app' &&
-        $entity->get('field_gateway')->isEmpty()
-      ) {
+      if ( $entity && $entity->getEntityTypeId() === 'node' && $entity->bundle() === 'app' && $entity->get('field_gateway')->isEmpty() && $entity->get('field_app_status')->value !== 'deleted') {
         $app_nodes[] = $entity;
         \Drupal::logger('zcs_kong')->notice(
           'Eligible App Node: @title (NID: @nid)',
@@ -341,10 +341,7 @@ class SyncAppsForm extends FormBase {
       // Create a new consumer.
       $create_consumer_response = $kong_service->createConsumerSync($user_name, $consumer_id, $contact_email);
 
-      if (
-        $create_consumer_response !== 'error' &&
-        $create_consumer_response->getStatusCode() === 201   // FIX: int, not string
-      ) {
+      if ($create_consumer_response !== 'error' && $create_consumer_response->getStatusCode() === 201) {
         $create_consumer_body          = $create_consumer_response->getBody()->getContents();
         $kong_create_consumer_response = Json::decode($create_consumer_body);
         $consumer_id_to_use            = $kong_create_consumer_response['id'] ?? NULL;
@@ -368,9 +365,7 @@ class SyncAppsForm extends FormBase {
 
       // FIX: redirect_uris must be an array for Kong.
       $redirect_uri_value = $node->field_redirect_url->value;
-      $redirect_uris      = !empty($redirect_uri_value)
-        ? (array) $redirect_uri_value
-        : [];
+      $redirect_uris      = !empty($redirect_uri_value) ? (array) $redirect_uri_value: [];
 
       $kong_app = [
         'name'          => $node->getTitle(),
@@ -382,6 +377,13 @@ class SyncAppsForm extends FormBase {
       ];
 
       $sync_apps_response = $kong_service->syncAppByNewConsumerId($kong_app, $user_name);
+
+      $jwt_id = $node->field_jwt->value;
+      $jwt_key = $node->field_jwt_key->value;
+      $jwt_secret = 'strongpassword';
+      $tags = !empty($node->field_tag->value) ? [$node->field_tag->value] : [];
+      $create_jwt_token_response = $kong_service->createJwtTokenSync($user_name, $jwt_id, $jwt_key, $jwt_secret, $tags);
+
 
       if ($sync_apps_response === 'error') {
         \Drupal::logger('zcs_kong')->error(
@@ -402,25 +404,15 @@ class SyncAppsForm extends FormBase {
       $response_body = (string) $sync_apps_response->getBody();
 
 
-      $jwt_id = $node->field_jwt->value;
-      $jwt_key = $node->field_jwt_key->value;
-      $jwt_secret = 'strongpassword';
-      //$consumer_username = $node->getTitle();
-      $tags = !empty($node->field_tag->value) ? [$node->field_tag->value] : [];
 
-      $create_jwt_token_response = $kong_service->createJwtTokenSync($user_name, $jwt_id, $jwt_key, $jwt_secret, $tags);
 
       if (empty($create_jwt_token_response)) {
-        \Drupal::logger('zcs_kong')->error(
-          'createJwtToken() returned empty for app @nid.', ['@nid' => $node->id()]
-        );
+        \Drupal::logger('zcs_kong')->error('createJwtToken() returned empty for app @nid.', ['@nid' => $node->id()]);
         continue;
       }
 
       if($create_jwt_token_response != 'error') {
-        \Drupal::logger('zcs_kong')->error(
-                'createJwtToken() returned empty for app @nid.', ['@nid' => $node->id()]
-              );
+        \Drupal::logger('zcs_kong')->error('createJwtToken() returned empty for app @nid.', ['@nid' => $node->id()]);
         continue;
       }
 
@@ -432,7 +424,6 @@ class SyncAppsForm extends FormBase {
         );
         continue;
       }
-
       $jwt_response_body = (string) $create_jwt_token_response->getBody();
 
       // FIX: log the result of updateSyncApp so failures are not silent.

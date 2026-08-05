@@ -3,6 +3,9 @@
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\File\FileUrlGeneratorInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Implements hook_theme().
@@ -163,4 +166,99 @@ function zcs_custom_tokens($type, $tokens, array $data, array $options, Bubbleab
     }
   }
   return $replacements;
+}
+
+function zcs_custom_preprocess_menu(array &$variables) {
+  if ($variables['menu_name'] !== 'main') {
+    return;
+  }
+
+  // Apply only to the "client" menu.     
+  foreach ($variables['items'] as $key => $item) {
+    if ($item['title'] == 'Client' && empty($item['below'])) {
+        unset($variables['items'][$key]);
+    }
+  }
+
+  /** @var \Drupal\Core\Session\AccountInterface $account */
+  $account = \Drupal::currentUser();
+  $variables['#cache']['contexts'][] = 'user.roles';
+
+  if (!_carrier_menu_should_flatten($account)) {
+    return;
+  }
+  $variables['items'] = _carrier_menu_flatten_tree($variables['items'], $account);
+    
+}
+
+/**
+ * Determines if the current user's menu should be flattened.
+ *
+ * Checks ROLE, not permission.
+ */
+function _carrier_menu_should_flatten(AccountInterface $account) {
+  $roles = $account->getRoles();
+
+  // Normalize for safe comparison (order-independent).
+  sort($roles);
+
+  $expected_roles = ['authenticated', 'consent_viewer'];
+  sort($expected_roles);
+
+
+  return $roles === $expected_roles;
+}
+
+
+/**
+ * Keep only:
+ * Carrier
+ *   └── Consent Management
+ */
+function _carrier_menu_flatten_tree(array $items) {
+  $filtered = [];
+
+  foreach ($items as $key => $item) {
+    // Keep only Carrier.
+    if ($item['title'] !== 'Carrier') {
+      continue;
+    }
+    $children = [];
+
+    foreach ($item['below'] as $child_key => $child) {
+
+      // Keep only Consent Management.
+      if ($child['title'] === 'Consent Management') {
+        $child['below'] = [];
+        $children[$child_key] = $child;
+      }
+    }
+
+    if (!empty($children)) {
+      $item['below'] = $children;
+      $filtered[$key] = $item;
+    }
+  }
+  return $filtered;
+}
+
+/**
+ * Implements hook_menu_link_content_access().
+ *
+ * Dynamically grants content_editor role access to the Carrier
+ * parent link, without needing to edit the stored
+ * menu_per_role__show_role field.
+ */
+function zcs_custom_menu_link_content_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  if ($operation !== 'view') {
+    return AccessResult::neutral();
+  }
+  // Only act on the specific Carrier menu link.
+  if ($entity->getTitle() === 'Carrier' && in_array('consent_viewer', $account->getRoles(), TRUE)) {
+    return AccessResult::allowed()
+      ->addCacheContexts(['user.roles'])
+      ->cachePerUser();
+  }
+
+  return AccessResult::neutral();
 }
