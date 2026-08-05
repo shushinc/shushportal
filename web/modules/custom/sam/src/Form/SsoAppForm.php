@@ -30,6 +30,9 @@ class SsoAppForm extends EntityForm {
     /** @var \Drupal\sam\Entity\SsoApp $app */
     $app = $this->entity;
 
+    // Get route provider if available.
+    $route_provider = $this->getRouteMatch()->getParameter('provider');
+
     $form['is_enabled'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Active'),
@@ -74,12 +77,19 @@ class SsoAppForm extends EntityForm {
       ],
     ];
 
+    // Disable provider field if coming from dedicated route.
+    if ($route_provider) {
+      $form['provider']['#disabled'] = TRUE;
+      $form['provider']['#default_value'] = $route_provider;
+    }
+
     $form['settings'] = [
       '#type' => 'container',
       '#attributes' => ['id' => 'provider-settings-wrapper'],
       '#tree' => TRUE,
     ];
 
+    // Resolve provider ID in order of precedence.
     $provider_id = $form_state->getValue('provider');
 
     if (!$provider_id) {
@@ -88,6 +98,9 @@ class SsoAppForm extends EntityForm {
     }
     if (!$provider_id) {
       $provider_id = $app->getProvider();
+    }
+    if (!$provider_id && $route_provider) {
+      $provider_id = $route_provider;
     }
 
     if ($provider_id && $this->providerManager->hasDefinition($provider_id)) {
@@ -101,11 +114,29 @@ class SsoAppForm extends EntityForm {
         '#open' => TRUE,
       ];
 
-      $form['settings']['details'] += $provider->getConfigurationForm(
-        $form,
-        $form_state,
-        $app
-      );
+      // Add provider configuration fields.
+      foreach ($provider->getConfigurationForm($form, $form_state, $app) as $key => $element) {
+        $form['settings']['details'][$key] = $element;
+      }
+
+      // Add Test Connection button for LDAP.
+      if (method_exists($provider, 'supportsConnectionTest') && $provider->supportsConnectionTest()) {
+        $form['settings']['test_connection_wrapper'] = [
+          '#type' => 'container',
+          '#attributes' => ['id' => 'test-connection-wrapper'],
+        ];
+
+        $form['settings']['test_connection'] = [
+          '#type' => 'button',
+          '#value' => $this->t('Test Connection'),
+          '#ajax' => [
+            'callback' => '::testConnectionCallback',
+            'wrapper' => 'test-connection-wrapper',
+            'event' => 'click',
+          ],
+          '#limit_validation_errors' => [],
+        ];
+      }
     }
 
     return parent::form($form, $form_state);
@@ -113,6 +144,46 @@ class SsoAppForm extends EntityForm {
 
   public function providerAjaxCallback(array &$form, FormStateInterface $form_state): array {
     return $form['settings'];
+  }
+
+  /**
+   * AJAX callback for Test Connection button.
+   */
+  public function testConnectionCallback(array &$form, FormStateInterface $form_state): array {
+    $messenger = \Drupal::messenger();
+    
+    try {
+      // Collect LDAP configuration from form state.
+      $configuration = [
+        'host' => trim((string) $form_state->getValue(['settings', 'details', 'connection', 'host'])),
+        'port' => (int) $form_state->getValue(['settings', 'details', 'connection', 'port']),
+        'encryption' => strtolower(trim((string) $form_state->getValue(['settings', 'details', 'connection', 'encryption']))),
+        'base_dn' => trim((string) $form_state->getValue(['settings', 'details', 'directory', 'base_dn'])),
+        'bind_dn' => trim((string) $form_state->getValue(['settings', 'details', 'service_account', 'bind_dn'])),
+        'bind_password_key' => trim((string) $form_state->getValue(['settings', 'details', 'service_account', 'bind_password_key'])),
+      ];
+
+      // Check if sam_ldap module is enabled.
+      if (!\Drupal::moduleHandler()->moduleExists('sam_ldap')) {
+        $messenger->addError($this->t('The sam_ldap module must be enabled to test LDAP connections.'));
+      }
+      else {
+        // Get the LDAP connection service.
+        $ldap_connection = \Drupal::service('sam_ldap.connection');
+        
+        // Test the connection.
+        $ldap_connection->testConnection($configuration);
+        
+        $messenger->addStatus($this->t('Successfully connected to the LDAP server.'));
+      }
+    }
+    catch (\Exception $e) {
+      $messenger->addError($this->t('Unable to connect to the LDAP server: @message', [
+        '@message' => $e->getMessage(),
+      ]));
+    }
+
+    return $form['settings']['test_connection_wrapper'];
   }
 
   public function validateForm(array &$form, FormStateInterface $form_state): void {
@@ -141,9 +212,16 @@ class SsoAppForm extends EntityForm {
     /** @var \Drupal\sam\Entity\SsoApp $app */
     $app = $this->entity;
 
+    // Get route provider if available.
+    $route_provider = $this->getRouteMatch()->getParameter('provider');
+
     $app->set('label', $form_state->getValue('label'));
     $app->set('domain', $form_state->getValue('domain'));
-    $app->set('provider', $form_state->getValue('provider'));
+    
+    // Use submitted provider or fall back to route provider.
+    $provider_id = $form_state->getValue('provider') ?: $route_provider;
+    $app->set('provider', $provider_id);
+    
     $app->set('is_enabled',$app->get('is_enabled') ? TRUE : FALSE);
     $app->set('status',$app->get('is_enabled') ? TRUE : FALSE);
 
@@ -152,7 +230,6 @@ class SsoAppForm extends EntityForm {
       $app->set('settings', $provider->submitConfigurationForm($form, $form_state, $app));
     }
 
-    $app->save();
 
     $form_state->setRedirect('entity.sam_sso_app.collection');
 

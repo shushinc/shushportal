@@ -3,3 +3,9 @@ sam.sso_app.add:
   title: 'Add SSO application'
   appears_on:
     - entity.sam_sso_app.collection
+
+sam.sso_app.add_ldap:
+  route_name: entity.sam_sso_app.add_ldap_form
+  title: 'Add LDAP application'
+  appears_on:
+    - entity.sam_sso_app.collection

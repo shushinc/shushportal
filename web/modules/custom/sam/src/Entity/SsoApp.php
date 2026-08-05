@@ -52,6 +52,10 @@ class SsoApp extends ConfigEntityBase implements SsoAppInterface {
 
   protected string $id;
   protected string $label;
+  protected array $settings = [];
+  protected string $provider;
+  protected string $domain;
+  protected bool $is_enabled;
   
 
   public function id(): string {
@@ -71,7 +75,7 @@ class SsoApp extends ConfigEntityBase implements SsoAppInterface {
   }
 
   public function getSettings(): array {
-    return $this->settings['details'] ?? [];
+    return $this->settings ?? [];
   }
 
   public function getSetting(string $key, $default = NULL) {

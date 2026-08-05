@@ -1,0 +1,6 @@
+services:
+  sam_ldap.connection:
+    class: Drupal\sam_ldap\Service\LdapConnectionService
+    arguments:
+      - '@logger.factory'
+      - '@key.repository'
