@@ -209,19 +209,19 @@ class SsoAppForm extends EntityForm {
   }
 
   public function submitForm(array &$form, FormStateInterface $form_state): void {
+    parent::submitForm($form, $form_state);  
     /** @var \Drupal\sam\Entity\SsoApp $app */
     $app = $this->entity;
 
     // Get route provider if available.
     $route_provider = $this->getRouteMatch()->getParameter('provider');
-
-    $app->set('label', $form_state->getValue('label'));
-    $app->set('domain', $form_state->getValue('domain'));
     
     // Use submitted provider or fall back to route provider.
     $provider_id = $form_state->getValue('provider') ?: $route_provider;
+
+    $app->set('label', $form_state->getValue('label'));
+    $app->set('domain', $form_state->getValue('domain'));
     $app->set('provider', $provider_id);
-    
     $app->set('is_enabled',$app->get('is_enabled') ? TRUE : FALSE);
     $app->set('status',$app->get('is_enabled') ? TRUE : FALSE);
 
@@ -230,10 +230,9 @@ class SsoAppForm extends EntityForm {
       $app->set('settings', $provider->submitConfigurationForm($form, $form_state, $app));
     }
 
+    $app->save();
 
     $form_state->setRedirect('entity.sam_sso_app.collection');
-
-    parent::submitForm($form, $form_state);
   }
 
 }

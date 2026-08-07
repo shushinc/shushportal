@@ -4,3 +4,9 @@ services:
     arguments:
       - '@logger.factory'
       - '@key.repository'
+
+  sam_ldap.authentication:
+    class: Drupal\sam_ldap\Service\LdapAuthenticationService
+    arguments:
+      - '@logger.factory'
+      - '@sam_ldap.connection'

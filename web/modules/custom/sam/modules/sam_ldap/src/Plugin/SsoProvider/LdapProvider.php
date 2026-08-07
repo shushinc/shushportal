@@ -111,13 +111,13 @@ final class LdapProvider extends PluginBase implements SsoProviderInterface {
           '#type' => 'textfield',
           '#title' => $this->t('Host'),
           '#description' => $this->t('LDAP server hostname or IP address, for example ldap.example.org or openldap.'),
-          '#default_value' => $settings['details']['connection']['host'] ?? '',
+          '#default_value' => $settings['host'] ?? '',
           '#required' => TRUE,
         ],
         'port' => [
           '#type' => 'number',
           '#title' => $this->t('Port'),
-          '#default_value' => $settings['details']['connection']['port'] ?? 389,
+          '#default_value' => $settings['port'] ?? 389,
           '#required' => TRUE,
           '#min' => 1,
           '#max' => 65535,
@@ -130,7 +130,7 @@ final class LdapProvider extends PluginBase implements SsoProviderInterface {
             'starttls' => $this->t('STARTTLS'),
             'ldaps' => $this->t('LDAPS'),
           ],
-          '#default_value' => $settings['details']['connection']['encryption'] ?? 'none',
+          '#default_value' => $settings['encryption'] ?? 'none',
           '#required' => TRUE,
         ],
       ],
@@ -142,7 +142,7 @@ final class LdapProvider extends PluginBase implements SsoProviderInterface {
           '#type' => 'textfield',
           '#title' => $this->t('Base DN'),
           '#description' => $this->t('The directory base used when searching for users. Example: dc=example,dc=org'),
-          '#default_value' => $settings['details']['directory']['base_dn'] ?? '',
+          '#default_value' => $settings['base_dn'] ?? '',
           '#required' => TRUE,
         ],
       ],
@@ -154,14 +154,14 @@ final class LdapProvider extends PluginBase implements SsoProviderInterface {
           '#type' => 'textfield',
           '#title' => $this->t('Bind DN'),
           '#description' => $this->t('Example: cn=admin,dc=example,dc=org'),
-          '#default_value' => $settings['details']['service_account']['bind_dn'] ?? '',
+          '#default_value' => $settings['bind_dn'] ?? '',
           '#required' => TRUE,
         ],
         'bind_password_key' => [
           '#type' => 'textfield',
           '#title' => $this->t('Drupal Key ID for Bind Password'),
           '#description' => $this->t('The Drupal Key entity ID that stores the LDAP service account password. Example: sam_ldap_bind_password'),
-          '#default_value' => $settings['details']['service_account']['bind_password_key'] ?? '',
+          '#default_value' => $settings['bind_password_key'] ?? '',
           '#required' => TRUE,
         ],
       ],
@@ -302,6 +302,21 @@ final class LdapProvider extends PluginBase implements SsoProviderInterface {
       'username_attribute' => trim((string) $form_state->getValue(['settings', 'details', 'attribute_mapping', 'username_attribute'])),
       'display_name_attribute' => trim((string) $form_state->getValue(['settings', 'details', 'attribute_mapping', 'display_name_attribute'])),
     ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function supportsCredentialAuthentication(): bool {
+    return TRUE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function authenticateCredentials(string $email, string $password, SsoAppInterface $app): array {
+    $authentication_service = \Drupal::service('sam_ldap.authentication');
+    return $authentication_service->authenticate($email, $password, $app);
   }
 
 }

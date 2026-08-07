@@ -166,15 +166,29 @@ final class LoginFlowManager {
       $provider = $this->providerManager->getProvider($provider_id);
 
       if ($provider !== NULL) {
-        // Redirect to SSO authentication entry point.
-        $url = Url::fromRoute('sam.authenticate');
+        // Check if provider supports credential authentication.
+        if ($provider->supportsCredentialAuthentication()) {
+          // Redirect to password screen for credential-based providers (LDAP).
+          $url = Url::fromRoute('sam.client_auth_screen');
 
-        $form_state->setResponse(
-          new RedirectResponse($url->toString())
-        );
+          $form_state->setResponse(
+            new RedirectResponse($url->toString())
+          );
 
-        $form_state->setRebuild(FALSE);
-        $form_state->disableRedirect();
+          $form_state->setRebuild(FALSE);
+          $form_state->disableRedirect();
+        }
+        else {
+          // Redirect to SSO authentication entry point for redirect-based providers (OIDC).
+          $url = Url::fromRoute('sam.authenticate');
+
+          $form_state->setResponse(
+            new RedirectResponse($url->toString())
+          );
+
+          $form_state->setRebuild(FALSE);
+          $form_state->disableRedirect();
+        }
       }
     }
   }
