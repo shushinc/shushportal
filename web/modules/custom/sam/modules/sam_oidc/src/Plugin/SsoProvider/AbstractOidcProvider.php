@@ -368,4 +368,18 @@ abstract class AbstractOidcProvider extends PluginBase implements SsoProviderInt
    */
   protected function validateProviderSpecificClaims(array $claims, SsoAppInterface $app): void {}
 
+  /**
+   * {@inheritdoc}
+   */
+  public function supportsCredentialAuthentication(): bool {
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function authenticateCredentials(string $email, string $password, SsoAppInterface $app): array {
+    throw new \LogicException('OIDC providers do not support credential-based authentication.');
+  }
+
 }

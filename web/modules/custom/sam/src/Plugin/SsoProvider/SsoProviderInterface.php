@@ -106,4 +106,36 @@ interface SsoProviderInterface extends PluginInspectionInterface, ContainerFacto
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state, SsoAppInterface $soApp = NULL): array;
 
+  /**
+   * Indicates whether this provider supports credential-based authentication.
+   *
+   * @return bool
+   *   TRUE when the provider supports authenticating with email and password.
+   */
+  public function supportsCredentialAuthentication(): bool;
+
+  /**
+   * Authenticates a user using email and password credentials.
+   *
+   * This method is only called for providers that return TRUE from
+   * supportsCredentialAuthentication().
+   *
+   * @param string $email
+   *   The user's email address.
+   * @param string $password
+   *   The user's password.
+   * @param \Drupal\sam\SsoAppInterface $app
+   *   The SSO app configuration.
+   *
+   * @return array
+   *   An array containing user identity data with keys:
+   *   - email: The user's email address
+   *   - username: The user's username
+   *   - display_name: The user's display name
+   *
+   * @throws \RuntimeException
+   *   Thrown when authentication fails.
+   */
+  public function authenticateCredentials(string $email, string $password, SsoAppInterface $app): array;
+
 }
