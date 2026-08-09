@@ -11,6 +11,7 @@ use Drupal\sam\Service\SsoAppResolver;
 use Drupal\sam\SsoProviderManager;
 use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Url;
 
 class ClientPasswordForm extends FormBase {
 
@@ -98,6 +99,14 @@ class ClientPasswordForm extends FormBase {
       '#type' => 'password',
       '#title' => $this->t('Password'),
       '#required' => TRUE,
+    ];
+    $form['forgot_password'] = [
+      '#type' => 'link',
+      '#title' => $this->t('Forgot your password?'),
+      '#url' => Url::fromRoute('user.pass'),
+      '#attributes' => [
+        'class' => ['forgot-password-link'],
+      ],
     ];
 
     $form['actions'] = [
