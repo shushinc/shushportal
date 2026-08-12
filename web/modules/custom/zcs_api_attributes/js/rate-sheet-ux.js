@@ -466,11 +466,38 @@
     });
   }
 
+  /**
+   * Prevents form submission when pressing ENTER key.
+   *
+   * @param {HTMLFormElement} form
+   *   The form element.
+   */
+  function preventEnterSubmit(form) {
+    form.addEventListener('keydown', function (event) {
+      // Check if ENTER key was pressed
+      if (event.key === 'Enter' || event.keyCode === 13) {
+        var target = event.target;
+        
+        // Allow ENTER on textareas and submit buttons
+        if (target.tagName === 'TEXTAREA' || 
+            (target.tagName === 'BUTTON' && target.type === 'submit') ||
+            (target.tagName === 'INPUT' && target.type === 'submit')) {
+          return;
+        }
+        
+        // Prevent form submission for all other cases
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    });
+  }
+
   Drupal.behaviors.rateSheetUx = {
     attach: function (context) {
       once('rate-sheet-attribute-filter', '[data-rate-sheet-ranges]', context).forEach(initAttributeFilter);
       once('rate-sheet-floating-submit', '[data-rate-sheet-floating-submit]', context).forEach(initFloatingSubmit);
       once('rate-sheet-accordion-toggles', '[data-rate-sheet-ranges]', context).forEach(initAccordionToggles);
+      once('rate-sheet-prevent-enter', 'form.new-rate-sheet-review, form.edit-rate-sheet', context).forEach(preventEnterSubmit);
     }
   };
 

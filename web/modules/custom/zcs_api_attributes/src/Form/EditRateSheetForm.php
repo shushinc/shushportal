@@ -167,10 +167,6 @@ class EditRateSheetForm extends FormBase {
     $is_cancelled = strtolower($status) === 'cancelled';
     $is_approved = strtolower($status) === 'approved';
 
-    if ($is_cancelled) {
-      $this->messenger->addWarning($this->t('This rate sheet has been cancelled and cannot be edited.'));
-    }
-
     if ($is_approved) {
       $this->messenger->addStatus($this->t('This rate sheet is approved. You can only add or remove clients.'));
     }
@@ -225,15 +221,15 @@ class EditRateSheetForm extends FormBase {
       '#weight' => 0,
     ];
 
-    // Effective date.
     $form['attribute_date'] = [
-      '#type' => 'date',
-      '#default_value' => date('Y-m-d', $rate_sheet->effective_date),
+      '#type' => 'textfield',
+      '#default_value' => date('m/Y', $rate_sheet->effective_date),
       '#weight' => 1,
       '#attributes' => [
-        'min' => date('Y-m-d'),
+        'type'=> 'month'
       ],
-      '#disabled' => $can_edit_clients_only,
+      '#date_date_format' => 'm/Y',
+      '#disabled' => TRUE,
     ];
 
     // Markup retail.
@@ -488,19 +484,6 @@ class EditRateSheetForm extends FormBase {
     // Validate rate sheet name.
     if (empty(trim($values['name']))) {
       $form_state->setErrorByName('name', $this->t('Rate sheet name is required.'));
-    }
-
-    // Validate effective date.
-    $effective_date = $values['attribute_date'] ?? NULL;
-    if (empty($effective_date)) {
-      $form_state->setErrorByName('attribute_date', $this->t('Effective date is required.'));
-    }
-    else {
-      $date_timestamp = strtotime($effective_date);
-      $today = strtotime(date('Y-m-d'));
-      if ($date_timestamp < $today) {
-        $form_state->setErrorByName('attribute_date', $this->t('Effective date cannot be in the past.'));
-      }
     }
 
     // Validate JSON payload only - ignore form fields
