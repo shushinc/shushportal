@@ -51,6 +51,13 @@ class RateSheetService {
   protected $time;
 
   /**
+   * In-memory cache for analytics_carrier taxonomy terms.
+   *
+   * @var array
+   */
+  protected $analyticsCarrierCache = [];
+
+  /**
    * Constructs a RateSheetService object.
    *
    * @param \Drupal\Core\Database\Connection $database
@@ -1457,6 +1464,14 @@ class RateSheetService {
         $calculation
       );
 
+      // Create Analytics node after successful pricing calculation
+      $this->createAnalyticsNode(
+        $bucket,
+        $client_data['id'],
+        $attribute_data['id'],
+        $calculation
+      );
+
       return $this->enrichBucketWithPricing(
         $bucket,
         $client_data,
@@ -2304,6 +2319,141 @@ class RateSheetService {
     }
 
     return $clients;
+  }
+
+  /**
+   * Resolves or creates an analytics_carrier taxonomy term.
+   *
+   * @param string $carrier_name
+   *   The carrier name from the bucket.
+   *
+   * @return int
+   *   The taxonomy term ID.
+   *
+   * @throws \InvalidArgumentException
+   *   When carrier name is empty.
+   * @throws \Exception
+   *   When term creation fails.
+   */
+  protected function resolveAnalyticsCarrier(string $carrier_name): int {
+    $carrier_name = trim($carrier_name);
+
+    if ($carrier_name === '') {
+      throw new \InvalidArgumentException('Carrier name cannot be empty.');
+    }
+
+    // Check in-memory cache first
+    if (isset($this->analyticsCarrierCache[$carrier_name])) {
+      return $this->analyticsCarrierCache[$carrier_name];
+    }
+
+    $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
+
+    // Search for existing term in analytics_carrier vocabulary
+    $terms = $term_storage->loadByProperties([
+      'vid' => 'analytics_carrier',
+      'name' => $carrier_name,
+    ]);
+
+    if (!empty($terms)) {
+      $term = reset($terms);
+      $term_id = (int) $term->id();
+
+      // Cache the result
+      $this->analyticsCarrierCache[$carrier_name] = $term_id;
+
+      return $term_id;
+    }
+
+    // Create new term
+    $term = $term_storage->create([
+      'vid' => 'analytics_carrier',
+      'name' => $carrier_name,
+    ]);
+
+    $term->save();
+
+    $term_id = (int) $term->id();
+
+    // Cache the result
+    $this->analyticsCarrierCache[$carrier_name] = $term_id;
+
+    return $term_id;
+  }
+
+  /**
+   * Creates an Analytics node for a successfully processed bucket.
+   *
+   * @param array $bucket
+   *   The bucket data.
+   * @param int $client_id
+   *   The client ID (already resolved).
+   * @param int $attribute_id
+   *   The API attribute ID (already resolved).
+   * @param array $calculation
+   *   The pricing calculation results.
+   *
+   * @throws \Exception
+   *   When Analytics node creation fails.
+   */
+  protected function createAnalyticsNode(
+    array $bucket,
+    int $client_id,
+    int $attribute_id,
+    array $calculation
+  ): void {
+    // Resolve carrier taxonomy term
+    $carrier_name = (string) ($bucket['carrier_name'] ?? '');
+
+    if ($carrier_name === '') {
+      throw new \Exception('Missing carrier_name in bucket');
+    }
+
+    $carrier_id = $this->resolveAnalyticsCarrier($carrier_name);
+
+    // Calculate average latency (rounded sum of three latency values)
+    $average_latency = round(
+      (float) ($bucket['avg_latency_full_rate'] ?? 0) +
+      (float) ($bucket['avg_latency_lower_rate'] ?? 0) +
+      (float) ($bucket['avg_latency_no_billable'] ?? 0)
+    );
+
+    $node_storage = $this->entityTypeManager->getStorage('node');
+
+    $node = $node_storage->create([
+      'type' => 'analytics',
+      'title' => 'Analytics: ' . ($bucket['source_bucket_id'] ?? 'unknown'),
+
+      'field_api_volume_in_mil' => (int) ($bucket['total_transaction_count'] ?? 0),
+
+      'field_average_api_latency_in_mil' => $average_latency,
+
+      'field_error_api_volume_in_mil' => (int) ($bucket['total_no_billable_transaction'] ?? 0),
+
+      'field_success_api_volume_in_mil' => (int) ($bucket['total_full_rate_billable_transaction'] ?? 0),
+
+      'field_404_api_volume_in_mil' => (int) ($bucket['total_lower_rate_billable_transaction'] ?? 0),
+
+      'field_kong_analytical_id' => (string) ($bucket['source_bucket_id'] ?? ''),
+
+      'field_api_path' => (string) ($bucket['endpoint'] ?? ''),
+
+      'field_est_revenue' => (float) ($calculation['total_est_revenue'] ?? 0),
+
+      'field_attribute' => [
+        'target_id' => $attribute_id,
+      ],
+
+      'field_end_customer' => [
+        'target_id' => $client_id,
+      ],
+
+      'field_carrier' => [
+        'target_id' => $carrier_id,
+      ],
+    ]);
+
+    $node->save();
   }
 
   /**
