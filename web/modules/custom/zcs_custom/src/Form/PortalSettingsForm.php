@@ -243,6 +243,7 @@ final class PortalSettingsForm extends ConfigFormBase {
    $config->set('currency', $form_state->getValue('currency_settings')['currency']);
    $config->set('rmp_limit', $form_state->getValue('retail_markup_limit_data')['rmp_limit']);
    $config->set('proposed_api_endpoint', $form_state->getValue('pricing_api_endpoint')['proposed_api_endpoint']);
+   $config->set('pricing_calculation_version', $form_state->getValue('pricing_api_endpoint')['pricing_calculation_version']);
    $config->set('consent_endpoint', $form_state->getValue('consent_api_endpoint')['consent_endpoint']);
    $config->set('client_billing_api_endpoint', $form_state->getValue('client_billing_endpoint')['client_billing_api_endpoint']);
 
