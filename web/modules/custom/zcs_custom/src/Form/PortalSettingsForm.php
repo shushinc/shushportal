@@ -165,6 +165,15 @@ final class PortalSettingsForm extends ConfigFormBase {
       '#title' => $this->t('Proposed API Endpoint'),
       '#default_value' => $this->config('zcs_custom.settings')->get('proposed_api_endpoint'),
     ];
+    $form['pricing_api_endpoint']['pricing_calculation_version'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Pricing Calculation Version'),
+      '#options' => [
+        'v1' => $this->t('v1'),
+        'v2' => $this->t('v2'),
+      ],
+      '#default_value' => $this->config('zcs_custom.settings')->get('pricing_calculation_version') ?: 'v1',
+    ];
     $form['consent_api_endpoint'] = [
       '#type' => 'details',
       '#open' => FALSE,
@@ -234,6 +243,7 @@ final class PortalSettingsForm extends ConfigFormBase {
    $config->set('currency', $form_state->getValue('currency_settings')['currency']);
    $config->set('rmp_limit', $form_state->getValue('retail_markup_limit_data')['rmp_limit']);
    $config->set('proposed_api_endpoint', $form_state->getValue('pricing_api_endpoint')['proposed_api_endpoint']);
+   $config->set('pricing_calculation_version', $form_state->getValue('pricing_api_endpoint')['pricing_calculation_version']);
    $config->set('consent_endpoint', $form_state->getValue('consent_api_endpoint')['consent_endpoint']);
    $config->set('client_billing_api_endpoint', $form_state->getValue('client_billing_endpoint')['client_billing_api_endpoint']);
 

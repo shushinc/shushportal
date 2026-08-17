@@ -4,3 +4,55 @@
  * @file
  * Primary module hooks for zcs_menu module.
  */
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function zcs_menu_preprocess_menu(&$variables) {
+
+    if (($variables['menu_name'] ?? '') !== 'main') {
+        return;
+    }
+
+    $pricing_version = \Drupal::config('zcs_custom.settings')->get('pricing_calculation_version') ?: 'v1';
+
+    if ($pricing_version === 'v2') {
+        return;
+    }
+
+    $v2_only_paths = [
+        '/client/rate-sheet-approval',
+        '/pricing/rate-sheet-list',
+    ];
+
+    _zcs_menu_filter_pricing_v2_items(
+        $variables['items'],
+        $v2_only_paths
+    );
+
+}
+
+/**
+ * Removes Pricing v2-only items recursively.
+ */
+function _zcs_menu_filter_pricing_v2_items(array &$items, array $v2_only_paths): void {
+
+    foreach ($items as $key => &$item) {
+        if (isset($item['url'])) {
+            $url = $item['url'];
+
+            if (!$url->isExternal()) {
+                $path = '/' . ltrim($url->getInternalPath(), '/');
+
+                if (in_array($path, $v2_only_paths, TRUE)) {
+                    unset($items[$key]);
+                    continue;
+                }
+            }
+        }
+
+        if (!empty($item['below'])) {
+            _zcs_menu_filter_pricing_v2_items($item['below'], $v2_only_paths);
+        }
+    }
+}
