@@ -165,6 +165,15 @@ final class PortalSettingsForm extends ConfigFormBase {
       '#title' => $this->t('Proposed API Endpoint'),
       '#default_value' => $this->config('zcs_custom.settings')->get('proposed_api_endpoint'),
     ];
+    $form['pricing_api_endpoint']['pricing_calculation_version'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Pricing Calculation Version'),
+      '#options' => [
+        'v1' => $this->t('v1'),
+        'v2' => $this->t('v2'),
+      ],
+      '#default_value' => $this->config('zcs_custom.settings')->get('pricing_calculation_version') ?: 'v1',
+    ];
     $form['consent_api_endpoint'] = [
       '#type' => 'details',
       '#open' => FALSE,
