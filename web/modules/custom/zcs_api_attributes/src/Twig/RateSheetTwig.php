@@ -63,9 +63,15 @@ class RateSheetTwig extends AbstractExtension implements ExtensionInterface {
     } 
 
     $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'USD';
-    $locale = $currencyMap[$currency];
-    $number = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
-    $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
+   // $locale = $currencyMap[$currency];
+   //  $number = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
+   // $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
+
+    $fmt = new \NumberFormatter('en', \NumberFormatter::CURRENCY);
+    $formatted = $fmt->formatCurrency(0, $currency);
+
+    // Strip the numeric/formatting characters to isolate just the symbol
+    $symbol = trim(preg_replace('/[\d.,\s]/u', '', $formatted)); 
 
 
     // $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'en_US';
