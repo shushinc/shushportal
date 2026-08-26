@@ -1548,3 +1548,70 @@ function zcs_api_attributes_update_9022() {
 
   return t('Created api_pricing_calculation_log table.');
 }
+
+/**
+ * Allow pricing calculation log fields to be NULL for failed calculations.
+ */
+function zcs_api_attributes_update_9023(): void {
+  $schema = \Drupal::database()->schema();
+
+  $fields = [
+    'source_bucket_id' => [
+      'type' => 'varchar',
+      'length' => 128,
+      'not null' => FALSE,
+      'description' => 'Unique source bucket identifier used for deduplication.',
+    ],
+    'client_key' => [
+      'type' => 'varchar',
+      'length' => 255,
+      'not null' => FALSE,
+      'description' => 'Client key received from the aggregate payload.',
+    ],
+    'client_id' => [
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+      'description' => 'Client Group ID.',
+    ],
+    'api_attribute_id' => [
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+      'description' => 'API Attribute node ID.',
+    ],
+    'endpoint' => [
+      'type' => 'varchar',
+      'length' => 255,
+      'not null' => FALSE,
+      'description' => 'Endpoint received from the aggregate payload.',
+    ],
+    'rate_sheet_id' => [
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+      'description' => 'Resolved Rate Sheet ID.',
+    ],
+    'rate_sheet_item_id' => [
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+      'description' => 'Resolved Rate Sheet Item ID.',
+    ],
+    'bucket_datetime' => [
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+      'description' => 'Bucket datetime as Unix timestamp.',
+    ],
+  ];
+
+  foreach ($fields as $field_name => $specification) {
+    $schema->changeField(
+      'api_pricing_calculation_log',
+      $field_name,
+      $field_name,
+      $specification
+    );
+  }
+}

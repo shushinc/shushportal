@@ -1548,6 +1548,7 @@ class RateSheetService {
       'total_full_rate_billable_transaction',
       'total_lower_rate_billable_transaction',
       'total_no_billable_transaction',
+      'carrier_name',
     ];
 
     foreach ($required_fields as $field) {
@@ -2062,14 +2063,14 @@ class RateSheetService {
         'run_id' => $run_id,
         'source_bucket_id' => $bucket['source_bucket_id'] ?? '',
         'client_key' => $bucket['client'] ?? '',
-        'client_id' => 0,
+        'client_id' => NULL,
         'client_type' => NULL,
         'api_attribute_id' => NULL,
         'attribute_name' => NULL,
         'endpoint' => $bucket['endpoint'] ?? '',
         'rate_sheet_id' => NULL,
         'rate_sheet_item_id' => NULL,
-        'bucket_datetime' => $bucket['datatime'] ?? '',
+        'bucket_datetime' => !empty($bucket['datatime']) ? strtotime($bucket['datatime']) : NULL,
         'total_transaction_count' => (int) ($bucket['total_transaction_count'] ?? 0),
         'total_full_rate_billable_transaction' => (int) ($bucket['total_full_rate_billable_transaction'] ?? 0),
         'total_lower_rate_billable_transaction' => (int) ($bucket['total_lower_rate_billable_transaction'] ?? 0),
