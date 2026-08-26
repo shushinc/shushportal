@@ -1901,7 +1901,11 @@ class RateSheetService {
     $bucket['success_unit_price'] = $calculation['successful_unit_price'];
     $bucket['unsuccessful_unit_price'] = $calculation['unsuccessful_unit_price'];
     $bucket['markup_percentage'] = $markup_percentage;
-    $bucket['discount_price'] = 0.0;
+
+    // Discount information.
+    $bucket['discount_percentage'] = $calculation['discount_percentage'] ?? 0.0;
+    $bucket['discount_price'] = $calculation['discount_amount'] ?? 0.0;
+
     $bucket['pricing_status'] = 'success';
 
     $transaction_rows = [];
@@ -1910,6 +1914,8 @@ class RateSheetService {
       $transaction_rows[] = [
         'transaction_type' => 'Successful',
         'total_full_rate_billable_transaction' => (int) $bucket['total_full_rate_billable_transaction'],
+        'discount_percentage' => $calculation['discount_percentage'] ?? 0.0,
+        'discount_amount' => $calculation['discount_amount'] ?? 0.0,
         'est_revenue' => $calculation['successful_est_revenue'],
       ];
     }
