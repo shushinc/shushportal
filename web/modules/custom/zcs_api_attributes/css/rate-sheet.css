@@ -799,3 +799,40 @@
 .rate-sheet-review-range-grid-row:hover > span {
   background: #f8f9fa;
 }
+.ui-dialog .rate-sheet {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.ui-dialog .rate-sheet table.attributes-table {
+  min-width: 1100px;
+  width: 100%;
+}
+
+.ui-dialog .rate-sheet table.attributes-table th:last-child,
+.ui-dialog .rate-sheet table.attributes-table td:last-child {
+  padding-right: 25px;
+}
+
+.ui-dialog .rate-sheet table tbody td .form-type-number {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.ui-dialog .rate-sheet table tbody td .form-type-number .field-prefix {
+  position: static;
+  margin: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ui-dialog .rate-sheet table tbody td .form-type-number input {
+  width: 90px;
+  min-width: 90px;
+  max-width: 90px;
+  box-sizing: border-box;
+  text-align: right;
+}

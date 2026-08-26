@@ -27,9 +27,9 @@
   width: 70px;
 }
 
-.ui-dialog .field-prefix {
+/* .ui-dialog .field-prefix {
   margin-right: 10px;
-}
+} */
 .ui-dialog .attribute-review .js-form-item-status,
 .ui-dialog .api-attribute-review .js-form-item-status {
   display: flex;

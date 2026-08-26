@@ -62,11 +62,19 @@ class ViewClientController extends ControllerBase {
        $currencyMap[$currency['alphabeticCode']] = $currency['locale'];
     }  
     $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'USD';
-    $locale = $currencyMap[$currency];
-    $number = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
-    $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);  
+    // $locale = $currencyMap[$currency];
+    // $number = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
+    // $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);  
+    // $fmt = new \NumberFormatter($locale . '@currency=' . $currency, \NumberFormatter::CURRENCY);
+    // $symbol = $fmt->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
 
-    
+    // Use a neutral locale, not the currency's own native locale
+    $fmt = new \NumberFormatter('en', \NumberFormatter::CURRENCY);
+    $formatted = $fmt->formatCurrency(0, $currency);
+
+    // Strip the numeric/formatting characters to isolate just the symbol
+    $symbol = trim(preg_replace('/[\d.,\s]/u', '', $formatted));
+  
     $address = $group->get('field_address')->getValue();
     $address_value = isset($address[0]) ? $address[0]: '';
 
