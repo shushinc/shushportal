@@ -75,9 +75,16 @@ class RateSheetReviewForm extends FormBase {
     } 
 
     $currency = \Drupal::config('zcs_custom.settings')->get('currency') ?? 'USD';
-    $locale = $currencyMap[$currency];
-    $number = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
-    $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
+    // $locale = $currencyMap[$currency];
+    // $number = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
+    // $symbol = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
+
+          // $symbols[] = $number->getSymbol(\NumberFormatter::CURRENCY_SYMBOL); 
+    $fmt = new \NumberFormatter('en', \NumberFormatter::CURRENCY);
+    $formatted = $fmt->formatCurrency(0, $currency);
+
+    // Strip the numeric/formatting characters to isolate just the symbol
+    $symbol = trim(preg_replace('/[\d.,\s]/u', '', $formatted));
 
 
     if (!empty($data)) {
