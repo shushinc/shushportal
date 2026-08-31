@@ -1518,6 +1518,14 @@ class RateSheetService {
 
     $datetime = $bucket['datatime'] ?? NULL;
 
+    // Transaction fields
+    $transaction_fields = [
+      'total_transaction_count',
+      'total_full_rate_billable_transaction',
+      'total_lower_rate_billable_transaction',
+      'total_no_billable_transaction',
+    ];
+
     $required_fields = [
       'source_bucket_id',
       'datatime',
@@ -1529,6 +1537,17 @@ class RateSheetService {
       'total_no_billable_transaction',
       'carrier_name',
     ];
+
+    // Validate transaction fields are non-negative integers
+    foreach ($transaction_fields as $field) {
+      if (!array_key_exists($field, $bucket)) {
+        return "Missing required field: {$field}";
+      }
+
+      if (!is_int($bucket[$field]) || $bucket[$field] < 0) {
+        return "Invalid value for {$field}: must be integer >= 0";
+      }
+    }
 
     foreach ($required_fields as $field) {
       if (!isset($bucket[$field])) {
