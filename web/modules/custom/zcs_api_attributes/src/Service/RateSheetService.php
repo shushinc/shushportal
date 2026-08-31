@@ -1346,6 +1346,29 @@ class RateSheetService {
   }
 
   /**
+   * Loads discounts for a specific client.
+   *
+   * @param int $client_id
+   *   The client ID.
+   *
+   * @return array
+   *   The pricing discount information.
+   */
+  public function loadClientDiscount(int $client_id) {
+
+    $data = $this->database->select('discount_pricing_page_data', 'dppd')
+      ->fields('dppd', ['page_data', 'client_id', 'client_name'])
+      ->condition('attribute_status', 2)
+      ->condition('client_id', $client_id)
+      ->orderBy('updated', 'DESC')
+      ->range(0, 1)
+      ->execute()
+      ->fetchAssoc();
+      if (!$data) return [];
+      return $data;
+  }
+
+  /**
    * Processes a single bucket and calculates pricing.
    *
    * @param array $bucket
@@ -1410,7 +1433,7 @@ class RateSheetService {
           'No active pricing configuration found for client and endpoint.'
         );
       }
-
+      $discount_information = $this->loadClientDiscount($configuration['client_id']);
       $ranges = $configuration['ranges'] ?? [];
 
       if (empty($ranges)) {
@@ -1450,8 +1473,10 @@ class RateSheetService {
 
       $calculation = $this->calculatePricing(
         $bucket,
+        $discount_information,
         $ranges,
-        $cumulative_before
+        $cumulative_before,
+        $configuration['attribute_id']
       );
 
       $this->logSuccessfulBucket(
@@ -1758,29 +1783,47 @@ class RateSheetService {
     return $total;
   }
 
-  /**
-   * Calculates pricing for a bucket across ranges.
-   *
-   * @param array $bucket
-   *   The bucket data.
-   * @param array $ranges
-   *   The pricing ranges.
-   * @param int $cumulative_before
-   *   Cumulative usage before this bucket.
-   *
-   * @return array
-   *   Calculation results with breakdown.
-   */
-  protected function calculatePricing(array $bucket, array $ranges, int $cumulative_before): array {
+  protected function calculatePricing(
+    array $bucket,
+    $discount_information,
+    array $ranges,
+    int $cumulative_before,
+    int $api_attribute_id
+  ): array {
 
     $total_full_rate = (int) $bucket['total_full_rate_billable_transaction'];
     $total_lower_rate = (int) $bucket['total_lower_rate_billable_transaction'];
+
+    /*
+    * Resolve the discount percentage for this API attribute.
+    *
+    * Example:
+    * discount_pricing = 0.075 means 0.075%.
+    *
+    * Therefore:
+    * 0.075 / 100 = 0.00075
+    */
+    $discount_percentage = 0.0;
+
+    if (!empty($discount_information) && !empty($discount_information['page_data'])) {
+      
+      $discount_data = json_decode($discount_information['page_data'],TRUE);
+
+      if (isset($discount_data[$api_attribute_id]['discount_pricing']) &&
+        is_numeric($discount_data[$api_attribute_id]['discount_pricing'])) {
+        $discount_percentage = (float) $discount_data[$api_attribute_id]['discount_pricing'];
+      }
+    }
+
+    $discount_rate = $discount_percentage / 100;
 
     $remaining_success = $total_full_rate;
     $current_position = $cumulative_before;
 
     $breakdown = [];
 
+    $total_success_amount_before_discount = 0;
+    $total_success_discount = 0;
     $total_success_amount = 0;
 
     foreach ($ranges as $range) {
@@ -1801,7 +1844,6 @@ class RateSheetService {
         $available = $remaining_success;
       }
       else {
-
         $start = max($current_position + 1, $range_from);
 
         $available = max(
@@ -1816,8 +1858,18 @@ class RateSheetService {
 
       $success_count = min($remaining_success, $available);
 
-      $success_amount = $success_count * $range['success_unit_price'];
+      /*
+      * Calculate the original successful amount.
+      */
+      $success_amount_before_discount = $success_count * $range['success_unit_price'];
 
+      /*
+      * Discount applies only to successful/full-rate transactions.
+      */
+      $success_discount = $success_amount_before_discount * $discount_rate;
+      $success_amount = $success_amount_before_discount - $success_discount;
+      $total_success_amount_before_discount += $success_amount_before_discount;
+      $total_success_discount += $success_discount;
       $total_success_amount += $success_amount;
 
       $breakdown[] = [
@@ -1829,6 +1881,9 @@ class RateSheetService {
         'lower_rate_billable_transaction' => 0,
         'success_unit_price' => $range['success_unit_price'],
         'partial_unit_price' => $range['partial_unit_price'],
+        'discount_percentage' => $discount_percentage,
+        'success_amount_before_discount' => round($success_amount_before_discount, 4),
+        'discount_amount' => round($success_discount, 4),
         'success_amount' => round($success_amount, 4),
         'partial_amount' => 0,
         'segment_total_amount' => round($success_amount, 4),
@@ -1838,12 +1893,19 @@ class RateSheetService {
       $current_position += $success_count;
     }
 
-    // Partial transactions always use the fixed Partial Unit Price.
+    /*
+    * Partial transactions always use the fixed Partial Unit Price.
+    * Discounts do NOT apply to partial transactions.
+    */
     $partial_unit_price = (float) $ranges[0]['partial_unit_price'];
 
-    $total_partial_amount = $total_lower_rate * $partial_unit_price;
+    $total_partial_amount =
+      $total_lower_rate * $partial_unit_price;
 
     return [
+      'discount_percentage' => $discount_percentage,
+      'successful_est_revenue_before_discount' => round($total_success_amount_before_discount, 4),
+      'discount_amount' => round($total_success_discount, 4),
       'successful_est_revenue' => round($total_success_amount, 4),
       'unsuccessful_est_revenue' => round($total_partial_amount, 4),
       'total_est_revenue' => round($total_success_amount + $total_partial_amount, 4),
@@ -1879,7 +1941,11 @@ class RateSheetService {
     $bucket['success_unit_price'] = $calculation['successful_unit_price'];
     $bucket['unsuccessful_unit_price'] = $calculation['unsuccessful_unit_price'];
     $bucket['markup_percentage'] = $markup_percentage;
-    $bucket['discount_price'] = 0.0;
+
+    // Discount information.
+    $bucket['discount_percentage'] = $calculation['discount_percentage'] ?? 0.0;
+    $bucket['discount_price'] = $calculation['discount_amount'] ?? 0.0;
+
     $bucket['pricing_status'] = 'success';
 
     $transaction_rows = [];
@@ -1888,6 +1954,8 @@ class RateSheetService {
       $transaction_rows[] = [
         'transaction_type' => 'Successful',
         'total_full_rate_billable_transaction' => (int) $bucket['total_full_rate_billable_transaction'],
+        'discount_percentage' => $calculation['discount_percentage'] ?? 0.0,
+        'discount_amount' => $calculation['discount_amount'] ?? 0.0,
         'est_revenue' => $calculation['successful_est_revenue'],
       ];
     }
