@@ -1367,11 +1367,12 @@ class RateSheetService {
       );
     }
 
-    // Prevent the same bucket from being processed more than once.
+    // Prevent the same bucket from being processed more than once (successful).
     $existing_log_id = $this->database
       ->select('api_pricing_calculation_log', 'apcl')
       ->fields('apcl', ['id'])
       ->condition('source_bucket_id', $source_bucket_id)
+      ->condition('status', 'success')
       ->range(0, 1)
       ->execute()
       ->fetchField();
@@ -1555,6 +1556,10 @@ class RateSheetService {
       return 'Sum of billable transactions must be >= 0';
     }
 
+    if ($sum !== (int) $bucket['total_transaction_count'] ) {
+      return 'Sum of billable transactions must be equal to the Total Transaction Count';
+    }
+
     return NULL;
   }
 
@@ -1633,7 +1638,6 @@ class RateSheetService {
    * @return array|null
    *   Array with id, or NULL if not found.
    * 
-   * @TODO reduce code verbosity. SQL performance, less queries
    */
   protected function resolveRateSheetItem(int $rate_sheet_id, int $api_attribute_id): ?array {
     $result = $this->database->select('rate_sheet_item', 'rsi')
