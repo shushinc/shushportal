@@ -1515,6 +1515,9 @@ class RateSheetService {
    *   Error message or NULL if valid.
    */
   protected function validateBucket(array $bucket): ?string {
+
+    $datetime = $bucket['datatime'] ?? NULL;
+
     $required_fields = [
       'source_bucket_id',
       'datatime',
@@ -1558,6 +1561,17 @@ class RateSheetService {
 
     if ($sum !== (int) $bucket['total_transaction_count'] ) {
       return 'Sum of billable transactions must be equal to the Total Transaction Count';
+    }
+
+    $date = \DateTimeImmutable::createFromFormat('Y-m-d\TH:i:s\Z', $datetime, new \DateTimeZone('UTC'));
+    $date_errors = \DateTimeImmutable::getLastErrors();
+
+    if (empty($datetime)) {
+      return 'Missing or invalid datatime field';
+    }
+
+    if($date === FALSE || ($date_errors !== FALSE && ($date_errors['warning_count'] > 0 || $date_errors['error_count'] > 0))) {
+      return 'Invalid datatime format: must be ISO 8601 UTC (e.g., 2023-01-01T12:00:00Z)';
     }
 
     return NULL;
@@ -2006,7 +2020,7 @@ class RateSheetService {
         'endpoint' => $bucket['endpoint'] ?? '',
         'rate_sheet_id' => NULL,
         'rate_sheet_item_id' => NULL,
-        'bucket_datetime' => !empty($bucket['datatime']) ? strtotime($bucket['datatime']) : NULL,
+        'bucket_datetime' => NULL,
         'total_transaction_count' => (int) ($bucket['total_transaction_count'] ?? 0),
         'total_full_rate_billable_transaction' => (int) ($bucket['total_full_rate_billable_transaction'] ?? 0),
         'total_lower_rate_billable_transaction' => (int) ($bucket['total_lower_rate_billable_transaction'] ?? 0),
