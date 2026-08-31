@@ -2454,30 +2454,21 @@ class RateSheetService {
       (float) ($bucket['avg_latency_full_rate'] ?? 0) +
       (float) ($bucket['avg_latency_lower_rate'] ?? 0) +
       (float) ($bucket['avg_latency_no_billable'] ?? 0)
-    );
+    ) / 3;
 
     $node_storage = $this->entityTypeManager->getStorage('node');
 
     $node = $node_storage->create([
       'type' => 'analytics',
       'title' => 'Analytics: ' . ($bucket['source_bucket_id'] ?? 'unknown'),
-
       'field_api_volume_in_mil' => (int) ($bucket['total_transaction_count'] ?? 0),
-
       'field_average_api_latency_in_mil' => $average_latency,
-
       'field_error_api_volume_in_mil' => (int) ($bucket['total_no_billable_transaction'] ?? 0),
-
       'field_success_api_volume_in_mil' => (int) ($bucket['total_full_rate_billable_transaction'] ?? 0),
-
       'field_404_api_volume_in_mil' => (int) ($bucket['total_lower_rate_billable_transaction'] ?? 0),
-
       'field_kong_analytical_id' => (string) ($bucket['source_bucket_id'] ?? ''),
-
       'field_api_path' => (string) ($bucket['endpoint'] ?? ''),
-
       'field_est_revenue' => (float) ($calculation['total_est_revenue'] ?? 0),
-
       'field_attribute' => [
         'target_id' => $attribute_id,
       ],
