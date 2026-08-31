@@ -1615,3 +1615,25 @@ function zcs_api_attributes_update_9023(): void {
     );
   }
 }
+
+/**
+ * Allow multiple pricing logs for the same source bucket.
+ */
+function zcs_api_attributes_update_9024(): void {
+  $schema = \Drupal::database()->schema();
+
+  // Replace the unique source_bucket_id index with a regular index.
+  if ($schema->indexExists('api_pricing_calculation_log', 'source_bucket_id')) {
+    $schema->dropIndex('api_pricing_calculation_log', 'source_bucket_id');
+  }
+
+  $schema->addIndex('api_pricing_calculation_log', 'source_bucket_id', ['source_bucket_id'], [
+    'fields' => [
+      'source_bucket_id' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => FALSE,
+      ],
+    ],
+  ]);
+}

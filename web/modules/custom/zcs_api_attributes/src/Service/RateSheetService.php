@@ -57,6 +57,8 @@ class RateSheetService {
    */
   protected $analyticsCarrierCache = [];
 
+  protected array $analyticsTermCache = [];
+
   /**
    * Constructs a RateSheetService object.
    *
@@ -1390,11 +1392,12 @@ class RateSheetService {
       );
     }
 
-    // Prevent the same bucket from being processed more than once.
+    // Prevent the same bucket from being processed more than once (successful).
     $existing_log_id = $this->database
       ->select('api_pricing_calculation_log', 'apcl')
       ->fields('apcl', ['id'])
       ->condition('source_bucket_id', $source_bucket_id)
+      ->condition('status', 'success')
       ->range(0, 1)
       ->execute()
       ->fetchField();
@@ -1492,8 +1495,8 @@ class RateSheetService {
       // Create Analytics node after successful pricing calculation
       $this->createAnalyticsNode(
         $bucket,
-        $client_data['id'],
-        $attribute_data['id'],
+        $client_data['name'],
+        $attribute_data['name'],
         $calculation
       );
 
@@ -1539,6 +1542,17 @@ class RateSheetService {
    *   Error message or NULL if valid.
    */
   protected function validateBucket(array $bucket): ?string {
+
+    $datetime = $bucket['datatime'] ?? NULL;
+
+    // Transaction fields
+    $transaction_fields = [
+      'total_transaction_count',
+      'total_full_rate_billable_transaction',
+      'total_lower_rate_billable_transaction',
+      'total_no_billable_transaction',
+    ];
+
     $required_fields = [
       'source_bucket_id',
       'datatime',
@@ -1550,6 +1564,17 @@ class RateSheetService {
       'total_no_billable_transaction',
       'carrier_name',
     ];
+
+    // Validate transaction fields are non-negative integers
+    foreach ($transaction_fields as $field) {
+      if (!array_key_exists($field, $bucket)) {
+        return "Missing required field: {$field}";
+      }
+
+      if (!is_int($bucket[$field]) || $bucket[$field] < 0) {
+        return "Invalid value for {$field}: must be integer >= 0";
+      }
+    }
 
     foreach ($required_fields as $field) {
       if (!isset($bucket[$field])) {
@@ -1578,6 +1603,21 @@ class RateSheetService {
 
     if ($sum < 0) {
       return 'Sum of billable transactions must be >= 0';
+    }
+
+    if ($sum !== (int) $bucket['total_transaction_count'] ) {
+      return 'Sum of billable transactions must be equal to the Total Transaction Count';
+    }
+
+    $date = \DateTimeImmutable::createFromFormat('Y-m-d\TH:i:s\Z', $datetime, new \DateTimeZone('UTC'));
+    $date_errors = \DateTimeImmutable::getLastErrors();
+
+    if (empty($datetime)) {
+      return 'Missing or invalid datatime field';
+    }
+
+    if($date === FALSE || ($date_errors !== FALSE && ($date_errors['warning_count'] > 0 || $date_errors['error_count'] > 0))) {
+      return 'Invalid datatime format: must be ISO 8601 UTC (e.g., 2023-01-01T12:00:00Z)';
     }
 
     return NULL;
@@ -1658,7 +1698,6 @@ class RateSheetService {
    * @return array|null
    *   Array with id, or NULL if not found.
    * 
-   * @TODO reduce code verbosity. SQL performance, less queries
    */
   protected function resolveRateSheetItem(int $rate_sheet_id, int $api_attribute_id): ?array {
     $result = $this->database->select('rate_sheet_item', 'rsi')
@@ -2070,7 +2109,7 @@ class RateSheetService {
         'endpoint' => $bucket['endpoint'] ?? '',
         'rate_sheet_id' => NULL,
         'rate_sheet_item_id' => NULL,
-        'bucket_datetime' => !empty($bucket['datatime']) ? strtotime($bucket['datatime']) : NULL,
+        'bucket_datetime' => NULL,
         'total_transaction_count' => (int) ($bucket['total_transaction_count'] ?? 0),
         'total_full_rate_billable_transaction' => (int) ($bucket['total_full_rate_billable_transaction'] ?? 0),
         'total_lower_rate_billable_transaction' => (int) ($bucket['total_lower_rate_billable_transaction'] ?? 0),
@@ -2450,73 +2489,136 @@ class RateSheetService {
     return $term_id;
   }
 
+
+  protected function resolveAnalyticsTerm(string $vocabulary, string $name): int {
+
+    $name = trim($name);
+
+    if ($name === '') {
+      throw new \InvalidArgumentException(
+        sprintf(
+          'Taxonomy term name cannot be empty for vocabulary "%s".',
+          $vocabulary
+        )
+      );
+    }
+
+    $cache_key = $vocabulary . ':' . $name;
+
+    if (isset($this->analyticsTermCache[$cache_key])) {
+      return $this->analyticsTermCache[$cache_key];
+    }
+
+    $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
+
+    $terms = $term_storage->loadByProperties([
+      'vid' => $vocabulary,
+      'name' => $name,
+    ]);
+
+    if (!empty($terms)) {
+      $term = reset($terms);
+
+      $term_id = (int) $term->id();
+
+      $this->analyticsTermCache[$cache_key] = $term_id;
+
+      return $term_id;
+    }
+
+    $term = $term_storage->create([
+      'vid' => $vocabulary,
+      'name' => $name,
+    ]);
+
+    $term->save();
+
+    $term_id = (int) $term->id();
+
+    $this->analyticsTermCache[$cache_key] = $term_id;
+
+    return $term_id;
+  }
+
+
   /**
    * Creates an Analytics node for a successfully processed bucket.
    *
    * @param array $bucket
    *   The bucket data.
-   * @param int $client_id
-   *   The client ID (already resolved).
-   * @param int $attribute_id
-   *   The API attribute ID (already resolved).
+   * @param string $client_name
+   *   The client name (already resolved).
+   * @param string $attribute_name
+   *   The API attribute name (already resolved).
    * @param array $calculation
    *   The pricing calculation results.
    *
    * @throws \Exception
    *   When Analytics node creation fails.
    */
-  protected function createAnalyticsNode(
-    array $bucket,
-    int $client_id,
-    int $attribute_id,
-    array $calculation
-  ): void {
-    // Resolve carrier taxonomy term
-    $carrier_name = (string) ($bucket['carrier_name'] ?? '');
+  protected function createAnalyticsNode(array $bucket, string $client_name, string $attribute_name, array $calculation): void {
+
+    $carrier_name = trim((string) ($bucket['carrier_name'] ?? ''));
 
     if ($carrier_name === '') {
       throw new \Exception('Missing carrier_name in bucket');
     }
 
-    $carrier_id = $this->resolveAnalyticsCarrier($carrier_name);
+    if ($client_name === '') {
+      throw new \Exception('Missing client name for analytics');
+    }
 
-    // Calculate average latency (rounded sum of three latency values)
-    $average_latency = round(
+    if ($attribute_name === '') {
+      throw new \Exception('Missing attribute name for analytics');
+    }
+
+    $bucket_datetime = (string) ($bucket['datatime'] ?? '');
+
+    if ($bucket_datetime === '') {
+      throw new \Exception('Missing datatime in bucket');
+    }
+
+    // Resolve taxonomy terms.
+    $carrier_id = $this->resolveAnalyticsTerm('analytics_carrier', $carrier_name);
+
+    $customer_id = $this->resolveAnalyticsTerm('analytics_customer',$client_name);
+
+    $attribute_id = $this->resolveAnalyticsTerm('analytics_attributes',$attribute_name);
+
+    // Incoming format:
+    // 2026-08-12T00:00:00Z
+    //
+    // Drupal datetime fields store UTC without the trailing Z.
+    $date = new \DateTimeImmutable($bucket_datetime);
+    $field_date = $date->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d\TH:i:s');
+
+    // Average of the three latency values.
+    $average_latency = round((
       (float) ($bucket['avg_latency_full_rate'] ?? 0) +
       (float) ($bucket['avg_latency_lower_rate'] ?? 0) +
-      (float) ($bucket['avg_latency_no_billable'] ?? 0)
-    );
+      (float) ($bucket['avg_latency_no_billable'] ?? 0))
+    / 3);
 
     $node_storage = $this->entityTypeManager->getStorage('node');
 
     $node = $node_storage->create([
       'type' => 'analytics',
       'title' => 'Analytics: ' . ($bucket['source_bucket_id'] ?? 'unknown'),
-
+      'field_date' => $field_date,
       'field_api_volume_in_mil' => (int) ($bucket['total_transaction_count'] ?? 0),
-
       'field_average_api_latency_in_mil' => $average_latency,
-
       'field_error_api_volume_in_mil' => (int) ($bucket['total_no_billable_transaction'] ?? 0),
-
       'field_success_api_volume_in_mil' => (int) ($bucket['total_full_rate_billable_transaction'] ?? 0),
-
       'field_404_api_volume_in_mil' => (int) ($bucket['total_lower_rate_billable_transaction'] ?? 0),
-
       'field_kong_analytical_id' => (string) ($bucket['source_bucket_id'] ?? ''),
-
       'field_api_path' => (string) ($bucket['endpoint'] ?? ''),
-
       'field_est_revenue' => (float) ($calculation['total_est_revenue'] ?? 0),
-
       'field_attribute' => [
         'target_id' => $attribute_id,
       ],
-
       'field_end_customer' => [
-        'target_id' => $client_id,
+        'target_id' => $customer_id,
       ],
-
       'field_carrier' => [
         'target_id' => $carrier_id,
       ],
