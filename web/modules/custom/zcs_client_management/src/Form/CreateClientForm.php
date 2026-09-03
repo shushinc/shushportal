@@ -598,17 +598,6 @@ class CreateClientForm extends FormBase {
               "family_name" => $form_state->getValue('contact_name') ?? '',
             ]);
             $group->save();
-            $user = User::create([
-              'name' => $contact_name,
-              'mail' => $contact_email,
-              'status' => 0, //
-              'roles' => 'authenticated',
-            ]);
-            $user->save();
-
-            $token = $this->generateToken();
-            $save_invitation = $this->saveInvitation($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
-            $send_email = $this->sendInvitationMail($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
 
             $kong_response = $response->getBody()->getContents();
             $response = Json::decode($kong_response);
