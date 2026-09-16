@@ -551,8 +551,11 @@ class CreateClientForm extends FormBase {
       // create consumer in kong:
       try {
         $response = \Drupal::service('zcs_kong.kong_gateway')->createConsumer($contact_name, $contact_email);
-        if($response != 'error'){
-          $status_code = $response->getStatusCode();
+        if($response != 'error') {
+          $status_code = '201';
+          $kong_response = $response->getBody()->getContents();
+          $response = Json::decode($kong_response);
+
           if ($status_code == '201') {
             $group = Group::create([
               'type' => 'partner',
@@ -572,36 +575,26 @@ class CreateClientForm extends FormBase {
               'field_industry' => $industry,
               'field_pricing_type' => $pricing_type,
               'field_apis_agreement_covers' => $encoded_data,
+              'field_address' => [
+                "langcode" => null,
+                "country_code" => $country_code ?? '',
+                "administrative_area" => $administrative_area ?? '',
+                "locality" => $locality ?? '',
+                "dependent_locality" => $dependent_locality ?? '',
+                "postal_code" => $postal_code ?? '',
+                "sorting_code" => $sorting_code ?? '',
+                "address_line1" => $address_line1 ?? '',
+                "address_line2" => $address_line2 ?? '',
+                "address_line3" => $address_line3 ?? '',
+                "organization" => $organization ?? '',
+                "given_name" => $form_state->getValue('contact_name') ?? '',
+                "additional_name" => $additional_name ?? '',
+                "family_name" => $form_state->getValue('contact_name') ?? '',
+              ],
+              'field_consumer_id' => $response['id'],
               'user_id' => \Drupal::currentUser()->id(),
               'created' => \Drupal::time()->getRequestTime(),
             ]);
-            $group->save();
-            $uid = \Drupal::currentUser()->id();
-            $user = User::load($uid);
-            $group->addMember($user, ['group_roles' => ['partner-admin']]);
-            $group->save();
-
-            $group->set('field_address', [
-              "langcode" => null,
-              "country_code" => $country_code ?? '',
-              "administrative_area" => $administrative_area ?? '',
-              "locality" => $locality ?? '',
-              "dependent_locality" => $dependent_locality ?? '',
-              "postal_code" => $postal_code ?? '',
-              "sorting_code" => $sorting_code ?? '',
-              "address_line1" => $address_line1 ?? '',
-              "address_line2" => $address_line2 ?? '',
-              "address_line3" => $address_line3 ?? '',
-              "organization" => $organization ?? '',
-              "given_name" => $form_state->getValue('contact_name') ?? '',
-              "additional_name" => $additional_name ?? '',
-              "family_name" => $form_state->getValue('contact_name') ?? '',
-            ]);
-            $group->save();
-
-            $kong_response = $response->getBody()->getContents();
-            $response = Json::decode($kong_response);
-            $group->set('field_consumer_id', $response['id']);
             $group->save();
 
             $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
@@ -643,45 +636,27 @@ class CreateClientForm extends FormBase {
         'field_industry' => $industry,
         'field_pricing_type' => $pricing_type,
         'field_apis_agreement_covers' => $encoded_data,
+        'field_address' => [
+          "langcode" => null,
+          "country_code" => $country_code ?? '',
+          "administrative_area" => $administrative_area ?? '',
+          "locality" => $locality ?? '',
+          "dependent_locality" => $dependent_locality ?? '',
+          "postal_code" => $postal_code ?? '',
+          "sorting_code" => $sorting_code ?? '',
+          "address_line1" => $address_line1 ?? '',
+          "address_line2" => $address_line2 ?? '',
+          "address_line3" => $address_line3 ?? '',
+          "organization" => $organization ?? '',
+          "given_name" => $form_state->getValue('contact_name') ?? '',
+          "additional_name" => $additional_name ?? '',
+          "family_name" => $form_state->getValue('contact_name') ?? '',
+        ],
         'user_id' => \Drupal::currentUser()->id(),
         'created' => \Drupal::time()->getRequestTime(),
       ]);
-      $group->save();
-
-      $group->set('field_address', [
-        "langcode" => null,
-        "country_code" => $country_code ?? '',
-        "administrative_area" => $administrative_area ?? '',
-        "locality" => $locality ?? '',
-        "dependent_locality" => $dependent_locality ?? '',
-        "postal_code" => $postal_code ?? '',
-        "sorting_code" => $sorting_code ?? '',
-        "address_line1" => $address_line1 ?? '',
-        "address_line2" => $address_line2 ?? '',
-        "address_line3" => $address_line3 ?? '',
-        "organization" => $organization ?? '',
-        "given_name" => $form_state->getValue('contact_name') ?? '',
-        "additional_name" => $additional_name ?? '',
-        "family_name" => $form_state->getValue('contact_name') ?? '',
-      ]);
-      $group->save();
-
       $client_billing_profile = \Drupal::service('zcs_client_management.client_management')->createUpdateClientBilling($group);
-      $uid = \Drupal::currentUser()->id();
-      $user = User::load($uid);
-      $group->addMember($user, ['group_roles' => ['partner-admin']]);
       $group->save();
-      $user = User::create([
-        'name' => $contact_name,
-        'mail' => $contact_email,
-        'status' => 0, //
-        'roles' => 'authenticated',
-      ]);
-      $user->save();
-      $token = $this->generateToken();
-      $save_invitation = $this->saveInvitation($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
-      $send_email = $this->sendInvitationMail($group->id(), $contact_name, $contact_email, 'partner-admin', $token);
-      $this->messenger()->addMessage($this->t('Client is invited successfully.'));
       $form_state->setRedirectUrl(Url::fromRoute('view.client_details.page_1'));
     }
   }
