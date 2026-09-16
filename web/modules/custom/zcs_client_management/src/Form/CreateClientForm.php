@@ -552,7 +552,7 @@ class CreateClientForm extends FormBase {
       try {
         $response = \Drupal::service('zcs_kong.kong_gateway')->createConsumer($contact_name, $contact_email);
         if($response != 'error') {
-          $status_code = '201';
+          $status_code = $response->getStatusCode();
           $kong_response = $response->getBody()->getContents();
           $response = Json::decode($kong_response);
 
