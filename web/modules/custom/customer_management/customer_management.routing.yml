@@ -1,3 +1,37 @@
+customer_management.list_customer:
+  path: '/customers'
+  defaults:
+    _controller: '\Drupal\customer_management\Controller\CustomerListController::list'
+    _title: 'Customer Management'
+  requirements:
+    _permission: 'access customer management'
+  options:
+    no_cache: true
+
+customer_management.add_customer:
+  path: '/customers/add'
+  defaults:
+    _form: '\Drupal\customer_management\Form\CreateCustomerForm'
+    _title: 'Add Customer'
+  requirements:
+    _permission: 'create customer'
+  options:
+    no_cache: true
+
+customer_management.edit_customer:
+  path: '/customers/{node}/edit'
+  defaults:
+    _form: '\Drupal\customer_management\Form\CreateCustomerForm'
+    _title: 'Edit Customer'
+  requirements:
+    _permission: 'edit customer'
+    node: \d+
+  options:
+    parameters:
+      node:
+        type: entity:node
+    no_cache: true
+
 customer_management.reveal_key:
   path: '/customer/{node}/reveal-key'
   defaults:
@@ -10,7 +44,7 @@ customer_management.reveal_key:
     parameters:
       node:
         type: entity:node
-    no_cache: TRUE
+    no_cache: true
 
 customer_management.reset_key:
   path: '/customer/{node}/reset-key'
@@ -24,25 +58,4 @@ customer_management.reset_key:
     parameters:
       node:
         type: entity:node
-
-customer_management.create_customer_form:
-  path: "/client/customers/list"
-  defaults:
-    _form: '\Drupal\customer_management\Form\CreateCustomerForm'
-    _title: "Create Customer"
-    id: 0
-  requirements:
-    _permission: 'access content'
-    id: \d+
-  options:
-    no_cache: "TRUE"
-
-customer_management.list_customer:
-  path: "/client/customers"
-  defaults:
-    _controller: '\Drupal\customer_management\Controller\CustomerListController::list'
-    _title: "Customers"
-  requirements:
-    _permission: "access content"
-  options:
     no_cache: true

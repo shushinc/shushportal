@@ -1,3 +1,25 @@
 services:
   customer_management.credential_generator:
     class: Drupal\customer_management\Service\CredentialGenerator
+
+  customer_management.history:
+    class: Drupal\customer_management\Service\CustomerHistoryService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@date.formatter'
+
+  customer_management.mail:
+    class: Drupal\customer_management\Service\CustomerMailService
+    arguments:
+      - '@plugin.manager.mail'
+      - '@current_user'
+
+  customer_management.manager:
+    class: Drupal\customer_management\Service\CustomerManager
+    arguments:
+      - '@entity_type.manager'
+      - '@customer_management.credential_generator'
+      - '@customer_management.history'
+      - '@customer_management.mail'
+      - '@current_user'

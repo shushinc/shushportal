@@ -1,3 +1,15 @@
+access customer management:
+  title: 'Access customer management'
+  description: 'View the custom customer management pages.'
+
+create customer:
+  title: 'Create customers'
+  description: 'Create customer records through the custom customer management form.'
+
+edit customer:
+  title: 'Edit customers'
+  description: 'Edit customer records through the custom customer management form.'
+
 view hashed key:
   title: 'View customer hashed key'
   description: 'Allows a user to reveal the plaintext hashed key of a customer record. Restrict this to trusted admin roles only.'

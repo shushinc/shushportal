@@ -6,18 +6,44 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\customer_management\Service\CustomerManager;
+use Drupal\node\NodeInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * "Are you sure?" confirmation for regenerating a customer's hashed key.
+ * Confirmation form for regenerating a customer's hashed key.
  */
 class ResetHashedKeyForm extends ConfirmFormBase {
 
   /**
    * The customer node being reset.
    *
-   * @var \Drupal\node\NodeInterface
+   * @var \Drupal\node\NodeInterface|null
    */
   protected $node;
+
+  /**
+   * The customer manager.
+   *
+   * @var \Drupal\customer_management\Service\CustomerManager
+   */
+  protected $customerManager;
+
+  /**
+   * Constructs the form.
+   */
+  public function __construct(CustomerManager $customer_manager) {
+    $this->customerManager = $customer_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('customer_management.manager')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -30,7 +56,10 @@ class ResetHashedKeyForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, EntityInterface $node = NULL) {
-    $this->node = $node;
+    if ($node instanceof NodeInterface && $node->bundle() === 'customer') {
+      $this->node = $node;
+    }
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -38,15 +67,16 @@ class ResetHashedKeyForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Reset the hashed key for %name?', ['%name' => $this->node->label()]);
+    return $this->t('Reset the hashed key for %name?', ['%name' => $this->node ? $this->node->label() : '']);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getDescription() {
-    return $this->t('This immediately invalidates the current hashed key — any phone-number hashes already computed with it will stop matching. A new key will be generated and emailed to @email, along with the usual integration snippet. This cannot be undone.', [
-      '@email' => $this->node->get('field_contact_email')->value,
+    $email = ($this->node && $this->node->hasField('field_contact_email')) ? $this->node->get('field_contact_email')->value : '';
+    return $this->t('This will invalidate the current hashed key immediately. A new key will be generated and emailed to @email. Integrations using the previous key must be updated. This cannot be undone.', [
+      '@email' => $email,
     ]);
   }
 
@@ -61,44 +91,21 @@ class ResetHashedKeyForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return Url::fromRoute('entity.node.edit_form', ['node' => $this->node->id()]);
+    return Url::fromRoute('customer_management.edit_customer', ['node' => $this->node ? $this->node->id() : 0]);
   }
 
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    /** @var \Drupal\customer_management\Service\CredentialGenerator $generator */
-    $generator = \Drupal::service('customer_management.credential_generator');
-    $new_key = $generator->generateHashedKey();
-
-    $this->node->set('field_hashed_key', $new_key);
-    $this->node->save();
-
-    $email = $this->node->get('field_contact_email')->value;
-    if (!empty($email)) {
-      \Drupal::service('plugin.manager.mail')->mail(
-        'customer_management',
-        'hashed_key_reset',
-        $email,
-        \Drupal::currentUser()->getPreferredLangcode(),
-        [
-          'customer_name' => $this->node->label(),
-          'contact_name' => $this->node->get('field_contact_name')->value,
-          'client_id' => $this->node->get('field_client_id')->value,
-          'hashed_key' => $new_key,
-        ]
-      );
+    if ($this->node) {
+      $this->customerManager->resetHashedKey((int) $this->node->id());
+      $this->messenger()->addStatus($this->t('The hashed key has been reset and emailed to the contact.'));
+      $form_state->setRedirect('customer_management.edit_customer', ['node' => $this->node->id()]);
+      return;
     }
 
-    customer_management_log_event(
-      (int) $this->node->id(),
-      'hashed_key_reset',
-      $this->t('Hashed key reset by @user.', ['@user' => $this->currentUser()->getAccountName()])
-    );
-
-    $this->messenger()->addStatus($this->t('The hashed key has been reset and emailed to the contact.'));
-    $form_state->setRedirectUrl($this->getCancelUrl());
+    $form_state->setRedirect('customer_management.list_customer');
   }
 
 }

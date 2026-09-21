@@ -6,3 +6,11 @@ hashed-key-toggle:
     - core/drupalSettings
     - core/once
     - core/drupal.ajax
+
+customer-management:
+  js: {}
+  dependencies:
+    - core/drupal
+    - core/drupal.dialog.ajax
+    - core/drupalSettings
+    - core/once
