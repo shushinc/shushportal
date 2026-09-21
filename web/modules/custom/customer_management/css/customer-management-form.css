@@ -5,45 +5,8 @@
   margin-top: 1.5rem;
 }
 
-.customer-management-demand-partners-filter-wrapper .form-item {
-  margin: 0;
-}
-
-.customer-management-demand-partners-list-wrapper {
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  max-height: 300px;
-  overflow-y: auto;
-  background: #fff;
-}
-
-.customer-management-demand-partners-list {
-  padding: 0.5rem;
-}
-
-.customer-management-demand-partners-list .form-item,
-.customer-management-demand-partners-list .form-item-d-emand-partners,
-.customer-management-demand-partners-list .form-select {
-  margin: 0;
-  width: 100%;
-}
-
-.customer-management-demand-partners-select {
-  width: 100%;
-  min-height: 220px;
-  border: 0;
-  box-shadow: none;
-  background: transparent;
-}
-
-.customer-management-demand-partners-select option {
-  padding: 0.5rem;
-  border-radius: 4px;
-}
-
-.customer-management-demand-partners-select option:checked {
-  background: #e0e7ff linear-gradient(0deg, #e0e7ff 0%, #e0e7ff 100%);
-  color: #3730a3;
+.customer-management-selected-demand-partners {
+  margin-bottom: 0;
 }
 
 .customer-management-form-field {
@@ -60,4 +23,40 @@
 
 .customer-management-created-credentials-section .messages {
   margin-top: 0;
+}
+
+.customer-demand-partner-modal {
+  max-width: 600px;
+}
+
+.customer-demand-partner-modal .rate-sheet-client-list-wrapper {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.customer-demand-partner-modal .rate-sheet-client-list {
+  padding: 0.5rem;
+}
+
+.customer-demand-partner-modal .rate-sheet-client-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.customer-demand-partner-modal .rate-sheet-client-item:hover {
+  background: #f3f4f6;
+}
+
+.customer-demand-partner-modal .rate-sheet-client-checkbox {
+  margin-right: 0.75rem;
+}
+
+.customer-demand-partner-modal .rate-sheet-client-item label {
+  cursor: pointer;
+  flex: 1;
+  margin: 0;
 }

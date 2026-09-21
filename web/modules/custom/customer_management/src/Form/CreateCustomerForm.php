@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\customer_management\Form;
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
@@ -67,6 +68,38 @@ final class CreateCustomerForm extends FormBase {
     $is_edit = $node instanceof NodeInterface && $node->bundle() === 'customer';
     $demand_partner_options = $this->customerManager->getDemandPartnerOptions();
 
+    $selected_partners = $form_state->getValue('demand_partners');
+    if (!is_array($selected_partners)) {
+      $selected_partners = [];
+      if ($is_edit && $node->hasField('field_demand_partners')) {
+        foreach ($node->get('field_demand_partners')->getValue() as $item) {
+          $selected_partners[] = (string) $item['target_id'];
+        }
+      }
+    }
+
+    $selected_partners = array_values(array_map('strval', array_filter($selected_partners, static function ($value): bool {
+      return $value !== '' && $value !== NULL;
+    })));
+
+    $demand_partners_data = [];
+    foreach ($demand_partner_options as $term_id => $label) {
+      $demand_partners_data[] = [
+        'id' => (string) $term_id,
+        'label' => $label,
+      ];
+    }
+
+    $selected_demand_partners = [];
+    foreach ($selected_partners as $term_id) {
+      if (isset($demand_partner_options[$term_id])) {
+        $selected_demand_partners[] = [
+          'id' => (string) $term_id,
+          'label' => $demand_partner_options[$term_id],
+        ];
+      }
+    }
+
     $form['customer_nid'] = [
       '#type' => 'hidden',
       '#value' => $is_edit ? (int) $node->id() : 0,
@@ -75,63 +108,53 @@ final class CreateCustomerForm extends FormBase {
     $form['customer_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Customer Name'),
-      '#default_value' => $is_edit ? $node->label() : '',
+      '#default_value' => $form_state->getValue('customer_name') ?? ($is_edit ? $node->label() : ''),
       '#required' => TRUE,
     ];
 
     $form['contact_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Contact Name'),
-      '#default_value' => $is_edit && $node->hasField('field_contact_name') ? (string) $node->get('field_contact_name')->value : '',
+      '#default_value' => $form_state->getValue('contact_name') ?? ($is_edit && $node->hasField('field_contact_name') ? (string) $node->get('field_contact_name')->value : ''),
       '#required' => TRUE,
     ];
 
     $form['contact_email'] = [
       '#type' => 'email',
       '#title' => $this->t('Contact Email'),
-      '#default_value' => $is_edit && $node->hasField('field_contact_email') ? (string) $node->get('field_contact_email')->value : '',
+      '#default_value' => $form_state->getValue('contact_email') ?? ($is_edit && $node->hasField('field_contact_email') ? (string) $node->get('field_contact_email')->value : ''),
       '#required' => TRUE,
     ];
 
     $form['contact_phone'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Contact Phone'),
-      '#default_value' => $is_edit && $node->hasField('field_contact_phone') ? (string) $node->get('field_contact_phone')->value : '',
+      '#default_value' => $form_state->getValue('contact_phone') ?? ($is_edit && $node->hasField('field_contact_phone') ? (string) $node->get('field_contact_phone')->value : ''),
       '#required' => FALSE,
     ];
 
-    $selected_partners = [];
-    if ($is_edit && $node->hasField('field_demand_partners')) {
-      foreach ($node->get('field_demand_partners')->getValue() as $item) {
-        $selected_partners[] = (string) $item['target_id'];
-      }
-    }
-
-    $form['demand_partners_filter'] = [
-      '#type' => 'search',
-      '#title' => $this->t('Filter Demand Partners'),
-      '#title_display' => 'invisible',
+    $form['demand_partners_data'] = [
+      '#type' => 'hidden',
+      '#value' => Json::encode($demand_partners_data),
       '#attributes' => [
-        'class' => ['customer-management-demand-partners-filter'],
-        'placeholder' => $this->t('Type to filter demand partners')->render(),
-        'data-customer-demand-partners-filter' => '1',
-        'autocomplete' => 'off',
+        'data-customer-demand-partners-data' => '',
+      ],
+    ];
+
+    $form['selected_demand_partners_data'] = [
+      '#type' => 'hidden',
+      '#value' => Json::encode($selected_demand_partners),
+      '#attributes' => [
+        'data-customer-selected-demand-partners-data' => '',
       ],
     ];
 
     $form['demand_partners'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Demand Partners'),
-      '#options' => $demand_partner_options,
-      '#default_value' => $selected_partners,
-      '#multiple' => TRUE,
-      '#size' => max(8, min(12, count($demand_partner_options) ?: 8)),
+      '#type' => 'hidden',
+      '#value' => $selected_partners,
       '#attributes' => [
-        'class' => ['customer-management-demand-partners-select'],
-        'data-customer-demand-partners-select' => '1',
+        'data-customer-selected-demand-partners' => '',
       ],
-      '#prefix' => '<div class="rate-sheet-client-filter-wrapper customer-management-demand-partners-filter-wrapper">',
-      '#suffix' => '</div>',
     ];
 
     if ($is_edit) {
@@ -222,10 +245,6 @@ final class CreateCustomerForm extends FormBase {
     $form['#theme'] = 'create_customer';
     $form['#attached']['library'][] = 'customer_management/hashed-key-toggle';
     $form['#attached']['library'][] = 'customer_management/customer-management-form';
-    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
-    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-ranges';
-    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-number-format';
-    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-clients';
 
     return $form;
   }
@@ -261,7 +280,7 @@ final class CreateCustomerForm extends FormBase {
       'contact_name' => trim((string) $form_state->getValue('contact_name')),
       'contact_email' => trim((string) $form_state->getValue('contact_email')),
       'contact_phone' => trim((string) $form_state->getValue('contact_phone')),
-      'demand_partners' => array_values(array_filter($form_state->getValue('demand_partners', []))),
+      'demand_partners' => array_values(array_filter(array_map('strval', (array) $form_state->getValue('demand_partners', [])))),
     ];
 
     if ($customer_nid > 0) {

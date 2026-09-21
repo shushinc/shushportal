@@ -1,4 +1,7 @@
 {{ form.customer_nid }}
+{{ form.demand_partners_data }}
+{{ form.selected_demand_partners_data }}
+{{ form.demand_partners }}
 
 <div class="rate-sheet-filter">
   <div class="rate-sheet-filter-name">
@@ -22,16 +25,21 @@
 <div class="rate-sheet-attributes">
   <span class="attribute-inputs">
     <div class="api-attribute-filter">
-      <div class="api-attribute-filter">
-        <div class="api-attribute-filter-control">
-          <button type="button" class="button button--small customer-add-demand-partner" data-customer-add-demand-partner="">
-            Add Demand Partner
-          </button>
-        </div>
+      <div class="api-attribute-filter-control">
+        <button type="button" class="button button--small customer-add-demand-partner" data-customer-add-demand-partner>
+          Add Demand Partners
+        </button>
+      </div>
+
+      <div class="api-attribute-filter-actions">
+        {{ form.actions }}
       </div>
     </div>
 
-    
+    <div class="rate-sheet-linked-clients customer-management-demand-partners-section">
+      <h3>Demand Partners</h3>
+      <div class="rate-sheet-selected-clients-tags customer-management-selected-demand-partners" data-customer-selected-demand-partners-tags></div>
+    </div>
 
     {% if form.client_id or form.hashed_key_display %}
       <div class="rate-sheet-linked-clients customer-management-credentials-section">
