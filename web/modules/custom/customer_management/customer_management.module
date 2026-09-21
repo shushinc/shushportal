@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * @file
+ * Hooks for the Customer Management module.
+ *
+ * Assumes a "customer" content type with these fields:
+ *   - title               -> Customer Name
+ *   - field_contact_name
+ *   - field_contact_email
+ *   - field_contact_phone     (optional)
+ *   - field_demand_partners   (entity reference, multiple values)
+ *   - field_customer_client_id        (auto-generated, not editable)
+ *   - field_hashed_key       (auto-generated, hidden/masked)
+ */
+
+use Drupal\node\NodeInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Url;
+
+
+/**
+ * Implements hook_theme().
+ */
+function customer_management_theme() {
+  return [
+    'customers_list' => [
+      'variables' => [
+        'content' => NULL,
+      ],
+      'template' => 'customers_list',
+    ],
+  ];
+}

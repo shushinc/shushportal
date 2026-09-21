@@ -1,0 +1,19 @@
+uuid: 5377ded2-3b61-48fc-8c56-a92bc66d722d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_hashed_key
+    - node.type.customer
+id: node.customer.field_hashed_key
+field_name: field_hashed_key
+entity_type: node
+bundle: customer
+label: 'Hashed Key'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

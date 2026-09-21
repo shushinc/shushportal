@@ -1,0 +1,10 @@
+name: Customer Management
+type: module
+description: 'Provides the customer management + add/edit pages, auto-generates Client ID / Hashed Key, and emails the customer contact with integration instructions for hashing phone numbers sent to demand partners.'
+package: Shush
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:node
+  - drupal:views
+  - drupal:taxonomy
+  - drupal:field

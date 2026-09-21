@@ -1,0 +1,29 @@
+uuid: 1e7898f1-eb4e-4a4c-b9cd-1775789765c2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_demand_partners
+    - node.type.customer
+    - taxonomy.vocabulary.demand_partners
+id: node.customer.field_demand_partners
+field_name: field_demand_partners
+entity_type: node
+bundle: customer
+label: 'Demand Partners'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      demand_partners: demand_partners
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

@@ -1,0 +1,62 @@
+<?php
+
+/**
+ * @file
+ * Install/uninstall hooks for Customer Management.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function customer_management_schema() {
+  $schema['customer_management_log'] = [
+    'description' => 'Activity history for customer records (created, updated, hashed key reset, etc).',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary key.',
+      ],
+      'nid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The customer node ID this entry belongs to.',
+      ],
+      'action' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'Machine name of the action, e.g. customer_created, customer_updated, hashed_key_reset.',
+      ],
+      'message' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => FALSE,
+        'description' => 'Human-readable detail for this entry.',
+      ],
+      'uid' => [
+        'type' => 'int',
+        'not null' => FALSE,
+        'description' => 'The user who performed the action, if any.',
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Unix timestamp of the action.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'nid_created' => ['nid', 'created'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function customer_management_uninstall() {
+  \Drupal::database()->schema()->dropTable('customer_management_log');
+}

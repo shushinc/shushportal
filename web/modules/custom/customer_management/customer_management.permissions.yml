@@ -1,0 +1,9 @@
+view hashed key:
+  title: 'View customer hashed key'
+  description: 'Allows a user to reveal the plaintext hashed key of a customer record. Restrict this to trusted admin roles only.'
+  restrict access: true
+
+reset customer hashed key:
+  title: 'Reset customer hashed key'
+  description: 'Allows a user to invalidate a customer''s current hashed key and generate a new one. This immediately breaks any hashes computed with the old key. Restrict this to trusted admin roles only.'
+  restrict access: true

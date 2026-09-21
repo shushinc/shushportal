@@ -1,0 +1,3 @@
+services:
+  customer_management.credential_generator:
+    class: Drupal\customer_management\Service\CredentialGenerator

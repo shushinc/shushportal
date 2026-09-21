@@ -1,0 +1,48 @@
+customer_management.reveal_key:
+  path: '/customer/{node}/reveal-key'
+  defaults:
+    _controller: '\Drupal\customer_management\Controller\HashedKeyController::reveal'
+    _title: 'Reveal hashed key'
+  requirements:
+    _permission: 'view hashed key'
+    node: \d+
+  options:
+    parameters:
+      node:
+        type: entity:node
+    no_cache: TRUE
+
+customer_management.reset_key:
+  path: '/customer/{node}/reset-key'
+  defaults:
+    _form: '\Drupal\customer_management\Form\ResetHashedKeyForm'
+    _title: 'Reset hashed key'
+  requirements:
+    _permission: 'reset customer hashed key'
+    node: \d+
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+customer_management.create_customer_form:
+  path: "/client/customers/list"
+  defaults:
+    _form: '\Drupal\customer_management\Form\CreateCustomerForm'
+    _title: "Create Customer"
+    id: 0
+  requirements:
+    _permission: 'access content'
+    id: \d+
+  options:
+    no_cache: "TRUE"
+
+customer_management.list_customer:
+  path: "/client/customers"
+  defaults:
+    _controller: '\Drupal\customer_management\Controller\CustomerListController::list'
+    _title: "Customers"
+  requirements:
+    _permission: "access content"
+  options:
+    no_cache: true

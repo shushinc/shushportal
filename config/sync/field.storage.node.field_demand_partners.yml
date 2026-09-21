@@ -1,0 +1,20 @@
+uuid: b314e515-e3a1-4050-82ad-f35ab1e3f920
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - taxonomy
+id: node.field_demand_partners
+field_name: field_demand_partners
+entity_type: node
+type: entity_reference
+settings:
+  target_type: taxonomy_term
+module: core
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

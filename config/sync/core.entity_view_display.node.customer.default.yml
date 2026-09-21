@@ -1,0 +1,65 @@
+uuid: e13b59ad-727b-45c6-818f-e4649f178f71
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.customer.field_contact_email
+    - field.field.node.customer.field_contact_name
+    - field.field.node.customer.field_contact_phone
+    - field.field.node.customer.field_customer_client_id
+    - field.field.node.customer.field_demand_partners
+    - field.field.node.customer.field_hashed_key
+    - node.type.customer
+  module:
+    - user
+id: node.customer.default
+targetEntityType: node
+bundle: customer
+mode: default
+content:
+  field_contact_email:
+    type: basic_string
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_contact_name:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_contact_phone:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_customer_client_id:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  field_demand_partners:
+    type: entity_reference_label
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  field_hashed_key: true

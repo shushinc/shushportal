@@ -1,0 +1,9 @@
+uuid: 7d0d3f68-6bd8-4342-ace2-61cd3569d4a7
+langcode: en
+status: true
+dependencies: {  }
+name: 'Demand Partners'
+vid: demand_partners
+description: null
+weight: 0
+new_revision: false

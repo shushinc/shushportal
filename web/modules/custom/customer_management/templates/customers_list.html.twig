@@ -1,0 +1,53 @@
+{{ attach_library('core/drupal.dialog.ajax') }}
+  <div>
+    <div class="user-management-view api-attribute-status-header">
+      <header>
+        {{ content.link|merge({'#attributes': {'class': ['btn-primary']}}) }}
+      </header>
+    </div>
+    <table class="attributes-table customer-management-table">
+      <thead>
+        <tr>
+          <th>Customer Name</th>
+          <th>Contact Name</th>
+          <th>Contact Email</th>
+          <th>Contact Phone</th>
+          <th>Demand Partners</th>
+          <th>Operations</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% set counter = 1 %}
+        {% for sheet_info in content.final %}
+
+          {% set rate_sheet_status = sheet_info.status|lower %}
+
+          <tr>
+            <td>{{ sheet_info.name }}</td>
+            <td>{{ sheet_info.currency }}</td>
+            <td>{{ sheet_info.effective_date }}</td>
+            <td>{{ sheet_info.markup_retail }}</td>
+            <td>{{ sheet_info.approvals|raw }}</td>
+            <td>
+              <div class="edit-operation">
+                  <div class="edit-operation-wrap">
+                    {% for action in sheet_info.actions %}
+                      <a href="{{ action.disabled ? 'javascript:void(0)' : action.url }}" class="dropdown-item {{ action.class }} {% if action.ajax %}use-ajax{% endif %}"
+                        {% if action.ajax %} data-dialog-type="modal" data-dialog-options='{"width":1000,"title":"Rate Sheet Review","dialogClass":"api-popup-width-resize api-table-fixed"}'
+                        {% endif %}
+                      >
+                        {{ action.title }}
+                      </a>
+                  {% endfor %}
+                  </div>
+              </div>
+            </td>
+          </tr>
+          {% set counter = counter + 1 %}
+        {% endfor %}
+
+      </tbody>
+    </table>
+  </div>
+
+{# customer name, contact name, contact email, contact phone (optional), demand partners #}

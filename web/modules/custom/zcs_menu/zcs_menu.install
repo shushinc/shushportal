@@ -195,6 +195,19 @@ function zcs_menu_install() {
   ]);
   $client_rate_sheet_menu_link->save();
 
+  $customer_management_menu_link = MenuLinkContent::create([
+    'title' => 'Customer Management',
+    'link' => ['uri' => 'internal:/client/customers'], // Adjust path as needed.
+    'menu_name' => $menu_name,
+    'parent' => $client_parent_id, // Set the parent ID.
+    'weight' => 10,
+    'menu_per_role__show_role' => [
+      'administrator',
+      'carrier_admin',
+    ],
+  ]);
+  $customer_management_menu_link->save();
+
   // Create the parent menu link.
   $price_parent_menu_link = MenuLinkContent::create([
     'title' => 'Pricing',

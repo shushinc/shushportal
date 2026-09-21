@@ -135,7 +135,7 @@ table.attributes-table
 table.attributes-table {
   table-layout: fixed;
 }
-table.attributes-table th:first-child {
+table.attributes-table:not(.customer-management-table) th:first-child {
   width: 2%;
 }
 table.attributes-table th:nth-child(2),

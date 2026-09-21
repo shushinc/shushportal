@@ -1,0 +1,8 @@
+hashed-key-toggle:
+  js:
+    js/hashed-key-toggle.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - core/drupal.ajax
