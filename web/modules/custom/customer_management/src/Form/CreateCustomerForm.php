@@ -222,6 +222,10 @@ final class CreateCustomerForm extends FormBase {
     $form['#theme'] = 'create_customer';
     $form['#attached']['library'][] = 'customer_management/hashed-key-toggle';
     $form['#attached']['library'][] = 'customer_management/customer-management-form';
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet';
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-ranges';
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-number-format';
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-clients';
 
     return $form;
   }
