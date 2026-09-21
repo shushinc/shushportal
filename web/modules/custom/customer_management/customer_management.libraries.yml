@@ -14,3 +14,13 @@ customer-management:
     - core/drupal.dialog.ajax
     - core/drupalSettings
     - core/once
+
+customer-management-form:
+  css:
+    theme:
+      css/customer-management-form.css: {}
+  js:
+    js/customer-management-form.js: {}
+  dependencies:
+    - core/drupal
+    - core/once

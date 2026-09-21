@@ -1,13 +1,21 @@
 (function (Drupal, once) {
   'use strict';
 
-  var style = document.createElement('style');
-  style.textContent = '.hashed-key-toggle, .hashed-key-reset { margin-inline-start: 8px; }';
-  document.head.appendChild(style);
+  function ensureInlineStyle() {
+    if (document.getElementById('customer-management-hashed-key-style')) {
+      return;
+    }
+
+    var style = document.createElement('style');
+    style.id = 'customer-management-hashed-key-style';
+    style.textContent = '.hashed-key-actions{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-top:.5rem}.hashed-key-toggle,.hashed-key-reset{margin:0}';
+    document.head.appendChild(style);
+  }
 
   function attachBehavior(wrapper) {
     var revealUrl = wrapper.getAttribute('data-reveal-url');
-    var display = wrapper.parentElement ? wrapper.parentElement.querySelector('[data-hashed-key-display]') : null;
+    var fieldWrapper = wrapper.closest('.customer-management-hashed-key-field') || wrapper.parentElement;
+    var display = fieldWrapper ? fieldWrapper.querySelector('[data-hashed-key-display]') : null;
     var toggleButton = wrapper.querySelector('[data-hashed-key-toggle]');
 
     if (!revealUrl || !display || !toggleButton) {
@@ -55,6 +63,7 @@
 
   Drupal.behaviors.hashedKeyToggle = {
     attach: function (context) {
+      ensureInlineStyle();
       once('hashed-key-toggle', '[data-reveal-url]', context).forEach(attachBehavior);
     }
   };

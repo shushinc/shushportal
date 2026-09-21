@@ -9,11 +9,11 @@
     <span class="attributes-label">Contact Name</span>
     <span class="attribute-inputs">{{ form.contact_name }}</span>
   </div>
-  <div class="rate-sheet-filter-name">
+  <div class="rate-sheet-filter-currencies">
     <span class="attributes-label">Contact Email</span>
     <span class="attribute-inputs">{{ form.contact_email }}</span>
   </div>
-  <div class="rate-sheet-filter-name">
+  <div class="rate-sheet-filter-effective">
     <span class="attributes-label">Contact Phone</span>
     <span class="attribute-inputs">{{ form.contact_phone }}</span>
   </div>
@@ -22,40 +22,54 @@
 <div class="rate-sheet-attributes">
   <span class="attribute-inputs">
     <div class="api-attribute-filter">
+      <div class="api-attribute-filter-control">
+        <label for="{{ form.demand_partners_filter['#id'] }}">{{ 'Filter Demand Partners' }}</label>
+        {{ form.demand_partners_filter }}
+      </div>
+
       <div class="api-attribute-filter-actions">
         {{ form.actions }}
       </div>
     </div>
 
-    <div class="customer-management-form-fields">
-      <div class="customer-management-form-field">
-        {{ form.demand_partners }}
+    <div class="rate-sheet-linked-clients customer-management-demand-partners-section">
+      <h3>Demand Partners</h3>
+      <div class="rate-sheet-client-list-wrapper customer-management-demand-partners-list-wrapper">
+        <div class="rate-sheet-client-list customer-management-demand-partners-list">
+          {{ form.demand_partners }}
+        </div>
       </div>
-
-      {% if form.client_id %}
-        <div class="customer-management-form-field">
-          {{ form.client_id }}
-        </div>
-      {% endif %}
-
-      {% if form.hashed_key_display %}
-        <div class="customer-management-form-field">
-          {{ form.hashed_key_display }}
-          {{ form.hashed_key_actions }}
-        </div>
-      {% endif %}
-
-      {% if form.history %}
-        <div class="customer-management-form-field">
-          {{ form.history }}
-        </div>
-      {% endif %}
-
-      {% if form.created_credentials_modal %}
-        <div class="customer-management-form-field">
-          {{ form.created_credentials_modal }}
-        </div>
-      {% endif %}
     </div>
+
+    {% if form.client_id or form.hashed_key_display %}
+      <div class="rate-sheet-linked-clients customer-management-credentials-section">
+        <h3>Credentials</h3>
+
+        {% if form.client_id %}
+          <div class="customer-management-form-field">
+            {{ form.client_id }}
+          </div>
+        {% endif %}
+
+        {% if form.hashed_key_display %}
+          <div class="customer-management-form-field customer-management-hashed-key-field">
+            {{ form.hashed_key_display }}
+            {{ form.hashed_key_actions }}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if form.history %}
+      <div class="rate-sheet-linked-clients customer-management-history-section">
+        {{ form.history }}
+      </div>
+    {% endif %}
+
+    {% if form.created_credentials_modal %}
+      <div class="rate-sheet-linked-clients customer-management-created-credentials-section">
+        {{ form.created_credentials_modal }}
+      </div>
+    {% endif %}
   </span>
 </div>

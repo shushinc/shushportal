@@ -1,0 +1,63 @@
+.customer-management-demand-partners-section,
+.customer-management-credentials-section,
+.customer-management-history-section,
+.customer-management-created-credentials-section {
+  margin-top: 1.5rem;
+}
+
+.customer-management-demand-partners-filter-wrapper .form-item {
+  margin: 0;
+}
+
+.customer-management-demand-partners-list-wrapper {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+  background: #fff;
+}
+
+.customer-management-demand-partners-list {
+  padding: 0.5rem;
+}
+
+.customer-management-demand-partners-list .form-item,
+.customer-management-demand-partners-list .form-item-d-emand-partners,
+.customer-management-demand-partners-list .form-select {
+  margin: 0;
+  width: 100%;
+}
+
+.customer-management-demand-partners-select {
+  width: 100%;
+  min-height: 220px;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.customer-management-demand-partners-select option {
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.customer-management-demand-partners-select option:checked {
+  background: #e0e7ff linear-gradient(0deg, #e0e7ff 0%, #e0e7ff 100%);
+  color: #3730a3;
+}
+
+.customer-management-form-field {
+  margin-bottom: 1rem;
+}
+
+.customer-management-hashed-key-field .form-item {
+  margin-bottom: 0.5rem;
+}
+
+.customer-management-history-section details {
+  width: 100%;
+}
+
+.customer-management-created-credentials-section .messages {
+  margin-top: 0;
+}

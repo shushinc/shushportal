@@ -11,7 +11,6 @@ use Drupal\Core\Url;
 use Drupal\customer_management\Service\CustomerHistoryService;
 use Drupal\customer_management\Service\CustomerManager;
 use Drupal\node\NodeInterface;
-use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -104,15 +103,35 @@ final class CreateCustomerForm extends FormBase {
     $selected_partners = [];
     if ($is_edit && $node->hasField('field_demand_partners')) {
       foreach ($node->get('field_demand_partners')->getValue() as $item) {
-        $selected_partners[] = (int) $item['target_id'];
+        $selected_partners[] = (string) $item['target_id'];
       }
     }
 
+    $form['demand_partners_filter'] = [
+      '#type' => 'search',
+      '#title' => $this->t('Filter Demand Partners'),
+      '#title_display' => 'invisible',
+      '#attributes' => [
+        'class' => ['customer-management-demand-partners-filter'],
+        'placeholder' => $this->t('Type to filter demand partners')->render(),
+        'data-customer-demand-partners-filter' => '1',
+        'autocomplete' => 'off',
+      ],
+    ];
+
     $form['demand_partners'] = [
-      '#type' => 'checkboxes',
+      '#type' => 'select',
       '#title' => $this->t('Demand Partners'),
       '#options' => $demand_partner_options,
       '#default_value' => $selected_partners,
+      '#multiple' => TRUE,
+      '#size' => max(8, min(12, count($demand_partner_options) ?: 8)),
+      '#attributes' => [
+        'class' => ['customer-management-demand-partners-select'],
+        'data-customer-demand-partners-select' => '1',
+      ],
+      '#prefix' => '<div class="rate-sheet-client-filter-wrapper customer-management-demand-partners-filter-wrapper">',
+      '#suffix' => '</div>',
     ];
 
     if ($is_edit) {
@@ -202,6 +221,7 @@ final class CreateCustomerForm extends FormBase {
 
     $form['#theme'] = 'create_customer';
     $form['#attached']['library'][] = 'customer_management/hashed-key-toggle';
+    $form['#attached']['library'][] = 'customer_management/customer-management-form';
 
     return $form;
   }
