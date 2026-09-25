@@ -1553,7 +1553,42 @@ function zcs_api_attributes_update_9022() {
  * Allow pricing calculation log fields to be NULL for failed calculations.
  */
 function zcs_api_attributes_update_9023(): void {
-  $schema = \Drupal::database()->schema();
+  $database = \Drupal::database();
+  $schema = $database->schema();
+
+  if (!$schema->tableExists('api_pricing_calculation_log')) {
+    return;
+  }
+
+  // Normalize legacy bucket_datetime values before converting the column from
+  // varchar to an unsigned Unix timestamp. Historical records may contain ISO
+  // 8601 values or blank/invalid strings, which would otherwise make the
+  // schema change fail on MySQL.
+  $records = $database->select('api_pricing_calculation_log', 'apcl')
+    ->fields('apcl', ['id', 'bucket_datetime'])
+    ->execute();
+
+  foreach ($records as $record) {
+    $value = trim((string) $record->bucket_datetime);
+
+    if ($value === '') {
+      $normalized_value = NULL;
+    }
+    elseif (ctype_digit($value)) {
+      $normalized_value = (int) $value;
+    }
+    else {
+      $timestamp = strtotime($value);
+      $normalized_value = $timestamp !== FALSE ? $timestamp : NULL;
+    }
+
+    $database->update('api_pricing_calculation_log')
+      ->fields([
+        'bucket_datetime' => $normalized_value,
+      ])
+      ->condition('id', $record->id)
+      ->execute();
+  }
 
   $fields = [
     'source_bucket_id' => [
