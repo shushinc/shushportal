@@ -1545,7 +1545,6 @@ class RateSheetService {
 
     $datetime = $bucket['datatime'] ?? NULL;
 
-    // Transaction fields
     $transaction_fields = [
       'total_transaction_count',
       'total_full_rate_billable_transaction',
@@ -1565,14 +1564,14 @@ class RateSheetService {
       'carrier_name',
     ];
 
-    // Validate transaction fields are non-negative integers
+    // Transaction counts must be non-negative integers.
     foreach ($transaction_fields as $field) {
       if (!array_key_exists($field, $bucket)) {
         return "Missing required field: {$field}";
       }
 
       if (!is_int($bucket[$field]) || $bucket[$field] < 0) {
-        return "Invalid value for {$field}: must be integer >= 0";
+        return "Invalid value for {$field}: transaction counts must be non-negative integers";
       }
     }
 
@@ -1582,41 +1581,37 @@ class RateSheetService {
       }
     }
 
-    // Validate numeric fields
-    $numeric_fields = [
-      'total_transaction_count',
-      'total_full_rate_billable_transaction',
-      'total_lower_rate_billable_transaction',
-      'total_no_billable_transaction',
-    ];
+    // Validate sum.
+    $sum = $bucket['total_full_rate_billable_transaction']
+      + $bucket['total_lower_rate_billable_transaction']
+      + $bucket['total_no_billable_transaction'];
 
-    foreach ($numeric_fields as $field) {
-      if (!is_numeric($bucket[$field]) || $bucket[$field] < 0) {
-        return "Invalid value for {$field}: must be integer >= 0";
-      }
-    }
-
-    // Validate sum
-    $sum = (int) $bucket['total_full_rate_billable_transaction']
-      + (int) $bucket['total_lower_rate_billable_transaction']
-      + (int) $bucket['total_no_billable_transaction'];
-
-    if ($sum < 0) {
-      return 'Sum of billable transactions must be >= 0';
-    }
-
-    if ($sum !== (int) $bucket['total_transaction_count'] ) {
+    if ($sum !== $bucket['total_transaction_count']) {
       return 'Sum of billable transactions must be equal to the Total Transaction Count';
     }
-
-    $date = \DateTimeImmutable::createFromFormat('Y-m-d\TH:i:s\Z', $datetime, new \DateTimeZone('UTC'));
-    $date_errors = \DateTimeImmutable::getLastErrors();
 
     if (empty($datetime)) {
       return 'Missing or invalid datatime field';
     }
 
-    if($date === FALSE || ($date_errors !== FALSE && ($date_errors['warning_count'] > 0 || $date_errors['error_count'] > 0))) {
+    $date = \DateTimeImmutable::createFromFormat(
+      'Y-m-d\TH:i:s\Z',
+      $datetime,
+      new \DateTimeZone('UTC')
+    );
+
+    $date_errors = \DateTimeImmutable::getLastErrors();
+
+    if (
+      $date === FALSE ||
+      (
+        $date_errors !== FALSE &&
+        (
+          $date_errors['warning_count'] > 0 ||
+          $date_errors['error_count'] > 0
+        )
+      )
+    ) {
       return 'Invalid datatime format: must be ISO 8601 UTC (e.g., 2023-01-01T12:00:00Z)';
     }
 
@@ -2089,6 +2084,10 @@ class RateSheetService {
   /**
    * Logs a failed bucket.
    *
+   * Invalid transaction counts are sanitized before persistence because the
+   * audit log columns are unsigned. Invalid request data must not cause the
+   * audit logging itself to fail.
+   *
    * @param array $bucket
    *   The bucket data.
    * @param string $run_id
@@ -2097,6 +2096,12 @@ class RateSheetService {
    *   The error message.
    */
   protected function logFailedBucket(array $bucket, string $run_id, string $error_message): void {
+    $sanitize_transaction_count = static function ($value): int {
+      return is_int($value) && $value >= 0
+        ? $value
+        : 0;
+    };
+
     $this->database->insert('api_pricing_calculation_log')
       ->fields([
         'run_id' => $run_id,
@@ -2110,10 +2115,18 @@ class RateSheetService {
         'rate_sheet_id' => NULL,
         'rate_sheet_item_id' => NULL,
         'bucket_datetime' => NULL,
-        'total_transaction_count' => (int) ($bucket['total_transaction_count'] ?? 0),
-        'total_full_rate_billable_transaction' => (int) ($bucket['total_full_rate_billable_transaction'] ?? 0),
-        'total_lower_rate_billable_transaction' => (int) ($bucket['total_lower_rate_billable_transaction'] ?? 0),
-        'total_no_billable_transaction' => (int) ($bucket['total_no_billable_transaction'] ?? 0),
+        'total_transaction_count' => $sanitize_transaction_count(
+          $bucket['total_transaction_count'] ?? NULL
+        ),
+        'total_full_rate_billable_transaction' => $sanitize_transaction_count(
+          $bucket['total_full_rate_billable_transaction'] ?? NULL
+        ),
+        'total_lower_rate_billable_transaction' => $sanitize_transaction_count(
+          $bucket['total_lower_rate_billable_transaction'] ?? NULL
+        ),
+        'total_no_billable_transaction' => $sanitize_transaction_count(
+          $bucket['total_no_billable_transaction'] ?? NULL
+        ),
         'cumulative_before' => 0,
         'cumulative_after' => 0,
         'successful_unit_price' => NULL,
