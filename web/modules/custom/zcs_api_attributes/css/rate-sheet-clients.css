@@ -1,4 +1,4 @@
-.rate-sheet-client-modal-overlay {
+.rate-sheet-client-modal-overlay, .customer-credentials-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -11,7 +11,7 @@
   z-index: 1000;
 }
 
-.rate-sheet-client-modal {
+.rate-sheet-client-modal, .customer-credentials-modal {
   background: white;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -22,7 +22,11 @@
   flex-direction: column;
 }
 
-.rate-sheet-client-modal-header {
+.customer-credentials-modal {
+  max-width: 720px;
+}
+
+.rate-sheet-client-modal-header, .customer-credentials-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -30,7 +34,7 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
-.rate-sheet-client-modal-header h2 {
+.rate-sheet-client-modal-header h2, .customer-credentials-modal-header h2 {
   margin: 0;
   font-size: 1.25rem;
 }
@@ -53,10 +57,80 @@
   color: #111827;
 }
 
-.rate-sheet-client-modal-body {
+.rate-sheet-client-modal-body, .customer-credentials-modal-body {
   padding: 1.5rem;
   overflow-y: auto;
   flex: 1;
+}
+.customer-credentials-warning {
+  background-color: #fef3c7;
+  color: #92400e;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.customer-credentials-field {
+  margin-bottom: 1rem;
+}
+.customer-credentials-field label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+.customer-credentials-field .customer-credentials-value {
+  background-color: #f3f4f6;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-family: monospace;
+  word-break: break-all;
+}
+
+.customer-credentials-field .customer-credentials-hash-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+button.customer-credentials-copy {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.customer-credentials-copy-status-wrapper  {
+  background-color: #d1fae5;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #16a34a;
+  display: none;
+  margin-top: 1rem;
+}
+
+
+.customer-credentials-copy-status {
+  font-size: 0.875rem;
+  color: #16a34a;
+  margin-left: 0.5rem;
+}
+
+.customer-credentials-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.customer-credentials-modal-footer button {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .rate-sheet-client-filter-wrapper {
@@ -87,7 +161,7 @@
   margin: 0;
 }
 
-.rate-sheet-client-tag {
+.rate-sheet-client-tag, .customer-management-demand-partner-tag {
   display: inline-flex;
   align-items: center;
   background: #e0e7ff;
@@ -98,11 +172,11 @@
   font-size: 0.875rem;
 }
 
-.rate-sheet-client-tag-label {
+.rate-sheet-client-tag-label, .customer-management-demand-partner-tag-label {
   margin-right: 0.5rem;
 }
 
-.rate-sheet-client-tag-remove {
+.rate-sheet-client-tag-remov, .customer-management-demand-partner-tag-remove {
   background: none;
   border: none;
   cursor: pointer;

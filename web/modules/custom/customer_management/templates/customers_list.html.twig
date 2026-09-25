@@ -3,7 +3,7 @@
 <div>
   <div class="user-management-view api-attribute-status-header">
     <header>
-      {{ content.link }}
+      {{ content.link|merge({'#attributes': {'class': ['btn-primary']}}) }}
     </header>
   </div>
 

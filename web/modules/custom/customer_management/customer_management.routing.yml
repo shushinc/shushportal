@@ -1,5 +1,5 @@
 customer_management.list_customer:
-  path: '/customers'
+  path: '/client/customers'
   defaults:
     _controller: '\Drupal\customer_management\Controller\CustomerListController::list'
     _title: 'Customer Management'

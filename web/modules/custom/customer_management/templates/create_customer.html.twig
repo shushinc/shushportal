@@ -1,75 +1,95 @@
-{{ form.customer_nid }}
-{{ form.demand_partners_data }}
-{{ form.selected_demand_partners_data }}
-{{ form.demand_partners }}
+<div class="customer-management-form">
 
-<div class="rate-sheet-filter">
-  <div class="rate-sheet-filter-name">
-    <span class="attributes-label">Customer Name</span>
-    <span class="attribute-inputs">{{ form.customer_name }}</span>
-  </div>
-  <div class="rate-sheet-filter-name">
-    <span class="attributes-label">Contact Name</span>
-    <span class="attribute-inputs">{{ form.contact_name }}</span>
-  </div>
-  <div class="rate-sheet-filter-currencies">
-    <span class="attributes-label">Contact Email</span>
-    <span class="attribute-inputs">{{ form.contact_email }}</span>
-  </div>
-  <div class="rate-sheet-filter-effective">
-    <span class="attributes-label">Contact Phone</span>
-    <span class="attribute-inputs">{{ form.contact_phone }}</span>
-  </div>
-</div>
+  <h1 class="customer-management-form-title">
+    {{ is_edit ? 'Edit Customer'|t : 'Add Customer'|t }}
+  </h1>
 
-<div class="rate-sheet-attributes">
-  <span class="attribute-inputs">
-    <div class="api-attribute-filter">
-      <div class="api-attribute-filter-control">
-        <button type="button" class="button button--small customer-add-demand-partner" data-customer-add-demand-partner>
-          Add Demand Partners
-        </button>
-      </div>
+  <div class="customer-management-form-grid">
 
-      <div class="api-attribute-filter-actions">
-        {{ form.actions }}
-      </div>
+    <div class="customer-management-form-field">
+      {{ form.customer_name }}
     </div>
 
-    <div class="rate-sheet-linked-clients customer-management-demand-partners-section">
-      <h3>Demand Partners</h3>
-      <div class="rate-sheet-selected-clients-tags customer-management-selected-demand-partners" data-customer-selected-demand-partners-tags></div>
+    <div class="customer-management-form-field">
+      {{ form.contact_name }}
     </div>
 
-    {% if form.client_id or form.hashed_key_display %}
-      <div class="rate-sheet-linked-clients customer-management-credentials-section">
-        <h3>Credentials</h3>
+    <div class="customer-management-form-field">
+      {{ form.contact_email }}
+    </div>
 
-        {% if form.client_id %}
-          <div class="customer-management-form-field">
-            {{ form.client_id }}
-          </div>
-        {% endif %}
+    <div class="customer-management-form-field">
+      {{ form.contact_phone }}
+    </div>
 
-        {% if form.hashed_key_display %}
-          <div class="customer-management-form-field customer-management-hashed-key-field">
-            {{ form.hashed_key_display }}
-            {{ form.hashed_key_actions }}
-          </div>
-        {% endif %}
+  </div>
+
+  {% if is_edit and form.customer_client_id is defined %}
+    <div class="customer-management-form-grid customer-management-credentials-section">
+
+      <div class="customer-management-form-field">
+        {{ form.customer_client_id }}
       </div>
-    {% endif %}
 
-    {% if form.history %}
-      <div class="rate-sheet-linked-clients customer-management-history-section">
-        {{ form.history }}
-      </div>
-    {% endif %}
+      {% if form.hashed_key is defined %}
+        <div class="customer-management-form-field customer-management-hashed-key-field">
+          {{ form.hashed_key }}
+        </div>
+      {% endif %}
 
-    {% if form.created_credentials_modal %}
-      <div class="rate-sheet-linked-clients customer-management-created-credentials-section">
-        {{ form.created_credentials_modal }}
-      </div>
-    {% endif %}
-  </span>
+    </div>
+  {% endif %}
+
+  <div
+    class="customer-management-demand-partners"
+    data-customer-demand-partners-container
+  >
+
+    <div class="customer-management-demand-partners-card">
+
+      <button
+        type="button"
+        class="button button--small customer-management-add-demand-partners rate-sheet-add-client"
+        data-customer-add-demand-partners
+      >
+        {{ 'Add Demand Partners'|t }}
+      </button>
+
+      <div
+        class="customer-management-selected-demand-partners"
+        data-customer-selected-demand-partners
+      ></div>
+
+    </div>
+
+  </div>
+
+  {{ form.demand_partners }}
+  {{ form.demand_partners_data }}
+  {{ form.selected_demand_partners_data }}
+
+  <div class="customer-management-form-actions">
+    {{ form.actions }}
+
+    <a
+      href="{{ path('customer_management.list_customer') }}"
+      class="customer-management-back-link"
+    >
+      {{ 'Back to customers'|t }}
+    </a>
+  </div>
+
+  {{ form|without(
+    'customer_name',
+    'contact_name',
+    'contact_email',
+    'contact_phone',
+    'customer_client_id',
+    'hashed_key',
+    'demand_partners',
+    'demand_partners_data',
+    'selected_demand_partners_data',
+    'actions'
+  ) }}
+
 </div>

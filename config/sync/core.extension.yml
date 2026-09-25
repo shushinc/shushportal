@@ -17,6 +17,7 @@ module:
   consolidate: 0
   contact: 0
   contextual: 0
+  customer_management: 0
   dashboard: 0
   datetime: 0
   dblog: 0

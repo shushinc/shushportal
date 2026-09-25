@@ -64,10 +64,25 @@ final class CreateCustomerForm extends FormBase {
   /**
    * Builds the form.
    */
-  public function buildForm(array $form, FormStateInterface $form_state, NodeInterface $node = NULL): array {
+  public function buildForm(array $form, FormStateInterface $form_state, $node = NULL): array {
+  
+    $customer_nid = $node ? $node->id() : 0;
     $is_edit = $node instanceof NodeInterface && $node->bundle() === 'customer';
     $demand_partner_options = $this->customerManager->getDemandPartnerOptions();
 
+    if ($customer_nid > 0) {
+      $tempstoreService = \Drupal::service('tempstore.private')->get('customer_management');
+      $new_customer_credentials = $tempstoreService->get('new_customer_credentials_' . $customer_nid);
+
+      if ($new_customer_credentials) {
+        $tempstoreService->delete('new_customer_credentials_' . $customer_nid);
+        $form['#attached']['drupalSettings']['customerManagement']['newCustomerCredentials'] = [
+          'clientId' => $new_customer_credentials['client_id'],
+          'hashedKey' => $new_customer_credentials['hashed_key'],
+        ];
+      }
+    }
+  
     $selected_partners = $form_state->getValue('demand_partners');
     if (!is_array($selected_partners)) {
       $selected_partners = [];
@@ -151,9 +166,9 @@ final class CreateCustomerForm extends FormBase {
 
     $form['demand_partners'] = [
       '#type' => 'hidden',
-      '#value' => $selected_partners,
+      '#value' => implode(',', $selected_partners),
       '#attributes' => [
-        'data-customer-selected-demand-partners' => '',
+        'data-customer-demand-partners-input' => '',
       ],
     ];
 
@@ -243,6 +258,8 @@ final class CreateCustomerForm extends FormBase {
     }
 
     $form['#theme'] = 'create_customer';
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-clients';
+    $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-ranges';
     $form['#attached']['library'][] = 'customer_management/hashed-key-toggle';
     $form['#attached']['library'][] = 'customer_management/customer-management-form';
 
@@ -275,28 +292,102 @@ final class CreateCustomerForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
     $customer_nid = (int) $form_state->getValue('customer_nid');
+
+    /*
+    * Demand Partners are stored in a single hidden field as a
+    * comma-separated list of taxonomy term IDs.
+    *
+    * Example:
+    *   "12,18,25"
+    *
+    * Convert the value back to a clean array before sending it to the
+    * CustomerManager.
+    */
+    $demand_partners_value = $form_state->getValue('demand_partners', '');
+
+    if (is_array($demand_partners_value)) {
+      // Defensive fallback in case the form is rebuilt with an array value.
+      $demand_partner_ids = $demand_partners_value;
+    }
+    else {
+      $demand_partner_ids = explode(',', (string) $demand_partners_value);
+    }
+
+    $demand_partner_ids = array_values(array_unique(array_filter(
+      array_map(
+        static fn ($value): string => trim((string) $value),
+        $demand_partner_ids
+      ),
+      static fn (string $value): bool => $value !== '' && ctype_digit($value)
+    )));
+
     $values = [
       'customer_name' => trim((string) $form_state->getValue('customer_name')),
       'contact_name' => trim((string) $form_state->getValue('contact_name')),
       'contact_email' => trim((string) $form_state->getValue('contact_email')),
       'contact_phone' => trim((string) $form_state->getValue('contact_phone')),
-      'demand_partners' => array_values(array_filter(array_map('strval', (array) $form_state->getValue('demand_partners', [])))),
+      'demand_partners' => $demand_partner_ids,
     ];
 
+    /*
+    * Update existing customer.
+    */
+  
+    // Stores the new customer credentials for display after redirecting to the edit page.
+    $new_customer_credentials = NULL;
+
     if ($customer_nid > 0) {
-      $customer = $this->customerManager->updateCustomer($customer_nid, $values);
-      $this->messenger()->addStatus($this->t('Customer "@name" has been updated.', ['@name' => $customer->label()]));
-      $form_state->setRedirect('customer_management.edit_customer', ['node' => $customer->id()]);
+  
+      $customer = $this->customerManager->updateCustomer(
+        $customer_nid,
+        $values
+      );
+
+      $this->messenger()->addStatus(
+        $this->t(
+          'Customer "@name" has been updated.',
+          [
+            '@name' => $customer->label(),
+          ]
+        )
+      );
+
+      $form_state->setRedirect(
+        'customer_management.edit_customer',
+        [
+          'node' => $customer->id(),
+        ]
+      );
+
       return;
     }
 
+    /*
+    * Create new customer.
+    */
     $result = $this->customerManager->createCustomer($values);
     $customer = $result['node'];
+    $tempstoreService = \Drupal::service('tempstore.private')->get('customer_management');
+    $tempstoreService->set('new_customer_credentials_' . $customer->id(), [
+      'client_id' => $result['client_id'],
+      'hashed_key' => $result['hashed_key'],
+    ]);
 
-    $this->messenger()->addStatus($this->t('Customer "@name" has been created.', ['@name' => $customer->label()]));
-    $form_state->setRedirect('customer_management.edit_customer', ['node' => $customer->id()]);
-    $this->messenger()->addStatus($this->t('Client ID: @client_id', ['@client_id' => $result['client_id']]));
-    $this->messenger()->addWarning($this->t('Hashed Key (store securely now): @hashed_key', ['@hashed_key' => $result['hashed_key']]));
+    $this->messenger()->addStatus(
+      $this->t(
+        'Customer "@name" has been created.',
+        [
+          '@name' => $customer->label(),
+        ]
+      )
+    );
+
+    $form_state->setRedirect(
+      'customer_management.edit_customer',
+      [
+        'node' => $customer->id(),
+      ]
+    );
   }
 
 }

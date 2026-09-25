@@ -1,62 +1,312 @@
-.customer-management-demand-partners-section,
-.customer-management-credentials-section,
-.customer-management-history-section,
-.customer-management-created-credentials-section {
-  margin-top: 1.5rem;
+.customer-management-form {
+  width: 100%;
 }
 
-.customer-management-selected-demand-partners {
-  margin-bottom: 0;
+.customer-management-form-title {
+  margin-bottom: 1.5rem;
+}
+
+/*
+ * Main form fields.
+ *
+ * Same visual organization used by the Rate Sheet form:
+ * three fields on the first row.
+ */
+.customer-management-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
 }
 
 .customer-management-form-field {
-  margin-bottom: 1rem;
+  min-width: 0;
 }
 
+.customer-management-form-field .form-item {
+  margin: 0;
+}
+
+.customer-management-form-field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.customer-management-form-field input,
+.customer-management-form-field select {
+  width: 100%;
+}
+
+/*
+ * Demand Partners card.
+ */
+.customer-management-demand-partners {
+  margin-top: 1rem;
+}
+
+.customer-management-demand-partners-card {
+  background: #fff;
+  border: 1px solid #d8dbe2;
+  border-radius: 12px;
+  padding: 1.5rem;
+  min-height: 48px;
+}
+
+.customer-management-add-demand-partners {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.customer-management-add-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+/*
+ * Selected Demand Partners.
+ */
+.customer-management-selected-demand-partners {
+  margin-top: 1rem;
+}
+
+.customer-management-selected-demand-partners:empty {
+  display: none;
+}
+
+/*
+ * Hashed key.
+ */
 .customer-management-hashed-key-field .form-item {
   margin-bottom: 0.5rem;
 }
 
-.customer-management-history-section details {
-  width: 100%;
+.hashed-key-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
 }
 
-.customer-management-created-credentials-section .messages {
-  margin-top: 0;
+.hashed-key-toggle,
+.hashed-key-reset {
+  margin: 0;
+}
+
+/*
+ * Actions.
+ */
+.customer-management-form-actions {
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.customer-management-back-link {
+  display: inline-block;
+}
+
+/*
+ * Demand Partner modal.
+ */
+.customer-demand-partner-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
 .customer-demand-partner-modal {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.customer-demand-partner-modal .rate-sheet-client-list-wrapper {
+.customer-demand-partner-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.customer-demand-partner-modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.customer-demand-partner-modal-close {
+  background: none;
+  border: 0;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+}
+
+.customer-demand-partner-modal-close:hover {
+  color: #111827;
+}
+
+.customer-demand-partner-modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.customer-demand-partner-filter-wrapper {
+  margin-bottom: 1rem;
+}
+
+.customer-demand-partner-filter-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.customer-demand-partner-filter-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+
+.customer-demand-partner-selected-tags {
+  margin-bottom: 1rem;
+  min-height: 2rem;
+}
+
+.customer-demand-partner-no-selection {
+  color: #6b7280;
+  font-style: italic;
+  margin: 0;
+}
+
+.customer-demand-partner-tag {
+  display: inline-flex;
+  align-items: center;
+  background: #e0e7ff;
+  color: #3730a3;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  margin: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.customer-demand-partner-tag-label {
+  margin-right: 0.5rem;
+}
+
+.customer-demand-partner-tag-remove {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3730a3;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.customer-demand-partner-list-wrapper {
   border: 1px solid #d1d5db;
   border-radius: 4px;
   max-height: 300px;
   overflow-y: auto;
 }
 
-.customer-demand-partner-modal .rate-sheet-client-list {
+.customer-demand-partner-list {
   padding: 0.5rem;
 }
 
-.customer-demand-partner-modal .rate-sheet-client-item {
+.customer-demand-partner-item {
   display: flex;
   align-items: center;
   padding: 0.5rem;
   border-radius: 4px;
 }
 
-.customer-demand-partner-modal .rate-sheet-client-item:hover {
+.customer-demand-partner-item:hover {
   background: #f3f4f6;
 }
 
-.customer-demand-partner-modal .rate-sheet-client-checkbox {
+.customer-demand-partner-checkbox {
   margin-right: 0.75rem;
 }
 
-.customer-demand-partner-modal .rate-sheet-client-item label {
+.customer-demand-partner-item label {
   cursor: pointer;
   flex: 1;
   margin: 0;
+}
+
+.customer-demand-partner-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.customer-demand-partner-modal-cancel,
+.customer-demand-partner-modal-save {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.customer-demand-partner-modal-cancel {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.customer-demand-partner-modal-cancel:hover {
+  background: #f9fafb;
+}
+
+.customer-demand-partner-modal-save {
+  background: #2563eb;
+  border: 1px solid #2563eb;
+  color: #fff;
+}
+
+.customer-demand-partner-modal-save:hover {
+  background: #1d4ed8;
+}
+
+@media (max-width: 900px) {
+  .customer-management-form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }

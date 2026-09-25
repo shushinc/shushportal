@@ -24,3 +24,4 @@ customer-management-form:
   dependencies:
     - core/drupal
     - core/once
+    - core/drupalSettings
