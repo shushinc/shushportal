@@ -98,9 +98,13 @@
 		</div>
 		<div class="charts-dropdown-months">
 			<select>
-				{% for i,month in content.months %}
-					<option value={{ i+1 }} {% if i+1 == content.currentMonth %} selected {% endif %}>{{ month }}</option>
-				{% endfor %}
+				{% for i, month in content.months %}
+					{% set monthNumber = '%02d'|format(i + 1) %}
+					<option value="{{ monthNumber }}"
+						{% if monthNumber == content.currentMonth %}selected{% endif %}>
+						{{ month }}
+				</option>
+        {% endfor %}
 			</select>
 		</div>
 		<div class="charts-dropdown-years">
