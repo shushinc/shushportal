@@ -174,8 +174,6 @@ final class CreateCustomerForm extends FormBase {
 
     if ($is_edit) {
       $client_id = $node->hasField('field_customer_client_id') ? (string) $node->get('field_customer_client_id')->value : '';
-      $masked_value = str_repeat('•', 24);
-
       $form['client_id'] = [
         '#type' => 'textfield',
         '#title' => $this->t('Client ID'),
@@ -184,35 +182,26 @@ final class CreateCustomerForm extends FormBase {
         '#disabled' => TRUE,
       ];
 
-      $form['hashed_key_display'] = [
-        '#type' => 'textfield',
-        '#title' => $this->t('Hashed Key'),
-        '#default_value' => $masked_value,
-        '#attributes' => [
-          'readonly' => 'readonly',
-          'data-hashed-key-display' => '1',
-        ],
+      $form['credentials_notice'] = [
+        '#markup' => '<p>' . $this->t('For security, the hashed key cannot be viewed after customer creation. Credentials can be resent to the contact email.') . '</p>',
       ];
 
-      $form['hashed_key_actions'] = [
+      $form['credential_actions'] = [
         '#type' => 'container',
         '#attributes' => [
           'class' => ['hashed-key-actions'],
-          'data-customer-id' => (string) $node->id(),
-          'data-reveal-url' => Url::fromRoute('customer_management.reveal_key', ['node' => $node->id()])->toString(),
-          'data-reset-url' => Url::fromRoute('customer_management.reset_key', ['node' => $node->id()])->toString(),
         ],
       ];
 
-      if ($this->currentUser()->hasPermission('view hashed key')) {
-        $form['hashed_key_actions']['show'] = [
+      if ($this->currentUser()->hasPermission('resend customer credentials')) {
+        $form['credential_actions']['resend'] = [
           '#type' => 'markup',
-          '#markup' => '<button type="button" class="button button--small hashed-key-toggle" data-hashed-key-toggle="1">' . $this->t('Show') . '</button>',
+          '#markup' => '<a class="button button--small" href="' . Url::fromRoute('customer_management.resend_credentials', ['node' => $node->id()])->toString() . '">' . $this->t('Resend credentials') . '</a>',
         ];
       }
 
       if ($this->currentUser()->hasPermission('reset customer hashed key')) {
-        $form['hashed_key_actions']['reset'] = [
+        $form['credential_actions']['reset'] = [
           '#type' => 'markup',
           '#markup' => '<a class="button button--small hashed-key-reset" href="' . Url::fromRoute('customer_management.reset_key', ['node' => $node->id()])->toString() . '">' . $this->t('Reset') . '</a>',
         ];
@@ -260,7 +249,6 @@ final class CreateCustomerForm extends FormBase {
     $form['#theme'] = 'create_customer';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-clients';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-ranges';
-    $form['#attached']['library'][] = 'customer_management/hashed-key-toggle';
     $form['#attached']['library'][] = 'customer_management/customer-management-form';
 
     return $form;

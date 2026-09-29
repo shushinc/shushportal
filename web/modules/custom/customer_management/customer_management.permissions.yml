@@ -10,9 +10,9 @@ edit customer:
   title: 'Edit customers'
   description: 'Edit customer records through the custom customer management form.'
 
-view hashed key:
-  title: 'View customer hashed key'
-  description: 'Allows a user to reveal the plaintext hashed key of a customer record. Restrict this to trusted admin roles only.'
+resend customer credentials:
+  title: 'Resend customer credentials'
+  description: 'Allows a user to resend the current Client ID and hashed key to the customer contact email without displaying the key in the UI.'
   restrict access: true
 
 reset customer hashed key:

@@ -14,6 +14,8 @@ services:
     arguments:
       - '@plugin.manager.mail'
       - '@current_user'
+      - '@extension.path.resolver'
+      - '@twig'
 
   customer_management.manager:
     class: Drupal\customer_management\Service\CustomerManager

@@ -36,6 +36,19 @@
     </div>
   {% endif %}
 
+  {% if form.client_id is defined %}
+    <div class="customer-management-form-grid customer-management-credentials-section">
+      <div class="customer-management-form-field">
+        {{ form.client_id }}
+      </div>
+    </div>
+
+    <div class="customer-management-credentials-actions">
+      {{ form.credentials_notice }}
+      {{ form.credential_actions }}
+    </div>
+  {% endif %}
+
   <div
     class="customer-management-demand-partners"
     data-customer-demand-partners-container
@@ -82,6 +95,9 @@
     'contact_phone',
     'customer_client_id',
     'hashed_key',
+    'client_id',
+    'credentials_notice',
+    'credential_actions',
     'demand_partners',
     'demand_partners_data',
     'selected_demand_partners_data',

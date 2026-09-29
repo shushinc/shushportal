@@ -5,7 +5,7 @@
  * Hooks for the Customer Management module.
  */
 
-use Drupal\Core\Datetime\DateFormatterInterface;
+use Drupal\Core\Render\Markup;
 
 /**
  * Implements hook_theme().
@@ -29,56 +29,28 @@ function customer_management_theme() {
  * Implements hook_mail().
  */
 function customer_management_mail($key, &$message, $params) {
+  $options = [
+    'langcode' => $message['langcode'],
+  ];
   $site_name = \Drupal::config('system.site')->get('name') ?: 'Site';
-  $message['headers']['Content-Type'] = 'text/plain; charset=UTF-8';
+
   $message['from'] = \Drupal::config('system.site')->get('mail');
+  $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed; delsp=yes';
 
   switch ($key) {
     case 'customer_created':
-      $message['subject'] = t('Your customer credentials for @site', ['@site' => $site_name]);
-      $message['body'][] = customer_management_build_credentials_mail_body($params, FALSE);
+      $message['subject'] = t('Your customer credentials for @site', ['@site' => $site_name], $options);
+      $message['body'][] = Markup::create($params['message']);
+      break;
+
+    case 'credentials_resent':
+      $message['subject'] = t('Your customer credentials for @site', ['@site' => $site_name], $options);
+      $message['body'][] = Markup::create($params['message']);
       break;
 
     case 'hashed_key_reset':
-      $message['subject'] = t('Your customer hashed key has been reset for @site', ['@site' => $site_name]);
-      $message['body'][] = customer_management_build_credentials_mail_body($params, TRUE);
+      $message['subject'] = t('Your customer hashed key has been reset for @site', ['@site' => $site_name], $options);
+      $message['body'][] = Markup::create($params['message']);
       break;
   }
-}
-
-/**
- * Builds the credentials email body.
- */
-function customer_management_build_credentials_mail_body(array $params, bool $is_reset = FALSE) {
-  $lines = [];
-  $lines[] = $params['contact_name'] ?? 'Hello,';
-  $lines[] = '';
-
-  if ($is_reset) {
-    $lines[] = t('The hashed key for customer "@customer" has been reset.', [
-      '@customer' => $params['customer_name'] ?? '',
-    ]);
-    $lines[] = t('The previous hashed key is no longer valid. Please update any integration using the old key.');
-  }
-  else {
-    $lines[] = t('Your customer account "@customer" has been created.', [
-      '@customer' => $params['customer_name'] ?? '',
-    ]);
-  }
-
-  $lines[] = '';
-  $lines[] = t('Client ID: @client_id', ['@client_id' => $params['client_id'] ?? '']);
-  $lines[] = t('Hashed Key: @hashed_key', ['@hashed_key' => $params['hashed_key'] ?? '']);
-  $lines[] = '';
-  $lines[] = t('Important: treat the hashed key as a secret credential and store it securely.');
-  $lines[] = '';
-  $lines[] = t('Example integration outline:');
-  $lines[] = '  - Normalize the phone number according to your agreed project rules before hashing.';
-  $lines[] = '  - Use the hashed key as the secret when computing the secure hash/HMAC of the phone number.';
-  $lines[] = '  - Send the resulting value using the agreed request header/protocol used by your Shush/Moriarty integration.';
-  $lines[] = '';
-  $lines[] = t('If you need help confirming the exact protocol details, please contact support.');
-  $lines[] = '';
-
-  return implode("\n", $lines);
 }

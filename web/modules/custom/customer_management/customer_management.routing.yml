@@ -32,13 +32,13 @@ customer_management.edit_customer:
         type: entity:node
     no_cache: true
 
-customer_management.reveal_key:
-  path: '/customer/{node}/reveal-key'
+customer_management.resend_credentials:
+  path: '/customer/{node}/resend-credentials'
   defaults:
-    _controller: '\Drupal\customer_management\Controller\HashedKeyController::reveal'
-    _title: 'Reveal hashed key'
+    _form: '\Drupal\customer_management\Form\ResendCredentialsForm'
+    _title: 'Resend credentials'
   requirements:
-    _permission: 'view hashed key'
+    _permission: 'resend customer credentials'
     node: \d+
   options:
     parameters:

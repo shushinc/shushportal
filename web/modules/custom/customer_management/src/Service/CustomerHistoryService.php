@@ -160,6 +160,7 @@ class CustomerHistoryService {
       'customer_created' => 'Customer Created',
       'customer_updated' => 'Customer Updated',
       'hashed_key_reset' => 'Hashed Key Reset',
+      'credentials_resent' => 'Credentials Resent',
       default => ucfirst(str_replace('_', ' ', $action_type)),
     };
   }
@@ -170,6 +171,10 @@ class CustomerHistoryService {
   protected function buildDetailsText(string $action_type, array $log_data): string {
     if ($action_type === 'customer_updated' && !empty($log_data['changed_fields']) && is_array($log_data['changed_fields'])) {
       return 'Changed fields: ' . implode(', ', $log_data['changed_fields']);
+    }
+
+    if ($action_type === 'credentials_resent' && !empty($log_data['email_sent_to'])) {
+      return 'Credentials emailed to ' . $log_data['email_sent_to'];
     }
 
     if ($action_type === 'hashed_key_reset' && !empty($log_data['email_sent_to'])) {

@@ -175,6 +175,35 @@ class CustomerManager {
   }
 
   /**
+   * Resends the current customer credentials to the contact email.
+   */
+  public function resendCredentials(int $nid): NodeInterface {
+    /** @var \Drupal\node\NodeInterface $node */
+    $node = $this->entityTypeManager->getStorage('node')->load($nid);
+    if (!$node || $node->bundle() !== 'customer') {
+      throw new \InvalidArgumentException('Invalid customer node.');
+    }
+
+    $email = (string) $node->get('field_contact_email')->value;
+    if ($email === '') {
+      throw new \InvalidArgumentException('Customer contact email is empty.');
+    }
+
+    $this->mailService->resendCredentialsEmail([
+      'customer_name' => $node->label(),
+      'contact_name' => (string) $node->get('field_contact_name')->value,
+      'client_id' => (string) $node->get('field_customer_client_id')->value,
+      'hashed_key' => (string) $node->get('field_hashed_key')->value,
+    ], $email);
+
+    $this->historyService->log((int) $node->id(), 'credentials_resent', (int) $this->currentUser->id(), [
+      'email_sent_to' => $email,
+    ]);
+
+    return $node;
+  }
+
+  /**
    * Resets a customer's hashed key.
    */
   public function resetHashedKey(int $nid): NodeInterface {
