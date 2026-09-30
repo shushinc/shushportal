@@ -142,6 +142,7 @@ class CustomerListController extends ControllerBase {
           'core/drupal.dialog.ajax',
           'customer_management/customer-management',
           'zcs_api_attributes/attributes-page',
+          'zcs_api_attributes/rate-sheet-review',
         ],
       ],
     ];

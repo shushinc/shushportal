@@ -184,7 +184,8 @@
   margin-top: 24px;
 }
 
-.new-rate-sheet-review .rate-sheet-attributes-toolbar {
+.new-rate-sheet-review .rate-sheet-attributes-toolbar,
+.customer-management-search .rate-sheet-filter {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
@@ -192,6 +193,14 @@
   justify-content: space-between;
   margin-bottom: 16px;
 }
+
+.customer-management-search .rate-sheet-filter {
+  padding: 1rem;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+}
+
 
 .new-rate-sheet-review .api-attribute-filter {
   flex: 1 1 320px;
@@ -207,7 +216,8 @@
   font-weight: 700;
 }
 
-.new-rate-sheet-review .api-attribute-filter input[type="search"] {
+.new-rate-sheet-review .api-attribute-filter input[type="search"],
+.customer-management-search .rate-sheet-filter input[type="search"]{
   width: 100%;
   min-height: 48px;
   padding: 10px 16px;
