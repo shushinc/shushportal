@@ -14,7 +14,14 @@ function zcs_menu_preprocess_menu(&$variables) {
         return;
     }
 
-    $pricing_version = \Drupal::config('zcs_custom.settings')->get('pricing_calculation_version') ?: 'v1';
+    $config = \Drupal::config('zcs_custom.settings');
+
+    $variables['#cache']['tags'] = array_unique(array_merge(
+        $variables['#cache']['tags'] ?? [],
+        $config->getCacheTags()
+    ));
+
+    $pricing_version = $config->get('pricing_calculation_version') ?: 'v1';
 
     if ($pricing_version === 'v2') {
         return;
