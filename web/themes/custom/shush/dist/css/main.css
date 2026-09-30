@@ -2839,3 +2839,6 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
 }
 
 /*# sourceMappingURL=main.css.map*/
+.d-inline {
+  display: inline!important;
+}
