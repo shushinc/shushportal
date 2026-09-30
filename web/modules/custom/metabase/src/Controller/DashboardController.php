@@ -273,8 +273,11 @@ class DashboardController extends ControllerBase {
       $token = JWT::encode($payload, $secket_key, 'HS256');
 
       // Build the embed URL.
-      $embed_url = $base_url . '/embed/dashboard/' . $token . '#background=false&bordered=false&titled=false';
-
+     // $embed_url = $base_url . '/embed/dashboard/' . $token . '#background=false&bordered=false&titled=false';
+    
+      $month = date('M');   
+      $year  = (int) date('Y'); 
+      $embed_url = $base_url . '/embed/dashboard/' . $token . '?month=' . $month . '&year=' . $year . '#background=false&bordered=false&titled=false';
       // Return the URL as JSON.
       return $embed_url;
     }
