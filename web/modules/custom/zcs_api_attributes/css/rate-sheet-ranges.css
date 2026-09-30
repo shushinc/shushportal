@@ -420,7 +420,8 @@
 
 .rate-sheet-add-range,
 .rate-sheet-add-client,
-.rate-sheet-remove-range {
+.rate-sheet-remove-range,
+.customer-management-action-button {
   align-items: center;
   border: 0;
   border-radius: 10px;
@@ -445,7 +446,8 @@
 
 .rate-sheet-add-range::before,
 .rate-sheet-add-client::before,
-.rate-sheet-remove-range::before {
+.rate-sheet-remove-range::before,
+.customer-management-action-button::before {
   align-items: center;
   border-radius: 50%;
   display: inline-flex;
@@ -458,25 +460,37 @@
 }
 
 .rate-sheet-add-range,
-.rate-sheet-add-client {
+.rate-sheet-add-client,
+.customer-management-action-button {
   background: #118df0;
   color: #ffffff;
 }
 
 .rate-sheet-add-range::before,
-.rate-sheet-add-client::before {
+.rate-sheet-add-client::before,
+.customer-management-action-button::before {
   background: rgba(255, 255, 255, 0.22);
   content: "+";
+}
+
+.customer-management-action-button--back::before {
+  content: "<"!important;
 }
 
 .rate-sheet-add-range:hover,
 .rate-sheet-add-range:focus,
 .rate-sheet-add-client:hover,
-.rate-sheet-add-client:focus {
+.rate-sheet-add-client:focus,
+.customer-management-action-button:hover,
+.customer-management-action-button:focus {
   background: #118df0;
   box-shadow: 0 4px 10px rgba(17, 141, 240, 0.25);
   color: #ffffff;
   transform: translateY(-1px);
+}
+
+.customer-management-action-button  {
+  margin-top: 1rem;
 }
 
 .rate-sheet-remove-range {

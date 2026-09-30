@@ -25,3 +25,4 @@ customer-management-form:
     - core/drupal
     - core/once
     - core/drupalSettings
+    - core/drupal.dialog.ajax

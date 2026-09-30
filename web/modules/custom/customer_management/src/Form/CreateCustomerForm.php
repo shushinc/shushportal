@@ -196,14 +196,14 @@ final class CreateCustomerForm extends FormBase {
       if ($this->currentUser()->hasPermission('resend customer credentials')) {
         $form['credential_actions']['resend'] = [
           '#type' => 'markup',
-          '#markup' => '<a class="button button--small" href="' . Url::fromRoute('customer_management.resend_credentials', ['node' => $node->id()])->toString() . '">' . $this->t('Resend credentials') . '</a>',
+          '#markup' => '<a class="button button--small customer-management-action-button rate-sheet-add-client use-ajax" data-dialog-type="modal" data-dialog-options=\'{"width":600}\' href="' . Url::fromRoute('customer_management.resend_credentials', ['node' => $node->id()])->toString() . '">' . $this->t('Resend credentials') . '</a>',
         ];
       }
 
       if ($this->currentUser()->hasPermission('reset customer hashed key')) {
         $form['credential_actions']['reset'] = [
           '#type' => 'markup',
-          '#markup' => '<a class="button button--small hashed-key-reset" href="' . Url::fromRoute('customer_management.reset_key', ['node' => $node->id()])->toString() . '">' . $this->t('Reset') . '</a>',
+          '#markup' => '<a class="button button--small customer-management-action-button rate-sheet-add-client use-ajax" data-dialog-type="modal" data-dialog-options=\'{"width":600}\' href="' . Url::fromRoute('customer_management.reset_key', ['node' => $node->id()])->toString() . '">' . $this->t('Reset') . '</a>',
         ];
       }
 
@@ -229,7 +229,12 @@ final class CreateCustomerForm extends FormBase {
     ];
 
     $form['actions']['cancel'] = Link::fromTextAndUrl($this->t('Back to customers'), Url::fromRoute('customer_management.list_customer'))->toRenderable();
-    $form['actions']['cancel']['#attributes']['class'][] = 'button';
+    $form['actions']['cancel']['#attributes']['class'] = [
+      'button',
+      'button--small',
+      'customer-management-action-button',
+      'customer-management-action-button--back',
+    ];
 
     if (!$is_edit) {
       $created_credentials = $form_state->get('created_credentials');
@@ -250,6 +255,7 @@ final class CreateCustomerForm extends FormBase {
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-clients';
     $form['#attached']['library'][] = 'zcs_api_attributes/rate-sheet-ranges';
     $form['#attached']['library'][] = 'customer_management/customer-management-form';
+    $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
 
     return $form;
   }

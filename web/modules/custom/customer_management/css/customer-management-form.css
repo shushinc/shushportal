@@ -112,8 +112,16 @@
   gap: 1rem;
 }
 
+.customer-management-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  text-decoration: none;
+}
+
 .customer-management-back-link {
-  display: inline-block;
+  display: inline-flex;
 }
 
 /*

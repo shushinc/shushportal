@@ -176,6 +176,11 @@ table.attributes-table th:nth-child(4) {
   padding: 10px 20px;
 }
 
+body.client-customers table.attributes-table tr td {
+  text-align: left;
+  padding: 10px 20px;
+}
+
 .pricing-rate-sheet-list table.attributes-table tr td {
   text-align: left;
   padding: 10px 20px;
@@ -209,10 +214,10 @@ body.pricing-rate-sheet-list table.attributes-table th:first-child {
   width: 14%;
 }
 
+body.client-customers table.attributes-table th:last-child,
 body.pricing-rate-sheet-list table.attributes-table th:last-child {
   text-align: center;
 }
-
 
 body.pricing-rate-sheet-list table.attributes-table th:nth-child(2) {
   width: 10%;

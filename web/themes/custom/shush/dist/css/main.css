@@ -1392,6 +1392,7 @@ table tr td .key-inactive p {
 }
 table tr td .edit-operation {
   position: relative;
+  text-align: center;
 }
 table tr td .edit-operation::before {
   content: "";
