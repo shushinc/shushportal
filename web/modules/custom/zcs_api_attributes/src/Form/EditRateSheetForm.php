@@ -223,7 +223,9 @@ class EditRateSheetForm extends FormBase {
 
     $form['attribute_date'] = [
       '#type' => 'textfield',
-      '#default_value' => date('m/Y', $rate_sheet->effective_date),
+      '#default_value' => is_numeric($rate_sheet->effective_date)
+        ? date('m/Y', (int) $rate_sheet->effective_date)
+        : '',
       '#weight' => 1,
       '#attributes' => [
         'type'=> 'month'
@@ -615,7 +617,6 @@ class EditRateSheetForm extends FormBase {
         ->fields([
           'name' => $values['name'],
           'markup_retail' => $values['retail_markup_percentage'],
-          'effective_date' => strtotime($values['attribute_date']),
         ])
         ->condition('id', $rate_sheet_id)
         ->execute();
