@@ -105,7 +105,9 @@ class NewRateSheetReviewForm extends FormBase {
     // Effective date.
     $form['attribute_date'] = [
       '#type' => 'textfield',
-      '#default_value' => date('M d, Y', $data->effective_date),
+      '#default_value' => is_numeric($data->effective_date)
+        ? date('M d, Y', (int) $data->effective_date)
+        : '',
       '#weight' => 1,
       '#disabled' => TRUE,
     ];
