@@ -1,0 +1,83 @@
+# Deploys the `development` branch to the GCE VM `portal-kong-runtime`
+# (project sherlock-004) on every push, or manually from the Actions tab.
+#
+# One-time setup: scripts/deploy/gcp-setup.sh  (see scripts/deploy/README.md)
+# Required GitHub config:
+#   secrets.GCP_WIF_PROVIDER  projects/<num>/locations/global/workloadIdentityPools/github/providers/shushportal
+#   secrets.GCP_DEPLOY_SA     github-portal-deployer@sherlock-004.iam.gserviceaccount.com
+#   vars.GCE_ZONE             zone of portal-kong-runtime, e.g. us-central1-a
+
+name: Deploy development → portal-kong-runtime
+
+on:
+  push:
+    branches: [development]
+  workflow_dispatch:
+    inputs:
+      force_composer:
+        description: "Run composer install even if composer.lock did not change"
+        type: boolean
+        default: false
+
+# Never run two deploys against the same VM at once; queue them instead.
+concurrency:
+  group: deploy-portal-kong-runtime
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write   # needed for keyless auth to GCP (Workload Identity Federation)
+
+env:
+  GCP_PROJECT: sherlock-004
+  GCE_INSTANCE: portal-kong-runtime
+  GCE_ZONE: ${{ vars.GCE_ZONE }}
+  APP_DIR: /var/www/html/shushportal
+  DEPLOY_BRANCH: development
+
+jobs:
+  deploy:
+    name: Deploy to portal-kong-runtime
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: development
+
+    steps:
+      - name: Checkout (for the deploy script)
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_DEPLOY_SA }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy over SSH (IAP tunnel)
+        env:
+          FORCE_COMPOSER: ${{ inputs.force_composer && '1' || '0' }}
+        run: |
+          set -euo pipefail
+          test -n "$GCE_ZONE" || { echo "::error::Repository variable GCE_ZONE is not set"; exit 1; }
+
+          # The script is streamed from this commit, so the VM always runs the
+          # deploy logic that matches the code being deployed.
+          gcloud compute ssh "$GCE_INSTANCE" \
+            --project "$GCP_PROJECT" \
+            --zone "$GCE_ZONE" \
+            --tunnel-through-iap \
+            --quiet \
+            --command "sudo env APP_DIR='$APP_DIR' DEPLOY_BRANCH='$DEPLOY_BRANCH' EXPECTED_SHA='$GITHUB_SHA' FORCE_COMPOSER='$FORCE_COMPOSER' bash -s" \
+            < scripts/deploy/deploy-portal.sh
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### portal-kong-runtime deploy: ${{ job.status }}"
+            echo "- Commit: \`${GITHUB_SHA::8}\` by ${{ github.actor }}"
+            echo "- Branch: \`${DEPLOY_BRANCH}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
