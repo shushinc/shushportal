@@ -61,16 +61,27 @@ class RateSheetController extends ControllerBase {
    */
   public function rateSheetList() {
     $limit = 10;
-    $allResultSet = $this->database->select('rate_sheet', 'rs');
-    $resultTotal = $allResultSet->countQuery()->execute()->fetchField();
-    $pager = $this->pagerManager->createPager($resultTotal, $limit);
     $final = [];
 
-    $resultSet = $this->database->select('rate_sheet', 'rs')
-      ->fields('rs', ['id', 'name', 'effective_date', 'currency', 'markup_retail', 'created_date', 'created_by']);
-    $resultSet->range($pager->getCurrentPage() * $limit, $limit);
-    $resultSet->orderBy('effective_date', 'DESC');
-    $resultSet = $resultSet->execute()->fetchAll();
+    /** @var \Drupal\Core\Database\Query\PagerSelectExtender $query */
+    $query = $this->database->select('rate_sheet', 'rs')
+      ->fields('rs', [
+        'id',
+        'name',
+        'effective_date',
+        'currency',
+        'markup_retail',
+        'created_date',
+        'created_by',
+      ])
+      ->extend(\Drupal\Core\Database\Query\PagerSelectExtender::class);
+
+    $query->orderBy('effective_date', 'DESC');
+    $query->limit($limit);
+
+    $resultSet = $query
+      ->execute()
+      ->fetchAll();
 
     $url = Url::fromRoute('zcs_api_attributes.create_rate_sheet');
     $route_name = $url->getRouteName();
@@ -92,7 +103,6 @@ class RateSheetController extends ControllerBase {
 
     foreach($resultSet as $result) {
 
-      $is_current_user_owner = ($result->created_by == \Drupal::currentUser()->id());
       $current_user_roles = \Drupal::currentUser()->getRoles();
       $approval_roles = ['financial_rate_sheet_approval_level_1', 'financial_rate_sheet_approval_level_2', 'finance_admin'];
       $rate_sheet_admin_roles = ['client_rate_sheet_admin', 'finance_admin'];
@@ -175,10 +185,19 @@ class RateSheetController extends ControllerBase {
     $data['final'] = $final;
 
     return [
-      '#theme' => 'rate_sheet_list',
-      '#content' => $data,
+      '#type' => 'container',
+      '#attributes' => [
+        'data-rate-sheet-list' => '',
+      ],
+      'list' => [
+        '#theme' => 'rate_sheet_list',
+        '#content' => $data,
+      ],
+      'pager' => [
+        '#type' => 'pager',
+      ],
       '#attached' => [
-        'library' => ['zcs_api_attributes/attributes-page', 'zcs_api_attributes/rate-sheet-approval',],
+        'library' => ['zcs_api_attributes/attributes-page', 'zcs_api_attributes/rate-sheet-approval','zcs_api_attributes/rate-sheet-list',],
       ],
     ];
   }
