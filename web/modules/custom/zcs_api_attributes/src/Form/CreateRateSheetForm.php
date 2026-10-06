@@ -344,6 +344,18 @@ class CreateRateSheetForm extends FormBase {
         if ($to != -1 && (!is_numeric($to) || floatval($to) < floatval($from))) {
           $form_state->setError($form, $this->t('Invalid "to" range value for attribute @id. Must be greater than "from" or -1 for unbounded.', ['@id' => $attribute_id]));
         }
+
+        $partial_range = isset($range['partial_range']) ? str_replace(',', '', $range['partial_range']) : NULL;
+        $success_rate = isset($range['success_rate']) ? str_replace(',', '', $range['success_rate']) : NULL;
+
+        if (!is_numeric($partial_range) || (float) $partial_range < 0) {
+          $form_state->setError($form, $this->t('Partial Tx Unit Price for attribute @id cannot be negative.', ['@id' => $attribute_id]));
+        }
+
+        if (!is_numeric($success_rate) || (float) $success_rate < 0) {
+          $form_state->setError($form, $this->t('Successful Tx Unit Price for attribute @id cannot be negative.', ['@id' => $attribute_id]));
+        }
+
       }
     }
   }
