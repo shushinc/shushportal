@@ -133,7 +133,8 @@
     {% endif %}
 
     {% if not (form.can_edit_clients_only and form.can_edit_clients_only['#value'] == true) %}
-    <div class="rate-sheet-accordion" data-rate-sheet-ranges data-rate-sheet-progressive data-rate-sheet-initial-visible="10" data-rate-sheet-load-step="10">
+      {% set rate_sheet_view_only = form.can_edit and form.can_edit['#value'] == false %}
+      <div class="rate-sheet-accordion" data-rate-sheet-ranges data-rate-sheet-progressive data-rate-sheet-initial-visible="10" data-rate-sheet-load-step="10"{% if rate_sheet_view_only %} data-rate-sheet-read-only="true"{% endif %}>
       {% set counter = 1 %}
       {% for id, title in attributes.titles %}
         {% set ranges_for_attribute = attribute(form.rate_sheet_item_ranges, id) %}
@@ -158,7 +159,7 @@
                 {{ form['tiered_calculation_' ~ id] }}
               </span>
 
-              <button type="button" class="button button--small rate-sheet-add-range" data-rate-sheet-add-range data-attribute-id="{{ id }}">
+              <button type="button" class="button button--small rate-sheet-add-range" data-rate-sheet-add-range data-attribute-id="{{ id }}"{% if rate_sheet_view_only %} disabled{% endif %}>
                 Add Range
               </button>
 

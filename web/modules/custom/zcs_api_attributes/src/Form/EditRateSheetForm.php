@@ -210,7 +210,7 @@ class EditRateSheetForm extends FormBase {
       '#default_value' => $rate_sheet->name,
       '#description' => $this->t('The rate sheet name.'),
       '#required' => TRUE,
-      '#disabled' => $can_edit_clients_only,
+      '#disabled' => !$can_edit,
     ];
 
     // Currencies form select.
@@ -241,7 +241,7 @@ class EditRateSheetForm extends FormBase {
       '#step' => 1,
       '#required' => TRUE,
       '#default_value' => $rate_sheet->markup_retail,
-      '#disabled' => $can_edit_clients_only,
+      '#disabled' => !$can_edit,
     ];
 
     // Load rate sheet items.

@@ -4,6 +4,7 @@ namespace Drupal\zcs_api_attributes\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Datetime\DateFormatterInterface;
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -50,6 +51,13 @@ class CreateRateSheetForm extends FormBase {
   protected $dateFormatter;
 
   /**
+   * The database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $database;
+
+  /**
    * The rate sheet service.
    *
    * @var \Drupal\zcs_api_attributes\Service\RateSheetService
@@ -72,6 +80,8 @@ class CreateRateSheetForm extends FormBase {
    *   The config factory.
    * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
    *   The date formatter.
+   * @param \Drupal\Core\Database\Connection $database
+   *  The database connection.
    * @param \Drupal\zcs_api_attributes\Service\RateSheetService $rate_sheet_service
    *   The rate sheet service.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
@@ -81,6 +91,7 @@ class CreateRateSheetForm extends FormBase {
     EntityTypeManagerInterface $entity_type_manager,
     ConfigFactoryInterface $config_factory,
     DateFormatterInterface $date_formatter,
+    Connection $database,
     RateSheetService $rate_sheet_service,
     MessengerInterface $messenger
   ) {
@@ -88,6 +99,7 @@ class CreateRateSheetForm extends FormBase {
     $this->entityTypeManager = $entity_type_manager;
     $this->configFactory = $config_factory;
     $this->dateFormatter = $date_formatter;
+    $this->database = $database;
     $this->rateSheetService = $rate_sheet_service;
     $this->messenger = $messenger;
   }
@@ -100,6 +112,7 @@ class CreateRateSheetForm extends FormBase {
       $container->get('entity_type.manager'),
       $container->get('config.factory'),
       $container->get('date.formatter'),
+      $container->get('database'),
       $container->get('zcs_api_attributes.rate_sheet_service'),
       $container->get('messenger')
     );
@@ -250,8 +263,21 @@ class CreateRateSheetForm extends FormBase {
     $values = $form_state->getValues();
 
     // Validate rate sheet name.
-    if (empty(trim($values['name']))) {
+    $name = trim($values['name'] ?? '');
+    if (empty($name) || $name === '') {
       $form_state->setErrorByName('name', $this->t('Rate sheet name is required.'));
+    }
+    else {
+      // Check for duplicate rate sheet name.
+       $duplicate = $this->database->select('rate_sheet', 'rs')
+        ->condition('rs.name', $name)
+        ->countQuery()
+        ->execute()
+        ->fetchField();
+
+      if ($duplicate) {
+        $form_state->setErrorByName('name', $this->t('A rate sheet with this name already exists. Please choose a different name.'));
+      }
     }
 
     // Validate effective date.

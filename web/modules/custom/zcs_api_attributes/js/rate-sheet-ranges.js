@@ -42,6 +42,22 @@
     return Array.prototype.slice.call(container.querySelectorAll('[data-rate-sheet-attribute-item]'));
   }
 
+
+  /**
+   * Disables editable range controls when the rate sheet is view-only.
+   *
+   * Accordion toggles remain enabled so users can inspect all ranges.
+   */
+  function applyReadOnlyState(container) {
+    if (!container || container.getAttribute('data-rate-sheet-read-only') !== 'true') {
+      return;
+    }
+    container.querySelectorAll('[data-rate-sheet-range-field], [data-rate-sheet-add-range], [data-rate-sheet-remove-range]').forEach(function (control) {
+      control.disabled = true;
+    });
+  }
+
+
   /**
    * Gets all range rows for an attribute item.
    *
@@ -781,6 +797,7 @@
         loadExistingRanges(container);
         initializeAccordion(container);
         updateRangesPayload(container);
+        applyReadOnlyState(container);
 
         // Debounce payload updates to avoid excessive JSON serialization.
         var debouncedUpdate = debounce(function () {
