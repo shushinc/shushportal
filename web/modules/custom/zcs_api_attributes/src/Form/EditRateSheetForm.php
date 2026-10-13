@@ -238,6 +238,7 @@ class EditRateSheetForm extends FormBase {
     $form['retail_markup_percentage'] = [
       '#type' => 'number',
       '#min' => 0,
+      '#max' => 100,
       '#step' => 1,
       '#required' => TRUE,
       '#default_value' => $rate_sheet->markup_retail,
@@ -481,6 +482,11 @@ class EditRateSheetForm extends FormBase {
     // If in clients-only mode, skip most validation
     if ($can_edit_clients_only) {
       return;
+    }
+
+    $markup = $values['retail_markup_percentage'] ?? NULL;
+    if (!is_numeric($markup) || (float) $markup < 0 || (float) $markup > 100) {
+      $form_state->setErrorByName('retail_markup_percentage', $this->t('Enterprise Custom Markup must be between 0 and 100.'));
     }
 
     // Validate rate sheet name.
