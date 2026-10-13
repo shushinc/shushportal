@@ -1409,7 +1409,7 @@ class RateSheetService {
     $validation_error = $this->validateBucket($bucket);
 
     if ($validation_error !== NULL) {
-      $this->logFailedBucket($bucket, $run_id, $validation_error);
+      $this->logFailedBucket($bucket, $run_id, $validation_error, $this->getPricingFailureContext($bucket));
 
       return $this->enrichBucketWithError(
         $bucket,
@@ -1417,6 +1417,7 @@ class RateSheetService {
       );
     }
 
+    $configuration = NULL;
     try {
       $client_key = (string) $bucket['client'];
       $endpoint = (string) $bucket['endpoint'];
@@ -1511,10 +1512,19 @@ class RateSheetService {
     catch (\Exception $e) {
       $error_message = $e->getMessage();
 
+      $context = $this->getPricingFailureContext($bucket, $configuration);
+
       $this->logger->error(
-        'Pricing calculation failed for bucket @bucket_id: @message',
+        'Pricing calculation failed for bucket @bucket_id (client @client, client_id @client_id, endpoint @endpoint, attribute @attribute [@attribute_id], rate sheet @rate_sheet_id, item @item_id): @message',
         [
           '@bucket_id' => $source_bucket_id,
+          '@client' => (string) ($bucket['client'] ?? ''),
+          '@client_id' => $context['client_id'] ?? 'N/A',
+          '@endpoint' => (string) ($bucket['endpoint'] ?? ''),
+          '@attribute' => $context['attribute_name'] ?? 'N/A',
+          '@attribute_id' => $context['api_attribute_id'] ?? 'N/A',
+          '@rate_sheet_id' => $context['rate_sheet_id'] ?? 'N/A',
+          '@item_id' => $context['rate_sheet_item_id'] ?? 'N/A',
           '@message' => $error_message,
         ]
       );
@@ -1522,7 +1532,8 @@ class RateSheetService {
       $this->logFailedBucket(
         $bucket,
         $run_id,
-        $error_message
+        $error_message,
+        $context
       );
 
       return $this->enrichBucketWithError(
@@ -2095,7 +2106,7 @@ class RateSheetService {
    * @param string $error_message
    *   The error message.
    */
-  protected function logFailedBucket(array $bucket, string $run_id, string $error_message): void {
+  protected function logFailedBucket(array $bucket, string $run_id, string $error_message, array $context = []): void {
     $sanitize_transaction_count = static function ($value): int {
       return is_int($value) && $value >= 0
         ? $value
@@ -2107,13 +2118,13 @@ class RateSheetService {
         'run_id' => $run_id,
         'source_bucket_id' => $bucket['source_bucket_id'] ?? '',
         'client_key' => $bucket['client'] ?? '',
-        'client_id' => NULL,
-        'client_type' => NULL,
-        'api_attribute_id' => NULL,
-        'attribute_name' => NULL,
+        'client_id' => $context['client_id'] ?? NULL,
+        'client_type' => $context['client_type'] ?? NULL,
+        'api_attribute_id' => $context['api_attribute_id'] ?? NULL,
+        'attribute_name' => $context['attribute_name'] ?? NULL,
         'endpoint' => $bucket['endpoint'] ?? '',
-        'rate_sheet_id' => NULL,
-        'rate_sheet_item_id' => NULL,
+        'rate_sheet_id' => $context['rate_sheet_id'] ?? NULL,
+        'rate_sheet_item_id' => $context['rate_sheet_item_id'] ?? NULL,
         'bucket_datetime' => NULL,
         'total_transaction_count' => $sanitize_transaction_count(
           $bucket['total_transaction_count'] ?? NULL
@@ -2789,6 +2800,59 @@ class RateSheetService {
     }
 
     return $configuration;
+  }
+
+
+  /**
+   * Resolves identifiers for a failed pricing calculation.
+   *
+   * A missing attribute/range may cause the preloaded configuration to be
+   * absent. Resolve the known entities independently for diagnostic logging.
+   */
+  protected function getPricingFailureContext(array $bucket, ?array $configuration = NULL): array {
+    $client_key = (string) ($bucket['client'] ?? '');
+    $endpoint = (string) ($bucket['endpoint'] ?? '');
+
+    $context = [
+      'client_id' => $configuration['client_id'] ?? NULL,
+      'client_type' => $configuration['client_type'] ?? NULL,
+      'api_attribute_id' => $configuration['attribute_id'] ?? NULL,
+      'attribute_name' => $configuration['attribute_name'] ?? NULL,
+      'rate_sheet_id' => $configuration['rate_sheet_id'] ?? NULL,
+      'rate_sheet_item_id' => $configuration['rate_sheet_item_id'] ?? NULL,
+    ];
+
+    if ($context['client_id'] === NULL && $client_key !== '') {
+      $client = $this->resolveClient($client_key);
+      if ($client !== NULL) {
+        $context['client_id'] = $client['id'];
+        $context['client_type'] = $client['type'];
+      }
+    }
+
+    if ($context['api_attribute_id'] === NULL && $endpoint !== '') {
+      $attribute = $this->resolveApiAttribute($endpoint);
+      if ($attribute !== NULL) {
+        $context['api_attribute_id'] = $attribute['id'];
+        $context['attribute_name'] = $attribute['name'];
+      }
+    }
+
+    if ($context['rate_sheet_id'] === NULL && $context['client_id'] !== NULL) {
+      $context['rate_sheet_id'] = $this->getActiveRateSheetForClient((int) $context['client_id']);
+    }
+
+    if ($context['rate_sheet_item_id'] === NULL
+      && $context['rate_sheet_id'] !== NULL
+      && $context['api_attribute_id'] !== NULL) {
+      $item = $this->resolveRateSheetItem(
+        (int) $context['rate_sheet_id'],
+        (int) $context['api_attribute_id']
+      );
+      $context['rate_sheet_item_id'] = $item['id'] ?? NULL;
+    }
+
+    return $context;
   }
 
 }
