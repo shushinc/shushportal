@@ -1304,7 +1304,7 @@ class RateSheetService {
       ->condition('crs.rate_sheet_client_status_id', $approved_status_id)
       ->condition('crs.active', 1)
       ->condition('rs.effective_date', $today, '<=')
-      ->orderBy('crs.effective_date', 'DESC')
+      ->orderBy('crs.id', 'DESC')
       ->range(0, 1)
       ->execute()
       ->fetchField();
