@@ -6,3 +6,8 @@ administer dashboard:
   title: 'Administer Dashboard'
   description: 'Configure dashboard settings and manage access'
   restrict access: true
+
+view all dashboard data:
+  title: 'View all dashboard data'
+  description: 'See every client and end customer, not only those of the groups the user belongs to'
+  restrict access: true
