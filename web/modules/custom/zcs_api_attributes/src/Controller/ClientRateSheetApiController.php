@@ -144,10 +144,16 @@ class ClientRateSheetApiController extends ControllerBase {
 
       return new JsonResponse($result, 200);
     }
-    catch (\Exception $e) {
-      $this->getLogger('zcs_api_attributes')->error(
-        'Error processing aggregate pricing: @message',
-        ['@message' => $e->getMessage()]
+    catch (\Throwable $e) {
+      $this->logger->error(
+        'Aggregate pricing request failed. Error: @message. '
+        . 'File: @file. Line: @line.',
+        [
+          '@message' => $e->getMessage(),
+          '@file' => $e->getFile(),
+          '@line' => $e->getLine(),
+          'exception' => $e,
+        ]
       );
 
       return new JsonResponse(
