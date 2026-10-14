@@ -167,13 +167,6 @@ protected $currentUser;
 
         foreach ($results as $result) {
 
-          if ($key === 'end_customers') {
-            $user_id = (int) $this->currentUser->id();
-            $args = [
-              ':user_id_1' => $user_id,
-            ];
-          }
-
           if ($key != 'years') {
             $options[$result->id] = $result->name;
           }
