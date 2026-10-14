@@ -1511,30 +1511,55 @@ class RateSheetService {
     }
     catch (\Exception $e) {
       $error_message = $e->getMessage();
-
-      $context = $this->getPricingFailureContext($bucket, $configuration);
+      $context = [];
+      try {
+        $context = $this->getPricingFailureContext(
+          $bucket,
+          $configuration
+        );
+      }
+      catch (\Throwable $context_error) {
+        $this->logger->error(
+          'Failed to resolve pricing diagnostic context: @message',
+          ['@message' => $context_error->getMessage()]
+        );
+      }
 
       $this->logger->error(
-        'Pricing calculation failed for bucket @bucket_id (client @client, client_id @client_id, endpoint @endpoint, attribute @attribute [@attribute_id], rate sheet @rate_sheet_id, item @item_id): @message',
+        'Pricing calculation failed. '
+        . 'Bucket: @bucket. '
+        . 'Client: @client. '
+        . 'Endpoint: @endpoint. '
+        . 'Attribute: @attribute. '
+        . 'Rate Sheet: @rate_sheet. '
+        . 'Error: @error',
         [
-          '@bucket_id' => $source_bucket_id,
-          '@client' => (string) ($bucket['client'] ?? ''),
-          '@client_id' => $context['client_id'] ?? 'N/A',
-          '@endpoint' => (string) ($bucket['endpoint'] ?? ''),
-          '@attribute' => $context['attribute_name'] ?? 'N/A',
-          '@attribute_id' => $context['api_attribute_id'] ?? 'N/A',
-          '@rate_sheet_id' => $context['rate_sheet_id'] ?? 'N/A',
-          '@item_id' => $context['rate_sheet_item_id'] ?? 'N/A',
-          '@message' => $error_message,
+          '@bucket' => $source_bucket_id,
+          '@client' => (string) ($bucket['client'] ?? 'N/A'),
+          '@endpoint' => (string) ($bucket['endpoint'] ?? 'N/A'),
+          '@attribute' => $context['attribute_name'] ?? 'Not found',
+          '@rate_sheet' => $context['rate_sheet_id'] ?? 'N/A',
+          '@error' => $error_message,
         ]
       );
 
-      $this->logFailedBucket(
-        $bucket,
-        $run_id,
-        $error_message,
-        $context
-      );
+      try {
+        $this->logFailedBucket(
+          $bucket,
+          $run_id,
+          $error_message,
+          $context
+        );
+      }
+      catch (\Throwable $logging_error) {
+        $this->logger->error(
+          'Failed to persist pricing failure for bucket @bucket: @message',
+          [
+            '@bucket' => $source_bucket_id,
+            '@message' => $logging_error->getMessage(),
+          ]
+        );
+      }
 
       return $this->enrichBucketWithError(
         $bucket,
