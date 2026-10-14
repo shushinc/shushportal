@@ -7,6 +7,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -43,6 +44,13 @@ class DataSource {
   protected $moduleHandler;
 
   /**
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
+   */
+  protected $currentUser;
+
+  /**
    * Constructs a DataSource object.
    *
    * @param \Drupal\Core\Database\Connection $database
@@ -59,11 +67,30 @@ class DataSource {
     ConfigFactoryInterface $config_factory,
     TimeInterface $time,
     ModuleHandlerInterface $module_handler,
+    AccountProxyInterface $current_user,
   ) {
     $this->database = $database;
     $this->configFactory = $config_factory;
     $this->time = $time;
     $this->moduleHandler = $module_handler;
+    $this->currentUser = $current_user;
+  }
+
+  /**
+   * Whether the current user may see data for all clients.
+   *
+   * Mirrors the team's rule: uid 1, administrator or carrier_admin see
+   * everything; everyone else only sees their own groups.
+   */
+  public function canViewAllData(): bool {
+    $account = $this->currentUser;
+    if ((int) $account->id() === 1) {
+      return TRUE;
+    }
+    if (array_intersect(['administrator', 'carrier_admin'], $account->getRoles())) {
+      return TRUE;
+    }
+    return $account->hasPermission('view all dashboard data');
   }
 
   /**
@@ -131,13 +158,22 @@ class DataSource {
 
     $connection = \Drupal::database();
 
+    // Filters that must be limited to the groups the user belongs to.
+    $scoped = ['clients', 'end_customers'];
+    $view_all = $this->canViewAllData();
+
     foreach ($filters as $key => &$filter) {
-      // Carriers.
-      $query_string = $this->loadSqlFromFile('filters/' . $key);
+      $args = [];
+      $file = 'filters/' . $key;
+      if (!$view_all && in_array($key, $scoped, TRUE)) {
+        $file = 'filters/' . $key . '_by_user';
+        $args = [':user_id' => (int) $this->currentUser->id()];
+      }
+      $query_string = $this->loadSqlFromFile($file);
       $options = [];
 
       if ($query_string !== FALSE) {
-        $results = $connection->query($query_string)->fetchAll();
+        $results = $connection->query($query_string, $args)->fetchAll();
         foreach ($results as $result) {
           if ($key != 'years') {
             $options[$result->id] = $result->name;
