@@ -8,6 +8,7 @@ use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Drupal\Core\Session\AccountProxyInterface;
 
 /**
  * Service for providing dashboard data.
@@ -42,6 +43,13 @@ class DataSource {
    */
   protected $moduleHandler;
 
+/**
+ * The current logged-in user.
+ *
+ * @var \Drupal\Core\Session\AccountProxyInterface
+ */
+protected $currentUser;
+
   /**
    * Constructs a DataSource object.
    *
@@ -59,11 +67,13 @@ class DataSource {
     ConfigFactoryInterface $config_factory,
     TimeInterface $time,
     ModuleHandlerInterface $module_handler,
+    AccountProxyInterface $current_user,
   ) {
     $this->database = $database;
     $this->configFactory = $config_factory;
     $this->time = $time;
     $this->moduleHandler = $module_handler;
+    $this->currentUser = $current_user;
   }
 
   /**
@@ -137,8 +147,33 @@ class DataSource {
       $options = [];
 
       if ($query_string !== FALSE) {
-        $results = $connection->query($query_string)->fetchAll();
+       
+        $args = [];
+
+        if ($key === 'end_customers') {
+          $user_id = (int) $this->currentUser->id();
+
+          $args = [
+            ':user_id_1' => $user_id,
+            ':user_id_2' => $user_id,
+            ':user_id_3' => $user_id,
+            ':user_id_4' => $user_id,
+            ':user_id_5' => $user_id,
+            ':user_id_6' => $user_id,
+          ];
+        }
+
+        $results = $connection->query($query_string, $args)->fetchAll();
+
         foreach ($results as $result) {
+
+          if ($key === 'end_customers') {
+            $user_id = (int) $this->currentUser->id();
+            $args = [
+              ':user_id_1' => $user_id,
+            ];
+          }
+
           if ($key != 'years') {
             $options[$result->id] = $result->name;
           }
@@ -150,8 +185,8 @@ class DataSource {
       $filter['options'] = $options;
     }
 
-    $filters['months']['selected'] = date('n');
-    $filters['years']['selected'] = date('Y');
+    $filters['months']['selected'] = (int) date('n');
+    $filters['years']['selected'] = (int) date('Y');
 
     return $filters;
   }
