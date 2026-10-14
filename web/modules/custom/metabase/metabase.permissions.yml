@@ -7,3 +7,8 @@ access module reports:
   title: 'Access module reports'
   description: 'Allow users to access the module reports page.'
   restrict access: TRUE
+
+view all analytics end customers:
+  title: 'View all analytics end customers'
+  description: 'See every end customer in embedded analytics, regardless of partner group membership.'
+  restrict access: TRUE

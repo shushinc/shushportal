@@ -12,3 +12,7 @@ services:
     arguments: ['@metabase.proxy']
     tags:
       - { name: event_subscriber }
+
+  metabase.end_customer_access:
+    class: Drupal\metabase\Service\EndCustomerAccess
+    arguments: ['@database', '@group.membership_loader']

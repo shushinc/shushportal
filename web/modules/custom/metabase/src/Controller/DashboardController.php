@@ -7,6 +7,8 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\metabase\Form\EndCustomerFilterForm;
+use Drupal\metabase\Service\EndCustomerAccess;
 use Drupal\metabase\Service\MetabaseService;
 use Firebase\JWT\JWT;
 use GuzzleHttp\ClientInterface;
@@ -68,6 +70,20 @@ class DashboardController extends ControllerBase {
   protected $requestStack;
 
   /**
+   * End customer access resolver.
+   *
+   * @var \Drupal\metabase\Service\EndCustomerAccess
+   */
+  protected $endCustomerAccess;
+
+  /**
+   * Locked end_customer_ids value for this request.
+   *
+   * @var string|null
+   */
+  protected $lockedEndCustomers;
+
+  /**
    * Constructs a new DashboardController object.
    *
    * @param \Drupal\metabase\Service\MetabaseService $metabase_api_service
@@ -93,6 +109,7 @@ class DashboardController extends ControllerBase {
     AccountProxyInterface $current_user,
     ConfigFactoryInterface $config_factory,
     RequestStack $request_stack,
+    EndCustomerAccess $end_customer_access,
   ) {
     $this->metabaseApiService = $metabase_api_service;
     $this->httpClient = $http_client;
@@ -101,6 +118,7 @@ class DashboardController extends ControllerBase {
     $this->currentUser = $current_user;
     $this->configFactory = $config_factory;
     $this->requestStack = $request_stack;
+    $this->endCustomerAccess = $end_customer_access;
   }
 
   /**
@@ -115,6 +133,7 @@ class DashboardController extends ControllerBase {
       $container->get('current_user'),
       $container->get('config.factory'),
       $container->get('request_stack'),
+      $container->get('metabase.end_customer_access'),
     );
   }
 
@@ -142,6 +161,14 @@ class DashboardController extends ControllerBase {
       '#type' => 'markup',
       '#markup' => '<div class="user-management-header"><h3>Main Dashboard</h3></div>',
     ];
+
+    // End customer filter, limited to terms the user may see.
+    $allowed = $this->endCustomerAccess->getAllowedEndCustomers($this->currentUser);
+    $requested = $this->requestStack->getCurrentRequest()->query->get('end_customer');
+    $selected = (is_numeric($requested) && isset($allowed[(int) $requested])) ? (int) $requested : NULL;
+    $this->lockedEndCustomers = $this->endCustomerAccess->buildLockedValue($this->currentUser, $selected);
+
+    $build['filters'] = $this->formBuilder()->getForm(EndCustomerFilterForm::class, $allowed, $selected);
 
     $user = $this->currentUser;
     $roles = $user->getRoles();
@@ -261,6 +288,12 @@ class DashboardController extends ControllerBase {
       }
     }
 
+    // Locked on EVERY embedded dashboard: restricts both the data and what
+    // the user can pick. Must be set to "Locked" in each dashboard's embed
+    // settings, otherwise Metabase rejects the token.
+    $params['end_customer_ids'] = $this->lockedEndCustomers
+      ?? $this->endCustomerAccess->buildLockedValue($this->currentUser);
+
     // Create JWT payload.
     $payload = [
       'resource' => ['dashboard' => (int) $dashboard_id],
@@ -274,7 +307,6 @@ class DashboardController extends ControllerBase {
 
       // Build the embed URL.
       $embed_url = $base_url . '/embed/dashboard/' . $token . '#background=false&bordered=false&titled=false';
-
       // Return the URL as JSON.
       return $embed_url;
     }
