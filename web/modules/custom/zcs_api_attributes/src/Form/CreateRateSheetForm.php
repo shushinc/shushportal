@@ -160,16 +160,16 @@ class CreateRateSheetForm extends FormBase {
       '#weight' => 0,
     ];
 
-    // Effective date.
+    // QA can select any effective day, including past dates.
+    $is_qa = $this->currentUser()->hasRole('shush_qa');
     $form['attribute_date'] = [
       '#type' => 'date',
-      '#default_value' => date('Y-m-d'),
+      '#default_value' => $is_qa ? date('Y-m-d') : date('Y-m-01'),
       '#weight' => 1,
-      '#attributes' => [
-        'min' => date('Y-m-d'),
-        'type'=> 'month'
-      ],
-      '#date_date_format' => 'm/Y',
+      '#attributes' => $is_qa
+        ? []
+        : ['min' => date('Y-m-01'), 'type' => 'month'],
+      '#date_date_format' => $is_qa ? 'Y-m-d' : 'm/Y',
     ];
 
     // Markup retail.
@@ -286,28 +286,25 @@ class CreateRateSheetForm extends FormBase {
       }
     }
 
-    // Validate effective date.
+    // QA users may select an exact day, including dates in the past.
+    $is_qa = $this->currentUser()->hasRole('shush_qa');
     $effective_date = $values['attribute_date'] ?? NULL;
     if (empty($effective_date)) {
       $form_state->setErrorByName('attribute_date', $this->t('Effective date is required.'));
     }
     else {
-      $effectiveDate = \DateTimeImmutable::createFromFormat('Y-m', $effective_date);
+      $format = $is_qa ? '!Y-m-d' : '!Y-m';
+      $effective_date_input = $is_qa
+        ? $effective_date
+        : substr($effective_date, 0, 7);
+      $effectiveDate = \DateTimeImmutable::createFromFormat($format, $effective_date_input);
+      $errors = \DateTimeImmutable::getLastErrors();
 
-      if (!$effectiveDate) {
-        $form_state->setErrorByName('attribute_date', $this->t('Effective date must include a valid month and year.'));
+      if (!$effectiveDate || ($errors !== FALSE && ($errors['warning_count'] || $errors['error_count']))) {
+        $form_state->setErrorByName('attribute_date', $this->t('Effective date is invalid.'));
       }
-      else {
-        $effectiveDate = $effectiveDate->setDate(
-          (int) $effectiveDate->format('Y'),
-          (int) $effectiveDate->format('m'),
-          1
-        );
-        $currentMonthStart = new \DateTimeImmutable('first day of this month');
-
-        if ($effectiveDate < $currentMonthStart) {
-          $form_state->setErrorByName('attribute_date', $this->t('Effective date cannot be in the past.'));
-        }
+      elseif (!$is_qa && $effectiveDate < new \DateTimeImmutable('first day of this month midnight')) {
+        $form_state->setErrorByName('attribute_date', $this->t('Effective date cannot be in the past.'));
       }
     }
 
@@ -404,14 +401,12 @@ class CreateRateSheetForm extends FormBase {
         }
       }
 
-      $effectiveDate = \DateTimeImmutable::createFromFormat('Y-m', $values['attribute_date'] ?? '');
-      $effectiveDate = $effectiveDate
-        ? $effectiveDate->setDate(
-          (int) $effectiveDate->format('Y'),
-          (int) $effectiveDate->format('m'),
-          1
-        )
-        : new \DateTimeImmutable('first day of this month');
+      $is_qa = $this->currentUser()->hasRole('shush_qa');
+      $effective_date_input = (string) $values['attribute_date'];
+      $effectiveDate = \DateTimeImmutable::createFromFormat(
+        $is_qa ? '!Y-m-d' : '!Y-m',
+        $is_qa ? $effective_date_input : substr($effective_date_input, 0, 7)
+      );
 
       $rate_sheet_id = $this->rateSheetService->createRateSheet([
         'name' => $values['name'],
