@@ -1,0 +1,14 @@
+uuid: 791e1707-ead2-4866-b158-28c415ce2929
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.shush_qa
+  module:
+    - user
+id: user_remove_role_action.shush_qa
+label: 'Remove the Shush QA role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: shush_qa

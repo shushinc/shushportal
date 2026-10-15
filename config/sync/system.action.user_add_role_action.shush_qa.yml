@@ -1,0 +1,14 @@
+uuid: 697830a1-c868-448d-83a4-68ae65302f52
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.shush_qa
+  module:
+    - user
+id: user_add_role_action.shush_qa
+label: 'Add the Shush QA role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: shush_qa
