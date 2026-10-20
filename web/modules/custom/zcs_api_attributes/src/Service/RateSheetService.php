@@ -1059,9 +1059,6 @@ class RateSheetService {
             ->condition('rate_sheet_id', $rate_sheet_id)
             ->condition('client_id', $client_id)
             ->execute();
-
-          // Update group field_selected_rate_sheets
-          $this->updateClientSelectedRateSheets($client_id, $rate_sheet_id, TRUE);
         }
 
         unset($transaction);
@@ -2178,73 +2175,6 @@ class RateSheetService {
         'created_date' => $this->time->getRequestTime(),
       ])
       ->execute();
-  }
-
-  /**
-   * Updates the client's selected rate sheets field.
-   *
-   * @param int $client_id
-   *   The Client (group) ID.
-   * @param int $rate_sheet_id
-   *   The Rate Sheet ID.
-   * @param bool $add
-   *   TRUE to add, FALSE to remove.
-   */
-  protected function updateClientSelectedRateSheets(int $client_id, int $rate_sheet_id, bool $add = TRUE) {
-    // Get current value
-    $current_value = $this->database->select('group__field_selected_rate_sheets', 'gfsr')
-      ->fields('gfsr', ['field_selected_rate_sheets_value'])
-      ->condition('entity_id', $client_id)
-      ->execute()
-      ->fetchField();
-
-    $rate_sheets = [];
-    if ($current_value) {
-      $rate_sheets = json_decode($current_value, TRUE) ?: [];
-    }
-
-    if ($add) {
-      $rate_sheets[(string) $rate_sheet_id] = 1;
-    }
-    else {
-      unset($rate_sheets[(string) $rate_sheet_id]);
-    }
-
-    $new_value = json_encode($rate_sheets);
-
-    // Check if record exists
-    $exists = $this->database->select('group__field_selected_rate_sheets', 'gfsr')
-      ->fields('gfsr', ['entity_id'])
-      ->condition('entity_id', $client_id)
-      ->execute()
-      ->fetchField();
-
-    if ($exists) {
-      $this->database->update('group__field_selected_rate_sheets')
-        ->fields(['field_selected_rate_sheets_value' => $new_value])
-        ->condition('entity_id', $client_id)
-        ->execute();
-    }
-    else {
-      // Get the latest revision_id for this group
-      $revision_id = $this->database->select('groups', 'g')
-        ->fields('g', ['revision_id'])
-        ->condition('id', $client_id)
-        ->execute()
-        ->fetchField();
-
-      $this->database->insert('group__field_selected_rate_sheets')
-        ->fields([
-          'bundle' => 'partner',
-          'deleted' => 0,
-          'entity_id' => $client_id,
-          'revision_id' => $revision_id,
-          'langcode' => 'en',
-          'delta' => 0,
-          'field_selected_rate_sheets_value' => $new_value,
-        ])
-        ->execute();
-    }
   }
 
   /**
