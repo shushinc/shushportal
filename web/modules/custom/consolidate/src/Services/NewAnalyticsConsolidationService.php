@@ -169,7 +169,7 @@ class NewAnalyticsConsolidationService {
     return $result['total'] ?? 0;
   }
 
-  public function consolidateMonth(string $group, string $date): int {
+  public function consolidateMonth(string $group, string $date): float {
     $referenceDateTime = new DrupalDateTime($date);
 
     $firstDayOfTheMonth = clone $referenceDateTime;
@@ -193,7 +193,7 @@ class NewAnalyticsConsolidationService {
     $result = $this->getAnalyticsInDateRange($group, $startDate, $endDate);
     $result = reset($result['rows']);
 
-    return $result['total'] ?? 0;
+    return (float) ($result['total'] ?? 0);
   }
 
   public function consolidateYear(string $group, string $date): int {
