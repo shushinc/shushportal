@@ -2797,3 +2797,15 @@ body.create-client #edit-actions .form-submit:hover, body.apps-create-from #edit
 }
 
 /*# sourceMappingURL=main.css.map*/
+
+.password-change-page .right-side-logo img{
+  max-width: 300px;
+  width: 100%;
+  height: auto;
+}
+
+.header-site-logo .site__logo img {
+  max-width: 300px;
+  width: 100%;
+  height: auto;
+}
