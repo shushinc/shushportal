@@ -1322,6 +1322,8 @@ class RateSheetService {
     $buckets = $payload['buckets'] ?? [];
 
     if (empty($buckets)) {
+      $payload['rows'] = [];
+      unset($payload['buckets']);
       return $payload;
     }
 
@@ -1331,13 +1333,18 @@ class RateSheetService {
 
     $run_id = (string) ($payload['run_id'] ?? '');
 
-    foreach ($buckets as $index => $bucket) {
-      $payload['buckets'][$index] = $this->processBucket(
+    $rows = [];
+
+    foreach ($buckets as $bucket) {
+      $rows[] = $this->processBucket(
         $bucket,
         $pricing_configuration,
         $run_id,
       );
     }
+
+    unset($payload['buckets']);
+    $payload['rows'] = $rows;
 
     return $payload;
   }
