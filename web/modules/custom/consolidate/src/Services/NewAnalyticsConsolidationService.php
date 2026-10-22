@@ -193,6 +193,15 @@ class NewAnalyticsConsolidationService {
     $result = $this->getAnalyticsInDateRange($group, $startDate, $endDate);
     $result = reset($result['rows']);
 
+    \Drupal::logger('analytics_debug')->notice('Group: @group | Start: @start | End: @end | Result: @result',
+      [
+        '@group' => $group,
+        '@start' => $startDate,
+        '@end' => $endDate,
+        '@result' => json_encode($result),
+      ]
+    );
+
     return (float) ($result['total'] ?? 0);
   }
 
