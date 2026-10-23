@@ -101,9 +101,29 @@ class ClientRateSheetApiController extends ControllerBase {
    */
   public function getRanges(Request $request): JsonResponse {
 
+    $this->logger->info(
+      'Received aggregate pricing request. Method: @method. URI: @uri. Content: @content',
+      [
+        '@method' => $request->getMethod(),
+        '@uri' => $request->getUri(),
+        '@content' => $request->getContent(),
+      ]
+    );
+
     $account = $this->authenticateSuperAdmin($request);
 
+    // todo: improve error handling for authentication failures, e.g., log attempts, rate limit, etc.
+    // with throwable errors, we can log the exception details for debugging purposes.
     if (!$account) {
+
+      $this->logger->warning(
+        'Unauthorized aggregate pricing request. Method: @method. Path: @path.',
+        [
+          '@method' => $request->getMethod(),
+          '@path' => $request->getPathInfo(),
+        ]
+      );
+
       return new JsonResponse([
           'error' => 'Unauthorized',
           'message' => 'Valid Super Admin credentials are required.',
@@ -125,6 +145,14 @@ class ClientRateSheetApiController extends ControllerBase {
 
     // Validate top-level structure
     if (!isset($payload['buckets']) || !is_array($payload['buckets'])) {
+      $this->logger->warning(
+        'Invalid aggregate pricing request payload. Method: @method. Path: @path. Payload: @payload',
+        [
+          '@method' => $request->getMethod(),
+          '@path' => $request->getPathInfo(),
+          '@payload' => json_encode($payload),
+        ]
+      );
       return new JsonResponse(
         ['error' => 'Missing or invalid buckets array'],
         400
@@ -132,6 +160,14 @@ class ClientRateSheetApiController extends ControllerBase {
     }
 
     if (empty($payload['buckets'])) {
+      $this->logger->warning(
+        'Invalid aggregate pricing request payload. Method: @method. Path: @path. Payload: @payload',
+        [
+          '@method' => $request->getMethod(),
+          '@path' => $request->getPathInfo(),
+          '@payload' => json_encode($payload),
+        ]
+      );
       return new JsonResponse(
         ['error' => 'Buckets array cannot be empty'],
         400

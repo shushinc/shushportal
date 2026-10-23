@@ -1322,11 +1322,13 @@ class RateSheetService {
     $buckets = $payload['buckets'] ?? [];
 
     if (empty($buckets)) {
+      $this->logger->info('Processing aggregate pricing payload with @count buckets.', ['@count' => count($buckets)]);
       $payload['rows'] = [];
       unset($payload['buckets']);
       return $payload;
     }
-
+    
+    // Add login level to confirm points that were successfully processed and those that failed.
     $client_endpoints = $this->groupEndpointsByClient($buckets);
 
     $pricing_configuration = $this->loadPricingConfiguration($client_endpoints);
@@ -1346,6 +1348,9 @@ class RateSheetService {
     unset($payload['buckets']);
     $payload['rows'] = $rows;
 
+
+    // log the $payload variable that is returned to the client for debugging purposes
+    $this->logger->info('Processed aggregate pricing payload with @payload rows.', ['@payload' => json_encode($payload, JSON_PRETTY_PRINT)]);
     return $payload;
   }
 
@@ -1390,6 +1395,13 @@ class RateSheetService {
     $source_bucket_id = (string) ($bucket['source_bucket_id'] ?? '');
 
     if ($source_bucket_id === '') {
+      // log error and return an enriched bucket with error message
+
+      $this->logger->error(
+        'Pricing calculation failed. Missing source_bucket_id in bucket: @bucket',
+        ['@bucket' => json_encode($bucket)]
+      );
+
       return $this->enrichBucketWithError(
         $bucket,
         'Missing source_bucket_id'
@@ -1406,6 +1418,9 @@ class RateSheetService {
       ->execute()
       ->fetchField();
 
+
+    // todo
+    // return http 304 if the bucket has already been processed successfully
     if ($existing_log_id !== FALSE) {
       return $this->enrichBucketAsDuplicate($bucket);
     }
@@ -1413,7 +1428,13 @@ class RateSheetService {
     $validation_error = $this->validateBucket($bucket);
 
     if ($validation_error !== NULL) {
-      $this->logFailedBucket($bucket, $run_id, $validation_error, $this->getPricingFailureContext($bucket));
+      $this->logger->error(
+        'Pricing calculation failed. Invalid bucket data: @bucket. Error: @error',
+        [
+          '@bucket' => json_encode($bucket),
+          '@error' => $validation_error,
+        ]
+      );
 
       return $this->enrichBucketWithError(
         $bucket,
@@ -1435,7 +1456,7 @@ class RateSheetService {
 
       if ($configuration === NULL) {
         throw new \Exception(
-          'No active pricing configuration found for client and endpoint.'
+          'No active pricing configuration found for client and endpoint.' . $configuration['name'] . ', Endpoint: ' . $endpoint
         );
       }
       $discount_information = $this->loadClientDiscount($configuration['client_id']);
@@ -1443,7 +1464,7 @@ class RateSheetService {
 
       if (empty($ranges)) {
         throw new \Exception(
-          'No pricing ranges found for client and endpoint.'
+          'No pricing ranges found for client and endpoint. ClientID: ' . $configuration['name'] . ', Endpoint: ' . $endpoint
         );
       }
 
