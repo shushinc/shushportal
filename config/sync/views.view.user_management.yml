@@ -7,7 +7,6 @@ dependencies:
     - user.role.api_attribute_approval_level_1
     - user.role.api_attribute_approval_level_2
     - user.role.carrier_admin
-    - user.role.client_admin
     - user.role.consent_viewer
     - user.role.finance_admin
     - user.role.financial_rate_sheet_approval_level_1
@@ -696,7 +695,6 @@ display:
           operator: or
           value:
             carrier_admin: carrier_admin
-            client_admin: client_admin
             finance_admin: finance_admin
             reports_admin: reports_admin
             financial_rate_sheet_approval_level_1: financial_rate_sheet_approval_level_1
