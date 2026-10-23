@@ -1348,6 +1348,9 @@ class RateSheetService {
     unset($payload['buckets']);
     $payload['rows'] = $rows;
 
+
+    // log the $payload variable that is returned to the client for debugging purposes
+    $this->logger->info('Processed aggregate pricing payload with @payload rows.', ['@payload' => json_encode($payload, JSON_PRETTY_PRINT)]);
     return $payload;
   }
 
