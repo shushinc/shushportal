@@ -1359,6 +1359,8 @@ class RateSheetService {
       $rows[] = $this->formatPricingRow($row);
     }
 
+    $this->logger->info('Processed aggregate pricing payload with @payload rows.', ['@payload' => json_encode($payload, JSON_PRETTY_PRINT)]);
+
     return [
       'schema_version' => $payload['schema_version'] ?? '1.0',
       'run_id' => $run_id,
@@ -1384,7 +1386,17 @@ class RateSheetService {
       'unit_price', 'markup_percentage', 'discount_price',
       'transaction_rows',
     ];
-    return array_intersect_key($row, array_flip($keys));
+
+    $formatted = array_intersect_key($row, array_flip($keys));
+
+    if (isset($formatted['client_type'])) {
+      $formatted['client_type'] = match ($formatted['client_type']) {
+        'demand_partner' => 'demandpartner',
+        default => $formatted['client_type'],
+      };
+    }
+
+    return $formatted;
   }
 
   /**
