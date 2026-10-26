@@ -1361,12 +1361,25 @@ class RateSheetService {
 
     $this->logger->info('Processed aggregate pricing payload with @payload rows.', ['@payload' => json_encode($payload, JSON_PRETTY_PRINT)]);
 
-    return [
+    $response = [
       'schema_version' => $payload['schema_version'] ?? '1.0',
       'run_id' => $run_id,
       'hour' => $payload['hour'] ?? NULL,
       'rows' => $rows,
     ];
+
+    // Log final API response for debugging.
+    $this->logger->debug(
+      'Aggregate pricing API response: @response',
+      [
+        '@response' => json_encode(
+          $response,
+          JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
+        ),
+      ]
+    );
+
+    return $response;
   }
 
   /**
