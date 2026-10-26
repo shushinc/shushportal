@@ -27,23 +27,28 @@ class DeleteController extends ControllerBase {
 
     $consumer_id = $app->get('field_consumer_id')->getValue()[0]['value'];
     $user_name = \Drupal::service('zcs_kong.kong_gateway')->getContactNameUsingConsumerId($consumer_id);
-    $client_id = $app->get('field_client_id')->getValue()[0]['value'];
-    $jwt_id = $app->get('field_jwt')->getValue()[0]['value'];
+    $client_id = $app->get('field_client_id')->getValue()[0]['value'] ?? NULL;
+    $jwt_id = $app->get('field_jwt')->getValue()[0]['value'] ?? NULL;
     
     $delete_credentials_response = \Drupal::service('zcs_kong.kong_gateway')->deleteAppCredentials($user_name, $client_id);
     if (!empty($delete_credentials_response)) {
-      $status_code = $delete_credentials_response->getStatusCode();
-      if ($status_code == '204') {
-        $app->set('field_app_status', 'deleted');
-        $app->save();
-        $delete_jwt_response = \Drupal::service('zcs_kong.kong_gateway')->deleteJwt($user_name, $jwt_id);
-        $jwt_status_code = $delete_jwt_response->getStatusCode();
-        if ($jwt_status_code == '204') {
-          \Drupal::messenger()->addMessage('App Deleted Successfully');
+      if ($delete_credentials_response != "error") {
+         $status_code = $delete_credentials_response->getStatusCode();
+         if ($status_code == '204') {
+          $app->set('field_app_status', 'deleted');
+          $app->save();
+          $delete_jwt_response = \Drupal::service('zcs_kong.kong_gateway')->deleteJwt($user_name, $jwt_id);
+          $jwt_status_code = $delete_jwt_response->getStatusCode();
+          if ($jwt_status_code == '204') {
+            \Drupal::messenger()->addMessage('App Deleted Successfully');
+          }
+          else {
+            \Drupal::messenger()->addMessage('App Deleted Successfully and Error in JWT deletion');
+          }     
         }
-        else {
-          \Drupal::messenger()->addMessage('App Deleted Successfully and Error in JWT deletion');
-        }     
+      }
+      else {
+        \Drupal::messenger()->addError('Gateway connection failure to delete App.Please contact the administrator for further assistance.');
       }
     }
     else {
