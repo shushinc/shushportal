@@ -1321,37 +1321,70 @@ class RateSheetService {
   public function processAggregatePricing(array $payload): array {
     $buckets = $payload['buckets'] ?? [];
 
-    if (empty($buckets)) {
-      $this->logger->info('Processing aggregate pricing payload with @count buckets.', ['@count' => count($buckets)]);
-      $payload['rows'] = [];
-      unset($payload['buckets']);
-      return $payload;
+    // Reject replays before processing any bucket in this request.
+    $seen = [];
+    foreach ($buckets as $bucket) {
+      $id = (string) ($bucket['source_bucket_id'] ?? '');
+      if ($id !== '') {
+        if (isset($seen[$id])) {
+          throw new \DomainException('Duplicate source_bucket_id in request: ' . $id, 409);
+        }
+        $seen[$id] = TRUE;
+        $exists = $this->database->select('api_pricing_calculation_log', 'apcl')
+          ->fields('apcl', ['id'])
+          ->condition('source_bucket_id', $id)
+          ->condition('status', 'success')
+          ->range(0, 1)
+          ->execute()
+          ->fetchField();
+        if ($exists !== FALSE) {
+          throw new \DomainException('Bucket already processed: ' . $id, 409);
+        }
+      }
     }
-    
-    // Add login level to confirm points that were successfully processed and those that failed.
-    $client_endpoints = $this->groupEndpointsByClient($buckets);
 
-    $pricing_configuration = $this->loadPricingConfiguration($client_endpoints);
-
+    $configuration = $this->loadPricingConfiguration($this->groupEndpointsByClient($buckets));
     $run_id = (string) ($payload['run_id'] ?? '');
-
     $rows = [];
 
     foreach ($buckets as $bucket) {
-      $rows[] = $this->processBucket(
-        $bucket,
-        $pricing_configuration,
-        $run_id,
-      );
+      $row = $this->processBucket($bucket, $configuration, $run_id);
+      if (isset($row['pricing_status']) && $row['pricing_status'] !== 'success') {
+        $status = $row['pricing_status'] === 'duplicate' ? 409 : 422;
+        throw new \DomainException(
+          (string) ($row['pricing_error'] ?? 'Bucket already processed'),
+          $status
+        );
+      }
+      $rows[] = $this->formatPricingRow($row);
     }
 
-    unset($payload['buckets']);
-    $payload['rows'] = $rows;
+    return [
+      'schema_version' => $payload['schema_version'] ?? '1.0',
+      'run_id' => $run_id,
+      'hour' => $payload['hour'] ?? NULL,
+      'rows' => $rows,
+    ];
+  }
 
-
-    // log the $payload variable that is returned to the client for debugging purposes
-    $this->logger->info('Processed aggregate pricing payload with @payload rows.', ['@payload' => json_encode($payload, JSON_PRETTY_PRINT)]);
-    return $payload;
+  /**
+   * Builds the documented pricing response without internal diagnostic fields.
+   */
+  protected function formatPricingRow(array $row): array {
+    $keys = [
+      'source_bucket_id', 'datatime', 'carrier_name', 'client',
+      'client_type', 'customer_name', 'endpoint', 'attribute',
+      'pricing_type', 'total_transaction_count',
+      'total_full_rate_billable_transaction',
+      'total_lower_rate_billable_transaction',
+      'total_no_billable_transaction',
+      'latency_sum_full_rate', 'latency_sum_lower_rate',
+      'latency_sum_no_billable', 'avg_latency_full_rate',
+      'avg_latency_lower_rate', 'avg_latency_no_billable',
+      'unit_price', 'markup_percentage', 'discount_price',
+      'transaction_rows',
+    ];
+    return array_intersect_key($row, array_flip($keys));
   }
 
   /**
@@ -1960,6 +1993,7 @@ class RateSheetService {
 
     return [
       'discount_percentage' => $discount_percentage,
+      'unit_price' => (float) $ranges[0]['success_unit_price'],
       'successful_est_revenue_before_discount' => round($total_success_amount_before_discount, 4),
       'discount_amount' => round($total_success_discount, 4),
       'successful_est_revenue' => round($total_success_amount, 4),
@@ -1993,21 +2027,19 @@ class RateSheetService {
   protected function enrichBucketWithPricing(array $bucket, array $client_data, array $attribute_data, float $markup_percentage, array $calculation): array {
     $bucket['client_type'] = $client_data['type'];
     $bucket['attribute'] = $attribute_data['name'];
-    $bucket['pricing_type'] = '';
-    $bucket['success_unit_price'] = $calculation['successful_unit_price'];
-    $bucket['unsuccessful_unit_price'] = $calculation['unsuccessful_unit_price'];
+    // Preserve the supplied pricing type; no domestic/international source is
+    // available in the current rate-sheet configuration.
+    $bucket['pricing_type'] = $bucket['pricing_type'] ?? '';
+    $bucket['unit_price'] = (float) ($calculation['unit_price'] ?? 0);
     $bucket['markup_percentage'] = $markup_percentage;
 
-    // Discount information.
-    $bucket['discount_percentage'] = $calculation['discount_percentage'] ?? 0.0;
-    $bucket['discount_price'] = $calculation['discount_amount'] ?? 0.0;
-
+    $bucket['discount_price'] = (float) ($calculation['discount_amount'] ?? 0);
     $bucket['pricing_status'] = 'success';
 
-    $transaction_rows = [];
+    $rows = [];
 
     if ((int) $bucket['total_full_rate_billable_transaction'] > 0) {
-      $transaction_rows[] = [
+      $rows[] = [
         'transaction_type' => 'Successful',
         'total_full_rate_billable_transaction' => (int) $bucket['total_full_rate_billable_transaction'],
         'discount_percentage' => $calculation['discount_percentage'] ?? 0.0,
@@ -2017,14 +2049,21 @@ class RateSheetService {
     }
 
     if ((int) $bucket['total_lower_rate_billable_transaction'] > 0) {
-      $transaction_rows[] = [
+      $rows[] = [
         'transaction_type' => 'UnSuccessful',
         'total_lower_rate_billable_transaction' => (int) $bucket['total_lower_rate_billable_transaction'],
         'est_revenue' => $calculation['unsuccessful_est_revenue'],
       ];
     }
 
-    $bucket['transaction_rows'] = $transaction_rows;
+    if ((int) $bucket['total_no_billable_transaction'] > 0) {
+      $rows[] = [
+        'transaction_type' => 'Other',
+        'total_no_billable_transaction' => (int) $bucket['total_no_billable_transaction'],
+        'est_revenue' => 0.0,
+      ];
+    }
+    $bucket['transaction_rows'] = $rows;
 
     return $bucket;
   }
@@ -2700,6 +2739,7 @@ class RateSheetService {
         'rs',
         'rs.id = crs.rate_sheet_id'
       );
+      $query->leftJoin('group__field_partner_type', 'gfpt', 'gfpt.entity_id = g.id');
 
       $query->join(
         'rate_sheet_item',
@@ -2743,7 +2783,7 @@ class RateSheetService {
       $query->addField('rsir', 'success_rate');
       $query->addField('rsir', 'partial_range');
 
-      $query->addField('g', 'type', 'client_type');
+      $query->addField('gfpt', 'field_partner_type_value', 'client_type');
 
       $query
         ->condition('crs.id', $subquery, 'IN')
