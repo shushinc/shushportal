@@ -180,6 +180,10 @@ class ClientRateSheetApiController extends ControllerBase {
 
       return new JsonResponse($result, 200);
     }
+    catch (\DomainException $e) {
+      $status = in_array($e->getCode(), [409, 422], TRUE) ? $e->getCode() : 422;
+      return new JsonResponse(['error' => $e->getMessage()], $status);
+    }
     catch (\Throwable $e) {
       $this->logger->error(
         'Aggregate pricing request failed. Error: @message. '
