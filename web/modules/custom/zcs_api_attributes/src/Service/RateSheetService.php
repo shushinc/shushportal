@@ -1517,13 +1517,20 @@ class RateSheetService {
           'No active pricing configuration found for client and endpoint.' . $configuration['name'] . ', Endpoint: ' . $endpoint
         );
       }
+
+      $pricing_type = $configuration['pricing_type'] ?? NULL;
+
+      if (!in_array($pricing_type, ['domestic', 'international'], TRUE)) {
+        throw new \UnexpectedValueException(
+          'Invalid or missing pricing type for client: ' . $client_key
+        );
+      }
+
       $discount_information = $this->loadClientDiscount($configuration['client_id']);
       $ranges = $configuration['ranges'] ?? [];
 
       if (empty($ranges)) {
-        throw new \Exception(
-          'No pricing ranges found for client and endpoint. ClientID: ' . $configuration['name'] . ', Endpoint: ' . $endpoint
-        );
+        throw new \Exception('No pricing ranges found for client: ' . $client_key . ', Endpoint: ' . $endpoint);
       }
 
       $client_data = [
@@ -1589,7 +1596,8 @@ class RateSheetService {
         $client_data,
         $attribute_data,
         $markup_percentage,
-        $calculation
+        $calculation,
+        $pricing_type
       );
     }
     catch (\Exception $e) {
@@ -2049,12 +2057,12 @@ class RateSheetService {
    * @return array
    *   Enriched bucket.
    */
-  protected function enrichBucketWithPricing(array $bucket, array $client_data, array $attribute_data, float $markup_percentage, array $calculation): array {
+  protected function enrichBucketWithPricing(array $bucket, array $client_data, array $attribute_data, float $markup_percentage, array $calculation, string $pricing_type): array {
     $bucket['client_type'] = $client_data['type'];
     $bucket['attribute'] = $attribute_data['name'];
     // Preserve the supplied pricing type; no domestic/international source is
     // available in the current rate-sheet configuration.
-    $bucket['pricing_type'] = $bucket['pricing_type'] ?? '';
+    $bucket['pricing_type'] = $pricing_type;
     $bucket['unit_price'] = (float) ($calculation['unit_price'] ?? 0);
     $bucket['markup_percentage'] = $markup_percentage;
 
@@ -2766,6 +2774,8 @@ class RateSheetService {
       );
       $query->leftJoin('group__field_partner_type', 'gfpt', 'gfpt.entity_id = g.id');
 
+      $query->leftJoin('group__field_pricing_type', 'gfpricing', 'gfpricing.entity_id = g.id');
+
       $query->join(
         'rate_sheet_item',
         'rsi',
@@ -2809,6 +2819,7 @@ class RateSheetService {
       $query->addField('rsir', 'partial_range');
 
       $query->addField('gfpt', 'field_partner_type_value', 'client_type');
+      $query->addField('gfpricing', 'field_pricing_type_value', 'pricing_type');
 
       $query
         ->condition('crs.id', $subquery, 'IN')
@@ -2828,6 +2839,11 @@ class RateSheetService {
           $configuration[$client_name][$endpoint] = [
             'client_id' => (int) $row->id,
             'client_type' => $row->client_type,
+            'pricing_type' => match ($row->pricing_type) {
+              'domestic_pricing' => 'domestic',
+              'international_pricing' => 'international',
+              default => NULL,
+            },
             'rate_sheet_id' => (int) $row->rate_sheet_id,
             'rate_sheet_item_id' => (int) $row->rate_sheet_item_id,
             'attribute_id' => (int) $row->api_attribute_id,
