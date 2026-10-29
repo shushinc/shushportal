@@ -92,6 +92,11 @@ class AnalyticsPostController extends ControllerBase {
           $group_relation = $this->getGroupId($content['client']);    
         } 
 
+        if(empty($group_relation)) {
+          $responses[$key] = ['message' => 'No group found for the client : '. $content['client']];
+          continue;
+        }
+
         //attribute
         $attrTerms = $this->entityTypeManager()->getStorage('taxonomy_term')->loadByProperties(['vid' => 'analytics_attributes', 'name' => $content['attribute']]);
         if (!$attrTerms) {
@@ -218,7 +223,7 @@ class AnalyticsPostController extends ControllerBase {
       $group_content_ids = \Drupal::entityQuery('group_relationship')
       ->condition('type', 'partner-group_node-app')
       ->condition('entity_id', $node_id)
-      ->accessCheck()->accessCheck(FALSE)->execute();
+      ->accessCheck(FALSE)->execute();
       $relationship_id = reset($group_content_ids);
       if($relationship_id) {
         $group_relationship = GroupRelationship::load($relationship_id);
