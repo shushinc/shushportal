@@ -154,7 +154,6 @@ final class CreateKeyForm extends FormBase {
     $redirect_uris = $form_state->getValue('redirect_uri'); 
     if (\Drupal::currentUser()->hasRole('carrier_admin') || \Drupal::currentUser()->hasRole('administrator')) {
       $client_id = $form_state->getValue('consumer_id'); 
-     // $user_name = \Drupal::service('zcs_kong.kong_gateway')->getContactNameUsingConsumerId($client_id);
       $user_name = \Drupal::service('zcs_kong.kong_gateway')->getClientNameUsingConsumerId($client_id);
 
      // $response_key_details = \Drupal::service('zcs_kong.kong_gateway')->generateKeyv($client_id, $tags, $ttl);
@@ -196,7 +195,6 @@ final class CreateKeyForm extends FormBase {
         \Drupal::messenger()->addError('Sorry! You dont have access to create App.');  
       } 
       else {
-        //$user_name=  \Drupal::service('zcs_kong.kong_gateway')->getClientContactUsername();
         $user_name=  \Drupal::service('zcs_kong.kong_gateway')->getClientName();
         $response_key_details = \Drupal::service('zcs_kong.kong_gateway')->generateKeyV1($user_name, $tags, $app_name, $redirect_uris);
         if(!empty($response_key_details)) {
