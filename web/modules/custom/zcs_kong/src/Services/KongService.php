@@ -305,6 +305,51 @@ class kongService  {
     }
 
   }
+
+
+
+
+    /**
+   * {@inheritdoc}
+   */
+  public function getClientName() {
+
+    if (!\Drupal::currentUser()->hasRole('client_admin')) {
+      //\Drupal::messenger()->addError('The user has no access to create APP');
+      return FALSE;
+    }
+    else {
+      $memberships = \Drupal::service('group.membership_loader')->loadByUser(\Drupal::currentUser());
+      if (isset($memberships)) {
+        $roles = $memberships[0]->getRoles();
+        $group_roles = [];
+        foreach($roles as $role) {
+          $group_roles[] = $role->id();
+        }
+        if (in_array('partner-admin', $group_roles)) {
+          $group_id = $memberships[0]->getGroup()->id();
+          $group = Group::load($group_id);
+          if ($group) {
+             return $group->label();
+          }
+          else {
+           // \Drupal::messenger()->addError('Problem in fetching the client details');
+            return "error";
+          }
+        }
+        else {
+         // \Drupal::messenger()->addError('You dont have admin access to create App');
+          return "error";
+        }
+      }
+      else {
+       // \Drupal::messenger()->addError('Your are not part of client');
+        return "error";
+      }
+    }
+
+  }
+
    /**
    * {@inheritdoc}
    */
@@ -576,6 +621,25 @@ public function getUsersAppList($consumer_id) {
     }
     return  $contact_name;
 
+  }
+
+
+ /**
+  * {@inheritdoc}
+  */
+  public function getClientNameUsingConsumerId($client_id) {
+  $contact_name = ''; 
+    $groups = \Drupal::entityTypeManager()
+    ->getStorage('group')
+    ->loadByProperties([
+      'type' => 'partner',
+      'field_consumer_id' => $client_id,
+    ]);
+
+    foreach ($groups as $group) {
+      $group_label = $group->label();
+    }
+    return  $group_label;
   }
 
  /**
@@ -850,7 +914,7 @@ public function getUsersAppList($consumer_id) {
 
   public function deleteKeyKong($app) {
     $consumer_id = $app->get('field_consumer_id')->getValue()[0]['value'];
-    $user_name = \Drupal::service('zcs_kong.kong_gateway')->getContactNameUsingConsumerId($consumer_id);
+    $user_name = \Drupal::service('zcs_kong.kong_gateway')->getClientNameUsingConsumerId($consumer_id);
     $client_id = $app->get('field_client_id')->value;
     if(!empty($client_id)) {
       $jwt_id = $app->get('field_jwt')->getValue()[0]['value'];
