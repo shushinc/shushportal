@@ -914,7 +914,6 @@ public function getUsersAppList($consumer_id) {
 
   public function deleteKeyKong($app) {
     $consumer_id = $app->get('field_consumer_id')->getValue()[0]['value'];
-    //$user_name = \Drupal::service('zcs_kong.kong_gateway')->getContactNameUsingConsumerId($consumer_id);
     $user_name = \Drupal::service('zcs_kong.kong_gateway')->getClientNameUsingConsumerId($consumer_id);
     $client_id = $app->get('field_client_id')->value;
     if(!empty($client_id)) {
