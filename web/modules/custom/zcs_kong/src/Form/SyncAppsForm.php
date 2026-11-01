@@ -239,7 +239,8 @@ class SyncAppsForm extends FormBase {
     $kong_service  = \Drupal::service('zcs_kong.kong_gateway');
 
     $contact_email = $kong_service->getContactEmailUsingConsumerId($consumer_id);
-    $user_name     = $kong_service->getContactNameUsingConsumerId($consumer_id);
+   // $user_name     = $kong_service->getContactNameUsingConsumerId($consumer_id);
+    $user_name    =  $kong_service->getClientNameUsingConsumerId($consumer_id);
 
     if (empty($contact_email) || empty($user_name)) {
       \Drupal::logger('zcs_kong')->error(
@@ -308,7 +309,8 @@ class SyncAppsForm extends FormBase {
     // ------------------------------------------------------------------ //
     $kong_service    = \Drupal::service('zcs_kong.kong_gateway');
     $contact_email   = $kong_service->getContactEmailUsingConsumerId($consumer_id);
-    $user_name       = $kong_service->getContactNameUsingConsumerId($consumer_id);
+    //$user_name       = $kong_service->getContactNameUsingConsumerId($consumer_id);
+    $user_name    =  $kong_service->getClientNameUsingConsumerId($consumer_id);
 
     if (empty($contact_email) || empty($user_name)) {
       \Drupal::logger('zcs_kong')->error(

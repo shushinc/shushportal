@@ -26,7 +26,10 @@ class DeleteController extends ControllerBase {
     $app = Node::load($id);
 
     $consumer_id = $app->get('field_consumer_id')->getValue()[0]['value'];
-    $user_name = \Drupal::service('zcs_kong.kong_gateway')->getContactNameUsingConsumerId($consumer_id);
+   // $user_name = \Drupal::service('zcs_kong.kong_gateway')->getContactNameUsingConsumerId($consumer_id);
+    
+    $user_name = \Drupal::service('zcs_kong.kong_gateway')->getClientNameUsingConsumerId($consumer_id);
+
     $client_id = $app->get('field_client_id')->getValue()[0]['value'] ?? NULL;
     $jwt_id = $app->get('field_jwt')->getValue()[0]['value'] ?? NULL;
     
