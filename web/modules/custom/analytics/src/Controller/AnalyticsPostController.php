@@ -126,15 +126,11 @@ class AnalyticsPostController extends ControllerBase {
         else {
           $customerTerm = reset($customerTerms);
         }
-
-        $average_api_ms = ($content['avg_latency_full_rate'] + $content['avg_latency_lower_rate']+ $content['avg_latency_no_billable']) / 3;
         $node->set('field_end_customer', $customerTerm->id());
-
-
         // remaining fields
         $node->set('field_api_volume_in_mil', array_sum($content['status_counts']));
         
-      
+      // Average API Latency Calculation
         $full_count = (int) $content['total_full_rate_billable_transaction'];
         $half_count = (int) $content['total_lower_rate_billable_transaction'];
         $no_billable_count = (int) $content['total_no_billable_transaction'];
