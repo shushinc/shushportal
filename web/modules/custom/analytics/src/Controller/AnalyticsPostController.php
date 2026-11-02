@@ -132,11 +132,29 @@ class AnalyticsPostController extends ControllerBase {
           $customerTerm = reset($customerTerms);
         }
 
-        $average_api_ms = ($content['avg_latency_full_rate'] + $content['avg_latency_lower_rate']+ $content['avg_latency_no_billable']) / 3;
         $node->set('field_end_customer', $customerTerm->id());
 
         // remaining fields
         $node->set('field_api_volume_in_mil', array_sum($content['status_counts']));
+
+        // Average API Latency Calculation
+        $full_count = (int) $content['total_full_rate_billable_transaction'];
+        $half_count = (int) $content['total_lower_rate_billable_transaction'];
+        $no_billable_count = (int) $content['total_no_billable_transaction'];
+
+        $full_avg_latency = (float) $content['avg_latency_full_rate'];
+        $half_avg_latency = (float) $content['avg_latency_lower_rate'];
+        $no_billable_avg_latency = (float) $content['avg_latency_no_billable'];
+        $total_count = $full_count + $half_count + $no_billable_count;
+      
+        $average_api_ms = 0;
+        if ($total_count > 0) {
+            $total_latency =
+                ($full_count * $full_avg_latency) +
+                ($half_count * $half_avg_latency) +
+                ($no_billable_count * $no_billable_avg_latency);
+            $average_api_ms = round($total_latency / $total_count, 3);
+        }
         
         $node->set('field_average_api_latency_in_mil', $average_api_ms);     
         $node->set('field_date', str_replace(' ', 'T', $content['timestamp_interval']));
