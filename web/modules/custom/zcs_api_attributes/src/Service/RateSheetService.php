@@ -1344,13 +1344,60 @@ class RateSheetService {
     }
 
     $configuration = $this->loadPricingConfiguration($this->groupEndpointsByClient($buckets));
+
+
+    // Validate every bucket before persisting any analytics or pricing logs.
+    foreach ($buckets as $bucket) {
+      $client = (string) ($bucket['client'] ?? '');
+      $endpoint = (string) ($bucket['endpoint'] ?? '');
+      $validation_error = $this->validateBucket($bucket);
+      if ($validation_error !== NULL) {
+        throw new \DomainException($validation_error, 422);
+      }
+
+      $full = (int) $bucket['total_full_rate_billable_transaction'];
+      $lower = (int) $bucket['total_lower_rate_billable_transaction'];
+      $anonymous_free = $client === 'Anonymous' && $full + $lower === 0;
+
+      if ($anonymous_free) {
+        if ($this->resolveApiAttribute($endpoint) === NULL) {
+          throw new \DomainException('API attribute not found for endpoint: ' . $endpoint, 404);
+        }
+        $existing_analytics = $this->entityTypeManager->getStorage('node')
+          ->getQuery()
+          ->accessCheck(FALSE)
+          ->condition('type', 'analytics')
+          ->condition('field_kong_analytical_id', (string) $bucket['source_bucket_id'])
+          ->range(0, 1)
+          ->execute();
+        if ($existing_analytics) {
+          throw new \DomainException('Bucket already processed: ' . $bucket['source_bucket_id'], 409);
+        }
+        continue;
+      }
+
+      if (!isset($configuration[$client][$endpoint])) {
+        throw new \DomainException(
+          'No active pricing configuration found for client: ' . $client . ', Endpoint: ' . $endpoint,
+          404
+        );
+      }
+      if (empty($configuration[$client][$endpoint]['ranges'])) {
+        throw new \DomainException(
+          'No pricing ranges found for client: ' . $client . ', Endpoint: ' . $endpoint,
+          404
+        );
+      }
+    }
+
+
     $run_id = (string) ($payload['run_id'] ?? '');
     $rows = [];
 
     foreach ($buckets as $bucket) {
       $row = $this->processBucket($bucket, $configuration, $run_id);
       if (isset($row['pricing_status']) && $row['pricing_status'] !== 'success') {
-        $status = $row['pricing_status'] === 'duplicate' ? 409 : 422;
+        $status = $row['pricing_status'] === 'duplicate' ? 409 : (int) ($row['pricing_http_status'] ?? 422);
         throw new \DomainException(
           (string) ($row['pricing_error'] ?? 'Bucket already processed'),
           $status
@@ -1512,6 +1559,37 @@ class RateSheetService {
       */
       $configuration = $pricing_configuration[$client_key][$endpoint] ?? NULL;
 
+      // Non-billable Anonymous traffic must still be captured in analytics.
+      if ($client_key === 'Anonymous'
+        && (int) $bucket['total_full_rate_billable_transaction']
+          + (int) $bucket['total_lower_rate_billable_transaction'] === 0) {
+        $attribute = $this->resolveApiAttribute($endpoint);
+        if ($attribute === NULL) {
+          throw new \DomainException('API attribute not found for endpoint: ' . $endpoint, 404);
+        }
+
+        $this->createAnalyticsNode(
+          $bucket,
+          $client_key,
+          (string) $attribute['name'],
+          ['total_est_revenue' => 0.0]
+        );
+
+        $bucket['client_type'] = NULL;
+        $bucket['attribute'] = (string) $attribute['name'];
+        $bucket['pricing_type'] = NULL;
+        $bucket['unit_price'] = 0.0;
+        $bucket['markup_percentage'] = 0.0;
+        $bucket['discount_price'] = 0.0;
+        $bucket['transaction_rows'] = [[
+          'transaction_type' => 'Other',
+          'total_no_billable_transaction' => (int) $bucket['total_no_billable_transaction'],
+          'est_revenue' => 0.0,
+        ]];
+        $bucket['pricing_status'] = 'success';
+        return $bucket;
+      }
+
       if ($configuration === NULL) {
         throw new \Exception(
           'No active pricing configuration found for client and endpoint.' . $configuration['name'] . ', Endpoint: ' . $endpoint
@@ -1652,10 +1730,11 @@ class RateSheetService {
         );
       }
 
-      return $this->enrichBucketWithError(
-        $bucket,
-        $error_message
-      );
+      $result = $this->enrichBucketWithError($bucket, $error_message);
+      if ($e instanceof \DomainException && $e->getCode() === 404) {
+        $result['pricing_http_status'] = 404;
+      }
+      return $result;
     }
   }
 
