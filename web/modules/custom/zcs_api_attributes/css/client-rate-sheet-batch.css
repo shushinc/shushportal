@@ -131,3 +131,67 @@
 .client-rate-sheet-table th.client-rate-sheet-checkbox-cell input[type="checkbox"]:indeterminate {
   opacity: 0.7;
 }
+
+/* Search form introduced on the Client Rate Sheet Approval page. */
+.client-rate-sheet-search-form {
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.client-rate-sheet-search-form input[type="search"] {
+  box-sizing: border-box;
+  width: min(100%, 340px);
+  min-height: 42px;
+  padding: 0.425rem 0.475rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.client-rate-sheet-search-form input[type="search"]:focus-visible,
+.client-rate-sheet-search-form button:focus-visible,
+.client-rate-sheet-search-form a.button:focus-visible {
+  outline: 2px solid #118df0;
+  outline-offset: 2px;
+}
+
+.client-rate-sheet-search-form button[type="submit"],
+.client-rate-sheet-search-form a.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.425rem 1rem;
+  border-radius: 6px;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.client-rate-sheet-search-form button[type="submit"] {
+  color: #fff;
+  background: #118df0;
+  border: 1px solid #118df0;
+}
+
+.client-rate-sheet-search-form button[type="submit"]:hover {
+  background: #243f82;
+}
+
+.client-rate-sheet-search-form a.button {
+  color: #118df0;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+}
+
+.client-rate-sheet-search-form a.button:hover {
+  background: #eef2ff;
+}
+
+@media (max-width: 600px) {
+  .client-rate-sheet-search-form input[type="search"] {
+    width: 100%;
+  }
+}

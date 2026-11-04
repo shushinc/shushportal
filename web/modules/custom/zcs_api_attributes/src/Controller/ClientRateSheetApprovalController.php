@@ -64,7 +64,7 @@ Class ClientRateSheetApprovalController extends ControllerBase {
         
         // Get filter parameter from query string
         $request = \Drupal::request();
-        $rate_sheet_name_filter = $request->query->get('rate_sheet_name', '');
+        $rate_sheet_name_filter = trim((string) $request->query->get('rate_sheet_name', ''));
         
         // Get all client rate sheets
         $all_client_rate_sheets = $this->rateSheetService->getClientRateSheets();
@@ -100,11 +100,22 @@ Class ClientRateSheetApprovalController extends ControllerBase {
             ];
         }
 
+
+        // Keep the pager outside the themed table render array so Drupal
+        // renders it even when the Twig template does not render child elements.
+
         $build = [
-            '#theme' => 'client_rate_sheet_approval',
-            '#content' => [
-                'final' => $final,
-                'rate_sheet_name_filter' => $rate_sheet_name_filter,
+            '#type' => 'container',
+            'listing' => [
+                '#theme' => 'client_rate_sheet_approval',
+                '#content' => [
+                    'final' => $final,
+                    'rate_sheet_name_filter' => $rate_sheet_name_filter,
+                    'list_url' => Url::fromRoute('zcs_api_attributes.client_rate_sheet_approval')->toString(),
+                ],
+            ],
+            'pager' => [
+                '#type' => 'pager',
             ],
             '#attached' => [
                 'library' => [
@@ -118,7 +129,7 @@ Class ClientRateSheetApprovalController extends ControllerBase {
         $build['pager'] = [
             '#type' => 'pager',
         ];
-        
+
         return $build;
     }
 
