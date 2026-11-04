@@ -817,7 +817,8 @@ class RateSheetService {
    */
   public function getClientRateSheets(): array {
     $query = $this->database->select('client_rate_sheet', 'crs')
-      ->fields('crs', ['rate_sheet_id', 'client_id', 'created_by', 'created_date', 'active', 'rate_sheet_client_status_id']);
+      ->fields('crs', ['rate_sheet_id', 'client_id', 'created_by', 'created_date', 'active', 'rate_sheet_client_status_id'])
+      ->orderBy('crs.id', 'DESC');
     
     $results = $query->execute()->fetchAll();
 
