@@ -3,17 +3,17 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.group.field_contact_email
-    - field.storage.group.field_contact_name
-    - field.storage.group.field_partner_status
-    - field.storage.group.field_partner_type
-    - group.type.partner
-    - user.role.administrator
-    - user.role.carrier_admin
+  - field.storage.group.field_contact_email
+  - field.storage.group.field_contact_name
+  - field.storage.group.field_partner_status
+  - field.storage.group.field_partner_type
+  - group.type.partner
+  - user.role.administrator
+  - user.role.carrier_admin
   module:
-    - group
-    - options
-    - user
+  - group
+  - options
+  - user
 _core:
   default_config_hash: '-KHwGEd8csVnW754Ap9zR2kB32FgffQ1g3egXFVsKSg'
 id: client_details
@@ -89,7 +89,7 @@ display:
             thousand_separator: ''
             prefix_suffix: true
           group_column: value
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 0
           delta_offset: 0
@@ -105,7 +105,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          entity_type: null
+          entity_type:
           entity_field: label
           plugin_id: field
           label: 'Client Name'
@@ -154,7 +154,7 @@ display:
           settings:
             link_to_entity: false
           group_column: value
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 0
           delta_offset: 0
@@ -217,7 +217,7 @@ display:
           settings:
             link_to_entity: false
           group_column: value
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 0
           delta_offset: 0
@@ -277,9 +277,9 @@ display:
           hide_alter_empty: true
           click_sort_column: value
           type: basic_string
-          settings: {  }
+          settings: {}
           group_column: value
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 0
           delta_offset: 0
@@ -339,9 +339,9 @@ display:
           hide_alter_empty: true
           click_sort_column: value
           type: list_default
-          settings: {  }
+          settings: {}
           group_column: value
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 0
           delta_offset: 0
@@ -401,9 +401,9 @@ display:
           hide_alter_empty: true
           click_sort_column: value
           type: list_default
-          settings: {  }
+          settings: {}
           group_column: value
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 0
           delta_offset: 0
@@ -516,7 +516,7 @@ display:
           offset: 0
           pagination_heading_level: h4
           items_per_page: 10
-          total_pages: null
+          total_pages:
           id: 0
           tags:
             next: ››
@@ -535,9 +535,9 @@ display:
       exposed_form:
         type: basic
         options:
-          submit_button: Apply
-          reset_button: false
-          reset_button_label: Reset
+          submit_button: Search
+          reset_button: true
+          reset_button_label: Clear
           exposed_sorts_label: 'Sort by'
           expose_sort_order: true
           sort_asc_label: Asc
@@ -550,7 +550,7 @@ display:
             carrier_admin: carrier_admin
       cache:
         type: tag
-        options: {  }
+        options: {}
       empty:
         area_text_custom:
           id: area_text_custom
@@ -580,7 +580,7 @@ display:
             field_identifier: ''
           exposed: false
           granularity: second
-      arguments: {  }
+      arguments: {}
       filters:
         status:
           id: status
@@ -602,10 +602,51 @@ display:
           plugin_id: bundle
           value:
             partner: partner
+        label:
+          id: label
+          table: groups_field_data
+          field: label
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: group
+          entity_field: label
+          plugin_id: string
+          operator: contains
+          value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: label_op
+            label: Client Name
+            description: ''
+            use_operator: false
+            operator: label_op
+            operator_limit_selection: false
+            operator_list: []
+            identifier: client_name
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            placeholder: Search clients...
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: []
+            group_items: []
       style:
         type: table
         options:
-          grouping: {  }
+          grouping: {}
           row_class: ''
           default_row_class: true
           columns:
@@ -680,8 +721,8 @@ display:
           disable_sql_rewrite: false
           distinct: false
           replica: false
-          query_tags: {  }
-      relationships: {  }
+          query_tags: {}
+      relationships: {}
       css_class: 'user-grid-block user-management-view'
       header:
         area_text_custom:
@@ -695,37 +736,37 @@ display:
           empty: true
           content: '<a href="/client/create-client?destination=/client/client-management" class="btn-primary use-ajax anchor-dropdown-btn" data-toggle="modal" data-dialog-type="modal" data-dialog-options=''{"width": 1000, "title": "Invite Client"}''>Invite Client</a>'
           tokenize: false
-      footer: {  }
-      display_extenders: {  }
+      footer: {}
+      display_extenders: {}
     cache_metadata:
       max-age: -1
       contexts:
-        - 'languages:language_content'
-        - 'languages:language_interface'
-        - url.query_args
-        - user.roles
+      - 'languages:language_content'
+      - 'languages:language_interface'
+      - url.query_args
+      - user.roles
       tags:
-        - 'config:field.storage.group.field_contact_email'
-        - 'config:field.storage.group.field_contact_name'
-        - 'config:field.storage.group.field_partner_status'
-        - 'config:field.storage.group.field_partner_type'
+      - 'config:field.storage.group.field_contact_email'
+      - 'config:field.storage.group.field_contact_name'
+      - 'config:field.storage.group.field_partner_status'
+      - 'config:field.storage.group.field_partner_type'
   page_1:
     id: page_1
     display_title: Page
     display_plugin: page
     position: 1
     display_options:
-      display_extenders: {  }
+      display_extenders: {}
       path: client/client-management
     cache_metadata:
       max-age: -1
       contexts:
-        - 'languages:language_content'
-        - 'languages:language_interface'
-        - url.query_args
-        - user.roles
+      - 'languages:language_content'
+      - 'languages:language_interface'
+      - url.query_args
+      - user.roles
       tags:
-        - 'config:field.storage.group.field_contact_email'
-        - 'config:field.storage.group.field_contact_name'
-        - 'config:field.storage.group.field_partner_status'
-        - 'config:field.storage.group.field_partner_type'
+      - 'config:field.storage.group.field_contact_email'
+      - 'config:field.storage.group.field_contact_name'
+      - 'config:field.storage.group.field_partner_status'
+      - 'config:field.storage.group.field_partner_type'
