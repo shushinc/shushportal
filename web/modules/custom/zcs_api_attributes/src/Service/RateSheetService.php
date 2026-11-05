@@ -2737,10 +2737,28 @@ class RateSheetService {
       throw new \Exception('Missing datatime in bucket');
     }
 
+    // Resolve the Partner group using the client key from the bucket.
+    $client_key = trim((string) ($bucket['client'] ?? ''));
+    if ($client_key === '') {
+      throw new \Exception('Missing client in bucket for analytics partner');
+    }
+
+    $partners = $this->entityTypeManager->getStorage('group')->loadByProperties([
+      'type' => 'partner',
+      'label' => $client_key,
+    ]);
+  
+    if (empty($partners)) {
+      throw new \Exception(sprintf('Partner group not found for client "%s".', $client_key));
+    }
+    $partner = reset($partners);
+    $partner_id = (int) $partner->id();
+
     // Resolve taxonomy terms.
     $carrier_id = $this->resolveAnalyticsTerm('analytics_carrier', $carrier_name);
 
-    $customer_id = $this->resolveAnalyticsTerm('analytics_customer',$client_name);
+    $customer_name = trim((string) ($bucket['customer_name'] ?? ''));
+    $customer_id = $this->resolveAnalyticsTerm('analytics_customer', $customer_name);
 
     $attribute_id = $this->resolveAnalyticsTerm('analytics_attributes',$attribute_name);
 
@@ -2774,6 +2792,9 @@ class RateSheetService {
       'field_est_revenue' => (float) ($calculation['total_est_revenue'] ?? 0),
       'field_attribute' => [
         'target_id' => $attribute_id,
+      ],
+      'field_partner' => [
+        'target_id' => $partner_id,
       ],
       'field_end_customer' => [
         'target_id' => $customer_id,
