@@ -1338,28 +1338,6 @@ class RateSheetService {
           continue;
         }
 
-        // Older successes predate response snapshots. Preserve their saved
-        // revenues rather than charging them again.
-        $previous = $this->loadSuccessfulPricingLog($source_bucket_id);
-        if ($previous !== NULL) {
-          $rows[] = $this->formatReplayedPricingRow(
-            $this->restoreLegacyPricingRow($previous, $bucket)
-          );
-          continue;
-        }
-
-        // Older non-billable Anonymous traffic has an Analytics node, but
-        // deliberately never wrote an api_pricing_calculation_log entry.
-        if (($bucket['client'] ?? '') === 'Anonymous'
-          && (int) ($bucket['total_full_rate_billable_transaction'] ?? 0)
-            + (int) ($bucket['total_lower_rate_billable_transaction'] ?? 0) === 0) {
-          $anonymous_row = $this->restoreLegacyAnonymousRow($bucket, $source_bucket_id);
-          if ($anonymous_row !== NULL) {
-            $rows[] = $this->formatReplayedPricingRow($anonymous_row);
-            continue;
-          }
-        }
-
         $validation_error = $this->validateBucket($bucket);
         if ($validation_error !== NULL) {
           throw new \InvalidArgumentException($validation_error);
@@ -1413,12 +1391,6 @@ class RateSheetService {
           $saved = $source_bucket_id !== ''
             ? $this->loadSavedPricingRow($source_bucket_id)
             : NULL;
-          if ($saved === NULL && $source_bucket_id !== '') {
-            $previous = $this->loadSuccessfulPricingLog($source_bucket_id);
-            if ($previous !== NULL) {
-              $saved = $this->restoreLegacyPricingRow($previous, $bucket);
-            }
-          }
           if ($saved !== NULL) {
             $rows[] = $this->formatReplayedPricingRow($saved);
             continue;
@@ -1481,126 +1453,6 @@ class RateSheetService {
     return $row;
   }
 
-  /**
-   * Reads an older committed success whose response snapshot does not exist.
-   */
-  protected function loadSuccessfulPricingLog(string $source_bucket_id): ?array {
-    $log = $this->database->select('api_pricing_calculation_log', 'apcl')
-      ->fields('apcl')
-      ->condition('source_bucket_id', $source_bucket_id)
-      ->condition('status', 'success')
-      ->orderBy('id', 'ASC')
-      ->range(0, 1)
-      ->execute()
-      ->fetchAssoc();
-
-    return $log ?: NULL;
-  }
-
-  /**
-   * Reconstructs legacy pricing from stored figures, never current rates.
-   *
-   * Older logs lack customer/carrier metadata and pricing_type; only those
-   * missing attributes are taken from the retry payload.
-   */
-  protected function restoreLegacyPricingRow(array $log, array $bucket): array {
-    $breakdown = json_decode((string) ($log['calculation_breakdown'] ?? ''), TRUE);
-    $breakdown = is_array($breakdown) ? $breakdown : [];
-    $discount = array_sum(array_column($breakdown, 'discount_amount'));
-    $full = (int) $log['total_full_rate_billable_transaction'];
-    $lower = (int) $log['total_lower_rate_billable_transaction'];
-    $other = (int) $log['total_no_billable_transaction'];
-
-    $original = array_replace($bucket, [
-      'source_bucket_id' => $log['source_bucket_id'],
-      'datatime' => gmdate('Y-m-d\TH:i:s\Z', (int) $log['bucket_datetime']),
-      'client' => $log['client_key'],
-      'endpoint' => $log['endpoint'],
-      'client_type' => $log['client_type'],
-      'attribute' => $log['attribute_name'],
-      'total_transaction_count' => (int) $log['total_transaction_count'],
-      'total_full_rate_billable_transaction' => $full,
-      'total_lower_rate_billable_transaction' => $lower,
-      'total_no_billable_transaction' => $other,
-      'unit_price' => (float) ($breakdown[0]['success_unit_price'] ?? $log['successful_unit_price'] ?? 0),
-      'markup_percentage' => (float) $log['markup_percentage'],
-      'discount_price' => (float) $discount,
-      'transaction_rows' => [],
-    ]);
-
-    if ($full > 0) {
-      $original['transaction_rows'][] = [
-        'transaction_type' => 'Successful',
-        'total_full_rate_billable_transaction' => $full,
-        'est_revenue' => (float) $log['successful_est_revenue'],
-      ];
-    }
-    if ($lower > 0) {
-      $original['transaction_rows'][] = [
-        'transaction_type' => 'UnSuccessful',
-        'total_lower_rate_billable_transaction' => $lower,
-        'est_revenue' => (float) $log['unsuccessful_est_revenue'],
-      ];
-    }
-    if ($other > 0) {
-      $original['transaction_rows'][] = [
-        'transaction_type' => 'Other',
-        'total_no_billable_transaction' => $other,
-        'est_revenue' => 0.0,
-      ];
-    }
-
-    return $this->formatSuccessfulPricingRow($original);
-  }
-
-  /**
-   * Recovers previously saved zero-charge Anonymous Analytics records.
-   *
-   * Older Anonymous buckets only created a node, not a pricing log.
-   */
-  protected function restoreLegacyAnonymousRow(array $bucket, string $source_bucket_id): ?array {
-    $storage = $this->entityTypeManager->getStorage('node');
-    $ids = $storage->getQuery()
-      ->accessCheck(FALSE)
-      ->condition('type', 'analytics')
-      ->condition('field_kong_analytical_id', $source_bucket_id)
-      ->range(0, 1)
-      ->execute();
-
-    if (!$ids) {
-      return NULL;
-    }
-
-    $node = $storage->load(reset($ids));
-    if (!$node) {
-      throw new \UnexpectedValueException('Previously saved Analytics node is missing');
-    }
-
-    $count = (int) $node->get('field_api_volume_in_mil')->value;
-    $other = (int) $node->get('field_error_api_volume_in_mil')->value;
-    $attribute_term = $node->get('field_attribute')->entity;
-    $original = array_replace($bucket, [
-      'source_bucket_id' => $source_bucket_id,
-      'datatime' => (string) $node->get('field_date')->value . 'Z',
-      'total_transaction_count' => $count,
-      'total_full_rate_billable_transaction' => 0,
-      'total_lower_rate_billable_transaction' => 0,
-      'total_no_billable_transaction' => $other,
-      'client_type' => NULL,
-      'pricing_type' => NULL,
-      'attribute' => $attribute_term ? $attribute_term->label() : NULL,
-      'unit_price' => 0.0,
-      'markup_percentage' => 0.0,
-      'discount_price' => 0.0,
-      'transaction_rows' => [[
-        'transaction_type' => 'Other',
-        'total_no_billable_transaction' => $other,
-        'est_revenue' => (float) $node->get('field_est_revenue')->value,
-      ]],
-    ]);
-
-    return $this->formatSuccessfulPricingRow($original);
-  }
 
   /**
    * Maps the internal pricing result to Aggregates schema 1.0.
