@@ -1320,114 +1320,175 @@ class RateSheetService {
    *   The enriched payload with pricing information.
    */
   public function processAggregatePricing(array $payload): array {
-    $buckets = $payload['buckets'] ?? [];
-
-    // Reject replays before processing any bucket in this request.
-    $seen = [];
-    foreach ($buckets as $bucket) {
-      $id = (string) ($bucket['source_bucket_id'] ?? '');
-      if ($id !== '') {
-        if (isset($seen[$id])) {
-          throw new \DomainException('Duplicate source_bucket_id in request: ' . $id, 409);
-        }
-        $seen[$id] = TRUE;
-        $exists = $this->database->select('api_pricing_calculation_log', 'apcl')
-          ->fields('apcl', ['id'])
-          ->condition('source_bucket_id', $id)
-          ->condition('status', 'success')
-          ->range(0, 1)
-          ->execute()
-          ->fetchField();
-        if ($exists !== FALSE) {
-          throw new \DomainException('Bucket already processed: ' . $id, 409);
-        }
-      }
-    }
-
-    $configuration = $this->loadPricingConfiguration($this->groupEndpointsByClient($buckets));
-
-
-    // Validate every bucket before persisting any analytics or pricing logs.
-    foreach ($buckets as $bucket) {
-      $client = (string) ($bucket['client'] ?? '');
-      $endpoint = (string) ($bucket['endpoint'] ?? '');
-      $validation_error = $this->validateBucket($bucket);
-      if ($validation_error !== NULL) {
-        throw new \DomainException($validation_error, 422);
-      }
-
-      $full = (int) $bucket['total_full_rate_billable_transaction'];
-      $lower = (int) $bucket['total_lower_rate_billable_transaction'];
-      $anonymous_free = $client === 'Anonymous' && $full + $lower === 0;
-
-      if ($anonymous_free) {
-        if ($this->resolveApiAttribute($endpoint) === NULL) {
-          throw new \DomainException('API attribute not found for endpoint: ' . $endpoint, 404);
-        }
-        $existing_analytics = $this->entityTypeManager->getStorage('node')
-          ->getQuery()
-          ->accessCheck(FALSE)
-          ->condition('type', 'analytics')
-          ->condition('field_kong_analytical_id', (string) $bucket['source_bucket_id'])
-          ->range(0, 1)
-          ->execute();
-        if ($existing_analytics) {
-          throw new \DomainException('Bucket already processed: ' . $bucket['source_bucket_id'], 409);
-        }
-        continue;
-      }
-
-      if (!isset($configuration[$client][$endpoint])) {
-        throw new \DomainException(
-          'No active pricing configuration found for client: ' . $client . ', Endpoint: ' . $endpoint,
-          404
-        );
-      }
-      if (empty($configuration[$client][$endpoint]['ranges'])) {
-        throw new \DomainException(
-          'No pricing ranges found for client: ' . $client . ', Endpoint: ' . $endpoint,
-          404
-        );
-      }
-    }
-
-
     $run_id = (string) ($payload['run_id'] ?? '');
     $rows = [];
 
-    foreach ($buckets as $bucket) {
-      $row = $this->processBucket($bucket, $configuration, $run_id);
-      if (isset($row['pricing_status']) && $row['pricing_status'] !== 'success') {
-        $status = $row['pricing_status'] === 'duplicate' ? 409 : (int) ($row['pricing_http_status'] ?? 422);
-        throw new \DomainException(
-          (string) ($row['pricing_error'] ?? 'Bucket already processed'),
-          $status
-        );
+    // A failure or replay belongs to its own bucket, not to the entire run.
+    foreach ($payload['buckets'] ?? [] as $bucket) {
+      $source_bucket_id = trim((string) ($bucket['source_bucket_id'] ?? ''));
+      try {
+        if ($source_bucket_id === '') {
+          throw new \InvalidArgumentException('Missing source_bucket_id');
+        }
+
+        // Replays must not depend on today's pricing configuration.
+        $saved = $this->loadSavedPricingRow($source_bucket_id);
+        if ($saved !== NULL) {
+          $rows[] = $this->formatReplayedPricingRow($saved);
+          continue;
+        }
+
+        $validation_error = $this->validateBucket($bucket);
+        if ($validation_error !== NULL) {
+          throw new \InvalidArgumentException($validation_error);
+        }
+
+        $client = (string) $bucket['client'];
+        $anonymous_free = $client === 'Anonymous'
+          && (int) $bucket['total_full_rate_billable_transaction']
+            + (int) $bucket['total_lower_rate_billable_transaction'] === 0;
+
+        // Load only the current bucket's configuration: one invalid client
+        // must not prevent the rest of the run from being processed.
+        $configuration = $anonymous_free
+          ? []
+          : $this->loadPricingConfiguration(
+              $this->groupEndpointsByClient([$bucket])
+            );
+
+        // The pricing log, Analytics node and replay snapshot are atomic.
+        // The unique snapshot primary key also protects concurrent retries.
+        $transaction = $this->database->startTransaction();
+        $processed = $this->processBucket($bucket, $configuration, $run_id);
+
+        if (($processed['pricing_status'] ?? NULL) !== 'success') {
+          throw new \RuntimeException(
+            (string) ($processed['pricing_error'] ?? 'Bucket already processed')
+          );
+        }
+
+        $row = $this->formatSuccessfulPricingRow($processed);
+        $this->database->insert('api_pricing_bucket_result')
+          ->fields([
+            'source_bucket_id' => $source_bucket_id,
+            'response_json' => json_encode($row, JSON_THROW_ON_ERROR),
+            'created_date' => $this->time->getRequestTime(),
+          ])
+          ->execute();
+
+        unset($transaction);
+        $rows[] = $row;
       }
-      $rows[] = $this->formatPricingRow($row);
+      catch (\Throwable $e) {
+        if (isset($transaction)) {
+          $transaction->rollBack();
+          unset($transaction);
+        }
+
+        // A concurrent request may have committed the same bucket first.
+        // Return its persisted result rather than reporting a false failure.
+        try {
+          $saved = $source_bucket_id !== ''
+            ? $this->loadSavedPricingRow($source_bucket_id)
+            : NULL;
+          if ($saved !== NULL) {
+            $rows[] = $this->formatReplayedPricingRow($saved);
+            continue;
+          }
+        }
+        catch (\Throwable $replay_error) {
+          $this->logger->error('Failed to recover replay for @id: @error', [
+            '@id' => $source_bucket_id,
+            '@error' => $replay_error->getMessage(),
+          ]);
+        }
+
+        $this->logger->error('Aggregate pricing bucket @id failed: @error', [
+          '@id' => $source_bucket_id,
+          '@error' => $e->getMessage(),
+        ]);
+        try {
+          $this->logFailedBucket($bucket, $run_id, $e->getMessage());
+        }
+        catch (\Throwable $logging_error) {
+          $this->logger->error('Unable to log failed bucket @id: @error', [
+            '@id' => $source_bucket_id,
+            '@error' => $logging_error->getMessage(),
+          ]);
+        }
+        $rows[] = [
+          'source_bucket_id' => $source_bucket_id,
+          'status' => 'failed',
+          'error' => $e->getMessage(),
+        ];
+      }
     }
 
-    $this->logger->info('Processed aggregate pricing payload with @payload rows.', ['@payload' => json_encode($payload, JSON_PRETTY_PRINT)]);
-
-    $response = [
+    return [
       'schema_version' => $payload['schema_version'] ?? '1.0',
       'run_id' => $run_id,
       'hour' => $payload['hour'] ?? NULL,
       'rows' => $rows,
     ];
+  }
 
-    // Log final API response for debugging.
-    $this->logger->debug(
-      'Aggregate pricing API response: @response',
-      [
-        '@response' => json_encode(
-          $response,
-          JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
-        ),
-      ]
-    );
+  /**
+   * Returns the exact committed pricing response for a bucket.
+   */
+  protected function loadSavedPricingRow(string $source_bucket_id): ?array {
+    $json = $this->database->select('api_pricing_bucket_result', 'r')
+      ->fields('r', ['response_json'])
+      ->condition('source_bucket_id', $source_bucket_id)
+      ->execute()
+      ->fetchField();
 
-    return $response;
+    if ($json === FALSE) {
+      return NULL;
+    }
+
+    $row = json_decode($json, TRUE, 512, JSON_THROW_ON_ERROR);
+    if (!is_array($row)) {
+      throw new \UnexpectedValueException('Invalid stored pricing response for ' . $source_bucket_id);
+    }
+    return $row;
+  }
+
+
+  /**
+   * Maps the internal pricing result to Aggregates schema 1.0.
+   */
+  protected function formatSuccessfulPricingRow(array $processed): array {
+    $row = $this->formatPricingRow($processed);
+    $transactions = [];
+    foreach ($row['transaction_rows'] ?? [] as $transaction) {
+      $type = (string) ($transaction['transaction_type'] ?? 'Other');
+      $count_field = match ($type) {
+        'Successful' => 'total_full_rate_billable_transaction',
+        'UnSuccessful', 'Unsuccessful Transactions' => 'total_lower_rate_billable_transaction',
+        default => 'total_no_billable_transaction',
+      };
+      $transactions[] = [
+        'transaction_type' => $type === 'UnSuccessful' ? 'Unsuccessful Transactions' : $type,
+        'transaction_type_count' => (int) ($transaction[$count_field] ?? 0),
+        'est_revenue' => (float) ($transaction['est_revenue'] ?? 0),
+      ];
+    }
+    $row['transaction_rows'] = $transactions;
+
+    return [
+      'source_bucket_id' => (string) ($row['source_bucket_id'] ?? ''),
+      'status' => 'success',
+      'message' => 'Bucket processed and saved successfully',
+    ] + $row;
+  }
+
+  /**
+   * Changes only replay metadata; all monetary values remain untouched.
+   */
+  protected function formatReplayedPricingRow(array $row): array {
+    $row['status'] = 'replayed';
+    $row['message'] = 'Previously processed; original saved result returned without charging again';
+    return $row;
   }
 
   /**
@@ -1436,14 +1497,11 @@ class RateSheetService {
   protected function formatPricingRow(array $row): array {
     $keys = [
       'source_bucket_id', 'datatime', 'carrier_name', 'client',
-      'client_type', 'customer_name', 'endpoint', 'attribute',
+      'client_type', 'client_status', 'customer_name', 'endpoint', 'attribute',
       'pricing_type', 'total_transaction_count',
       'total_full_rate_billable_transaction',
       'total_lower_rate_billable_transaction',
       'total_no_billable_transaction',
-      'latency_sum_full_rate', 'latency_sum_lower_rate',
-      'latency_sum_no_billable', 'avg_latency_full_rate',
-      'avg_latency_lower_rate', 'avg_latency_no_billable',
       'unit_price', 'markup_percentage', 'discount_price',
       'transaction_rows',
     ];
@@ -1593,7 +1651,7 @@ class RateSheetService {
 
       if ($configuration === NULL) {
         throw new \Exception(
-          'No active pricing configuration found for client and endpoint.' . $configuration['name'] . ', Endpoint: ' . $endpoint
+          'No active pricing configuration found for client: ' . $client_key . ', Endpoint: ' . $endpoint
         );
       }
 
@@ -1616,6 +1674,7 @@ class RateSheetService {
         'id' => (int) $configuration['client_id'],
         'name' => $client_key,
         'type' => $configuration['client_type'] ?? 'unknown',
+        'status' => $configuration['client_status'] ?? NULL,
       ];
 
       $attribute_data = [
@@ -2139,6 +2198,7 @@ class RateSheetService {
    */
   protected function enrichBucketWithPricing(array $bucket, array $client_data, array $attribute_data, float $markup_percentage, array $calculation, string $pricing_type): array {
     $bucket['client_type'] = $client_data['type'];
+    $bucket['client_status'] = $client_data['status'] ?? NULL;
     $bucket['attribute'] = $attribute_data['name'];
     // Preserve the supplied pricing type; no domestic/international source is
     // available in the current rate-sheet configuration.
@@ -2874,6 +2934,7 @@ class RateSheetService {
         'rs.id = crs.rate_sheet_id'
       );
       $query->leftJoin('group__field_partner_type', 'gfpt', 'gfpt.entity_id = g.id');
+      $query->leftJoin('group__field_partner_status', 'gfstatus', 'gfstatus.entity_id = g.id');
 
       $query->leftJoin('group__field_pricing_type', 'gfpricing', 'gfpricing.entity_id = g.id');
 
@@ -2920,6 +2981,7 @@ class RateSheetService {
       $query->addField('rsir', 'partial_range');
 
       $query->addField('gfpt', 'field_partner_type_value', 'client_type');
+      $query->addField('gfstatus', 'field_partner_status_value', 'client_status');
       $query->addField('gfpricing', 'field_pricing_type_value', 'pricing_type');
 
       $query
@@ -2940,6 +3002,7 @@ class RateSheetService {
           $configuration[$client_name][$endpoint] = [
             'client_id' => (int) $row->id,
             'client_type' => $row->client_type,
+            'client_status' => $row->client_status,
             'pricing_type' => match ($row->pricing_type) {
               'domestic_pricing' => 'domestic',
               'international_pricing' => 'international',

@@ -178,7 +178,10 @@ class ClientRateSheetApiController extends ControllerBase {
       // Process payload through service
       $result = $this->rateSheetService->processAggregatePricing($payload);
 
-      return new JsonResponse($result, 200);
+      return new JsonResponse(
+        $result,
+        $this->getAggregateHttpStatus($result['rows'] ?? [])
+      );
     }
     catch (\DomainException $e) {
       $status = in_array($e->getCode(), [404, 409, 422], TRUE) ? $e->getCode() : 422;
@@ -201,6 +204,34 @@ class ClientRateSheetApiController extends ControllerBase {
         500
       );
     }
+  }
+
+  /**
+   * Determine the HTTP status for Aggregates' bucket-level contract.
+   *
+   * 200: all new successes.
+   * 207: at least one replay or failure, but not all failures.
+   * 500: every bucket failed.
+   */
+  protected function getAggregateHttpStatus(array $rows): int {
+    $statuses = array_column($rows, 'status');
+    $count = count($statuses);
+    if ($count === 0) {
+      return 500;
+    }
+
+    $failed = count(array_filter(
+      $statuses,
+      static fn ($status) => $status === 'failed'
+    ));
+    if ($failed === $count) {
+      return 500;
+    }
+
+    return count(array_filter(
+      $statuses,
+      static fn ($status) => $status !== 'success'
+    )) > 0 ? 207 : 200;
   }
 
 
