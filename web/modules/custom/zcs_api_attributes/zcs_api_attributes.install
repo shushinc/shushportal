@@ -1637,3 +1637,42 @@ function zcs_api_attributes_update_9024(): void {
     ],
   ]);
 }
+
+/**
+ * Persist the exact response for each successfully processed aggregate bucket.
+ *
+ * The primary key is the idempotency key: concurrent retries cannot commit
+ * duplicate results. The service writes this row in the same transaction as
+ * the pricing log and Analytics node.
+ */
+function zcs_api_attributes_update_9025(): void {
+  $schema = \Drupal::database()->schema();
+
+  if ($schema->tableExists('api_pricing_bucket_result')) {
+    return;
+  }
+
+  $schema->createTable('api_pricing_bucket_result', [
+    'description' => 'Immutable successful aggregate pricing responses keyed by source bucket.',
+    'fields' => [
+      'source_bucket_id' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'description' => 'Stable bucket idempotency identifier.',
+      ],
+      'response_json' => [
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => TRUE,
+        'description' => 'Exact successful response returned to Aggregates, as JSON.',
+      ],
+      'created_date' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Unix timestamp when the response was committed.',
+      ],
+    ],
+    'primary key' => ['source_bucket_id'],
+  ]);
+}
