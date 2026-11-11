@@ -628,7 +628,7 @@ public function getUsersAppList($consumer_id) {
   * {@inheritdoc}
   */
   public function getClientNameUsingConsumerId($client_id) {
-  $contact_name = ''; 
+  $group_label = ''; 
     $groups = \Drupal::entityTypeManager()
     ->getStorage('group')
     ->loadByProperties([
